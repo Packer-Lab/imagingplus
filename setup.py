@@ -4,7 +4,7 @@ setup(
     name='packerlabimaging_tempold',
     version='0.1',
     description='essential processing and analysis code for imaging experiments in Packer lab',
-    url='http://github.com/{.....}',
+    url='https://github.com/Packer-Lab/packerlabimaging.git',
     author='Packer Lab',
     author_email='adampacker@gmail.com',
     license='MIT',

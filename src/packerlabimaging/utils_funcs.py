@@ -1,4 +1,5 @@
 ### draft script - currently COPIED FROM PRAJAY'S vape.utils_func copy on Nov 22
+## TODO - Rob to update with current utils_func from Vape
 
 import numpy as np
 import json
@@ -20,6 +21,208 @@ import copy
 # plt.rcParams.update(params)
 # sns.set()
 # sns.set_style('white')
+
+##### PRAJAY'S FUNCTIONS THAT MIGHT BE APPROP FOR THIS SCRIPT ####### / start
+# simple ZProfile function for any sized square in the frame (equivalent to ZProfile function in Fiji)
+def ZProfile(movie, area_center_coords: tuple = None, area_size: int = -1, plot_trace: bool = True,
+             plot_image: bool = True, plot_frame: int = 1, vasc_image: np.array = None, **kwargs):
+    """
+    from Sarah Armstrong
+
+    Plot a z-profile of a movie, averaged over space inside a square area
+
+    movie = can be np.array of the TIFF stack or a tiff path from which it is read in
+    area_center_coords = coordinates of pixel at center of box (x,y)
+    area_size = int, length and width of the square in pixels
+    plot_frame = which movie frame to take as a reference to plot the area boundaries on
+    vasc_image = optionally include a vasculature image tif of the correct dimensions to plot the coordinates on.
+    """
+
+    if type(movie) is str:
+        movie = tf.imread(movie)
+    print('plotting zprofile for TIFF of shape: ', movie.shape)
+
+    # assume 15fps for 1024x1024 movies and 30fps imaging for 512x512 movies
+    if movie.shape[1] == 1024:
+        img_fps = 15
+    elif movie.shape[1] == 512:
+        img_fps = 30
+    else:
+        img_fps = None
+
+    assert area_size <= movie.shape[1] and area_size <= movie.shape[2], "area_size must be smaller than the image"
+    if area_size == -1:  # this parameter used to plot whole FOV area
+        area_size = movie.shape[1]
+        area_center_coords = (movie.shape[1]/2, movie.shape[2]/2)
+    assert area_size % 2 == 0, "pls give an even area size"
+
+    x = area_center_coords[0]
+    y = area_center_coords[1]
+    x1 = int(x - 1 / 2 * area_size)
+    x2 = int(x + 1 / 2 * area_size)
+    y1 = int(y - 1 / 2 * area_size)
+    y2 = int(y + 1 / 2 * area_size)
+    smol_movie = movie[:, y1:y2, x1:x2]
+    smol_mean = np.nanmean(smol_movie, axis=(1, 2))
+    print('|- Output shape for z profile: ', smol_mean.shape)
+
+    if plot_image:
+        f, ax1 = plt.subplots()
+        ref_frame = movie[plot_frame, :, :]
+        if vasc_image is not None:
+            assert vasc_image.shape == movie.shape[1:], 'vasculature image has incompatible dimensions'
+            ax1.imshow(vasc_image, cmap="binary_r")
+        else:
+            ax1.imshow(ref_frame, cmap="binary_r")
+
+        rect1 = patches.Rectangle(
+            (x1, y1), area_size, area_size, linewidth=1.5, edgecolor='r', facecolor="none")
+
+        ax1.add_patch(rect1)
+        ax1.set_title("Z-profile area")
+        plt.show()
+
+    if plot_trace:
+        if 'figsize' in kwargs:
+            figsize = kwargs['figsize']
+        else:
+            figsize = [10, 4]
+        fig, ax2 = plt.subplots(figsize=figsize)
+        if img_fps is not None:
+            ax2.plot(np.arange(smol_mean.shape[0])/img_fps, smol_mean, linewidth=0.5, color='black')
+            ax2.set_xlabel('Time (sec)')
+        else:
+            ax2.plot(smol_mean, linewidth=0.5, color='black')
+            ax2.set_xlabel('frames')
+        ax2.set_ylabel('Flu (a.u.)')
+        if 'title' in kwargs:
+            ax2.set_title(kwargs['title'])
+        plt.show()
+
+    return smol_mean
+
+
+def SaveDownsampledTiff(tiff_path: str = None, stack: np.array = None, group_by: int = 4, save_as: str = None, plot_zprofile: bool = True):
+    """
+    Create and save a downsampled version of the original tiff file. Original tiff file can be given as a numpy array stack
+    or a str path to the tiff.
+
+    :param tiff_path: path to the tiff to downsample
+    :param stack: numpy array stack of the tiff file already read in
+    :param group_by: specified interval for grouped averaging of the TIFF
+    :param save_as: path to save the downsampled tiff to, if none provided it will save to the same directory as the provided tiff_path
+    :param plot_zprofile: if True, plot the zaxis profile using the full TIFF stack provided.
+    :return: numpy array containing the downsampled TIFF stack
+    """
+    print('downsampling of tiff stack...')
+
+    if save_as is None:
+        assert tiff_path is not None, "please provide a save path to save_as"
+        save_as = tiff_path[:-4] + '_downsampled.tif'
+
+    if stack is None:
+        # open tiff file
+        print('|- working on... %s' % tiff_path)
+        stack = tf.imread(tiff_path)
+
+    resolution = stack.shape[1]
+
+    # plot zprofile of full TIFF stack
+    if plot_zprofile:
+        ZProfile(movie=stack, plot_image=True, title=tiff_path)
+
+    # downsample to 8-bit
+    stack8 = np.full_like(stack, fill_value=0)
+    for frame in np.arange(stack.shape[0]):
+        stack8[frame] = convert_to_8bit(stack[frame], 0, 255)
+
+    # stack8 = stack
+
+    # grouped average by specified interval
+    num_frames = stack8.shape[0] // group_by
+    # avgd_stack = np.empty((num_frames, resolution, resolution), dtype='uint16')
+    avgd_stack = np.empty((num_frames, resolution, resolution), dtype='uint8')
+    frame_count = np.arange(0, stack8.shape[0], group_by)
+    for i in np.arange(num_frames):
+        frame = frame_count[i]
+        avgd_stack[i] = np.mean(stack8[frame:frame + group_by], axis=0)
+
+    avgd_stack = avgd_stack.astype(np.uint8)
+
+    # bin down to 512 x 512 resolution if higher resolution
+    shape = np.shape(avgd_stack)
+    if shape[1] != 512:
+        # input_size = avgd_stack.shape[1]
+        # output_size = 512
+        # bin_size = input_size // output_size
+        # final_stack = avgd_stack.reshape((shape[0], output_size, bin_size,
+        #                                   output_size, bin_size)).mean(4).mean(2)
+        final_stack = avgd_stack
+    else:
+        final_stack = avgd_stack
+
+    # write output
+    print("\nsaving %s to... %s" % (final_stack.shape, save_as))
+    tf.imwrite(save_as, final_stack, photometric='minisblack')
+
+    return final_stack
+
+
+def subselect_tiff(tiff_path: str = None, tiff_stack: np.array = None, select_frames: tuple = (0, 0), save_as: str = None):
+    if tiff_stack is None:
+        # open tiff file
+        print('running subselecting tiffs')
+        print('|- working on... %s' % tiff_path)
+        tiff_stack = tf.imread(tiff_path)
+
+    stack_cropped = tiff_stack[select_frames[0]:select_frames[1]]
+
+    # stack8 = convert_to_8bit(stack_cropped)
+
+    if save_as is not None:
+        tf.imwrite(save_as, stack_cropped, photometric='minisblack')
+
+    return stack_cropped
+
+
+def make_tiff_stack(sorted_paths: list, save_as: str):
+    """
+    read in a bunch of tiffs and stack them together, and save the output as the save_as
+
+    :param sorted_paths: ls of string paths for tiffs to stack
+    :param save_as: .tif file path to where the tif should be saved
+    """
+
+    num_tiffs = len(sorted_paths)
+    print('working on tifs to stack: ', num_tiffs)
+
+    with tf.TiffWriter(save_as, bigtiff=True) as tif:
+        for i, tif_ in enumerate(sorted_paths):
+            with tf.TiffFile(tif_, multifile=True) as input_tif:
+                data = input_tif.asarray()
+            msg = ' -- Writing tiff: ' + str(i + 1) + ' out of ' + str(num_tiffs)
+            print(msg, end='\r')
+            tif.save(data)
+
+
+def convert_to_8bit(img, target_type_min=0, target_type_max=255):
+    """
+    :param img:
+    :param target_type:
+    :param target_type_min:
+    :param target_type_max:
+    :return:
+    """
+    imin = img.min()
+    imax = img.max()
+
+    a = (target_type_max - target_type_min) / (imax - imin)
+    b = target_type_max - a * imax
+    new_img = (a * img + b).astype(np.uint8)
+    return new_img
+
+
+##### PRAJAY'S FUNCTIONS THAT MIGHT BE APPROP FOR THIS SCRIPT ####### / end
 
 
 def intersect(lst1, lst2):
