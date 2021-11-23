@@ -16,8 +16,7 @@ import itertools
 import os
 import sys
 
-from .utils_funcs import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, \
-    s2p_loader  # listing functions from .utils_funcs that are used in this script
+from .utils_funcs import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, s2p_loader  # listing functions from .utils_funcs that are used in this script
 
 sys.path.append('/home/pshah/Documents/code/')
 # from Vape.utils.paq2py import *
@@ -36,9 +35,7 @@ import csv
 import warnings
 import bisect
 
-from utils import funcs_pj as pj
-from utils.paq_utils import paq_read, frames_discard
-import alloptical_plotting_utils as aoplot
+from utils.paq_utils import paq_read  ## TODO choose between adding paq_read to utils_funcs or make a new .py for paq_utils?
 import pickle
 
 from numba import njit
@@ -489,7 +486,7 @@ class TwoPhotonImaging:
         clock_idx = paq['chan_names'].index('frame_clock')
         clock_voltage = paq['data'][clock_idx, :]
 
-        frame_clock = pj.threshold_detect(clock_voltage, 1)
+        frame_clock = threshold_detect(clock_voltage, 1)
         self.frame_clock = frame_clock
         plt.figure(figsize=(10, 5))
         plt.plot(clock_voltage)

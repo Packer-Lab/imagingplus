@@ -23,6 +23,15 @@ import copy
 # sns.set_style('white')
 
 ##### PRAJAY'S FUNCTIONS THAT MIGHT BE APPROP FOR THIS SCRIPT ####### / start
+# useful for returning indexes when a
+def threshold_detect(signal, threshold):
+    '''lloyd russell'''
+    thresh_signal = signal > threshold
+    thresh_signal[1:][thresh_signal[:-1] & thresh_signal[1:]] = False
+    frames = np.where(thresh_signal)
+    return frames[0]
+
+
 # simple ZProfile function for any sized square in the frame (equivalent to ZProfile function in Fiji)
 def ZProfile(movie, area_center_coords: tuple = None, area_size: int = -1, plot_trace: bool = True,
              plot_image: bool = True, plot_frame: int = 1, vasc_image: np.array = None, **kwargs):
