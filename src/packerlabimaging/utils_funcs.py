@@ -23,6 +23,102 @@ import copy
 # sns.set_style('white')
 
 ##### PRAJAY'S FUNCTIONS THAT MIGHT BE APPROP FOR THIS SCRIPT ####### / start
+
+def normalize_dff(arr, threshold_pct=20, threshold_val=None):
+    """normalize given array (cells x time) to the mean of the fluorescence values below given threshold. Threshold
+    will refer to the that lower percentile of the given trace."""
+
+    if arr.ndim == 1:
+        if threshold_val is None:
+            a = np.percentile(arr, threshold_pct)
+            mean_ = arr[arr < a].mean()
+        else:
+            mean_ = threshold_val
+        # mean_ = abs(arr[arr < a].mean())
+        new_array = ((arr - mean_) / mean_) * 100
+        if np.isnan(new_array).any() == True:
+            Warning('Cell (unknown) contains nan, normalization factor: %s ' % mean_)
+
+    else:
+        new_array = np.empty_like(arr)
+        for i in range(len(arr)):
+            if threshold_val is None:
+                a = np.percentile(arr[i], threshold_pct)
+            else:
+                a = threshold_val
+            mean_ = np.mean(arr[i][arr[i] < a])
+            new_array[i] = ((arr[i] - mean_) / abs(mean_)) * 100
+
+            if np.isnan(new_array[i]).any() == True:
+                print('Warning:')
+                print('Cell %d: contains nan' % (i + 1))
+                print('      Mean of the sub-threshold for this cell: %s' % mean_)
+
+    return new_array
+
+
+# calculates average over sliding window for an array
+def moving_average(arr, n=4):
+    """
+    calculates average over sliding window for an array
+    :param arr:
+    :param n:
+    :return:
+    """
+    ret = np.cumsum(arr)
+    ret[n:] = ret[n:] - ret[:-n]
+    return ret[n - 1:] / n
+
+# finding paths to files with a certain extension
+def path_finder(umbrella, *args, is_folder=False):
+    '''
+    returns the path to the single item in the umbrella folder
+    containing the string names in each arg
+    is_folder = False if args is ls of files
+    is_folder = True if  args is ls of folders
+    '''
+    # ls of bools, has the function found each argument?
+    # ensures two folders / files are not found
+    found = [False] * len(args)
+    # the paths to the args
+    paths = [None] * len(args)
+
+    if is_folder:
+        for root, dirs, files in os.walk(umbrella):
+            for folder in dirs:
+                for i, arg in enumerate(args):
+                    if arg in folder:
+                        assert not found[i], 'found at least two paths for {},' \
+                                             'search {} to find conflicts' \
+                            .format(arg, umbrella)
+                        paths[i] = os.path.join(root, folder)
+                        found[i] = True
+
+    elif not is_folder:
+        for root, dirs, files in os.walk(umbrella):
+            for file in files:
+                for i, arg in enumerate(args):
+                    if arg in file:
+                        assert not found[i], 'found at least two paths for {},' \
+                                             'search {} to find conflicts' \
+                            .format(arg, umbrella)
+                        paths[i] = os.path.join(root, file)
+                        found[i] = True
+
+    print(paths)
+    for i, arg in enumerate(args):
+        if not found[i]:
+            raise ValueError('could not find path to {}'.format(arg))
+
+    return paths
+
+def points_in_circle_np(radius, x0=0, y0=0):
+    x_ = np.arange(x0 - radius - 1, x0 + radius + 1, dtype=int)
+    y_ = np.arange(y0 - radius - 1, y0 + radius + 1, dtype=int)
+    x, y = np.where((x_[:, np.newaxis] - x0) ** 2 + (y_ - y0) ** 2 <= radius ** 2)
+    for x, y in zip(x_[x], y_[y]):
+        yield x, y
+
 # useful for returning indexes when a
 def threshold_detect(signal, threshold):
     '''lloyd russell'''
