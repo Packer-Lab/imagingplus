@@ -460,7 +460,6 @@ class TwoPhotonImaging:
 
         return good_cells, events_loc_cells, flu_events_cells, stds
 
-    # reviewed till here for now
     def paqProcessing(self, paq_path: str = None):
         """
         Loads .paq file and saves data from individual channels.
@@ -551,15 +550,12 @@ class TwoPhotonImaging:
         """
         plots an image of a single specified tiff frame after reading using tifffile.
         :param frame_num: frame # from 2p imaging tiff to show (default is 0 - i.e. the first frame)
-        :param title: give a string to use as title (optional)
-        :return: imshow plot
+        :param title: (optional) give a string to use as title
+        :return: matplotlib imshow plot
         """
         stack = tf.imread(self.tiff_path, key=frame_num)
         plt.imshow(stack, cmap='gray')
-        if title is not None:
-            plt.suptitle(title)
-        else:
-            plt.suptitle('frame num: %s' % frame_num)
+        plt.suptitle(title) if title is not None else plt.suptitle('frame num: %s' % frame_num)
         plt.show()
         return stack
 
@@ -580,7 +576,7 @@ class TwoPhotonImaging:
 
         tif_path_save = self.analysis_save_path + 'reg_tiff_%s.tif' % self.metainfo['trial']
         tif_path_save2 = self.analysis_save_path + 'reg_tiff_%s_r.tif' % self.metainfo['trial']
-        reg_tif_folder = self.s2p_path + '/reg_tif/'
+        reg_tif_folder = self.suite2p_path + '/reg_tif/'
         reg_tif_list = os.listdir(reg_tif_folder)
         reg_tif_list.sort()
         sorted_paths = [reg_tif_folder + tif for tif in reg_tif_list][start:end + 1]
@@ -607,7 +603,23 @@ class TwoPhotonImaging:
                 print('saving cropped tiff ', reg_tif_crop.shape)
                 tif.save(reg_tif_crop)
 
-    def s2pMeanImage(s2p_path):
+    def s2pMeanImage(self, s2p_path: str = None, plot: bool = True):
+        """
+        Return array of the s2p mean image.
+        :param s2p_path: (optional) path to location of s2p data
+        :param plot: (optional) option to plot the s2p mean image
+        :return:
+        """
+
+        if s2p_path is None:
+            if hasattr(self, 'suite2p_path'):
+                s2p_path = self.suite2p_path
+            else:
+                ValueError(
+                    'ERROR: no suite2p path defined for data object, please provide s2p_path to use for locating s2p data.')
+
+        print(f'Plotting s2p mean image from {s2p_path}')
+
         os.chdir(s2p_path)
 
         ops = np.load('ops.npy', allow_pickle=True).item()
@@ -615,6 +627,11 @@ class TwoPhotonImaging:
         mean_img = ops['meanImg']
 
         mean_img = np.array(mean_img, dtype='uint16')
+
+        if plot:
+            plt.imshow(mean_img, cmap='gray')
+            plt.suptitle('s2p mean image')
+            plt.show()
 
         return mean_img
 
@@ -624,16 +641,17 @@ class TwoPhotonImaging:
                 pkl_path = self.pkl_path
             else:
                 raise ValueError(
-                    'pkl path for saving was not found in object attributes, please provide path to save to')
+                    'pkl path for saving was not found in data object attributes, please provide pkl_path to save to')
         else:
             self.pkl_path = pkl_path
 
         with open(self.pkl_path, 'wb') as f:
             pickle.dump(self, f)
-        print("\n\t -- expobj saved to %s -- " % pkl_path)
+        print("\n\t -- data object saved to %s -- " % pkl_path)
 
     def save(self):
         self.save_pkl()
+
 
 class WideFieldImaging:
 
