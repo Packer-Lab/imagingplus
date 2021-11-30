@@ -711,6 +711,16 @@ def closest_frame_before(clock, t):
     return np.where(subbed < 0, subbed, -np.inf).argmax()
 
 
+def closest_frame(clock, t):
+    ''' Returns the idx of the frame closest to  
+        the time t. 
+        Frame clock must be digitised and expressed
+        in the same reference frame as t.
+        '''
+    subbed = np.array(clock) - t
+    return np.argmin(abs(subbed))
+
+
 def test_responsive(flu, frame_clock, stim_times, pre_frames=10,
                     post_frames=10, offset=0):
     ''' Tests if cells in a fluoresence array are significantly responsive
@@ -924,20 +934,141 @@ def raster_plot(arr, y_pos=1, color=np.random.rand(3, ), alpha=1,
              color=color, alpha=alpha, markersize=markersize,
              label=label)
 
+def get_spiral_start(x_galvo, debounce_time):
+    
+    """ Get the sample at which the first spiral in a trial began 
+    
+    Experimental function involving lots of magic numbers
+    to detect spiral onsets.
+    Failures should be caught by assertion at end
+    Inputs:
+    x_galvo -- x_galvo signal recorded in paqio
+    debouce_time -- length of time (samples) encapulsating a whole trial
+                    ensures only spiral at start of trial is captured
+    
+    """
+    #x_galvo = np.round(x_galvo, 2)
+    x_galvo = my_floor(x_galvo, 2)
+    
+    # Threshold above which to determine signal as onset of square pulse
+    square_thresh = 0.02
+    # Threshold above which to consider signal a spiral (empirically determined)
+    diff_thresh = 10
+    
+    # remove noise from parked galvo signal
+    x_galvo[x_galvo < -0.5] = -0.6
+    
+    diffed = np.diff(x_galvo)
+    # remove the onset of galvo movement from f' signal
+    diffed[diffed > square_thresh] = 0
+    diffed = non_zero_smoother(diffed, window_size=200)
+    diffed[diffed>30] = 0
+    
+    # detect onset of sprials
+    spiral_start = threshold_detect(diffed, diff_thresh)
+    
+    if len(spiral_start) == 0:
+        print('No spirals found')
+        return None
+    else:
+        # Debounce to remove spirals that are not the onset of the trial
+        spiral_start = spiral_start[np.hstack((np.inf, np.diff(spiral_start))) > debounce_time]
+        n_squares = len(threshold_detect(x_galvo, -0.5))
+        assert len(spiral_start) == n_squares, \
+        'spiral_start has len {} but there are {} square pulses'.format(len(spiral_start), n_squares)
+        return spiral_start
 
-def adamiser(string):
-    words = string.split(' ')
-    n_pleases = int(len(words) / 10)
 
-    for please in range(n_pleases):
-        idx = randrange(len(words))
-        words.insert(idx, 'please')
+def non_zero_smoother(arr, window_size=200):
+    
+    """ Smooths an array by changing values to the number of
+        non-0 elements with window
+        
+        """
+    
+    windows = np.arange(0, len(arr), window_size)
+    windows = np.append(windows, len(arr))
 
-    n_caps = int(len(words) / 3)
-    for cap in range(n_caps):
-        idx = randrange(len(words))
-        words[idx] = words[idx].upper()
+    for idx in range(len(windows)):
 
-    return ' '.join(words)
+        chunk_start = windows[idx]
+        
+        if idx == len(windows) - 1:
+            chunk_end = len(arr)
+        else:
+            chunk_end = windows[idx+1]
+            
+        arr[chunk_start:chunk_end] = np.count_nonzero(arr[chunk_start:chunk_end])
+    
+    return arr
 
+
+def my_floor(a, precision=0):
+    # Floors to a specified number of dps
+    return np.round(a - 0.5 * 10**(-precision), precision)
+
+
+def get_trial_frames(clock, start, pre_frames, post_frames, paq_rate, fs=30):
+
+    # The frames immediately preceeding stim
+    start_idx = closest_frame_before(clock, start)
+    frames = np.arange(start_idx-pre_frames, start_idx+post_frames)
+    
+    # Is the trial outside of the frame clock
+    is_beyond_clock = np.max(frames) >= len(clock) or np.min(frames) < 0
+    
+    if is_beyond_clock:
+        return None, None
+    
+    frame_to_start = (start - clock[start_idx]) / paq_rate  # time (s) from frame to trial_start
+    frame_time_diff = np.diff(clock[frames]) / paq_rate  # ifi (s)
+    
+    # did the function find the correct frame
+    is_not_correct_frame = clock[start_idx+1]  < start or clock[start_idx] > start
+    # the nearest frame to trial start was not during trial
+    # if the time to the nearest frame is less than upper bound of inter-frame-interval
+    trial_not_running = frame_to_start > 1/(fs-1)
+    frames_not_consecutive = np.max(frame_time_diff) > 1/(fs-1)
+    
+    if trial_not_running or frames_not_consecutive:
+        return None, None
+    
+    return frames, start_idx
+
+
+def between_two_hits(idxs, easy_idxs, easy_outcome):
+    
+    assert len(easy_idxs) == len(easy_outcome)
+    
+    # Next easy trial from each test trial
+    closest_after = np.array([bisect.bisect_left(easy_idxs, idx) for idx in idxs])
+    # Previous easy trial from each test trial
+    closest_before = closest_after - 1
+    # Test trials before the first easy trial should have both previous and next
+    # as the first easy trial
+    closest_before[closest_before==-1] = 0
+    # Test trials after the last easy trial should have both previous and next
+    # as the last easy trial
+    closest_after[idxs>easy_idxs[-1]] = len(easy_idxs)-1
+    
+    assert len(idxs) == len(closest_before) == len(closest_after)
+    
+    between_two = []
+    for before, after in zip(closest_before, closest_after):
+        if easy_outcome[before] and easy_outcome[after] == 'hit':
+            between_two.append(True)
+        else:
+            between_two.append(False)
+    
+    assert len(between_two) == len(idxs)
+    
+    return between_two
+
+
+def points_in_circle_np(radius, x0=0, y0=0, ):
+    x_ = np.arange(x0 - radius - 1, x0 + radius + 1, dtype=int)
+    y_ = np.arange(y0 - radius - 1, y0 + radius + 1, dtype=int)
+    x, y = np.where((x_[:,np.newaxis] - x0)**2 + (y_ - y0)**2 <= radius**2)
+    for x, y in zip(x_[x], y_[y]):
+        yield x, y
 
