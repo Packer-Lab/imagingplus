@@ -7,7 +7,7 @@ The fundamental object of data is one t-series of imaging, along with its associ
 from the microscope during data collection, and any user generated files associated with the experiment of this t-series.
 
 """
-### this line was added inside the temp1 branch on git
+
 import re
 import glob
 import pandas as pd
