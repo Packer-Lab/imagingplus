@@ -12,12 +12,13 @@ import re
 import glob
 import pandas as pd
 import itertools
-import datetime
+import time
 import os
 import sys
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from .utils_funcs import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, s2p_loader, \
+from .utils_funcs import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, \
+    s2p_loader, \
     path_finder, points_in_circle_np, moving_average, normalize_dff
 
 sys.path.append('/home/pshah/Documents/code/')
@@ -43,18 +44,34 @@ import pickle
 from numba import njit
 
 
+###### UTILITIES
+
+# dictionary of terms, phrases, etc. that are used in the processing and analysis of imaging data
+terms_dictionary = {
+    'dFF': "normalization of datatrace for a given imaging ROI by subtraction and division of a given baseline value",
+    'ROI': "a single ROI from the imaging data"
+}
+
+def define_term(x):
+    try:
+        print(f"{x}:    {terms_dictionary[x]}") if type(x) is str else print(
+            'ERROR: please provide a string object as the key')
+    except KeyError:
+        print('input not found in dictionary')
+
+
 ## CLASS DEFINITIONS
 class TwoPhotonImaging:
     """Just two photon imaging related functions - currently set up for data collected from Bruker microscopes and
     suite2p processed Ca2+ imaging data """
 
-    def __init__(self, tiff_location_dir: str, tiff_path: str, exp_metainfo: dict, analysis_save_path: str,
+    def __init__(self, tiff_location_dir: str, tiff_path: str, exp_metainfo: dict, pkl_path: str,
                  paq_path: str = None, suite2p_path: str = None, make_downsampled_tiff: bool = False):
         """
         :param tiff_location_dir: parent directory where t-series .tiff is located (contains all of the accessory files for this t-series from the microscope)
         :param tiff_path: path to t-series .tiff
         :param exp_metainfo: dictionary containing any metainfo information field needed for this experiment. At minimum it needs to include prep #, t-series # and date of data collection.
-        :param analysis_save_path: path of parent location where processed data objects will save by default
+        :param pkl_path: path of where to save the experiment analysis object
         :param paq_path: (optional) path to .paq file associated with current t-series
         :param suite2p_path: (optional) path to suite2p outputs folder associated with this t-series (plane0 file? or ops file? not sure yet)
         :param make_downsampled_tiff: flag to run generation and saving of downsampled tiff of t-series (saves to the analysis save location)
@@ -62,47 +79,29 @@ class TwoPhotonImaging:
 
         print('\n***** CREATING NEW TwoPhotonImaging with the following exp_metainfo: ', exp_metainfo)
 
-        self.tiff_location_dir = tiff_location_dir  ## TODO add code this location from the tiff_path (don't require argument in __init__())
         self.tiff_path = tiff_path
+        self.tiff_location_dir = self.tiff_path[:[(s.start(), s.end()) for s in re.finditer('/', self.tiff_path)][-1][0]]  # this is the directory where the Bruker xml files associated with the 2p imaging TIFF are located
         self.paq_path = paq_path
         self.metainfo = exp_metainfo
-        self.analysis_save_path = analysis_save_path
+        self.pkl_path = pkl_path
         self.suite2p_path = suite2p_path
 
         ## TODO add checking path exists for all provided paths
 
-        # create analysis save path location
-        if os.path.exists(analysis_save_path):
-            self.analysis_save_path = analysis_save_path
-        else:
-            self.analysis_save_path = analysis_save_path
-            print('making analysis save folder at: \n  %s' % self.analysis_save_path)
-            os.makedirs(self.analysis_save_path)
+        # set and create analysis save path directory
+        self.analysis_save_dir = self.pkl_path[:[(s.start(), s.end()) for s in re.finditer('/', self.pkl_path)][-1][0]]
+        if not os.path.exists(self.analysis_save_dir):
+            print('making analysis save folder at: \n  %s' % self.analysis_save_dir)
+            os.makedirs(self.analysis_save_dir)
 
-        # create pkl path and save expobj to pkl object
-        pkl_path = "%s/%s_%s.pkl" % (self.analysis_save_path, exp_metainfo['date'],
-                                     exp_metainfo['trial'])  # specify path in Analysis folder to save pkl object
-        self.save_pkl(pkl_path=pkl_path)
-
-        # if os.path.exists(self.analysis_save_path):
-        #     pass
-        # elif os.path.exists(self.analysis_save_path[:-17]):
-        #     print('making analysis save folder at: \n  %s' % self.analysis_save_path)
-        #     os.mkdir(self.analysis_save_path)
-        # else:
-        #     raise Exception('cannot find save folder path at: ', self.analysis_save_path[:-17])
-
-        # elif os.path.exists(self.analysis_save_path[:-27]):
-        #     print('making analysis save folder at: \n  %s \n and %s' % (self.analysis_save_path[:-17], self.analysis_save_path))
-        #     os.mkdir(self.analysis_save_path[:-17])
-        #     os.mkdir(self.analysis_save_path)
+        self.save_pkl(pkl_path=pkl_path)  # save experiment object to pkl_path
 
         self._parsePVMetadata()
 
         if make_downsampled_tiff:
             stack = self.mean_raw_flu_trace(save_pkl=True)
             SaveDownsampledTiff(stack=stack,
-                                save_as=f"{analysis_save_path}/{exp_metainfo['date']}_{exp_metainfo['trial']}_downsampled.tif")
+                                save_as=f"{self.analysis_save_dir}/{exp_metainfo['date']}_{exp_metainfo['trial']}_downsampled.tif")
 
         if self.suite2p_path is not None:
             self.suite2p_completed = True
@@ -112,6 +111,20 @@ class TwoPhotonImaging:
             self.paqProcessing(paq_path=self.paq_path)
 
         self.save_pkl(pkl_path=pkl_path)
+
+    def __repr__(self):
+        if self.pkl_path:
+            lastmod = time.ctime(os.path.getmtime(self.pkl_path))
+        else:
+            lastmod = "(unsaved pkl object)"
+        if not hasattr(self, 'metainfo'):
+            information = f"uninitialized"
+        else:
+            prep = self.metainfo['animal prep.']
+            trial = self.metainfo['trial']
+            information = f"{prep} {trial}"
+        return repr(f"({information}) TwoPhotonImaging experimental data object, last saved: {lastmod}")
+
 
     def s2pRun(self, ops, db, user_batch_size):
 
@@ -557,7 +570,8 @@ class TwoPhotonImaging:
         plt.show()
         return stack
 
-    def stitch_reg_tiffs(self, first_frame: int, last_frame: int, force_crop: bool = False, force_stack: bool = False, s2p_run_batch: int = 2000):
+    def stitch_reg_tiffs(self, first_frame: int, last_frame: int, force_crop: bool = False, force_stack: bool = False,
+                         s2p_run_batch: int = 2000):
         """
         Stitches together registered tiffs outputs from suite2p from the provided imaging frame start and end values.
 
@@ -572,8 +586,8 @@ class TwoPhotonImaging:
         start = first_frame // s2p_run_batch
         end = last_frame // s2p_run_batch + 1
 
-        tif_path_save = self.analysis_save_path + 'reg_tiff_%s.tif' % self.metainfo['trial']
-        tif_path_save2 = self.analysis_save_path + 'reg_tiff_%s_r.tif' % self.metainfo['trial']
+        tif_path_save = self.analysis_save_dir + 'reg_tiff_%s.tif' % self.metainfo['trial']
+        tif_path_save2 = self.analysis_save_dir + 'reg_tiff_%s_r.tif' % self.metainfo['trial']
         reg_tif_folder = self.suite2p_path + '/reg_tif/'
         reg_tif_list = os.listdir(reg_tif_folder)
         reg_tif_list.sort()
@@ -652,17 +666,56 @@ class TwoPhotonImaging:
 
 
 class WideFieldImaging:
-
     """
     WideField imaging data object.
 
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, tiff_path, paq_path, exp_metainfo, pkl_path):
+        self.tiff_path = tiff_path
+        self.paq_path = paq_path
+        self.metainfo = exp_metainfo
+        # set and create analysis save path directory
+        self.analysis_save_dir = self.pkl_path[:[(s.start(), s.end()) for s in re.finditer('/', self.pkl_path)][-1][0]]
+        if not os.path.exists(self.analysis_save_dir):
+            print('making analysis save folder at: \n  %s' % self.analysis_save_dir)
+            os.makedirs(self.analysis_save_dir)
 
+        self.save_pkl(pkl_path=pkl_path)  # save experiment object to pkl_path
 
-class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PRAJAY'S PERSONAL CODE... should replace alot of these functions from Rob (more update to date for most)
+    def __repr__(self):
+        if self.pkl_path:
+            lastmod = time.ctime(os.path.getmtime(self.pkl_path))
+        else:
+            lastmod = "(unsaved pkl object)"
+        if not hasattr(self, 'metainfo'):
+            information = f"uninitialized"
+        else:
+            prep = self.metainfo['animal prep.']
+            trial = self.metainfo['trial']
+            information = f"{prep} {trial}"
+
+        return repr(f"({information}) WidefieldImaging experimental data object, last saved: {lastmod}")
+
+    def save_pkl(self, pkl_path: str = None):
+        if pkl_path is None:
+            if hasattr(self, 'pkl_path'):
+                pkl_path = self.pkl_path
+            else:
+                raise ValueError(
+                    'pkl path for saving was not found in data object attributes, please provide pkl_path to save to')
+        else:
+            self.pkl_path = pkl_path
+
+        with open(self.pkl_path, 'wb') as f:
+            pickle.dump(self, f)
+        print("\n\t -- data object saved to %s -- " % pkl_path)
+
+    def save(self):
+        self.save_pkl()
+
+class AllOptical(
+    TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PRAJAY'S PERSONAL CODE... should replace alot of these functions from Rob (more update to date for most)
     """This class provides methods for All Optical experiments"""
 
     def __init__(self, paths, metainfo, stimtype, quick=False):
@@ -672,20 +725,17 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
         self.naparm_path = paths[2]
         self.paq_path = paths[3]
 
-
         assert os.path.exists(self.naparm_path)
         assert os.path.exists(self.paq_path)
 
         self.seizure_frames = []
 
         TwoPhotonImaging.__init__(self, tiff_path_dir=paths[0], tiff_path=paths[1], paq_path=paths[3],
-                                  metainfo=metainfo, analysis_save_path=paths[4],
+                                  metainfo=metainfo, pkl_path=paths[4],
                                   suite2p_path=None, suite2p_run=False, quick=quick)
-
 
         # self.tiff_path_dir = paths[0]
         # self.tiff_path = paths[1]
-
 
         # self._parsePVMetadata()
 
@@ -700,11 +750,11 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
         self.pre_stim = int(1.0 * self.fps)  # length of pre stim trace collected (in frames)
         self.post_stim = int(3.0 * self.fps)  # length of post stim trace collected (in frames)
         self.pre_stim_response_window_msec = 500  # msec
-        self.pre_stim_response_frames_window = int(self.fps * self.pre_stim_response_window_msec / 1000)  # length of the pre stim response test window (in frames)
+        self.pre_stim_response_frames_window = int(
+            self.fps * self.pre_stim_response_window_msec / 1000)  # length of the pre stim response test window (in frames)
         self.post_stim_response_window_msec = 500  # msec
-        self.post_stim_response_frames_window = int(self.fps * self.post_stim_response_window_msec / 1000)  # length of the post stim response test window (in frames)
-
-
+        self.post_stim_response_frames_window = int(
+            self.fps * self.post_stim_response_window_msec / 1000)  # length of the post stim response test window (in frames)
 
         #### initializing data processing, data analysis and/or results associated attr's
 
@@ -730,9 +780,22 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
 
         ## NON PHOTOSTIM SLM TARGETS
 
-
         ##
         self.save()
+
+    def __repr__(self):
+        if self.pkl_path:
+            lastmod = time.ctime(os.path.getmtime(self.pkl_path))
+        else:
+            lastmod = "(unsaved pkl object)"
+        if not hasattr(self, 'metainfo'):
+            information = f"uninitialized"
+        else:
+            prep = self.metainfo['animal prep.']
+            trial = self.metainfo['trial']
+            information = f"{prep} {trial}"
+
+        return repr(f"({information}) TwoPhotonImaging.alloptical experimental data object, last saved: {lastmod}")
 
     def _parseNAPARMxml(self):
 
@@ -894,7 +957,8 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
             # # sanity check
             # assert max(self.stim_start_frames[0]) < self.raw[plane].shape[1] * self.n_planes
 
-    def photostimProcessing(self):  ## TODO need to figure out how to handle different types of photostimulation experiment setups
+    def photostimProcessing(
+            self):  ## TODO need to figure out how to handle different types of photostimulation experiment setups
 
         """
         remember that this is currently configured for only the interleaved photostim, not the really fast photostim of multi-groups
@@ -996,7 +1060,8 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
 
                 targets_trace = np.zeros([len(self.target_coords_all), data.shape[0]], dtype='float32')
                 for coord in range(len(self.target_coords_all)):
-                    target_areas = np.array(self.target_areas)  # TODO update this so that it doesn't include the extra exclusion zone
+                    target_areas = np.array(
+                        self.target_areas)  # TODO update this so that it doesn't include the extra exclusion zone
                     x = data[:, target_areas[coord, :, 1], target_areas[coord, :, 0]]  # = 1
                     targets_trace[coord] = np.mean(x, axis=1)
 
@@ -1007,7 +1072,8 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
                 counter += 1
 
             # final part, crop to the *exact* frames for current trial
-            self.raw_SLMTargets = targets_trace_full[:, self.curr_trial_frames[0] - start * 2000: self.curr_trial_frames[1] - (start * 2000)]
+            self.raw_SLMTargets = targets_trace_full[:,
+                                  self.curr_trial_frames[0] - start * 2000: self.curr_trial_frames[1] - (start * 2000)]
 
             self.dFF_SLMTargets = normalize_dff(self.raw_SLMTargets, threshold_pct=10)
 
@@ -1024,12 +1090,12 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
             f.suptitle(f"raw trace (blue), dFF trace (norm. to bottom 10 pct) (green) ")
             f.show()
 
-
             self.meanFluImg_registered = np.mean(mean_img_stack, axis=0)
 
             self.save() if save else None
 
-    def get_alltargets_stim_traces_norm(self, process: str, targets_idx: int = None, subselect_cells: list = None, pre_stim=15,
+    def get_alltargets_stim_traces_norm(self, process: str, targets_idx: int = None, subselect_cells: list = None,
+                                        pre_stim=15,
                                         post_stim=200, filter_sz: bool = False, stims: list = None):
         """
         primary function to measure the dFF and dF/setdF trace SNIPPETS for photostimulated targets.
@@ -1117,16 +1183,19 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
                         for stim in stim_timings:
                             if stim in self.slmtargets_szboundary_stim.keys():  # some stims dont have sz boundaries because of issues with their TIFFs not being made properly (not readable in Fiji), usually it is the first TIFF in a seizure
                                 if cell_idx not in self.slmtargets_szboundary_stim[stim]:
-                                    flu.append(targets_trace[cell_idx][stim - pre_stim: stim + self.stim_duration_frames + post_stim])
+                                    flu.append(targets_trace[cell_idx][
+                                               stim - pre_stim: stim + self.stim_duration_frames + post_stim])
                     else:
                         flu = []
-                        print('classifying of sz boundaries not completed for this expobj', self.metainfo['animal prep.'], self.metainfo['trial'])
+                        print('classifying of sz boundaries not completed for this expobj',
+                              self.metainfo['animal prep.'], self.metainfo['trial'])
                     # flu = [targets_trace[cell_idx][stim - pre_stim_sec: stim + self.stim_duration_frames + post_stim_sec] for
                     #        stim
                     #        in stim_timings if
                     #        stim not in self.seizure_frames]
                 else:
-                    flu = [targets_trace[cell_idx][stim - pre_stim: stim + self.stim_duration_frames + post_stim] for stim in stim_timings]
+                    flu = [targets_trace[cell_idx][stim - pre_stim: stim + self.stim_duration_frames + post_stim] for
+                           stim in stim_timings]
 
                 # flu_dfstdF = []
                 # flu_dff = []
@@ -1160,7 +1229,6 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
 
             print(f"shape of targets_dff_avg: {targets_dff_avg.shape}")
             return targets_dff, targets_dff_avg, targets_dfstdF, targets_dfstdF_avg, targets_raw, targets_raw_avg
-
 
     def cellStaProcessing(self, test='t_test'):
 
@@ -1455,7 +1523,6 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
             target_areas.append(target_area)
         self.target_areas = target_areas
 
-
         ## target_areas that need to be excluded when filtering for nontarget cells
         radius_px = int(np.ceil(((self.spiral_size / 2) + 2.5) / self.pix_sz_x))
         print("radius of target exclusion zone (in pixels): {:.2f}px".format(radius_px * self.pix_sz_x))
@@ -1465,7 +1532,6 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
             target_area = ([item for item in points_in_circle_np(radius_px, x0=coord[0], y0=coord[1])])
             target_areas.append(target_area)
         self.target_areas_exclude = target_areas
-
 
         # # get areas for SLM group #1
         # target_areas_1 = []
@@ -1480,7 +1546,6 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
         #     target_area = ([item for item in pj.points_in_circle_np(radius, x0=coord[0], y0=coord[1])])
         #     target_areas_2.append(target_area)
         # self.target_areas_2 = target_areas_2
-
 
         # find targets by stim groups
         target_files = []
@@ -1535,7 +1600,8 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
         self.targeted_cells = np.zeros([self.n_units], dtype='bool')
         self.targeted_cells[targ_cell_ids] = True
         # self.s2p_cell_targets = [self.cell_id[i] for i, x in enumerate(self.targeted_cells) if x is True]  # get ls of s2p cells that were photostim targetted
-        self.s2p_cell_targets = [self.cell_id[i] for i in np.where(self.targeted_cells)[0]]  # get ls of s2p cells that were photostim targetted
+        self.s2p_cell_targets = [self.cell_id[i] for i in
+                                 np.where(self.targeted_cells)[0]]  # get ls of s2p cells that were photostim targetted
 
         self.n_targeted_cells = np.sum(self.targeted_cells)
 
@@ -1564,7 +1630,8 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
         targ_cell_ids = np.unique(targ_cell)[1:] - 1  # correct the cell id due to zero indexing
         self.exclude_cells = np.zeros([self.n_units], dtype='bool')
         self.exclude_cells[targ_cell_ids] = True
-        self.s2p_cells_exclude = [self.cell_id[i] for i in np.where(self.exclude_cells)[0]]  # get ls of s2p cells that were photostim targetted
+        self.s2p_cells_exclude = [self.cell_id[i] for i in
+                                  np.where(self.exclude_cells)[0]]  # get ls of s2p cells that were photostim targetted
 
         self.n_exclude_cells = np.sum(self.exclude_cells)
 
@@ -1574,7 +1641,7 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
 
         # define non targets from suite2p ROIs (exclude cells in the SLM targets exclusion - .s2p_cells_exclude)
         self.s2p_nontargets = [cell for cell in self.good_cells if
-                                 cell not in self.s2p_cells_exclude]  ## exclusion of cells that are classified as s2p_cell_targets
+                               cell not in self.s2p_cells_exclude]  ## exclusion of cells that are classified as s2p_cell_targets
 
         print(f"Number of good, s2p non_targets: {len(self.s2p_nontargets)}")
 
@@ -1790,7 +1857,7 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
 
                 if save_img:
                     # save in a subdirectory under the ANALYSIS folder path from whence t-series TIFF came from
-                    save_path = self.analysis_save_path + 'avg_stim_images'
+                    save_path = self.analysis_save_dir + 'avg_stim_images'
                     save_path_stim = save_path + '/%s_%s_stim-%s.tif' % (
                         self.metainfo['date'], self.metainfo['trial'], stim)
                     if os.path.exists(save_path):
@@ -1843,7 +1910,6 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
               '\ndata path:', movie_path,
               '\nsync path:', sync_path,
               '\nSTA movie save path:', stam_save_path)
-
 
         # define STAmm parameters
         frameRate = int(self.fps)
@@ -2027,7 +2093,8 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
         return reliability_slmtargets, hits_slmtargets_df, df, traces_dff_successes
 
     # retrieves photostim avg traces for each SLM target, also calculates the reliability % for each SLM target
-    def calculate_SLMTarget_SuccessStims(self, hits_df, process: str, stims_idx_l: list, exclude_stims_targets: dict = {}):
+    def calculate_SLMTarget_SuccessStims(self, hits_df, process: str, stims_idx_l: list,
+                                         exclude_stims_targets: dict = {}):
         """uses outputs of calculate_SLMTarget_responses_dff to calculate overall successrate of the specified stims
 
         :param hits_df: pandas dataframe of targets x stims where 1 denotes successful stim response (0 is failure)
@@ -2053,8 +2120,6 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
                 AssertionError('no SLMTargets_tracedFF_stims_dff attr. [2]')
         else:
             ValueError('need to assign to process: dF/prestimF or trace dFF')
-
-
 
         traces_SLMtargets_successes_avg_dict = {}
         traces_SLMtargets_failures_avg_dict = {}
@@ -2091,7 +2156,6 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
                 traces_SLMtargets_failures_avg_dict[target_idx] = np.mean(traces_SLMtargets_failures_l, axis=0)
 
         return reliability_slmtargets, traces_SLMtargets_successes_avg_dict, traces_SLMtargets_failures_avg_dict
-
 
     # def get_alltargets_stim_traces_norm(self, pre_stim_sec=15, post_stim_sec=200, filter_sz: bool = False, stims_idx_l: ls = None):
     #     """
@@ -2208,11 +2272,11 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
         for cell in self.s2p_nontargets:
             # print('considering cell # %s' % cell)
             cell_idx = self.cell_id.index(cell)
-            flu_trials = [self.raw[cell_idx][stim - self.pre_stim: stim + self.stim_duration_frames + self.post_stim] for stim in stim_timings]
+            flu_trials = [self.raw[cell_idx][stim - self.pre_stim: stim + self.stim_duration_frames + self.post_stim]
+                          for stim in stim_timings]
 
-
-            dff_trace = normalize_dff(self.raw[cell_idx], threshold_pct=50)  # normalize trace (dFF) to mean of whole trace
-
+            dff_trace = normalize_dff(self.raw[cell_idx],
+                                      threshold_pct=50)  # normalize trace (dFF) to mean of whole trace
 
             if normalize_to == 'baseline':  # probably gonna ax this anyways
                 flu_dff = []
@@ -2229,13 +2293,14 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
 
             elif normalize_to == 'whole-trace':
                 print('s2p neu. corrected trace statistics: mean: %s (min: %s, max: %s, std: %s)' %
-                      (np.mean(self.raw[cell_idx]), np.min(self.raw[cell_idx]), np.max(self.raw[cell_idx]), np.std(self.raw[cell_idx], ddof=1)))
+                      (np.mean(self.raw[cell_idx]), np.min(self.raw[cell_idx]), np.max(self.raw[cell_idx]),
+                       np.std(self.raw[cell_idx], ddof=1)))
                 # dfstdf_trace = (self.raw[cell_idx] - np.mean(self.raw[cell_idx])) / np.std(self.raw[cell_idx], ddof=1)  # normalize trace (dFstdF) to std of whole trace
                 flu_dfstdF = []
                 flu_dff = []
                 flu_dff_ = [dff_trace[stim - self.pre_stim: stim + self.stim_duration_frames + self.post_stim] for
-                           stim in stim_timings if
-                           stim not in self.seizure_frames]
+                            stim in stim_timings if
+                            stim not in self.seizure_frames]
 
                 for i in range(len(flu_dff_)):
                     trace = flu_dff_[i]
@@ -2262,7 +2327,8 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
                     if mean_pre < 1:
                         # print('risky cell here at cell # %s, trial # %s, mean pre: %s [1.1]' % (cell, i+1, mean_pre))
                         trace_dff = [np.nan] * len(trace)
-                        dFstdF = [np.nan] * len(trace)  # - commented out to test if we need to exclude cells for this correction with low mean_pre since you're not dividing by a bad mean_pre value
+                        dFstdF = [np.nan] * len(
+                            trace)  # - commented out to test if we need to exclude cells for this correction with low mean_pre since you're not dividing by a bad mean_pre value
                     else:
                         # trace_dff = ((trace - mean_pre) / mean_pre) * 100
                         trace_dff = normalize_dff(trace, threshold_val=mean_pre)
@@ -2316,7 +2382,7 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
 
         self.save() if save else None
 
-            # return dff_traces, dff_traces_avg, dfstdF_traces, dfstdF_traces_avg, raw_traces, raw_traces_avg
+        # return dff_traces, dff_traces_avg, dfstdF_traces, dfstdF_traces_avg, raw_traces, raw_traces_avg
 
     def _trialProcessing_nontargets(expobj, normalize_to='pre-stim', save=True):
         '''
@@ -2332,8 +2398,8 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
         print('----------------------------------------------------------------')
 
         # make trial arrays from dff data shape: [cells x stims x frames]
-        expobj._makeNontargetsStimTracesArray(stim_timings=expobj.stim_start_frames, normalize_to=normalize_to, save=False)
-
+        expobj._makeNontargetsStimTracesArray(stim_timings=expobj.stim_start_frames, normalize_to=normalize_to,
+                                              save=False)
 
         # create parameters, slices, and subsets for making pre-stim and post-stim arrays to use in stats comparison
         # test_period = expobj.pre_stim_response_window_msec / 1000  # sec
@@ -2366,11 +2432,11 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
 
         expobj.save() if save else None
 
-
     def _runWilcoxonsTest(expobj, array1=None, array2=None):
 
         if array1 is None and array2 is None:
-            array1 = expobj.pre_array; array2 = expobj.post_array
+            array1 = expobj.pre_array;
+            array2 = expobj.post_array
 
         # check if the two distributions of flu values (pre/post) are different
         assert array1.shape == array2.shape, 'shapes for expobj.pre_array and expobj.post_array need to be the same for wilcoxon test'
@@ -2382,7 +2448,6 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
         return wilcoxons
 
         # expobj.save() if save else None
-
 
     def _sigTestAvgResponse_nontargets(expobj, p_vals=None, alpha=0.1, save=True):
         """
@@ -2398,7 +2463,7 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
 
         try:
             sig_units, _, _, _ = sm.stats.multitest.multipletests(p_vals, alpha=alpha, method='fdr_bh',
-                                                                         is_sorted=False, returnsorted=False)
+                                                                  is_sorted=False, returnsorted=False)
         except ZeroDivisionError:
             print('no cells responding')
 
@@ -2639,4 +2704,3 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
 
                 tf.imwrite(save_path, stack, photometric='minisblack')
                 print('\ns2p ROI + photostim targets masks saved in TIFF to: ', save_path)
-
