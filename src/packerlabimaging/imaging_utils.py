@@ -65,7 +65,7 @@ class TwoPhotonImaging:
     """Just two photon imaging related functions - currently set up for data collected from Bruker microscopes and
     suite2p processed Ca2+ imaging data """
 
-    def __init__(self, tiff_location_dir: str, tiff_path: str, exp_metainfo: dict, pkl_path: str,
+    def __init__(self, tiff_path: str, exp_metainfo: dict, pkl_path: str,
                  paq_path: str = None, suite2p_path: str = None, make_downsampled_tiff: bool = False):
         """
         :param tiff_location_dir: parent directory where t-series .tiff is located (contains all of the accessory files for this t-series from the microscope)

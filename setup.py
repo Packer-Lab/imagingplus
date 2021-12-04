@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='packerlabimaging_tempold',
+    name='packerlabimaging',
     version='0.1',
     description='essential processing and analysis code for imaging experiments in Packer lab',
     url='https://github.com/Packer-Lab/packerlabimaging.git',
