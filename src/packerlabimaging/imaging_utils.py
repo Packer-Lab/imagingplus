@@ -80,10 +80,8 @@ class TwoPhotonImaging:
         print('\n***** CREATING NEW TwoPhotonImaging with the following exp_metainfo: ', exp_metainfo)
 
         self.tiff_path = tiff_path
-        self.tiff_location_dir = self.tiff_path[:[(s.start(), s.end()) for s in re.finditer('/', self.tiff_path)][-1][0]]  # this is the directory where the Bruker xml files associated with the 2p imaging TIFF are located
         self.paq_path = paq_path
         self.metainfo = exp_metainfo
-        self.pkl_path = pkl_path
         self.suite2p_path = suite2p_path
 
         ## TODO add checking path exists for all provided paths
@@ -124,6 +122,19 @@ class TwoPhotonImaging:
             trial = self.metainfo['trial']
             information = f"{prep} {trial}"
         return repr(f"({information}) TwoPhotonImaging experimental data object, last saved: {lastmod}")
+
+    @property
+    def t_series_name(self):
+        return f'{self.metainfo["animal prep."]} {self.metainfo["trial"]}'
+
+    @property
+    def tiff_path_dir(self):
+        return self.tiff_path[:[(s.start(), s.end()) for s in re.finditer('/', self.tiff_path)][-1][0]]  # this is the directory where the Bruker xml files associated with the 2p imaging TIFF are located
+
+    @property
+    def pkl_path(self):
+        "specify path in Analysis folder to save pkl object"
+        return f"{self.analysis_save_path}{self.metainfo['date']}_{self.metainfo['trial']}.pkl"
 
 
     def s2pRun(self, ops, db, user_batch_size):
