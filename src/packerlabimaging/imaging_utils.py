@@ -63,10 +63,10 @@ class TwoPhotonImaging:
     """Just two photon imaging related functions - currently set up for data collected from Bruker microscopes and
     suite2p processed Ca2+ imaging data """
 
-    def __init__(self, tiff_path: str, exp_metainfo: dict, analysis_save_dir: str,
+    def __init__(self, microscope: str, tiff_path: str, exp_metainfo: dict, analysis_save_dir: str,
                  paq_path: str = None, suite2p_path: str = None, make_downsampled_tiff: bool = False):
         """
-        :param tiff_path_dir: parent directory where t-series .tiff is located (contains all of the accessory files for this t-series from the microscope)
+        :param microscope: name of microscope used to record imaging (options: "Bruker", "Scientifica", "other")
         :param tiff_path: path to t-series .tiff
         :param exp_metainfo: dictionary containing any metainfo information field needed for this experiment. At minimum it needs to include prep #, t-series # and date of data collection.
         :param analysis_save_dir: path of where to save the experiment analysis object
@@ -78,9 +78,9 @@ class TwoPhotonImaging:
         print('\n***** CREATING NEW TwoPhotonImaging with the following exp_metainfo: ', exp_metainfo)
 
         self.tiff_path = tiff_path
-        self.paq_path = paq_path
+        self.paq_path = paq_path if paq_path else None
         self.metainfo = exp_metainfo
-        self.suite2p_path = suite2p_path
+        self.suite2p_path = suite2p_path if suite2p_path else None
 
         ## TODO add checking path exists for all input paths
 
@@ -92,20 +92,16 @@ class TwoPhotonImaging:
 
         self.save_pkl(pkl_path=self.pkl_path)  # save experiment object to pkl_path
 
-        self._parsePVMetadata()
+        self._parsePVMetadata() if 'Bruker' in microscope else Warning(f'retrieving data-collection metainformation from {microscope} has not been implemented yet')
+        self.s2pProcessing(s2p_path=self.suite2p_path) if self.suite2p_path else None
+        self.paqProcessing(paq_path=self.paq_path) if self.paq_path else None
 
         if make_downsampled_tiff:
             stack = self.mean_raw_flu_trace(save_pkl=True)
             SaveDownsampledTiff(stack=stack,
                                 save_as=f"{self.analysis_save_dir}/{exp_metainfo['date']}_{exp_metainfo['trial']}_downsampled.tif")
 
-        if self.suite2p_path is not None:
-            self.s2pProcessing(s2p_path=self.suite2p_path)
-
-        if self.paq_path is not None:
-            self.paqProcessing(paq_path=self.paq_path)
-
-        self.save_pkl(pkl_path=self.pkl_path)
+        self.save()
 
     def __repr__(self):
         if self.pkl_path:
@@ -115,14 +111,17 @@ class TwoPhotonImaging:
         if not hasattr(self, 'metainfo'):
             information = f"uninitialized"
         else:
-            prep = self.metainfo['animal prep.']
-            trial = self.metainfo['trial']
-            information = f"{prep} {trial}"
+            information = self.t_series_name
         return repr(f"({information}) TwoPhotonImaging experimental data object, last saved: {lastmod}")
 
     @property
     def t_series_name(self):
-        return f'{self.metainfo["animal prep."]} {self.metainfo["trial"]}'
+        if 't series id' in self.metainfo.keys():
+            return f"{self.metainfo['t series id']}"
+        elif "animal prep." in self.metainfo.keys() and "trial" in self.metainfo.keys():
+            return f'{self.metainfo["animal prep."]} {self.metainfo["trial"]}'
+        else:
+            raise ValueError('no information found to retrieve t series id')
 
     @property
     def tiff_path_dir(self):
@@ -699,11 +698,18 @@ class WideFieldImaging:
         if not hasattr(self, 'metainfo'):
             information = f"uninitialized"
         else:
-            prep = self.metainfo['animal prep.']
-            trial = self.metainfo['trial']
-            information = f"{prep} {trial}"
+            information = self.t_series_name
 
         return repr(f"({information}) WidefieldImaging experimental data object, last saved: {lastmod}")
+
+    @property
+    def t_series_name(self):
+        if 't series id' in self.metainfo.keys():
+            return f"{self.metainfo['t series id']}"
+        elif "animal prep." in self.metainfo.keys() and "trial" in self.metainfo.keys():
+            return f'{self.metainfo["animal prep."]} {self.metainfo["trial"]}'
+        else:
+            raise ValueError('no information found to retrieve t series id')
 
     def save_pkl(self, pkl_path: str = None):
         if pkl_path is None:
@@ -799,9 +805,7 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
         if not hasattr(self, 'metainfo'):
             information = f"uninitialized"
         else:
-            prep = self.metainfo['animal prep.']
-            trial = self.metainfo['trial']
-            information = f"{prep} {trial}"
+            information = self.t_series_name
 
         return repr(f"({information}) TwoPhotonImaging.alloptical experimental data object, last saved: {lastmod}")
 
