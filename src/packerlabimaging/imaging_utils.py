@@ -18,13 +18,11 @@ import sys
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
 from .utils_funcs import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, \
-    s2p_loader, \
-    path_finder, points_in_circle_np, moving_average, normalize_dff
+    s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff
 
 sys.path.append('/home/pshah/Documents/code/')
 # from Vape.utils.paq2py import *
 from matplotlib.colors import ColorConverter
-from Vape.utils import STAMovieMaker_noGUI as STAMM
 import scipy.stats as stats
 import statsmodels.api
 import statsmodels as sm
