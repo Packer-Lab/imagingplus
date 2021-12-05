@@ -17,7 +17,7 @@ import os
 import sys
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from .utils_funcs import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, \
+from packerlabimaging.utils_funcs import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, \
     s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff
 
 sys.path.append('/home/pshah/Documents/code/')
@@ -36,7 +36,7 @@ import csv
 import warnings
 import bisect
 
-from utils.paq_utils import paq_read  ## TODO choose between adding paq_read to utils_funcs or make a new .py for paq_utils?
+from packerlabimaging.paq_utils import paq_read  ## TODO choose between adding paq_read to utils_funcs or make a new .py for paq_utils?
 import pickle
 
 from numba import njit
@@ -63,13 +63,13 @@ class TwoPhotonImaging:
     """Just two photon imaging related functions - currently set up for data collected from Bruker microscopes and
     suite2p processed Ca2+ imaging data """
 
-    def __init__(self, tiff_path: str, exp_metainfo: dict, pkl_path: str,
+    def __init__(self, tiff_path: str, exp_metainfo: dict, analysis_save_dir: str,
                  paq_path: str = None, suite2p_path: str = None, make_downsampled_tiff: bool = False):
         """
-        :param tiff_location_dir: parent directory where t-series .tiff is located (contains all of the accessory files for this t-series from the microscope)
+        :param tiff_path_dir: parent directory where t-series .tiff is located (contains all of the accessory files for this t-series from the microscope)
         :param tiff_path: path to t-series .tiff
         :param exp_metainfo: dictionary containing any metainfo information field needed for this experiment. At minimum it needs to include prep #, t-series # and date of data collection.
-        :param pkl_path: path of where to save the experiment analysis object
+        :param analysis_save_dir: path of where to save the experiment analysis object
         :param paq_path: (optional) path to .paq file associated with current t-series
         :param suite2p_path: (optional) path to suite2p outputs folder associated with this t-series (plane0 file? or ops file? not sure yet)
         :param make_downsampled_tiff: flag to run generation and saving of downsampled tiff of t-series (saves to the analysis save location)
@@ -82,15 +82,15 @@ class TwoPhotonImaging:
         self.metainfo = exp_metainfo
         self.suite2p_path = suite2p_path
 
-        ## TODO add checking path exists for all provided paths
+        ## TODO add checking path exists for all input paths
 
         # set and create analysis save path directory
-        self.analysis_save_dir = self.pkl_path[:[(s.start(), s.end()) for s in re.finditer('/', self.pkl_path)][-1][0]]
-        if not os.path.exists(self.analysis_save_dir):
-            print('making analysis save folder at: \n  %s' % self.analysis_save_dir)
-            os.makedirs(self.analysis_save_dir)
+        if not os.path.exists(analysis_save_dir):
+            print('making analysis save folder at: \n  %s' % analysis_save_dir)
+            os.makedirs(analysis_save_dir)
+        self.analysis_save_dir = analysis_save_dir
 
-        self.save_pkl(pkl_path=pkl_path)  # save experiment object to pkl_path
+        self.save_pkl(pkl_path=self.pkl_path)  # save experiment object to pkl_path
 
         self._parsePVMetadata()
 
@@ -106,7 +106,7 @@ class TwoPhotonImaging:
         if self.paq_path is not None:
             self.paqProcessing(paq_path=self.paq_path)
 
-        self.save_pkl(pkl_path=pkl_path)
+        self.save_pkl(pkl_path=self.pkl_path)
 
     def __repr__(self):
         if self.pkl_path:
@@ -131,8 +131,8 @@ class TwoPhotonImaging:
 
     @property
     def pkl_path(self):
-        "specify path in Analysis folder to save pkl object"
-        return f"{self.analysis_save_path}{self.metainfo['date']}_{self.metainfo['trial']}.pkl"
+        "path in Analysis folder to save pkl object"
+        return f"{self.analysis_save_dir}{self.metainfo['date']}_{self.metainfo['trial']}.pkl"
 
 
     def s2pRun(self, ops, db, user_batch_size):
@@ -209,7 +209,7 @@ class TwoPhotonImaging:
 
         print('\n-----parsing PV Metadata')
 
-        tiff_path = self.tiff_location_dir
+        tiff_path = self.tiff_path_dir
         path = []
 
         try:  # look for xml file in path, or two paths up (achieved by decreasing count in while loop)
@@ -657,14 +657,15 @@ class TwoPhotonImaging:
         return mean_img
 
     def save_pkl(self, pkl_path: str = None):
-        if pkl_path is None:
-            if hasattr(self, 'pkl_path'):
-                pkl_path = self.pkl_path
-            else:
-                raise ValueError(
-                    'pkl path for saving was not found in data object attributes, please provide pkl_path to save to')
-        else:
-            self.pkl_path = pkl_path
+        ## commented out after setting pkl_path as a @property
+        # if pkl_path is None:
+        #     if hasattr(self, 'pkl_path'):
+        #         pkl_path = self.pkl_path
+        #     else:
+        #         raise ValueError(
+        #             'pkl path for saving was not found in data object attributes, please provide pkl_path to save to')
+        # else:
+        #     self.pkl_path = pkl_path
 
         with open(self.pkl_path, 'wb') as f:
             pickle.dump(self, f)
@@ -723,8 +724,8 @@ class WideFieldImaging:
     def save(self):
         self.save_pkl()
 
-class AllOptical(
-    TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PRAJAY'S PERSONAL CODE... should replace alot of these functions from Rob (more update to date for most)
+
+class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PRAJAY'S PERSONAL CODE... should replace alot of these functions from Rob (more update to date for most)
     """This class provides methods for All Optical experiments"""
 
     def __init__(self, paths, metainfo, stimtype, quick=False):
