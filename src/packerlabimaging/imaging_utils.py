@@ -100,7 +100,6 @@ class TwoPhotonImaging:
                                 save_as=f"{self.analysis_save_dir}/{exp_metainfo['date']}_{exp_metainfo['trial']}_downsampled.tif")
 
         if self.suite2p_path is not None:
-            self.suite2p_completed = True
             self.s2pProcessing(s2p_path=self.suite2p_path)
 
         if self.paq_path is not None:
@@ -144,8 +143,7 @@ class TwoPhotonImaging:
         diameter_x = 13 / self.pix_sz_x
         diameter_y = 13 / self.pix_sz_y
         diameter = int(diameter_x), int(diameter_y)
-        batch_size = user_batch_size * (
-                262144 / num_pixels)  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
+        batch_size = user_batch_size * (262144 / num_pixels)  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
 
         if not db:
             db = {
@@ -161,7 +159,7 @@ class TwoPhotonImaging:
 
         opsEnd = run_s2p(ops=ops, db=db)
 
-        self.suite2p_completed = True  ## TODO does this make sense?
+        self.suite2p_path = ""  # TODO set the suite2p_path after running suite2p from the experiment object
 
     def _getPVStateShard(self, path, key):
 
