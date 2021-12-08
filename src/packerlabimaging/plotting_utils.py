@@ -6,10 +6,7 @@ import os
 import numpy as np
 import functools
 import random
-import datetime
 import matplotlib.pyplot as plt
-import matplotlib.ticker as mticker
-from matplotlib import pyplot as plt
 import tifffile as tf
 
 from utils_funcs import normalize_dff

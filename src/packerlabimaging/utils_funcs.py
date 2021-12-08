@@ -2,10 +2,11 @@
 ## TODO - Rob to update with current utils_func from Vape
 
 import numpy as np
-import json
 import tifffile as tf
 import os
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
+import pandas as pd
 import seaborn as sns
 import csv
 import math
@@ -328,6 +329,164 @@ def convert_to_8bit(img, target_type_min=0, target_type_max=255):
 
 
 ##### PRAJAY'S FUNCTIONS THAT MIGHT BE APPROP FOR THIS SCRIPT ####### / end
+
+# paq2py by Llyod Russel
+def paq_read(file_path=None, plot=False):
+    """
+    Read PAQ file (from PackIO) into python
+    Lloyd Russell 2015
+    Parameters
+    ==========
+    file_path : str, optional
+        full path to file to read in. if none is supplied a load file dialog
+        is opened, buggy on mac osx - Tk/matplotlib. Default: None.
+    plot : bool, optional
+        plot the data after reading? Default: False.
+    Returns
+    =======
+    data : ndarray
+        the data as a m-by-n array where m is the number of channels and n is
+        the number of datapoints
+    chan_names : list of str
+        the names of the channels provided in PackIO
+    hw_chans : list of str
+        the hardware lines corresponding to each channel
+    units : list of str
+        the units of measurement for each channel
+    rate : int
+        the acquisition sample rate, in Hz
+    """
+
+    # file load gui
+    if file_path is None:
+        import Tkinter
+        import tkFileDialog
+        root = Tkinter.Tk()
+        root.withdraw()
+        file_path = tkFileDialog.askopenfilename()
+        root.destroy()
+
+    # open file
+    fid = open(file_path, 'rb')
+
+    # get sample rate
+    rate = int(np.fromfile(fid, dtype='>f', count=1))
+
+    # get number of channels
+    num_chans = int(np.fromfile(fid, dtype='>f', count=1))
+
+    # get channel names
+    chan_names = []
+    for i in range(num_chans):
+        num_chars = int(np.fromfile(fid, dtype='>f', count=1))
+        chan_name = ''
+        for j in range(num_chars):
+            chan_name = chan_name + chr(np.fromfile(fid, dtype='>f', count=1)[0])
+        chan_names.append(chan_name)
+
+    # get channel hardware lines
+    hw_chans = []
+    for i in range(num_chans):
+        num_chars = int(np.fromfile(fid, dtype='>f', count=1))
+        hw_chan = ''
+        for j in range(num_chars):
+            hw_chan = hw_chan + chr(np.fromfile(fid, dtype='>f', count=1)[0])
+        hw_chans.append(hw_chan)
+
+    # get acquisition units
+    units = []
+    for i in range(num_chans):
+        num_chars = int(np.fromfile(fid, dtype='>f', count=1))
+        unit = ''
+        for j in range(num_chars):
+            unit = unit + chr(np.fromfile(fid, dtype='>f', count=1)[0])
+        units.append(unit)
+
+    # get data
+    temp_data = np.fromfile(fid, dtype='>f', count=-1)
+    num_datapoints = int(len(temp_data) / num_chans)
+    data = np.reshape(temp_data, [num_datapoints, num_chans]).transpose()
+
+    # close file
+    fid.close()
+
+    # plot
+    if plot:
+        # import matplotlib
+        # matplotlib.use('QT4Agg')
+        import matplotlib.pylab as plt
+        f, axes = plt.subplots(num_chans, 1, sharex=True, figsize=(15, num_chans*5), frameon=False)
+        for idx, ax in enumerate(axes):
+            ax.plot(data[idx])
+            ax.set_xlim([0, num_datapoints - 1])
+            ax.set_ylim([data[idx].min() - 1, data[idx].max() + 1])
+            # ax.set_ylabel(units[idx])
+            ax.set_title(chan_names[idx])
+
+            # -- Prajay edit
+            # change x axis ticks to seconds
+            label_format = '{:,.0f}'
+            labels = [item for item in ax.get_xticks()]
+            for item in labels:
+                labels[labels.index(item)] = int(round(item / rate))
+            ticks_loc = ax.get_xticks().tolist()
+            ax.xaxis.set_major_locator(mticker.FixedLocator(ticks_loc))
+            ax.set_xticklabels([label_format.format(x) for x in labels])
+            ax.set_xlabel('Time (secs)')
+            # --
+
+        plt.suptitle(file_path)
+        plt.tight_layout()
+        plt.show()
+
+    # make pandas data frame using data in channels
+    df = pd.DataFrame(data.T, columns=chan_names)
+
+    return {"data": data,
+            "chan_names": chan_names,
+            "hw_chans": hw_chans,
+            "units": units,
+            "rate": rate,
+            "num_datapoints": num_datapoints}, df
+
+
+def clean_lfp_signal(paq, input_array: str, chan_name: str = 'voltage', plot=False):
+    '''
+    the idea is to use EphysViewer.m in matlab to view .paq files and then from there export an excel file that
+    will contain paired sets of timevalues that are the start and end of the signal to clean up.
+
+    note: "clean up" does not mean to remove the signal values but instead to set them to a constant value that
+    will connect the end of the pre-clean signal and post-clean signal, so that it returns a continuous signal of the
+    same length as the original signal.
+
+    :param plot: to make plot of the fixed up LFP signal or not
+    :param chan_name: channel name in paq file that contains the LFP series
+    :param paq: paq file containing the LFP series
+    :param input_array: path to .mat file to read that contains the timevalues for signal to remove
+    :return: cleaned up LFP signal
+    '''
+
+    measurements = io.loadmat(input_array)
+
+    lfp_series = paq['data'][paq['chan_names'].index(chan_name)]
+    for set in range(len(measurements['PairedMeasures'])):
+        # calculate the sample value for begin and end of the set
+        begin = int(measurements['PairedMeasures'][set][3][0][0] * paq['rate'])
+        end = int(measurements['PairedMeasures'][set][5][0][0] * paq['rate'])
+
+        lfp_series[begin:end] = lfp_series[begin - 1]  # set the signal value to equal the voltage value just before
+
+    # detrend the LFP signal
+    signal.detrend(lfp_series)
+
+    if plot:
+        plt.figure(figsize=[40, 4])
+        plt.plot(lfp_series, linewidth=0.2)
+        plt.suptitle('LFP voltage')
+        plt.show()
+
+    return lfp_series
+    # replot the LFP signal
 
 
 def intersect(lst1, lst2):

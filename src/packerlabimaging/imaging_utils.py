@@ -18,7 +18,7 @@ import sys
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
 from packerlabimaging.utils_funcs import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, \
-    s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff
+    s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff, paq_read
 
 from matplotlib.colors import ColorConverter
 import scipy.stats as stats
@@ -32,7 +32,6 @@ import xml.etree.ElementTree as ET
 import tifffile as tf
 
 from packerlabimaging import plotting_utils as plotting
-from packerlabimaging.paq_utils import paq_read  ## TODO choose between adding paq_read to utils_funcs or make a new .py for paq_utils?
 import pickle
 
 
