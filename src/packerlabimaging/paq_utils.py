@@ -1,7 +1,6 @@
 # this package contains a bunch of functions useful for reading, plotting and working with data recorded in .paq files
 
-import sys; sys.path.append('/home/pshah/Documents/code/Vape/')
-from utils import sta
+import sys
 
 import numpy as np
 import pandas as pd

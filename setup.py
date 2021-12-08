@@ -10,5 +10,15 @@ setup(
     license='MIT',
     package_dir={'': 'src'},
     packages=find_packages(where='src'),
+    install_requires=[
+        'tifffile',
+        'numpy',
+        'seaborn',
+        'suite2p',
+        'matplotlib',
+        'pandas',
+        'scipy',
+        'statsmodels'
+    ],
     zip_safe=False
 )

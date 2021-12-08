@@ -11,8 +11,8 @@ from the microscope during data collection, and any user generated files associa
 import re
 import glob
 import pandas as pd
-import itertools
 import time
+import datetime
 import os
 import sys
 
@@ -20,8 +20,6 @@ import sys
 from packerlabimaging.utils_funcs import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, \
     s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff
 
-sys.path.append('/home/pshah/Documents/code/')
-# from Vape.utils.paq2py import *
 from matplotlib.colors import ColorConverter
 import scipy.stats as stats
 import statsmodels.api
@@ -32,14 +30,10 @@ import seaborn as sns
 import numpy as np
 import xml.etree.ElementTree as ET
 import tifffile as tf
-import csv
-import warnings
-import bisect
 
+from packerlabimaging import plotting_utils as plotting
 from packerlabimaging.paq_utils import paq_read  ## TODO choose between adding paq_read to utils_funcs or make a new .py for paq_utils?
 import pickle
-
-from numba import njit
 
 
 ###### UTILITIES
@@ -93,7 +87,7 @@ class TwoPhotonImaging:
         self.save_pkl(pkl_path=self.pkl_path)  # save experiment object to pkl_path
 
         self._parsePVMetadata() if 'Bruker' in microscope else Warning(f'retrieving data-collection metainformation from {microscope} has not been implemented yet')
-        self.s2pProcessing(s2p_path=self.suite2p_path) if self.suite2p_path else None
+        self.s2pProcessing(s2p_path=self.suite2p_path, s2p_batch_size=2000) if self.suite2p_path else None  ## TODO set option for providing input for s2p_batch_size
         self.paqProcessing(paq_path=self.paq_path) if self.paq_path else None
 
         if make_downsampled_tiff:
@@ -115,6 +109,29 @@ class TwoPhotonImaging:
         return repr(f"({information}) TwoPhotonImaging experimental data object, last saved: {lastmod}")
 
     @property
+    def fig_save_path(self):
+        today_date = datetime.today().strftime('%Y-%m-%d')
+        return self.analysis_save_dir + f'Results_fig/{today_date}/'
+
+    @fig_save_path.setter
+    def fig_save_path(self, value: str):
+        "set new default fig save path for data object"
+        self.fig_save_path = value
+
+    @property
+    def date(self):
+        "date of the experiment datacollection"
+        return self.metainfo['date']
+
+    @property
+    def prep(self):
+        return self.metainfo['animal prep']
+
+    @property
+    def trial(self):
+        return self.metainfo['trial']
+
+    @property
     def t_series_name(self):
         if 't series id' in self.metainfo.keys():
             return f"{self.metainfo['t series id']}"
@@ -132,6 +149,17 @@ class TwoPhotonImaging:
         "path in Analysis folder to save pkl object"
         return f"{self.analysis_save_dir}{self.metainfo['date']}_{self.metainfo['trial']}.pkl"
 
+    @pkl_path.setter
+    def pkl_path(self, path: str):
+        self.pkl_path = path
+
+    @property
+    def s2p_batch_size(self):
+        return 2000 * (262144 / self.frame_x * self.frame_y)  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
+
+    @s2p_batch_size.setter
+    def s2p_batch_size(self, value):
+        self.s2p_batch_size = value
 
     def s2pRun(self, ops, db, user_batch_size):
 
@@ -287,7 +315,7 @@ class TwoPhotonImaging:
               '\nscan centre (V):', scan_x, scan_y
               )
 
-    def s2pProcessing(self, s2p_path: str, subtract_neuropil: bool = True, subset_frames: tuple = None,
+    def s2pProcessing(self, s2p_path: str, s2p_batch_size: int, subtract_neuropil: bool = True, subset_frames: tuple = None,
                       save: bool = True):
         """processing of suite2p data from the current t-series
         :param s2p_path: path to the directory containing suite2p outputs
@@ -300,6 +328,7 @@ class TwoPhotonImaging:
             assert os.path.exists(s2p_path), print('ERROR: s2p path provided was not found')
             print(f"|- Updating suite2p path to newly provided path: {s2p_path}")
             self.suite2p_path = s2p_path  # update s2p path if provided different path
+        self.s2p_batch_size = s2p_batch_size
         self.s2p_subset_frames = subset_frames
         self.cell_id = []
         self.n_units = []
@@ -558,12 +587,12 @@ class TwoPhotonImaging:
 
         self.save() if save else None
 
-        aoplot.plotMeanRawFluTrace(expobj=self, stim_span_color=None, x_axis='frames', figsize=[20, 3],
+        plotting.plotMeanRawFluTrace(expobj=self, stim_span_color=None, x_axis='frames', figsize=[20, 3],
                                    title='Mean raw Flu trace -') if plot else None
 
         return im_stack
 
-    def plot_single_frame_tiff(self, frame_num: int = 0, title: str = None):
+    def plot_single_imaging_frame(self, frame_num: int = 0, title: str = None):
         """
         plots an image of a single specified tiff frame after reading using tifffile.
         :param frame_num: frame # from 2p imaging tiff to show (default is 0 - i.e. the first frame)
@@ -576,8 +605,7 @@ class TwoPhotonImaging:
         plt.show()
         return stack
 
-    def stitch_reg_tiffs(self, first_frame: int, last_frame: int, force_crop: bool = False, force_stack: bool = False,
-                         s2p_run_batch: int = 2000):
+    def stitch_reg_tiffs(self, first_frame: int, last_frame: int,  reg_tif_folder: str = None, force_crop: bool = False, s2p_run_batch: int = 2000):
         """
         Stitches together registered tiffs outputs from suite2p from the provided imaging frame start and end values.
 
@@ -587,14 +615,24 @@ class TwoPhotonImaging:
         :param force_stack:
         :param s2p_run_batch: batch size for suite2p run (defaults to 2000 because that is usually the batch size while running suite2p processing)
         """
-        self.curr_trial_frames = [first_frame, last_frame]
+
+        if reg_tif_folder is None:
+            if self.suite2p_path:
+                reg_tif_folder = self.suite2p_path + '/reg_tif/'
+                print(f"\- trying to load registerred tiffs from: {reg_tif_folder}")
+        else:
+            raise Exception(f"Must provide reg_tif_folder path for loading registered tiffs")
+        if not os.path.exists(reg_tif_folder):
+            raise Exception(f"no registered tiffs found at path: {reg_tif_folder}")
+
+        frame_range = [first_frame, last_frame]
 
         start = first_frame // s2p_run_batch
         end = last_frame // s2p_run_batch + 1
 
+        # set tiff paths to save registered tiffs:
         tif_path_save = self.analysis_save_dir + 'reg_tiff_%s.tif' % self.metainfo['trial']
         tif_path_save2 = self.analysis_save_dir + 'reg_tiff_%s_r.tif' % self.metainfo['trial']
-        reg_tif_folder = self.suite2p_path + '/reg_tif/'
         reg_tif_list = os.listdir(reg_tif_folder)
         reg_tif_list.sort()
         sorted_paths = [reg_tif_folder + tif for tif in reg_tif_list][start:end + 1]
@@ -603,11 +641,6 @@ class TwoPhotonImaging:
         print(sorted_paths)
 
         if os.path.exists(tif_path_save):
-            if force_stack:
-                make_tiff_stack(sorted_paths, save_as=tif_path_save)
-            else:
-                pass
-        else:
             make_tiff_stack(sorted_paths, save_as=tif_path_save)
 
         if not os.path.exists(tif_path_save2) or force_crop:
@@ -616,8 +649,7 @@ class TwoPhotonImaging:
                     print('cropping registered tiff')
                     data = input_tif.asarray()
                     print('shape of stitched tiff: ', data.shape)
-                reg_tif_crop = data[self.curr_trial_frames[0] - start * s2p_run_batch: self.curr_trial_frames[1] - (
-                        self.curr_trial_frames[0] - start * s2p_run_batch)]
+                reg_tif_crop = data[frame_range[0] - start * s2p_run_batch: frame_range[1] - (frame_range[0] - start * s2p_run_batch)]
                 print('saving cropped tiff ', reg_tif_crop.shape)
                 tif.save(reg_tif_crop)
 
@@ -629,7 +661,7 @@ class TwoPhotonImaging:
         :return:
         """
 
-        if s2p_path is None:
+        if s2p_path is None:  # TODO try to catch and handle the actual error
             if hasattr(self, 'suite2p_path'):
                 s2p_path = self.suite2p_path
             else:
@@ -732,17 +764,16 @@ class WideFieldImaging:
 class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PRAJAY'S PERSONAL CODE... should replace alot of these functions from Rob (more update to date for most)
     """This class provides methods for All Optical experiments"""
 
-    def __init__(self, paths, metainfo, stimtype, quick=False):
+    def __init__(self, paths, metainfo, quick=False):
         # self.metainfo = metainfo
         self.slmtargets_szboundary_stim = None
-        self.stim_type = stimtype
         self.naparm_path = paths[2]
         self.paq_path = paths[3]
 
         assert os.path.exists(self.naparm_path)
         assert os.path.exists(self.paq_path)
 
-        self.seizure_frames = []
+        # self.seizure_frames = []
 
         TwoPhotonImaging.__init__(self, tiff_path_dir=paths[0], tiff_path=paths[1], paq_path=paths[3],
                                   metainfo=metainfo, pkl_path=paths[4],
@@ -969,8 +1000,7 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
             # # sanity check
             # assert max(self.stim_start_frames[0]) < self.raw[plane].shape[1] * self.n_planes
 
-    def photostimProcessing(
-            self):  ## TODO need to figure out how to handle different types of photostimulation experiment setups
+    def photostimProcessing(self):  ## TODO need to figure out how to handle different types of photostimulation experiment setups
 
         """
         remember that this is currently configured for only the interleaved photostim, not the really fast photostim of multi-groups
@@ -999,248 +1029,82 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
         print('Single stim. Duration (ms): ', self.single_stim_dur)
         print('Total stim. Duration per trial (ms): ', self.stim_dur)
 
-        self.paqProcessing(lfp=True)
+        self.paqProcessing()
 
     def stimProcessing(self, stim_channel):
-
         self.stim_channel = stim_channel
+        self.photostimProcessing()
 
-        if self.stim_type == '2pstim':
-            self.photostimProcessing()
+    def subset_frames_current_trial(self, s2p_trials, trial, save=True):
+        """subsets frames from the overall suite2p run (which might include multiple t-series run together)
+        to the frames that are only relevant to the present trial"""
 
-    def subset_frames_current_trial(self, to_suite2p, trial, baseline_trials, force_redo: bool = False, save=True):
+        # determine which frames to retrieve from the overall total s2p output
+        total_frames_stitched = 0
+        for trial in s2p_trials:
+            _pkl_path = self.pkl_path[:-26] + trial + '/' + self.metainfo['date'] + '_' + trial + '.pkl'
+            with open(_pkl_path, 'rb') as f:
+                _expobj = pickle.load(f)
+            total_frames_stitched += _expobj.n_frames
+            if trial == self.trial:
+                self.curr_trial_frames = [total_frames_stitched - _expobj.n_frames, total_frames_stitched]
 
-        if force_redo:
-            continu = True
-            print('re-collecting subset frames of current trial')
-        elif hasattr(self, 'curr_trial_frames'):
-            print('skipped re-collecting subset frames of current trial')
-            continu = False
+        print(f'current trial frames (out of all trials run in suite2p): {self.curr_trial_frames}')
+
+        self.save() if save else None
+
+    def collect_traces_from_targets(self, reg_tif_folder: str, save: bool = True):
+        """uses registered tiffs to collect raw traces from SLM target areas"""
+
+        if reg_tif_folder is None:
+            if self.suite2p_path:
+                reg_tif_folder = self.suite2p_path + '/reg_tif/'
+                print(f"\- trying to load registerred tiffs from: {reg_tif_folder}")
         else:
-            continu = True
-            print('collecting subset frames of current trial')
+            raise Exception(f"Must provide reg_tif_folder path for loading registered tiffs")
+        if not os.path.exists(reg_tif_folder):
+            raise Exception(f"no registered tiffs found at path: {reg_tif_folder}")
 
-        if continu:
-            # determine which frames to retrieve from the overall total s2p output
-            total_frames_stitched = 0
-            curr_trial_frames = None
-            self.baseline_frames = [0, 0]
-            for t in to_suite2p:
-                pkl_path_2 = self.pkl_path[:-26] + t + '/' + self.metainfo['date'] + '_' + t + '.pkl'
-                with open(pkl_path_2, 'rb') as f:
-                    _expobj = pickle.load(f)
-                    # import suite2p data
-                total_frames_stitched += _expobj.n_frames
-                if t == trial:
-                    self.curr_trial_frames = [total_frames_stitched - _expobj.n_frames, total_frames_stitched]
-                if t in baseline_trials:
-                    self.baseline_frames[1] = total_frames_stitched
+        print(f'\n\ncollecting raw Flu traces from SLM target coord. areas from registered TIFFs from: {reg_tif_folder}')
+        # read in registered tiff
+        reg_tif_list = os.listdir(reg_tif_folder)
+        reg_tif_list.sort()
+        start = self.curr_trial_frames[0] // 2000  # 2000 because that is the batch size for suite2p run
+        end = self.curr_trial_frames[1] // 2000 + 1
 
-            print('baseline frames: ', self.baseline_frames)
-            print('current trial frames: ', self.curr_trial_frames)
+        mean_img_stack = np.zeros([end - start, self.frame_x, self.frame_y])
+        # collect mean traces from target areas of each target coordinate by reading in individual registered tiffs that contain frames for current trial
+        targets_trace_full = np.zeros([len(self.target_coords_all), (end - start) * 2000], dtype='float32')
+        counter = 0
+        for i in range(start, end):
+            tif_path_save2 = self.suite2p_path + '/reg_tif/' + reg_tif_list[i]
+            with tf.TiffFile(tif_path_save2, multifile=False) as input_tif:
+                print('|- reading tiff: %s' % tif_path_save2)
+                data = input_tif.asarray()
 
-            self.save() if save else None
+            targets_trace = np.zeros([len(self.target_coords_all), data.shape[0]], dtype='float32')
+            for coord in range(len(self.target_coords_all)):
+                target_areas = np.array(
+                    self.target_areas)  # TODO update this so that it doesn't include the extra exclusion zone
+                x = data[:, target_areas[coord, :, 1], target_areas[coord, :, 0]]  # = 1
+                targets_trace[coord] = np.mean(x, axis=1)
 
-    def collect_traces_from_targets(self, force_redo: bool = False, save: bool = True):
+            targets_trace_full[:, (i - start) * 2000: ((i - start) * 2000) + data.shape[
+                0]] = targets_trace  # iteratively write to each successive segment of the targets_trace array based on the length of the reg_tiff that is read in.
 
-        if force_redo:
-            continu = True
-        elif hasattr(self, 'raw_SLMTargets'):
-            print('skipped re-collecting of raw traces from SLM targets')
-            continu = False
-        else:
-            continu = True
+            mean_img_stack[counter] = np.mean(data, axis=0)
+            counter += 1
 
-        if continu:
-            print('\n\ncollecting raw Flu traces from SLM target coord. areas from registered TIFFs')
-            # read in registered tiff
-            reg_tif_folder = self.s2p_path + '/reg_tif/'
-            reg_tif_list = os.listdir(reg_tif_folder)
-            reg_tif_list.sort()
-            start = self.curr_trial_frames[0] // 2000  # 2000 because that is the batch size for suite2p run
-            end = self.curr_trial_frames[1] // 2000 + 1
+        # final part, crop to the *exact* frames for current trial
+        self.raw_SLMTargets = targets_trace_full[:,
+                              self.curr_trial_frames[0] - start * 2000: self.curr_trial_frames[1] - (start * 2000)]
 
-            mean_img_stack = np.zeros([end - start, self.frame_x, self.frame_y])
-            # collect mean traces from target areas of each target coordinate by reading in individual registered tiffs that contain frames for current trial
-            targets_trace_full = np.zeros([len(self.target_coords_all), (end - start) * 2000], dtype='float32')
-            counter = 0
-            for i in range(start, end):
-                tif_path_save2 = self.s2p_path + '/reg_tif/' + reg_tif_list[i]
-                with tf.TiffFile(tif_path_save2, multifile=False) as input_tif:
-                    print('|- reading tiff: %s' % tif_path_save2)
-                    data = input_tif.asarray()
+        self.dFF_SLMTargets = normalize_dff(self.raw_SLMTargets, threshold_pct=10)
 
-                targets_trace = np.zeros([len(self.target_coords_all), data.shape[0]], dtype='float32')
-                for coord in range(len(self.target_coords_all)):
-                    target_areas = np.array(
-                        self.target_areas)  # TODO update this so that it doesn't include the extra exclusion zone
-                    x = data[:, target_areas[coord, :, 1], target_areas[coord, :, 0]]  # = 1
-                    targets_trace[coord] = np.mean(x, axis=1)
+        self.meanFluImg_registered = np.mean(mean_img_stack, axis=0)
 
-                targets_trace_full[:, (i - start) * 2000: ((i - start) * 2000) + data.shape[
-                    0]] = targets_trace  # iteratively write to each successive segment of the targets_trace array based on the length of the reg_tiff that is read in.
+        self.save() if save else None
 
-                mean_img_stack[counter] = np.mean(data, axis=0)
-                counter += 1
-
-            # final part, crop to the *exact* frames for current trial
-            self.raw_SLMTargets = targets_trace_full[:,
-                                  self.curr_trial_frames[0] - start * 2000: self.curr_trial_frames[1] - (start * 2000)]
-
-            self.dFF_SLMTargets = normalize_dff(self.raw_SLMTargets, threshold_pct=10)
-
-            # targets_trace_dFF_full = normalize_dff(targets_trace_full, threshold_pct=10)
-            # self.dFF_SLMTargets = targets_trace_dFF_full[:, self.curr_trial_frames[0] - start * 2000: self.curr_trial_frames[1] - (start * 2000)]
-
-            # plots to compare dFF normalization for each trace
-            target = 0
-            f, axs = plt.subplots(nrows=2, ncols=1, figsize=[20, 10])
-            axs[0].plot(self.raw_SLMTargets[target], color='blue')
-            axs[0].set_ylabel('raw values')
-            axs[1].plot(range(len(self.dFF_SLMTargets[target])), self.dFF_SLMTargets[target], color='green')
-            axs[1].set_ylabel('dFF values')
-            f.suptitle(f"raw trace (blue), dFF trace (norm. to bottom 10 pct) (green) ")
-            f.show()
-
-            self.meanFluImg_registered = np.mean(mean_img_stack, axis=0)
-
-            self.save() if save else None
-
-    def get_alltargets_stim_traces_norm(self, process: str, targets_idx: int = None, subselect_cells: list = None,
-                                        pre_stim=15,
-                                        post_stim=200, filter_sz: bool = False, stims: list = None):
-        """
-        primary function to measure the dFF and dF/setdF trace SNIPPETS for photostimulated targets.
-        :param stims:
-        :param targets_idx: integer for the index of target cell to process
-        :param subselect_cells: ls of cells to subset from the overall set of traces (use in place of targets_idx if desired)
-        :param pre_stim: number of frames to use as pre-stim
-        :param post_stim: number of frames to use as post-stim
-        :param filter_sz: whether to filter out stims that are occuring seizures
-        :return: lists of individual targets dFF traces, and averaged targets dFF over all stims for each target
-        """
-        if filter_sz:
-            print('\n -- filter_sz active --')
-
-        if stims is None:
-            stim_timings = self.stim_start_frames
-        else:
-            stim_timings = stims
-
-        if process == 'trace raw':  ## specify which data to process (i.e. do you want to process whole trace dFF traces?)
-            data_to_process = self.raw_SLMTargets
-        elif process == 'trace dFF':
-            data_to_process = self.dFF_SLMTargets
-        else:
-            ValueError('need to provide `process` as either `trace raw` or `trace dFF`')
-
-        if subselect_cells:
-            num_cells = len(data_to_process[subselect_cells])
-            targets_trace = data_to_process[subselect_cells]  ## NOTE USING .raw traces
-        else:
-            num_cells = len(data_to_process)
-            targets_trace = data_to_process
-
-        # collect photostim timed average dff traces of photostim targets
-        targets_dff = np.zeros(
-            [num_cells, len(self.stim_start_frames), pre_stim + self.stim_duration_frames + post_stim])
-        # SLMTargets_stims_dffAvg = np.zeros([num_cells, pre_stim_sec + post_stim_sec])
-
-        targets_dfstdF = np.zeros(
-            [num_cells, len(self.stim_start_frames), pre_stim + self.stim_duration_frames + post_stim])
-        # targets_dfstdF_avg = np.zeros([num_cells, pre_stim_sec + post_stim_sec])
-
-        targets_raw = np.zeros(
-            [num_cells, len(self.stim_start_frames), pre_stim + self.stim_duration_frames + post_stim])
-        # targets_raw_avg = np.zeros([num_cells, pre_stim_sec + post_stim_sec])
-
-        if targets_idx is not None:
-            print('collecting stim traces for cell ', targets_idx + 1)
-            if filter_sz:
-                flu = [targets_trace[targets_idx][stim - pre_stim: stim + self.stim_duration_frames + post_stim] for
-                       stim in
-                       stim_timings if
-                       stim not in self.seizure_frames]
-            else:
-                flu = [targets_trace[targets_idx][stim - pre_stim: stim + self.stim_duration_frames + post_stim] for
-                       stim in
-                       stim_timings]
-            # flu_dfstdF = []
-            # flu_dff = []
-            for i in range(len(flu)):
-                trace = flu[i]
-                mean_pre = np.mean(trace[0:pre_stim])
-                if process == 'trace raw':
-                    trace_dff = ((trace - mean_pre) / mean_pre) * 100
-                elif process == 'trace dFF':
-                    trace_dff = (trace - mean_pre)
-                else:
-                    ValueError('not sure how to calculate peri-stim traces...')
-                std_pre = np.std(trace[0:pre_stim])
-                dFstdF = (trace - mean_pre) / std_pre  # make dF divided by std of pre-stim F trace
-
-                targets_raw[targets_idx, i] = trace
-                targets_dff[targets_idx, i] = trace_dff
-                targets_dfstdF[targets_idx, i] = dFstdF
-            print(f"shape of targets_dff[targets_idx]: {targets_dff[targets_idx].shape}")
-            return targets_raw[targets_idx], targets_dff[targets_idx], targets_dfstdF[targets_idx]
-
-        else:
-            for cell_idx in range(num_cells):
-                print('collecting stim traces for cell %s' % subselect_cells[cell_idx]) if subselect_cells else None
-
-                if filter_sz:
-                    if hasattr(self, 'slmtargets_szboundary_stim') and self.slmtargets_szboundary_stim is not None:
-                        flu = []
-                        for stim in stim_timings:
-                            if stim in self.slmtargets_szboundary_stim.keys():  # some stims dont have sz boundaries because of issues with their TIFFs not being made properly (not readable in Fiji), usually it is the first TIFF in a seizure
-                                if cell_idx not in self.slmtargets_szboundary_stim[stim]:
-                                    flu.append(targets_trace[cell_idx][
-                                               stim - pre_stim: stim + self.stim_duration_frames + post_stim])
-                    else:
-                        flu = []
-                        print('classifying of sz boundaries not completed for this expobj',
-                              self.metainfo['animal prep.'], self.metainfo['trial'])
-                    # flu = [targets_trace[cell_idx][stim - pre_stim_sec: stim + self.stim_duration_frames + post_stim_sec] for
-                    #        stim
-                    #        in stim_timings if
-                    #        stim not in self.seizure_frames]
-                else:
-                    flu = [targets_trace[cell_idx][stim - pre_stim: stim + self.stim_duration_frames + post_stim] for
-                           stim in stim_timings]
-
-                # flu_dfstdF = []
-                # flu_dff = []
-                # flu = []
-                if len(flu) > 0:
-                    for i in range(len(flu)):
-                        trace = flu[i]
-                        mean_pre = np.mean(trace[0:pre_stim])
-                        trace_dff = ((trace - mean_pre) / mean_pre) * 100
-                        std_pre = np.std(trace[0:pre_stim])
-                        dFstdF = (trace - mean_pre) / std_pre  # make dF divided by std of pre-stim F trace
-
-                        targets_raw[cell_idx, i] = trace
-                        targets_dff[cell_idx, i] = trace_dff
-                        targets_dfstdF[cell_idx, i] = dFstdF
-                        # flu_dfstdF.append(dFstdF)
-                        # flu_dff.append(trace_dff)
-
-                # targets_dff.append(flu_dff)  # contains all individual dFF traces for all stim times
-                # SLMTargets_stims_dffAvg.append(np.nanmean(flu_dff, axis=0))  # contains the dFF trace averaged across all stim times
-
-                # targets_dfstdF.append(flu_dfstdF)
-                # targets_dfstdF_avg.append(np.nanmean(flu_dfstdF, axis=0))
-
-                # SLMTargets_stims_raw.append(flu)
-                # targets_raw_avg.append(np.nanmean(flu, axis=0))
-
-            targets_dff_avg = np.mean(targets_dff, axis=1)
-            targets_dfstdF_avg = np.mean(targets_dfstdF, axis=1)
-            targets_raw_avg = np.mean(targets_raw, axis=1)
-
-            print(f"shape of targets_dff_avg: {targets_dff_avg.shape}")
-            return targets_dff, targets_dff_avg, targets_dfstdF, targets_dfstdF_avg, targets_raw, targets_raw_avg
 
     def cellStaProcessing(self, test='t_test'):
 
@@ -1417,6 +1281,145 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
 
             self.single_sig.append(single_sigs)
 
+
+    ### KEY FUNCTIONS TO REVIEW WITH ROB FOR ALLOPTICAL WORKFLOW
+
+    def get_alltargets_stim_traces_norm(self, process: str, targets_idx: int = None, subselect_cells: list = None,
+                                        pre_stim=15, post_stim=200, filter_sz: bool = False, stims: list = None):
+        """
+        primary function to measure the dFF and dF/setdF trace SNIPPETS for photostimulated targets.
+        :param stims:
+        :param targets_idx: integer for the index of target cell to process
+        :param subselect_cells: ls of cells to subset from the overall set of traces (use in place of targets_idx if desired)
+        :param pre_stim: number of frames to use as pre-stim
+        :param post_stim: number of frames to use as post-stim
+        :param filter_sz: whether to filter out stims that are occuring seizures
+        :return: lists of individual targets dFF traces, and averaged targets dFF over all stims for each target
+        """
+        if filter_sz:
+            print('\n -- filter_sz active --')
+
+        if stims is None:
+            stim_timings = self.stim_start_frames
+        else:
+            stim_timings = stims
+
+        if process == 'trace raw':  ## specify which data to process (i.e. do you want to process whole trace dFF traces?)
+            data_to_process = self.raw_SLMTargets
+        elif process == 'trace dFF':
+            data_to_process = self.dFF_SLMTargets
+        else:
+            ValueError('need to provide `process` as either `trace raw` or `trace dFF`')
+
+        if subselect_cells:
+            num_cells = len(data_to_process[subselect_cells])
+            targets_trace = data_to_process[subselect_cells]  ## NOTE USING .raw traces
+        else:
+            num_cells = len(data_to_process)
+            targets_trace = data_to_process
+
+        # collect photostim timed average dff traces of photostim targets
+        targets_dff = np.zeros(
+            [num_cells, len(self.stim_start_frames), pre_stim + self.stim_duration_frames + post_stim])
+        # SLMTargets_stims_dffAvg = np.zeros([num_cells, pre_stim_sec + post_stim_sec])
+
+        targets_dfstdF = np.zeros(
+            [num_cells, len(self.stim_start_frames), pre_stim + self.stim_duration_frames + post_stim])
+        # targets_dfstdF_avg = np.zeros([num_cells, pre_stim_sec + post_stim_sec])
+
+        targets_raw = np.zeros(
+            [num_cells, len(self.stim_start_frames), pre_stim + self.stim_duration_frames + post_stim])
+        # targets_raw_avg = np.zeros([num_cells, pre_stim_sec + post_stim_sec])
+
+        if targets_idx is not None:
+            print('collecting stim traces for cell ', targets_idx + 1)
+            if filter_sz:
+                flu = [targets_trace[targets_idx][stim - pre_stim: stim + self.stim_duration_frames + post_stim] for
+                       stim in
+                       stim_timings if
+                       stim not in self.seizure_frames]
+            else:
+                flu = [targets_trace[targets_idx][stim - pre_stim: stim + self.stim_duration_frames + post_stim] for
+                       stim in
+                       stim_timings]
+            # flu_dfstdF = []
+            # flu_dff = []
+            for i in range(len(flu)):
+                trace = flu[i]
+                mean_pre = np.mean(trace[0:pre_stim])
+                if process == 'trace raw':
+                    trace_dff = ((trace - mean_pre) / mean_pre) * 100
+                elif process == 'trace dFF':
+                    trace_dff = (trace - mean_pre)
+                else:
+                    ValueError('not sure how to calculate peri-stim traces...')
+                std_pre = np.std(trace[0:pre_stim])
+                dFstdF = (trace - mean_pre) / std_pre  # make dF divided by std of pre-stim F trace
+
+                targets_raw[targets_idx, i] = trace
+                targets_dff[targets_idx, i] = trace_dff
+                targets_dfstdF[targets_idx, i] = dFstdF
+            print(f"shape of targets_dff[targets_idx]: {targets_dff[targets_idx].shape}")
+            return targets_raw[targets_idx], targets_dff[targets_idx], targets_dfstdF[targets_idx]
+
+        else:
+            for cell_idx in range(num_cells):
+                print('collecting stim traces for cell %s' % subselect_cells[cell_idx]) if subselect_cells else None
+
+                if filter_sz:
+                    if hasattr(self, 'slmtargets_szboundary_stim') and self.slmtargets_szboundary_stim is not None:
+                        flu = []
+                        for stim in stim_timings:
+                            if stim in self.slmtargets_szboundary_stim.keys():  # some stims dont have sz boundaries because of issues with their TIFFs not being made properly (not readable in Fiji), usually it is the first TIFF in a seizure
+                                if cell_idx not in self.slmtargets_szboundary_stim[stim]:
+                                    flu.append(targets_trace[cell_idx][
+                                               stim - pre_stim: stim + self.stim_duration_frames + post_stim])
+                    else:
+                        flu = []
+                        print('classifying of sz boundaries not completed for this expobj',
+                              self.metainfo['animal prep.'], self.metainfo['trial'])
+                    # flu = [targets_trace[cell_idx][stim - pre_stim_sec: stim + self.stim_duration_frames + post_stim_sec] for
+                    #        stim
+                    #        in stim_timings if
+                    #        stim not in self.seizure_frames]
+                else:
+                    flu = [targets_trace[cell_idx][stim - pre_stim: stim + self.stim_duration_frames + post_stim] for
+                           stim in stim_timings]
+
+                # flu_dfstdF = []
+                # flu_dff = []
+                # flu = []
+                if len(flu) > 0:
+                    for i in range(len(flu)):
+                        trace = flu[i]
+                        mean_pre = np.mean(trace[0:pre_stim])
+                        trace_dff = ((trace - mean_pre) / mean_pre) * 100
+                        std_pre = np.std(trace[0:pre_stim])
+                        dFstdF = (trace - mean_pre) / std_pre  # make dF divided by std of pre-stim F trace
+
+                        targets_raw[cell_idx, i] = trace
+                        targets_dff[cell_idx, i] = trace_dff
+                        targets_dfstdF[cell_idx, i] = dFstdF
+                        # flu_dfstdF.append(dFstdF)
+                        # flu_dff.append(trace_dff)
+
+                # targets_dff.append(flu_dff)  # contains all individual dFF traces for all stim times
+                # SLMTargets_stims_dffAvg.append(np.nanmean(flu_dff, axis=0))  # contains the dFF trace averaged across all stim times
+
+                # targets_dfstdF.append(flu_dfstdF)
+                # targets_dfstdF_avg.append(np.nanmean(flu_dfstdF, axis=0))
+
+                # SLMTargets_stims_raw.append(flu)
+                # targets_raw_avg.append(np.nanmean(flu, axis=0))
+
+            targets_dff_avg = np.mean(targets_dff, axis=1)
+            targets_dfstdF_avg = np.mean(targets_dfstdF, axis=1)
+            targets_raw_avg = np.mean(targets_raw, axis=1)
+
+            print(f"shape of targets_dff_avg: {targets_dff_avg.shape}")
+            return targets_dff, targets_dff_avg, targets_dfstdF, targets_dfstdF_avg, targets_raw, targets_raw_avg
+
+
     def _findTargetsAreas(self):
 
         '''
@@ -1465,9 +1468,6 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
         # target_image_scaled_2 = target_image_slm_2;
         # del target_image_slm_2
 
-        # use frame_x and frame_y to get bounding box of OBFOV inside the BAFOV, assume BAFOV always 1024x1024
-        frame_x = self.frame_x
-        frame_y = self.frame_y
 
         # if frame_x < 1024 or frame_y < 1024:
         #     pass
@@ -1715,7 +1715,7 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
         for group in self.target_coords:
             a = []
             for target in group:
-                target_area = ([item for item in pj.points_in_circle_np(radius, x0=target[0], y0=target[1])])
+                target_area = ([item for item in points_in_circle_np(radius, x0=target[0], y0=target[1])])
                 a.append(target_area)
             target_areas.append(a)
 
@@ -1757,7 +1757,9 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
         print('Search completed.')
         print('Total number of targeted cells: ', self.n_targeted_cells)
 
-    # other usefull functions for all-optical analysis
+    ### END
+
+    # other useful functions for all-optical analysis
 
     def whiten_photostim_frame(self, tiff_path, save_as=''):
         im_stack = tf.imread(tiff_path, key=range(self.n_frames))
@@ -1957,12 +1959,12 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
                     'makeColourImage': False
                     }
 
-        # run STAmm
-        STAMM.STAMovieMaker(arg_dict)
+        # # run STAmm
+        # STAMM.STAMovieMaker(arg_dict)
 
         # show the MaxResponseImage
         img = glob.glob(stam_save_path + '/*MaxResponseImage.tif')[0]
-        pj.plot_single_tiff(img)
+        plotting.plot_single_tiff(img, frame_num=0)
 
     # def _good_cells(self, min_radius_pix, max_radius_pix):
     #     '''
@@ -2013,18 +2015,6 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
     #     print('# of good cells found: %s (out of %s ROIs)' % (len(good_cells), len(self.cell_id)))
     #     return good_cells
 
-    @staticmethod
-    @njit
-    def sliding_window_std(raw_dff, std):
-        x = []
-        # y = []
-        for j in np.arange(len(raw_dff), step=4):
-            avg = np.mean(raw_dff[j:j + 4])
-            if avg > np.mean(
-                    raw_dff) + 2.5 * std:  # if the avg of 4 frames is greater than the threshold then save the result
-                x.append(j)
-                # y.append(avg)
-        return x
 
     # calculate reliability of photostim responsiveness of all of the targeted cells (found in s2p output)
     def get_SLMTarget_responses_dff(self, process: str, threshold=10, stims_to_use: list = None):
@@ -2629,90 +2619,80 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
     def s2pMaskStack(obj, pkl_list, s2p_path, parent_folder, force_redo: bool = False):
         """makes a TIFF stack with the s2p mean image, and then suite2p ROI masks for all cells detected, target cells, and also SLM targets as well?"""
 
-        if force_redo:
-            continu = True
-        elif hasattr(obj, 's2p_cell_targets'):
-            print('skipped re-making TIFF stack of finding s2p targets from suite2p cell ls')
-            continu = False
-        else:
-            continu = True
+        for pkl in pkl_list:
+            expobj = obj
 
-        if continu:
+            print('Retrieving s2p masks for:', pkl, end='\r')
 
-            for pkl in pkl_list:
-                expobj = obj
+            # with open(pkl, 'rb') as f:
+            #     expobj = pickle.load(f)
 
-                print('Retrieving s2p masks for:', pkl, end='\r')
+            # ls of cell ids to filter s2p masks by
+            # cell_id_list = [ls(range(1, 99999)),  # all
+            #                 expobj.photostim_r.cell_id[0],  # cells
+            #                 [expobj.photostim_r.cell_id[0][i] for i, b in enumerate(expobj.photostim_r.cell_s1[0]) if
+            #                  b == False],  # s2 cells
+            #                 [expobj.photostim_r.cell_id[0][i] for i, b in enumerate(expobj.photostim_r.is_target) if
+            #                  b == 1],  # pr cells
+            #                 [expobj.photostim_s.cell_id[0][i] for i, b in enumerate(expobj.photostim_s.is_target) if
+            #                  b == 1],  # ps cells
+            #                 ]
+            #
+            cell_ids = expobj.cell_id
 
-                # with open(pkl, 'rb') as f:
-                #     expobj = pickle.load(f)
+            # empty stack to fill with images
+            stack = np.empty((0, expobj.frame_y, expobj.frame_x), dtype='uint8')
 
-                # ls of cell ids to filter s2p masks by
-                # cell_id_list = [ls(range(1, 99999)),  # all
-                #                 expobj.photostim_r.cell_id[0],  # cells
-                #                 [expobj.photostim_r.cell_id[0][i] for i, b in enumerate(expobj.photostim_r.cell_s1[0]) if
-                #                  b == False],  # s2 cells
-                #                 [expobj.photostim_r.cell_id[0][i] for i, b in enumerate(expobj.photostim_r.is_target) if
-                #                  b == 1],  # pr cells
-                #                 [expobj.photostim_s.cell_id[0][i] for i, b in enumerate(expobj.photostim_s.is_target) if
-                #                  b == 1],  # ps cells
-                #                 ]
-                #
-                cell_ids = expobj.cell_id
+            s2p_path = s2p_path
 
-                # empty stack to fill with images
-                stack = np.empty((0, expobj.frame_y, expobj.frame_x), dtype='uint8')
+            # mean image from s2p
+            mean_img = obj.s2pMeanImage(s2p_path)
+            mean_img = np.expand_dims(mean_img, axis=0)
+            stack = np.append(stack, mean_img, axis=0)
 
-                s2p_path = s2p_path
+            # mask images from s2p
+            mask_img, targets_s2p_img = obj.s2pMasks(s2p_path=s2p_path, cell_ids=cell_ids)
+            mask_img = np.expand_dims(mask_img, axis=0)
+            targets_s2p_img = np.expand_dims(targets_s2p_img, axis=0)
+            # targets_s2p_img_1 = np.expand_dims(targets_s2p_img_1, axis=0)
+            # targets_s2p_img_2 = np.expand_dims(targets_s2p_img_2, axis=0)
+            stack = np.append(stack, mask_img, axis=0)
+            stack = np.append(stack, targets_s2p_img, axis=0)
+            # stack = np.append(stack, targets_s2p_img_1, axis=0)
+            # stack = np.append(stack, targets_s2p_img_2, axis=0)
 
-                # mean image from s2p
-                mean_img = s2pMeanImage(s2p_path)
-                mean_img = np.expand_dims(mean_img, axis=0)
-                stack = np.append(stack, mean_img, axis=0)
+            # # sta images
+            # for file in os.listdir(stam_save_path):
+            #     if all(s in file for s in ['AvgImage', expobj.photostim_r.tiff_path.split('/')[-1]]):
+            #         pr_sta_img = tf.imread(os.path.join(stam_save_path, file))
+            #         pr_sta_img = np.expand_dims(pr_sta_img, axis=0)
+            #     elif all(s in file for s in ['AvgImage', expobj.photostim_s.tiff_path.split('/')[-1]]):
+            #         ps_sta_img = tf.imread(os.path.join(stam_save_path, file))
+            #         ps_sta_img = np.expand_dims(ps_sta_img, axis=0)
 
-                # mask images from s2p
-                mask_img, targets_s2p_img = s2pMasks(obj=expobj, s2p_path=s2p_path, cell_ids=cell_ids)
-                mask_img = np.expand_dims(mask_img, axis=0)
-                targets_s2p_img = np.expand_dims(targets_s2p_img, axis=0)
-                # targets_s2p_img_1 = np.expand_dims(targets_s2p_img_1, axis=0)
-                # targets_s2p_img_2 = np.expand_dims(targets_s2p_img_2, axis=0)
-                stack = np.append(stack, mask_img, axis=0)
-                stack = np.append(stack, targets_s2p_img, axis=0)
-                # stack = np.append(stack, targets_s2p_img_1, axis=0)
-                # stack = np.append(stack, targets_s2p_img_2, axis=0)
+            # stack = np.append(stack, pr_sta_img, axis=0)
+            # stack = np.append(stack, ps_sta_img, axis=0)
 
-                # # sta images
-                # for file in os.listdir(stam_save_path):
-                #     if all(s in file for s in ['AvgImage', expobj.photostim_r.tiff_path.split('/')[-1]]):
-                #         pr_sta_img = tf.imread(os.path.join(stam_save_path, file))
-                #         pr_sta_img = np.expand_dims(pr_sta_img, axis=0)
-                #     elif all(s in file for s in ['AvgImage', expobj.photostim_s.tiff_path.split('/')[-1]]):
-                #         ps_sta_img = tf.imread(os.path.join(stam_save_path, file))
-                #         ps_sta_img = np.expand_dims(ps_sta_img, axis=0)
+            # target images
+            targ_img = obj.getTargetImage()
+            targ_img = np.expand_dims(targ_img, axis=0)
+            stack = np.append(stack, targ_img, axis=0)
 
-                # stack = np.append(stack, pr_sta_img, axis=0)
-                # stack = np.append(stack, ps_sta_img, axis=0)
+            # targ_img_1 = np.expand_dims(targ_img_1, axis=0)
+            # stack = np.append(stack, targ_img_1, axis=0)
+            #
+            # targ_img_2 = np.expand_dims(targ_img_2, axis=0)
+            # stack = np.append(stack, targ_img_2, axis=0)
 
-                # target images
-                targ_img = getTargetImage(expobj)
-                targ_img = np.expand_dims(targ_img, axis=0)
-                stack = np.append(stack, targ_img, axis=0)
+            # stack is now: mean_img, all_rois, all_cells, s2_cells, pr_cells, ps_cells,
+            # (whisker,) pr_sta_img, ps_sta_img, pr_target_areas, ps_target_areas
+            # c, x, y = stack.shape
+            # stack.shape = 1, 1, c, x, y, 1  # dimensions in TZCYXS order
 
-                # targ_img_1 = np.expand_dims(targ_img_1, axis=0)
-                # stack = np.append(stack, targ_img_1, axis=0)
-                #
-                # targ_img_2 = np.expand_dims(targ_img_2, axis=0)
-                # stack = np.append(stack, targ_img_2, axis=0)
+            x_pix = expobj.pix_sz_x
+            y_pix = expobj.pix_sz_y
 
-                # stack is now: mean_img, all_rois, all_cells, s2_cells, pr_cells, ps_cells,
-                # (whisker,) pr_sta_img, ps_sta_img, pr_target_areas, ps_target_areas
-                # c, x, y = stack.shape
-                # stack.shape = 1, 1, c, x, y, 1  # dimensions in TZCYXS order
+            save_path = os.path.join(parent_folder, pkl.split('/')[-1][:-4] + '_s2p_masks.tif')
 
-                x_pix = expobj.pix_sz_x
-                y_pix = expobj.pix_sz_y
-
-                save_path = os.path.join(parent_folder, pkl.split('/')[-1][:-4] + '_s2p_masks.tif')
-
-                tf.imwrite(save_path, stack, photometric='minisblack')
-                print('\ns2p ROI + photostim targets masks saved in TIFF to: ', save_path)
+            tf.imwrite(save_path, stack, photometric='minisblack')
+            print('\ns2p ROI + photostim targets masks saved in TIFF to: ', save_path)
