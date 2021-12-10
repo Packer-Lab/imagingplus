@@ -1130,25 +1130,7 @@ class AllOptical(TwoPhotonImaging):
         self.stim_channel = stim_channel
         self.photostimProcessing()
 
-    def subset_frames_current_trial(self, s2p_trials, trial, save=True):
-        """subsets frames from the overall suite2p run (which might include multiple t-series run together)
-        to the frames that are only relevant to the present trial"""
-
-        # determine which frames to retrieve from the overall total s2p output
-        total_frames_stitched = 0
-        for trial in s2p_trials:
-            _pkl_path = self.pkl_path[:-26] + trial + '/' + self.metainfo['date'] + '_' + trial + '.pkl'
-            with open(_pkl_path, 'rb') as f:
-                _expobj = pickle.load(f)
-            total_frames_stitched += _expobj.n_frames
-            if trial == self.trial:
-                self.curr_trial_frames = [total_frames_stitched - _expobj.n_frames, total_frames_stitched]
-
-        print(f'current trial frames (out of all trials run in suite2p): {self.curr_trial_frames}')
-
-        self.save() if save else None
-
-    def collect_traces_from_targets(self, reg_tif_folder: str, save: bool = True):
+    def collect_traces_from_targets(self, curr_trial_frames: list, reg_tif_folder: str, save: bool = True):
         """uses registered tiffs to collect raw traces from SLM target areas"""
 
         if reg_tif_folder is None:
@@ -1165,8 +1147,8 @@ class AllOptical(TwoPhotonImaging):
         # read in registered tiff
         reg_tif_list = os.listdir(reg_tif_folder)
         reg_tif_list.sort()
-        start = self.curr_trial_frames[0] // 2000  # 2000 because that is the batch size for suite2p run
-        end = self.curr_trial_frames[1] // 2000 + 1
+        start = curr_trial_frames[0] // 2000  # 2000 because that is the batch size for suite2p run
+        end = curr_trial_frames[1] // 2000 + 1
 
         mean_img_stack = np.zeros([end - start, self.frame_x, self.frame_y])
         # collect mean traces from target areas of each target coordinate by reading in individual registered tiffs that contain frames for current trial
@@ -1192,8 +1174,7 @@ class AllOptical(TwoPhotonImaging):
             counter += 1
 
         # final part, crop to the *exact* frames for current trial
-        self.raw_SLMTargets = targets_trace_full[:,
-                              self.curr_trial_frames[0] - start * 2000: self.curr_trial_frames[1] - (start * 2000)]
+        self.raw_SLMTargets = targets_trace_full[:, curr_trial_frames[0] - start * 2000: curr_trial_frames[1] - (start * 2000)]
 
         self.dFF_SLMTargets = normalize_dff(self.raw_SLMTargets, threshold_pct=10)
 
