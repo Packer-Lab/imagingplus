@@ -51,6 +51,10 @@ def define_term(x):
     except KeyError:
         print('input not found in dictionary')
 
+def _check_path_exists(path_arg: str, path: str):
+    assert os.path.exists(path), f"{path_arg} path not found: {path}"
+    return True
+
 
 ## CLASS DEFINITIONS
 class TwoPhotonImaging:
@@ -61,9 +65,9 @@ class TwoPhotonImaging:
                  paq_path: str = None, suite2p_path: str = None, make_downsampled_tiff: bool = False):
         """
         :param tiff_path: path to t-series .tiff
-        :param metainfo: dictionary containing any metainfo information field needed for this experiment. At minimum it needs to include prep #, t-series # and date of data collection.
         :param analysis_save_path: path of where to save the experiment analysis object
         :param microscope: name of microscope used to record imaging (options: "Bruker" (default), "Scientifica", "other")
+        :param metainfo: dictionary containing any metainfo information field needed for this experiment. At minimum it needs to include prep #, t-series # and date of data collection.
         :param paq_path: (optional) path to .paq file associated with current t-series
         :param suite2p_path: (optional) path to suite2p outputs folder associated with this t-series (plane0 file? or ops file? not sure yet)
         :param make_downsampled_tiff: flag to run generation and saving of downsampled tiff of t-series (saves to the analysis save location)
@@ -71,14 +75,11 @@ class TwoPhotonImaging:
 
         print('\n***** CREATING NEW TwoPhotonImaging with the following metainfo: ', metainfo)
 
-        self.tiff_path = tiff_path if os.path.exists(tiff_path) else FileNotFoundError("tiff_path was not found")
-        self.paq_path = paq_path if os.path.exists(paq_path) else FileNotFoundError("paq_path was not found")
-        self.suite2p_path = suite2p_path if os.path.exists(suite2p_path) else FileNotFoundError("suite2p_path was not found")
-        if 'date' in metainfo.keys() and 'trial' in metainfo.keys() and 'animal prep.' in metainfo.keys() and 't series id' in metainfo.keys():
-            self.metainfo = metainfo
-        else:
-            raise ValueError("Metainfo argument must contain the minimum fields: 'date', 'trial', 'animal prep.' and 't series id'")
-
+        self.tiff_path = tiff_path if _check_path_exists('tiff_path', tiff_path) else None
+        if paq_path: self.paq_path = paq_path if _check_path_exists('paq_path', paq_path) else None
+        if suite2p_path: self.suite2p_path = suite2p_path if _check_path_exists('suite2p_path', suite2p_path) else None
+        if 'date' in metainfo.keys() and 'trial' in metainfo.keys() and 'animal prep.' in metainfo.keys() and 't series id' in metainfo.keys(): self.metainfo = metainfo
+        else: raise ValueError("Metainfo argument must contain the minimum fields: 'date', 'trial', 'animal prep.' and 't series id'")
 
         # set and create analysis save path directory
         if not os.path.exists(analysis_save_path):
@@ -99,9 +100,12 @@ class TwoPhotonImaging:
 
         self._parsePVMetadata() if 'Bruker' in microscope else Warning(
             f'retrieving data-collection metainformation from {microscope} microscope has not been implemented yet')
+
+        # set s2p batch size
+        self.__s2p_batch_size = 2000 * (262144 / self.frame_x * self.frame_y)  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
         self.s2pProcessing(s2p_path=self.suite2p_path,
-                           s2p_batch_size=2000) if self.suite2p_path else None  ## TODO set option for providing input for s2p_batch_size
-        self.paqProcessing(paq_path=self.paq_path) if self.paq_path else None
+                           s2p_batch_size=2000) if hasattr(self, 'suite2p_path') else None  ## TODO set option for providing input for s2p_batch_size
+        TwoPhotonImaging.paqProcessing(self, paq_path=self.paq_path) if hasattr(self, 'paq_path') else None
 
         if make_downsampled_tiff:
             stack = self.mean_raw_flu_trace(save_pkl=True)
@@ -169,12 +173,12 @@ class TwoPhotonImaging:
 
     @property
     def s2p_batch_size(self):
-        return 2000 * (
-                    262144 / self.frame_x * self.frame_y)  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
+        # return 2000 * (262144 / self.frame_x * self.frame_y)  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
+        return self.__s2p_batch_size
 
     @s2p_batch_size.setter
     def s2p_batch_size(self, value):
-        self.s2p_batch_size = value
+        self.__s2p_batch_size = value
 
     def s2pRun(self, ops, db, user_batch_size):
 
@@ -783,7 +787,7 @@ class WideFieldImaging:
 class AllOptical(TwoPhotonImaging):
     """This class provides methods for All Optical experiments"""
 
-    def __init__(self, tiff_path: str, paq_path: str, naparm_path: str, analysis_save_path: str, metainfo: dict,
+    def __init__(self, microscope: str, tiff_path: str, paq_path: str, naparm_path: str, analysis_save_path: str, metainfo: dict,
                  suite2p_path:str = None, **kwargs):
 
         """
@@ -804,21 +808,19 @@ class AllOptical(TwoPhotonImaging):
 
         print('\n***** CREATING NEW TwoPhotonImaging.AllOptical data object')
 
-        self.__naparm_path = naparm_path if os.path.exists(naparm_path) else FileNotFoundError("naparm_path was not found")
+        if naparm_path: self.__naparm_path = naparm_path if _check_path_exists("naparm_path", naparm_path) else None
+        else: raise ValueError("Must provide naparm_path argument")
 
-        TwoPhotonImaging.__init__(self, tiff_path=tiff_path, paq_path=paq_path,
+        TwoPhotonImaging.__init__(self, tiff_path=tiff_path, paq_path=paq_path, microscope='Bruker',
                                   metainfo=metainfo, analysis_save_path=analysis_save_path,
-                                  suite2p_path=None)
+                                  suite2p_path=suite2p_path)
 
         # set photostim analysis time windows
-        self.__pre_stim = kwargs['pre_stim'] if kwargs['pre_stim'] else 1.0
-        self.__post_stim = kwargs['post_stim'] if kwargs['post_stim'] else 3.0
-        self.__pre_stim_response_window = kwargs['pre_stim_response_window'] if kwargs['pre_stim_response_window'] else 0.500
-        self.__post_stim_response_window = kwargs['post_stim_response_window'] if kwargs['post_stim_response_window'] else 0.500
-
-
-        self._set_photostim_windows(pre_stim, post_stim, pre_stim_response_window, post_stim_response_window)
-
+        self.__pre_stim = kwargs['pre_stim'] if 'pre_stim' in kwargs.keys() else 1.0
+        self.__post_stim = kwargs['post_stim'] if 'post_stim' in kwargs.keys() else 3.0
+        self.__pre_stim_response_window = kwargs['pre_stim_response_window'] if 'pre_stim_response_window' in kwargs.keys() else 0.500
+        self.__post_stim_response_window = kwargs['post_stim_response_window'] if 'post_stim_response_window' in kwargs.keys() else 0.500
+        # self._set_photostim_windows(pre_stim, post_stim, pre_stim_response_window, post_stim_response_window)  -- delete line
 
         # running photostimulation experiment processing
         self.stimProcessing(stim_channel='markpoints2packio')
