@@ -708,7 +708,7 @@ class TwoPhotonImaging:
 
         return mean_img
 
-    def save_pkl(self, pkl_path: str = None):
+    def save_pkl(self):
         ## commented out after setting pkl_path as a @property
         # if pkl_path is None:
         #     if hasattr(self, 'pkl_path'):
@@ -721,7 +721,7 @@ class TwoPhotonImaging:
 
         with open(self.pkl_path, 'wb') as f:
             pickle.dump(self, f)
-        print("\n\t -- data object saved to %s -- " % pkl_path)
+        print("\n\t -- data object saved to %s -- " % self.pkl_path)
 
     def save(self):
         self.save_pkl()
