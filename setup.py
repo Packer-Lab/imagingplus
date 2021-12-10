@@ -18,7 +18,8 @@ setup(
         'matplotlib',
         'pandas',
         'scipy',
-        'statsmodels'
+        'statsmodels',
+        'scikit-image'
     ],
     zip_safe=False
 )

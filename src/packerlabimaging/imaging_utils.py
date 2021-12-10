@@ -1,5 +1,7 @@
 ### DRAFT SCRIPT FOR FUNCS
 
+### TODO consider creating an independent submodule for suite2p_data, and image_processing
+
 """
 This is the main collection of functions for processing and analysis of calcium imaging data in the Packer lab.
 
@@ -17,8 +19,7 @@ import os
 import sys
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from packerlabimaging.utils_funcs import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, \
-    s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff, paq_read
+from packerlabimaging.utils_funcs import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff, paq_read
 
 from matplotlib.colors import ColorConverter
 import scipy.stats as stats
@@ -34,7 +35,6 @@ import tifffile as tf
 from packerlabimaging import plotting_utils as plotting
 import pickle
 
-
 ###### UTILITIES
 
 # dictionary of terms, phrases, etc. that are used in the processing and analysis of imaging data
@@ -42,6 +42,7 @@ terms_dictionary = {
     'dFF': "normalization of datatrace for a given imaging ROI by subtraction and division of a given baseline value",
     'ROI': "a single ROI from the imaging data"
 }
+
 
 def define_term(x):
     try:
@@ -56,26 +57,28 @@ class TwoPhotonImaging:
     """Just two photon imaging related functions - currently set up for data collected from Bruker microscopes and
     suite2p processed Ca2+ imaging data """
 
-    def __init__(self, microscope: str, tiff_path: str, exp_metainfo: dict, analysis_save_dir: str,
+    def __init__(self, tiff_path: str, metainfo: dict, analysis_save_dir: str, microscope: str = 'Bruker',
                  paq_path: str = None, suite2p_path: str = None, make_downsampled_tiff: bool = False):
         """
-        :param microscope: name of microscope used to record imaging (options: "Bruker", "Scientifica", "other")
         :param tiff_path: path to t-series .tiff
-        :param exp_metainfo: dictionary containing any metainfo information field needed for this experiment. At minimum it needs to include prep #, t-series # and date of data collection.
+        :param metainfo: dictionary containing any metainfo information field needed for this experiment. At minimum it needs to include prep #, t-series # and date of data collection.
         :param analysis_save_dir: path of where to save the experiment analysis object
+        :param microscope: name of microscope used to record imaging (options: "Bruker" (default), "Scientifica", "other")
         :param paq_path: (optional) path to .paq file associated with current t-series
         :param suite2p_path: (optional) path to suite2p outputs folder associated with this t-series (plane0 file? or ops file? not sure yet)
         :param make_downsampled_tiff: flag to run generation and saving of downsampled tiff of t-series (saves to the analysis save location)
         """
 
-        print('\n***** CREATING NEW TwoPhotonImaging with the following exp_metainfo: ', exp_metainfo)
+        print('\n***** CREATING NEW TwoPhotonImaging with the following metainfo: ', metainfo)
 
-        self.tiff_path = tiff_path
-        self.paq_path = paq_path if paq_path else None
-        self.metainfo = exp_metainfo
-        self.suite2p_path = suite2p_path if suite2p_path else None
+        self.tiff_path = tiff_path if os.path.exists(tiff_path) else FileNotFoundError("tiff_path was not found")
+        self.paq_path = paq_path if os.path.exists(paq_path) else FileNotFoundError("paq_path was not found")
+        self.suite2p_path = suite2p_path if os.path.exists(suite2p_path) else FileNotFoundError("suite2p_path was not found")
+        if 'date' in metainfo.keys() and 'trial' in metainfo.keys() and 'animal prep.' in metainfo.keys() and 't series id' in metainfo.keys():
+            self.metainfo = metainfo
+        else:
+            raise ValueError("Metainfo argument must contain the minimum fields: 'date', 'trial', 'animal prep.' and 't series id'")
 
-        ## TODO add checking path exists for all input paths
 
         # set and create analysis save path directory
         if not os.path.exists(analysis_save_dir):
@@ -85,14 +88,16 @@ class TwoPhotonImaging:
 
         self.save_pkl(pkl_path=self.pkl_path)  # save experiment object to pkl_path
 
-        self._parsePVMetadata() if 'Bruker' in microscope else Warning(f'retrieving data-collection metainformation from {microscope} has not been implemented yet')
-        self.s2pProcessing(s2p_path=self.suite2p_path, s2p_batch_size=2000) if self.suite2p_path else None  ## TODO set option for providing input for s2p_batch_size
+        self._parsePVMetadata() if 'Bruker' in microscope else Warning(
+            f'retrieving data-collection metainformation from {microscope} microscope has not been implemented yet')
+        self.s2pProcessing(s2p_path=self.suite2p_path,
+                           s2p_batch_size=2000) if self.suite2p_path else None  ## TODO set option for providing input for s2p_batch_size
         self.paqProcessing(paq_path=self.paq_path) if self.paq_path else None
 
         if make_downsampled_tiff:
             stack = self.mean_raw_flu_trace(save_pkl=True)
             SaveDownsampledTiff(stack=stack,
-                                save_as=f"{self.analysis_save_dir}/{exp_metainfo['date']}_{exp_metainfo['trial']}_downsampled.tif")
+                                save_as=f"{self.analysis_save_dir}/{metainfo['date']}_{metainfo['trial']}_downsampled.tif")
 
         self.save()
 
@@ -124,7 +129,7 @@ class TwoPhotonImaging:
 
     @property
     def prep(self):
-        return self.metainfo['animal prep']
+        return self.metainfo['animal prep.']
 
     @property
     def trial(self):
@@ -141,7 +146,8 @@ class TwoPhotonImaging:
 
     @property
     def tiff_path_dir(self):
-        return self.tiff_path[:[(s.start(), s.end()) for s in re.finditer('/', self.tiff_path)][-1][0]]  # this is the directory where the Bruker xml files associated with the 2p imaging TIFF are located
+        return self.tiff_path[:[(s.start(), s.end()) for s in re.finditer('/', self.tiff_path)][-1][
+            0]]  # this is the directory where the Bruker xml files associated with the 2p imaging TIFF are located
 
     @property
     def pkl_path(self):
@@ -154,7 +160,8 @@ class TwoPhotonImaging:
 
     @property
     def s2p_batch_size(self):
-        return 2000 * (262144 / self.frame_x * self.frame_y)  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
+        return 2000 * (
+                    262144 / self.frame_x * self.frame_y)  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
 
     @s2p_batch_size.setter
     def s2p_batch_size(self, value):
@@ -169,7 +176,8 @@ class TwoPhotonImaging:
         diameter_x = 13 / self.pix_sz_x
         diameter_y = 13 / self.pix_sz_y
         diameter = int(diameter_x), int(diameter_y)
-        batch_size = user_batch_size * (262144 / num_pixels)  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
+        batch_size = user_batch_size * (
+                    262144 / num_pixels)  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
 
         if not db:
             db = {
@@ -231,7 +239,7 @@ class TwoPhotonImaging:
 
     def _parsePVMetadata(self):
 
-        print('\n-----parsing PV Metadata')
+        print('\n-----parsing PV Metadata for Bruker microscope')
 
         tiff_path = self.tiff_path_dir
         path = []
@@ -314,7 +322,8 @@ class TwoPhotonImaging:
               '\nscan centre (V):', scan_x, scan_y
               )
 
-    def s2pProcessing(self, s2p_path: str, s2p_batch_size: int, subtract_neuropil: bool = True, subset_frames: tuple = None,
+    def s2pProcessing(self, s2p_path: str, s2p_batch_size: int, subtract_neuropil: bool = True,
+                      subset_frames: tuple = None,
                       save: bool = True):
         """processing of suite2p data from the current t-series
         :param s2p_path: path to the directory containing suite2p outputs
@@ -587,7 +596,7 @@ class TwoPhotonImaging:
         self.save() if save else None
 
         plotting.plotMeanRawFluTrace(expobj=self, stim_span_color=None, x_axis='frames', figsize=[20, 3],
-                                   title='Mean raw Flu trace -') if plot else None
+                                     title='Mean raw Flu trace -') if plot else None
 
         return im_stack
 
@@ -604,7 +613,8 @@ class TwoPhotonImaging:
         plt.show()
         return stack
 
-    def stitch_reg_tiffs(self, first_frame: int, last_frame: int,  reg_tif_folder: str = None, force_crop: bool = False, s2p_run_batch: int = 2000):
+    def stitch_reg_tiffs(self, first_frame: int, last_frame: int, reg_tif_folder: str = None, force_crop: bool = False,
+                         s2p_run_batch: int = 2000):
         """
         Stitches together registered tiffs outputs from suite2p from the provided imaging frame start and end values.
 
@@ -648,7 +658,8 @@ class TwoPhotonImaging:
                     print('cropping registered tiff')
                     data = input_tif.asarray()
                     print('shape of stitched tiff: ', data.shape)
-                reg_tif_crop = data[frame_range[0] - start * s2p_run_batch: frame_range[1] - (frame_range[0] - start * s2p_run_batch)]
+                reg_tif_crop = data[frame_range[0] - start * s2p_run_batch: frame_range[1] - (
+                            frame_range[0] - start * s2p_run_batch)]
                 print('saving cropped tiff ', reg_tif_crop.shape)
                 tif.save(reg_tif_crop)
 
@@ -760,45 +771,33 @@ class WideFieldImaging:
         self.save_pkl()
 
 
-class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PRAJAY'S PERSONAL CODE... should replace alot of these functions from Rob (more update to date for most)
+class AllOptical(TwoPhotonImaging):
     """This class provides methods for All Optical experiments"""
 
-    def __init__(self, paths, metainfo, quick=False):
-        # self.metainfo = metainfo
-        self.slmtargets_szboundary_stim = None
-        self.naparm_path = paths[2]
-        self.paq_path = paths[3]
+    def __init__(self, tiff_path: str, paq_path: str, naparm_path: str, analysis_save_dir: str, metainfo: dict,
+                 suite2p_path:str = None, **kwargs):
+        print('\n***** CREATING NEW TwoPhotonImaging.AllOptical data object')
 
-        assert os.path.exists(self.naparm_path)
-        assert os.path.exists(self.paq_path)
+        self.naparm_path = naparm_path if os.path.exists(naparm_path) else FileNotFoundError("naparm_path was not found")
 
-        # self.seizure_frames = []
+        TwoPhotonImaging.__init__(self, tiff_path=tiff_path, paq_path=paq_path,
+                                  metainfo=metainfo, analysis_save_dir=analysis_save_dir,
+                                  suite2p_path=None)
 
-        TwoPhotonImaging.__init__(self, tiff_path_dir=paths[0], tiff_path=paths[1], paq_path=paths[3],
-                                  metainfo=metainfo, pkl_path=paths[4],
-                                  suite2p_path=None, suite2p_run=False, quick=quick)
+        # set photostim analysis time windows
+        self.__pre_stim = kwargs['pre_stim'] if kwargs['pre_stim'] else self.__pre_stim = 1.0
+        self.__post_stim = kwargs['post_stim'] if kwargs['post_stim'] else self.__post_stim = 3.0
+        self.__pre_stim_response_window = kwargs['pre_stim_response_window'] if kwargs['pre_stim_response_window'] else self.__pre_stim_response_window = 0.500
+        self.__post_stim_response_window = kwargs['post_stim_response_window'] if kwargs['post_stim_response_window'] else self.__post_stim_response_window = 0.500
 
-        # self.tiff_path_dir = paths[0]
-        # self.tiff_path = paths[1]
 
-        # self._parsePVMetadata()
+        self._set_photostim_windows(pre_stim, post_stim, pre_stim_response_window, post_stim_response_window)
 
-        ## CREATE THE APPROPRIATE ANALYSIS SUBFOLDER TO USE FOR SAVING ANALYSIS RESULTS TO
 
-        print('\ninitialized alloptical expobj of exptype and trial: \n', self.metainfo)
-
+        # running photostimulation experiment processing
         self.stimProcessing(stim_channel='markpoints2packio')
         self._findTargetsAreas()
         self.find_photostim_frames()
-
-        self.pre_stim = int(1.0 * self.fps)  # length of pre stim trace collected (in frames)
-        self.post_stim = int(3.0 * self.fps)  # length of post stim trace collected (in frames)
-        self.pre_stim_response_window_msec = 500  # msec
-        self.pre_stim_response_frames_window = int(
-            self.fps * self.pre_stim_response_window_msec / 1000)  # length of the pre stim response test window (in frames)
-        self.post_stim_response_window_msec = 500  # msec
-        self.post_stim_response_frames_window = int(
-            self.fps * self.post_stim_response_window_msec / 1000)  # length of the post stim response test window (in frames)
 
         #### initializing data processing, data analysis and/or results associated attr's
 
@@ -838,6 +837,66 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
             information = self.t_series_name
 
         return repr(f"({information}) TwoPhotonImaging.alloptical experimental data object, last saved: {lastmod}")
+
+    @property
+    def pre_stim(self):
+        """setting time window for collecting Flu trace before each photostimulation trial"""
+        return self.__pre_stim
+
+    @pre_stim.setter
+    def pre_stim(self, value):
+        self.__pre_stim = value
+
+    @property
+    def post_stim(self):
+        """setting time window for collecting Flu trace after each photostimulation trial"""
+        return self.__post_stim
+
+    @post_stim.setter
+    def post_stim(self, value):
+        self.__post_stim = value
+
+    @property
+    def pre_stim_response_window(self):
+        """setting time window for measuring Flu trace before each photostimulation trial"""
+        return self.__pre_stim_response_window
+
+    @pre_stim_response_window.setter
+    def pre_stim_response_window(self, value):
+        self.__pre_stim_response_window = value
+
+    @property
+    def post_stim_response_window(self):
+        """setting time window for measuring Flu trace after each photostimulation trial"""
+        return self.__post_stim_response_window
+
+    @post_stim_response_window.setter
+    def post_stim_response_window(self, value):
+        self.__post_stim_response_window = value
+
+
+    # def _set_photostim_windows(self, pre_stim: float = 1.0, post_stim: float = 3.0, pre_stim_response_window: float = 0.500,
+    #                           post_stim_response_window: float = 0.500):
+    #     """setting time/frame windows for collecting and measuring photostimulation driven responses
+    #
+    #     :param pre_stim: time (secs) duration of pre-stim frames for collecting trace snippets
+    #     :param post_stim: time (secs) duration of post-stim frames for collecting trace snippets
+    #     :param pre_stim_response_window: time
+    #     """
+    #
+    #     self.pre_stim = int(pre_stim * self.fps)  # length of pre stim trace collected (in frames)
+    #     self.post_stim = int(post_stim * self.fps)  # length of post stim trace collected (in frames)
+    #     self.pre_stim_response_window = pre_stim_response_window  # msec
+    #     self.post_stim_response_window = post_stim_response_window  # msec
+
+    @property
+    def pre_stim_response_frames_window(self):
+        return int(self.fps * self.pre_stim_response_window)  # length of the pre stim response test window (in frames)
+
+    @property
+    def post_stim_response_frames_window(self):
+        return int(self.fps * self.post_stim_response_frames_window)  # length of the post stim response test window (in frames)
+
 
     def _parseNAPARMxml(self):
 
@@ -999,7 +1058,8 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
             # # sanity check
             # assert max(self.stim_start_frames[0]) < self.raw[plane].shape[1] * self.n_planes
 
-    def photostimProcessing(self):  ## TODO need to figure out how to handle different types of photostimulation experiment setups
+    def photostimProcessing(
+            self):  ## TODO need to figure out how to handle different types of photostimulation experiment setups
 
         """
         remember that this is currently configured for only the interleaved photostim, not the really fast photostim of multi-groups
@@ -1064,7 +1124,8 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
         if not os.path.exists(reg_tif_folder):
             raise Exception(f"no registered tiffs found at path: {reg_tif_folder}")
 
-        print(f'\n\ncollecting raw Flu traces from SLM target coord. areas from registered TIFFs from: {reg_tif_folder}')
+        print(
+            f'\n\ncollecting raw Flu traces from SLM target coord. areas from registered TIFFs from: {reg_tif_folder}')
         # read in registered tiff
         reg_tif_list = os.listdir(reg_tif_folder)
         reg_tif_list.sort()
@@ -1103,7 +1164,6 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
         self.meanFluImg_registered = np.mean(mean_img_stack, axis=0)
 
         self.save() if save else None
-
 
     def cellStaProcessing(self, test='t_test'):
 
@@ -1280,7 +1340,6 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
 
             self.single_sig.append(single_sigs)
 
-
     ### KEY FUNCTIONS TO REVIEW WITH ROB FOR ALLOPTICAL WORKFLOW
 
     def get_alltargets_stim_traces_norm(self, process: str, targets_idx: int = None, subselect_cells: list = None,
@@ -1418,7 +1477,6 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
             print(f"shape of targets_dff_avg: {targets_dff_avg.shape}")
             return targets_dff, targets_dff_avg, targets_dfstdF, targets_dfstdF_avg, targets_raw, targets_raw_avg
 
-
     def _findTargetsAreas(self):
 
         '''
@@ -1466,7 +1524,6 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
         # del target_image_slm_1
         # target_image_scaled_2 = target_image_slm_2;
         # del target_image_slm_2
-
 
         # if frame_x < 1024 or frame_y < 1024:
         #     pass
@@ -2014,7 +2071,6 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
     #     print('# of good cells found: %s (out of %s ROIs)' % (len(good_cells), len(self.cell_id)))
     #     return good_cells
 
-
     # calculate reliability of photostim responsiveness of all of the targeted cells (found in s2p output)
     def get_SLMTarget_responses_dff(self, process: str, threshold=10, stims_to_use: list = None):
         """
@@ -2403,7 +2459,7 @@ class AllOptical(TwoPhotonImaging):  # NOT REVIEWED SO FAR - JUST COPIED FROM PR
                                               save=False)
 
         # create parameters, slices, and subsets for making pre-stim and post-stim arrays to use in stats comparison
-        # test_period = expobj.pre_stim_response_window_msec / 1000  # sec
+        # test_period = expobj.pre_stim_response_window / 1000  # sec
         # expobj.test_frames = int(expobj.fps * test_period)  # test period for stats
         expobj.pre_stim_frames_test = np.s_[expobj.pre_stim - expobj.pre_stim_response_frames_window: expobj.pre_stim]
         stim_end = expobj.pre_stim + expobj.stim_duration_frames
