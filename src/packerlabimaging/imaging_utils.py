@@ -811,10 +811,10 @@ class AllOptical(TwoPhotonImaging):
                                   suite2p_path=None)
 
         # set photostim analysis time windows
-        self.__pre_stim = kwargs['pre_stim'] if kwargs['pre_stim'] else self.__pre_stim = 1.0
-        self.__post_stim = kwargs['post_stim'] if kwargs['post_stim'] else self.__post_stim = 3.0
-        self.__pre_stim_response_window = kwargs['pre_stim_response_window'] if kwargs['pre_stim_response_window'] else self.__pre_stim_response_window = 0.500
-        self.__post_stim_response_window = kwargs['post_stim_response_window'] if kwargs['post_stim_response_window'] else self.__post_stim_response_window = 0.500
+        self.__pre_stim = kwargs['pre_stim'] if kwargs['pre_stim'] else 1.0
+        self.__post_stim = kwargs['post_stim'] if kwargs['post_stim'] else 3.0
+        self.__pre_stim_response_window = kwargs['pre_stim_response_window'] if kwargs['pre_stim_response_window'] else 0.500
+        self.__post_stim_response_window = kwargs['post_stim_response_window'] if kwargs['post_stim_response_window'] else 0.500
 
 
         self._set_photostim_windows(pre_stim, post_stim, pre_stim_response_window, post_stim_response_window)
