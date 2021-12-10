@@ -708,7 +708,7 @@ class TwoPhotonImaging:
 
         return mean_img
 
-    def save_pkl(self):
+    def save_pkl(self, pkl_path: str = None):
         ## commented out after setting pkl_path as a @property
         # if pkl_path is None:
         #     if hasattr(self, 'pkl_path'):
@@ -718,6 +718,9 @@ class TwoPhotonImaging:
         #             'pkl path for saving was not found in data object attributes, please provide pkl_path to save to')
         # else:
         #     self.pkl_path = pkl_path
+        if pkl_path:
+            print(f'saving new pkl object at: {pkl_path}')
+            self.pkl_path = pkl_path
 
         with open(self.pkl_path, 'wb') as f:
             pickle.dump(self, f)
@@ -998,7 +1001,7 @@ class AllOptical(TwoPhotonImaging):
         self.spiral_size = np.ceil(spiral_size)
         # self.single_stim_dur = single_stim_dur  # not sure why this was previously getting this value from here, but I'm now getting it from the xml file above
 
-    def paqProcessing(self, **kwargs):
+    def paqProcessing(self, plot: bool = True, **kwargs):
 
         print('\n-----processing paq file...')
 
@@ -1014,12 +1017,13 @@ class AllOptical(TwoPhotonImaging):
 
         frame_clock = threshold_detect(clock_voltage, 1)
         self.frame_clock = frame_clock
-        plt.figure(figsize=(10, 5))
-        plt.plot(clock_voltage)
-        plt.plot(frame_clock, np.ones(len(frame_clock)), '.')
-        plt.suptitle('frame clock from paq, with detected frame clock instances as scatter')
-        sns.despine()
-        plt.show()
+        if plot:
+            plt.figure(figsize=(10, 5))
+            plt.plot(clock_voltage)
+            plt.plot(frame_clock, np.ones(len(frame_clock)), '.')
+            plt.suptitle('frame clock from paq, with detected frame clock instances as scatter')
+            sns.despine()
+            plt.show()
 
         # find start and stop frame_clock times -- there might be multiple 2p imaging starts/stops in the paq trial (hence multiple frame start and end times)
         self.frame_start_times = [self.frame_clock[0]]  # initialize ls
@@ -1067,12 +1071,13 @@ class AllOptical(TwoPhotonImaging):
         duration_frames = np.ceil((duration_ms / 1000) * frame_rate)
         self.stim_duration_frames = int(duration_frames)
 
-        plt.figure(figsize=(10, 5))
-        plt.plot(stim_volts)
-        plt.plot(stim_times, np.ones(len(stim_times)), '.')
-        plt.suptitle('stim times')
-        sns.despine()
-        plt.show()
+        if plot:
+            plt.figure(figsize=(10, 5))
+            plt.plot(stim_volts)
+            plt.plot(stim_times, np.ones(len(stim_times)), '.')
+            plt.suptitle('stim times')
+            sns.despine()
+            plt.show()
 
         # find stim frames
 
@@ -1089,10 +1094,6 @@ class AllOptical(TwoPhotonImaging):
                 stim_start_frames.append(stim_start_frame)
 
             self.stim_start_frames = stim_start_frames
-            # self.stim_start_frames.append(np.array(stim_start_frames))  # recoded with slight improvement
-
-            # # sanity check
-            # assert max(self.stim_start_frames[0]) < self.raw[plane].shape[1] * self.n_planes
 
     def photostimProcessing(self):  ## TODO need to figure out how to handle different types of photostimulation experiment setups
 
@@ -1123,7 +1124,7 @@ class AllOptical(TwoPhotonImaging):
         print('Single stim. Duration (ms): ', self.single_stim_dur)
         print('Total stim. Duration per trial (ms): ', self.stim_dur)
 
-        self.paqProcessing()
+        self.paqProcessing(plot=False)
 
     def stimProcessing(self, stim_channel):
         self.stim_channel = stim_channel
