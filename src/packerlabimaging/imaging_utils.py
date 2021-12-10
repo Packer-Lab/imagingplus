@@ -57,12 +57,12 @@ class TwoPhotonImaging:
     """Just two photon imaging related functions - currently set up for data collected from Bruker microscopes and
     suite2p processed Ca2+ imaging data """
 
-    def __init__(self, tiff_path: str, metainfo: dict, analysis_save_dir: str, microscope: str = 'Bruker',
+    def __init__(self, tiff_path: str, metainfo: dict, analysis_save_path: str, microscope: str = 'Bruker',
                  paq_path: str = None, suite2p_path: str = None, make_downsampled_tiff: bool = False):
         """
         :param tiff_path: path to t-series .tiff
         :param metainfo: dictionary containing any metainfo information field needed for this experiment. At minimum it needs to include prep #, t-series # and date of data collection.
-        :param analysis_save_dir: path of where to save the experiment analysis object
+        :param analysis_save_path: path of where to save the experiment analysis object
         :param microscope: name of microscope used to record imaging (options: "Bruker" (default), "Scientifica", "other")
         :param paq_path: (optional) path to .paq file associated with current t-series
         :param suite2p_path: (optional) path to suite2p outputs folder associated with this t-series (plane0 file? or ops file? not sure yet)
@@ -81,10 +81,19 @@ class TwoPhotonImaging:
 
 
         # set and create analysis save path directory
-        if not os.path.exists(analysis_save_dir):
-            print('making analysis save folder at: \n  %s' % analysis_save_dir)
-            os.makedirs(analysis_save_dir)
-        self.analysis_save_dir = analysis_save_dir
+        if not os.path.exists(analysis_save_path):
+            print('making analysis save folder at: \n  %s' % analysis_save_path)
+            os.makedirs(analysis_save_path)
+        if analysis_save_path[-4:] == '.pkl':
+            self.__pkl_path = analysis_save_path
+            self.analysis_save_dir = self.analysis_save_path[:[(s.start(), s.end()) for s in re.finditer('/', self.analysis_save_path)][-1][0]]  # this is the directory where the Bruker xml files associated with the 2p imaging TIFF are located
+        elif analysis_save_path[-1] == '/':
+            self.analysis_save_dir = analysis_save_path
+            self.__pkl_path = f"{self.analysis_save_dir}{self.metainfo['date']}_{self.metainfo['trial']}.pkl"
+        else:
+            self.analysis_save_dir = analysis_save_path + '/'
+            self.__pkl_path = f"{self.analysis_save_dir}{self.metainfo['date']}_{self.metainfo['trial']}.pkl"
+
 
         self.save_pkl(pkl_path=self.pkl_path)  # save experiment object to pkl_path
 
@@ -146,17 +155,17 @@ class TwoPhotonImaging:
 
     @property
     def tiff_path_dir(self):
-        return self.tiff_path[:[(s.start(), s.end()) for s in re.finditer('/', self.tiff_path)][-1][
-            0]]  # this is the directory where the Bruker xml files associated with the 2p imaging TIFF are located
+        return self.tiff_path[:[(s.start(), s.end()) for s in re.finditer('/', self.tiff_path)][-1][0]]  # this is the directory where the Bruker xml files associated with the 2p imaging TIFF are located
 
     @property
     def pkl_path(self):
         "path in Analysis folder to save pkl object"
-        return f"{self.analysis_save_dir}{self.metainfo['date']}_{self.metainfo['trial']}.pkl"
+        # return f"{self.analysis_save_dir}{self.metainfo['date']}_{self.metainfo['trial']}.pkl"
+        return self.__pkl_path
 
     @pkl_path.setter
     def pkl_path(self, path: str):
-        self.pkl_path = path
+        self.__pkl_path = path
 
     @property
     def s2p_batch_size(self):
@@ -774,14 +783,31 @@ class WideFieldImaging:
 class AllOptical(TwoPhotonImaging):
     """This class provides methods for All Optical experiments"""
 
-    def __init__(self, tiff_path: str, paq_path: str, naparm_path: str, analysis_save_dir: str, metainfo: dict,
+    def __init__(self, tiff_path: str, paq_path: str, naparm_path: str, analysis_save_path: str, metainfo: dict,
                  suite2p_path:str = None, **kwargs):
+
+        """
+        :param tiff_path: path to t-series .tiff
+        :param paq_path: path to .paq file associated with current t-series
+        :param naparm_path: path to folder containing photostimulation setup built by NAPARM
+        :param analysis_save_path: path of where to save the experiment analysis object
+        :param metainfo: dictionary containing any metainfo information field needed for this experiment. At minimum it needs to include prep #, t-series # and date of data collection.
+        :param microscope: name of microscope used to record imaging (options: "Bruker" (default), "Scientifica", "other")
+        :param suite2p_path: (optional) path to suite2p outputs folder associated with this t-series (plane0 file? or ops file? not sure yet)
+        :param make_downsampled_tiff: flag to run generation and saving of downsampled tiff of t-series (saves to the analysis save location)
+        :kwargs (optional):
+            pre_stim
+            post_stim
+            pre_stim_response_window
+            post_stim_response_window
+        """
+
         print('\n***** CREATING NEW TwoPhotonImaging.AllOptical data object')
 
-        self.naparm_path = naparm_path if os.path.exists(naparm_path) else FileNotFoundError("naparm_path was not found")
+        self.__naparm_path = naparm_path if os.path.exists(naparm_path) else FileNotFoundError("naparm_path was not found")
 
         TwoPhotonImaging.__init__(self, tiff_path=tiff_path, paq_path=paq_path,
-                                  metainfo=metainfo, analysis_save_dir=analysis_save_dir,
+                                  metainfo=metainfo, analysis_save_path=analysis_save_path,
                                   suite2p_path=None)
 
         # set photostim analysis time windows
@@ -837,6 +863,14 @@ class AllOptical(TwoPhotonImaging):
             information = self.t_series_name
 
         return repr(f"({information}) TwoPhotonImaging.alloptical experimental data object, last saved: {lastmod}")
+
+    @property
+    def naparm_path(self):
+        """setting location of naparm files that specify the photostimulation experiment setup"""
+        if self.__naparm_path[-1] == '/':
+            return self.__naparm_path
+        else:
+            return self.__naparm_path + '/'
 
     @property
     def pre_stim(self):
@@ -1058,8 +1092,7 @@ class AllOptical(TwoPhotonImaging):
             # # sanity check
             # assert max(self.stim_start_frames[0]) < self.raw[plane].shape[1] * self.n_planes
 
-    def photostimProcessing(
-            self):  ## TODO need to figure out how to handle different types of photostimulation experiment setups
+    def photostimProcessing(self):  ## TODO need to figure out how to handle different types of photostimulation experiment setups
 
         """
         remember that this is currently configured for only the interleaved photostim, not the really fast photostim of multi-groups
