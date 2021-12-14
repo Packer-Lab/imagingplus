@@ -791,7 +791,8 @@ class AllOptical(TwoPhotonImaging):
     """This class provides methods for All Optical experiments"""
 
     def __init__(self, microscope: str, tiff_path: str, paq_path: str, naparm_path: str, analysis_save_path: str, metainfo: dict,
-                 suite2p_path:str = None, **kwargs):
+                 suite2p_path:str = None, pre_stim: float = 1.0, post_stim: float = 3.0, pre_stim_response_window: float = 0.500,
+                 post_stim_response_window: float = 0.500):
 
         """
         :param tiff_path: path to t-series .tiff
@@ -802,11 +803,11 @@ class AllOptical(TwoPhotonImaging):
         :param microscope: name of microscope used to record imaging (options: "Bruker" (default), "Scientifica", "other")
         :param suite2p_path: (optional) path to suite2p outputs folder associated with this t-series (plane0 file? or ops file? not sure yet)
         :param make_downsampled_tiff: flag to run generation and saving of downsampled tiff of t-series (saves to the analysis save location)
+        :param pre_stim:
+        :param post_stim:
+        :param pre_stim_response_window:
+        :param post_stim_response_window:
         :kwargs (optional):
-            pre_stim
-            post_stim
-            pre_stim_response_window
-            post_stim_response_window
         """
 
         print('\n***** CREATING NEW TwoPhotonImaging.AllOptical data object')
@@ -819,10 +820,10 @@ class AllOptical(TwoPhotonImaging):
                                   suite2p_path=suite2p_path)
 
         # set photostim analysis time windows
-        self.__pre_stim = kwargs['pre_stim'] if 'pre_stim' in kwargs.keys() else 1.0
-        self.__post_stim = kwargs['post_stim'] if 'post_stim' in kwargs.keys() else 3.0
-        self.__pre_stim_response_window = kwargs['pre_stim_response_window'] if 'pre_stim_response_window' in kwargs.keys() else 0.500
-        self.__post_stim_response_window = kwargs['post_stim_response_window'] if 'post_stim_response_window' in kwargs.keys() else 0.500
+        self.__pre_stim = pre_stim
+        self.__post_stim = post_stim
+        self.__pre_stim_response_window = pre_stim_response_window
+        self.__post_stim_response_window = post_stim_response_window
         # self._set_photostim_windows(pre_stim, post_stim, pre_stim_response_window, post_stim_response_window)  -- delete line
 
         # running photostimulation experiment processing
@@ -913,21 +914,6 @@ class AllOptical(TwoPhotonImaging):
     def post_stim_response_window(self, value):
         self.__post_stim_response_window = value
 
-
-    # def _set_photostim_windows(self, pre_stim: float = 1.0, post_stim: float = 3.0, pre_stim_response_window: float = 0.500,
-    #                           post_stim_response_window: float = 0.500):
-    #     """setting time/frame windows for collecting and measuring photostimulation driven responses
-    #
-    #     :param pre_stim: time (secs) duration of pre-stim frames for collecting trace snippets
-    #     :param post_stim: time (secs) duration of post-stim frames for collecting trace snippets
-    #     :param pre_stim_response_window: time
-    #     """
-    #
-    #     self.pre_stim = int(pre_stim * self.fps)  # length of pre stim trace collected (in frames)
-    #     self.post_stim = int(post_stim * self.fps)  # length of post stim trace collected (in frames)
-    #     self.pre_stim_response_window = pre_stim_response_window  # msec
-    #     self.post_stim_response_window = post_stim_response_window  # msec
-
     @property
     def pre_stim_response_frames_window(self):
         return int(self.fps * self.pre_stim_response_window)  # length of the pre stim response test window (in frames)
@@ -935,7 +921,6 @@ class AllOptical(TwoPhotonImaging):
     @property
     def post_stim_response_frames_window(self):
         return int(self.fps * self.post_stim_response_frames_window)  # length of the post stim response test window (in frames)
-
 
     def _parseNAPARMxml(self):
 
