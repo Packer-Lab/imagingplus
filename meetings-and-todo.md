@@ -30,3 +30,6 @@ TODO:
     1) independent class for running suite2p and setting up experiment association - Rob likes the sound of this
     2) associating all related expobj inside each expobj - and then using these associations to run suite2p from the expobj
 - continue working on correcting attr's for the alloptical object
+
+Rob:
+- look through attr's for alloptical object and add to __init__ to initialize the attr's
