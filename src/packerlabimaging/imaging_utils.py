@@ -837,26 +837,18 @@ class AllOptical(TwoPhotonImaging):
         self.responses_SLMtargets = []  # dF/prestimF responses for all SLM targets for each photostim trial
         self.responses_SLMtargets_tracedFF = []  # poststim dFF - prestim dFF responses for all SLM targets for each photostim trial
 
-        # .get_alltargets_stim_traces_norm(pre_stim=expobj.pre_stim, post_stim=expobj.post_stim, stims=expobj.stim_start_frames)
-        # - various attrs. for collecting photostim timed trace snippets from raw Flu values
-        self.SLMTargets_stims_dff = []
-        self.SLMTargets_stims_dffAvg = []
-        self.SLMTargets_stims_dfstdF = []
-        self.SLMTargets_stims_dfstdF_avg = []
-        self.SLMTargets_stims_raw = []
-        self.SLMTargets_stims_rawAvg = []
-
-        self.SLMTargets_tracedFF_stims_dff = []
-        self.SLMTargets_tracedFF_stims_dffAvg = []
-        self.SLMTargets_tracedFF_stims_dfstdF = []
-        self.SLMTargets_tracedFF_stims_dfstdF_avg = []
-        self.SLMTargets_tracedFF_stims_raw = []
-        self.SLMTargets_tracedFF_stims_rawAvg = []
+        # TODO add attr's related to numpy array's and pandas dataframes for photostim trials - SLM targets
 
         ## NON PHOTOSTIM SLM TARGETS
 
+        # TODO add attr's related to numpy array's and pandas dataframes for photostim trials - non SLM suite2p ROIs
+
+
         ##
         self.save()
+
+    def __str__(self):
+        return self.__repr__()
 
     def __repr__(self):
         if self.pkl_path:
