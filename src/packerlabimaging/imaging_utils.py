@@ -19,7 +19,8 @@ import os
 import sys
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from packerlabimaging.utils_funcs import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff, paq_read
+from packerlabimaging.utils_funcs import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, \
+    s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff, paq_read, _check_path_exists
 
 from matplotlib.colors import ColorConverter
 import scipy.stats as stats
@@ -51,12 +52,321 @@ def define_term(x):
     except KeyError:
         print('input not found in dictionary')
 
-def _check_path_exists(path_arg: str, path: str):
-    assert os.path.exists(path), f"{path_arg} path not found: {path}"
-    return True
 
 
 ## CLASS DEFINITIONS
+from dataclasses import dataclass
+
+@dataclass
+class Experiment:
+    dataPath: str
+    analysisSavePath: str  # main dir where the experiment object and the trial objects will be saved to
+    microscope: str
+    animalID: str
+    trialsInformation: dict[{'trial ID': {'exp_type': None, 'tiff_path': None}}]
+    metainfo: dict
+    trialsSuite2P: list = list(trialsInformation.keys())
+    suite2pPath: str = analysisSavePath + '/suite2p/'
+    __s2p_batch_size: int = int(2000 * (262144 / self.frame_x * self.frame_y))  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
+    trials_pkl_paths: list = None
+    def __post_init__(self):
+        self.Suite2p = Suite2p(trialsSuite2P=self.trialsSuite2P, s2p_path=self.suite2pPath, s2p_batch_size = self.__s2p_batch_size, subtract_neuropil=True)
+
+    def _runExpTrialsProcessing(self):
+        for trial in self.trialsInformation:
+            if self.trialsInformation[trial]['exp_type'] == 'TwoPhotonImaging':
+                if 'tiff_path' not in trialsInformation[trial].keys() or 'paq_path' not in self.trialsInformation[trial].keys() \
+                        or 'naparm_path' not in self.trialsInformation[trial].keys():
+                    raise ValueError('TwoPhotonImaging experiment trial requires `tiff_path` field defined in .trialsInformation dictionary for each trial')
+                trial_obj = TwoPhotonImaging(tiff_path=self.trialsInformation[trial]['tiff_path'], metainfo=self.metainfo,
+                                             analysis_save_path=self.analysisSavePath, microscope = self.microscope, paq_path= None,
+                                             suite2p_path= None, make_downsampled_tiff= False)
+
+            elif self.trialsInformation[trial]['exp_type'] == 'AllOptical':
+                if 'tiff_path' not in self.trialsInformation[trial].keys() or 'paq_path' not in self.trialsInformation[trial].keys() \
+                        or 'naparm_path' not in self.trialsInformation[trial].keys():
+                    raise ValueError('AllOptical experiment trial requires `tiff_path`, `paq_path` and `naparm_path` fields defined in .trialsInformation dictionary for each alloptical trial')
+                trial_obj = AllOptical(microscope=self.microscope, tiff_path=self.trialsInformation[trial]['tiff_path'],
+                                       paq_path=self.trialsInformation[trial]['paq_path'], naparm_path=self.trialsInformation[trial]['naparm_path'],
+                                       analysis_save_path=self.analysisSavePath, metainfo=self.metainfo, suite2p_path= None,
+                                       pre_stim= 1.0, post_stim= 3.0, pre_stim_response_window = 0.500, post_stim_response_window = 0.500)
+
+
+    def _parsePVMetadata(self):
+
+        print('\n-----parsing PV Metadata for Bruker microscope')
+
+        tiff_path = self.tiff_path_dir
+        path = []
+
+        try:  # look for xml file in path, or two paths up (achieved by decreasing count in while loop)
+            count = 2
+            while count != 0 and not path:
+                count -= 1
+                for file in os.listdir(tiff_path):
+                    if file.endswith('.xml'):
+                        path = os.path.join(tiff_path, file)
+                    if file.endswith('.env'):
+                        env_path = os.path.join(tiff_path, file)
+                tiff_path = os.path.dirname(tiff_path)
+
+        except:
+            raise Exception('ERROR: Could not find or load xml for this acquisition from %s' % tiff_path)
+
+        xml_tree = ET.parse(path)  # parse xml from a path
+        root = xml_tree.getroot()  # make xml tree structure
+
+        sequence = root.find('Sequence')
+        acq_type = sequence.get('type')
+
+        if 'ZSeries' in acq_type:
+            n_planes = len(sequence.findall('Frame'))
+
+        else:
+            n_planes = 1
+
+        frame_period = float(self._getPVStateShard(path, 'framePeriod')[0])
+        fps = 1 / frame_period
+
+        frame_x = int(self._getPVStateShard(path, 'pixelsPerLine')[0])
+
+        frame_y = int(self._getPVStateShard(path, 'linesPerFrame')[0])
+
+        zoom = float(self._getPVStateShard(path, 'opticalZoom')[0])
+
+        scanVolts, _, index = self._getPVStateShard(path, 'currentScanCenter')
+        for scanVolts, index in zip(scanVolts, index):
+            if index == 'XAxis':
+                scan_x = float(scanVolts)
+            if index == 'YAxis':
+                scan_y = float(scanVolts)
+
+        pixelSize, _, index = self._getPVStateShard(path, 'micronsPerPixel')
+        for pixelSize, index in zip(pixelSize, index):
+            if index == 'XAxis':
+                pix_sz_x = float(pixelSize)
+            if index == 'YAxis':
+                pix_sz_y = float(pixelSize)
+
+        env_tree = ET.parse(env_path)
+        env_root = env_tree.getroot()
+
+        elem_list = env_root.find('TSeries')
+        # n_frames = elem_list[0].get('repetitions') # Rob would get the n_frames from env file
+        # change this to getting the last actual index from the xml file
+
+        n_frames = root.findall('Sequence/Frame')[-1].get('index')
+
+        self.fps = fps
+        self.frame_x = frame_x
+        self.frame_y = frame_y
+        self.n_planes = n_planes
+        self.pix_sz_x = pix_sz_x
+        self.pix_sz_y = pix_sz_y
+        self.scan_x = scan_x
+        self.scan_y = scan_y
+        self.zoom = zoom
+        self.n_frames = int(n_frames)
+
+        print('n planes:', n_planes,
+              '\nn frames:', int(n_frames),
+              '\nfps:', fps,
+              '\nframe size (px):', frame_x, 'x', frame_y,
+              '\nzoom:', zoom,
+              '\npixel size (um):', pix_sz_x, pix_sz_y,
+              '\nscan centre (V):', scan_x, scan_y
+              )
+
+    def save_pkl(self, pkl_path: str = None):
+        ## commented out after setting pkl_path as a @property
+        # if pkl_path is None:
+        #     if hasattr(self, 'pkl_path'):
+        #         pkl_path = self.pkl_path
+        #     else:
+        #         raise ValueError(
+        #             'pkl path for saving was not found in data object attributes, please provide pkl_path to save to')
+        # else:
+        #     self.pkl_path = pkl_path
+        if pkl_path:
+            print(f'saving new pkl object at: {pkl_path}')
+            self.pkl_path = pkl_path
+
+        with open(self.pkl_path, 'wb') as f:
+            pickle.dump(self, f)
+        print("\n\t -- data object saved to %s -- " % self.pkl_path)
+
+    def save(self):
+        self.save_pkl()
+
+
+class Suite2p:
+    """used to read in and save suite2p processed data and analysis."""
+    def __init__(self, trialsSuite2P: list['trial IDs'], s2p_path: str, s2p_batch_size: int, subtract_neuropil: bool = True, subset_frames: tuple = None,
+                 save: bool = True):
+        # set trials to run together in suite2p for Experiment
+        self.trialsSuite2P = trialsSuite2P
+        assert len(self.trialsSuite2P) > 1, "no trials found to run suite2p, option available to provide list of trial IDs in `trialsSuite2P`"
+        self.s2pRunComplete = False
+
+        if self.s2pRunComplete or s2p_path:
+            try:
+                self.s2pProcessing(s2p_path, s2p_batch_size, subtract_neuropil, subset_frames, save)  ## TODO confirm and specify values for args
+                self.s2pRunComplete = True
+            except:
+                raise ValueError(f'suite2p processed data could not be loaded from the provided `s2p_path`: {s2p_path}')
+
+
+
+
+    def s2pProcessing(self, s2p_path: str, s2p_batch_size: int, subtract_neuropil: bool = True,
+                      subset_frames: tuple = None,
+                      save: bool = True):
+        """processing of suite2p data from the current t-series
+        :param s2p_path: path to the directory containing suite2p outputs
+        :param subtract_neuropil: choose to subtract neuropil or not when loading s2p traces
+        :param subset_frames: (optional) use to specifiy loading a subset of data from the overall s2p trace
+        :param save: choose to save data object or not
+        """
+
+        if s2p_path is not None and s2p_path != self.suite2p_path:
+            assert os.path.exists(s2p_path), print('ERROR: s2p path provided was not found')
+            print(f"|- Updating suite2p path to newly provided path: {s2p_path}")
+            self.suite2p_path = s2p_path  # update s2p path if provided different path
+        self.s2p_batch_size = s2p_batch_size  ## TODO refactor
+        self.s2p_subset_frames = subset_frames
+        self.cell_id = []
+        self.n_units = []
+        self.cell_plane = []
+        self.cell_med = []
+        self.cell_x = []
+        self.cell_y = []
+        self.raw = []
+        self.mean_img = []
+        self.radius = []
+
+        if self.n_planes == 1:
+            FminusFneu, spks, self.stat, neuropil = s2p_loader(s2p_path,
+                                                               subtract_neuropil)  # s2p_loader() is in Vape/utils_func
+            ops = np.load(os.path.join(s2p_path, 'ops.npy'), allow_pickle=True).item()
+
+            if self.s2p_subset_frames is None:
+                self.raw = FminusFneu
+                self.neuropil = neuropil
+                self.spks = spks
+            elif self.s2p_subset_frames is not None:
+                self.raw = FminusFneu[:, self.s2p_subset_frames[0]:self.s2p_subset_frames[1]]
+                self.spks = spks[:, self.s2p_subset_frames[0]:self.s2p_subset_frames[1]]
+                self.neuropil = neuropil[:, self.s2p_subset_frames[0]:self.s2p_subset_frames[1]]
+            self.mean_img = ops['meanImg']
+            cell_id = []
+            cell_med = []
+            cell_x = []
+            cell_y = []
+            radius = []
+
+            for cell, s in enumerate(self.stat):
+                cell_id.append(s['original_index'])  # stat is an np array of dictionaries!
+                cell_med.append(s['med'])
+                cell_x.append(s['xpix'])
+                cell_y.append(s['ypix'])
+                radius.append(s['radius'])
+
+            self.cell_id = cell_id
+            self.n_units = len(self.cell_id)
+            self.cell_med = cell_med
+            self.cell_x = cell_x
+            self.cell_y = cell_y
+            self.radius = radius
+
+
+        elif self.n_planes > 1:  ## TODO get Rob to review this loop, no experience with multi-plane analysis
+            for plane in range(self.n_planes):
+                # s2p_path = os.path.join(self.tiff_path, 'suite2p', 'plane' + str(plane))
+                FminusFneu, self.spks, self.stat, self.neuro = s2p_loader(s2p_path,
+                                                                          subtract_neuropil)  # s2p_loader() is in utils_func
+                ops = np.load(os.path.join(s2p_path, 'ops.npy'), allow_pickle=True).item()
+
+                self.raw.append(FminusFneu)
+                self.mean_img.append(ops['meanImg'])
+                cell_id = []
+                cell_plane = []
+                cell_med = []
+                cell_x = []
+                cell_y = []
+                radius = []
+
+                for cell, s in enumerate(self.stat):
+                    cell_id.append(s['original_index'])  # stat is an np array of dictionaries!
+                    cell_med.append(s['med'])
+                    cell_x.append(s['xpix'])
+                    cell_y.append(s['ypix'])
+                    radius.append(s['radius'])
+
+                self.cell_id.append(cell_id)
+                self.n_units.append(len(self.cell_id[plane]))
+                self.cell_med.append(cell_med)
+                self.cell_x.append(cell_x)
+                self.cell_y.append(cell_y)
+                self.radius = radius
+
+                cell_plane.extend([plane] * self.n_units[plane])
+                self.cell_plane.append(cell_plane)
+
+        if self.n_units > 1:
+            print(f'|- Loaded {self.n_units} cells, recorded for {round(self.raw.shape[1] / self.fps, 2)} secs')
+        else:
+            print('******* SUITE2P DATA NOT LOADED.')
+
+        self.save() if save else None
+
+
+    def s2pRun(self, ops, db, user_batch_size, trialsSuite2P: list = None):
+        """run suite2p on the experiment object, using trials specified in current experiment object, using the attributes determined directly from the experiment object."""
+
+
+        tiffs_to_s2p = []
+        for trial in self.trialsSuite2P:
+            tiffs_to_s2p.append(self.trialsInformation[trial]['tiff_path'])
+
+
+        num_pixels = self.frame_x * self.frame_y
+        sampling_rate = self.fps / self.n_planes
+        diameter_x = 13 / self.pix_sz_x
+        diameter_y = 13 / self.pix_sz_y
+        diameter = int(diameter_x), int(diameter_y)
+        batch_size = user_batch_size * (
+                    262144 / num_pixels)  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
+
+        if not db:
+            db = {
+                'fs': float(sampling_rate),
+                'diameter': diameter,
+                'batch_size': int(batch_size),
+                'nimg_init': int(batch_size),
+                'nplanes': self.n_planes
+            }
+
+        # specify tiff list to suite2p and data path
+        db['tiff_list'] = tiffs_to_s2p
+        db['data_path'] = self.dataPath
+        db['save_folder'] = self.suite2pPath
+
+        print(db)
+
+        opsEnd = run_s2p(ops=ops, db=db)
+
+        self.s2pRunComplete = True
+
+
+    @property
+    def s2p_batch_size(self):
+        # return 2000 * (262144 / self.frame_x * self.frame_y)  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
+        return self.__s2p_batch_size
+
+    @s2p_batch_size.setter
+    def s2p_batch_size(self, value):
+        self.__s2p_batch_size = value
+
 class TwoPhotonImaging:
     """Just two photon imaging related functions - currently set up for data collected from Bruker microscopes and
     suite2p processed Ca2+ imaging data """
@@ -87,7 +397,7 @@ class TwoPhotonImaging:
             os.makedirs(analysis_save_path)
         if analysis_save_path[-4:] == '.pkl':
             self.__pkl_path = analysis_save_path
-            self.analysis_save_dir = self.analysis_save_path[:[(s.start(), s.end()) for s in re.finditer('/', self.analysis_save_path)][-1][0]]  # this is the directory where the Bruker xml files associated with the 2p imaging TIFF are located
+            self.analysis_save_dir = self.analysis_save_path[:[(s.start(), s.end()) for s in re.finditer('/', self.analysis_save_path)][-1][0]]
         elif analysis_save_path[-1] == '/':
             self.analysis_save_dir = analysis_save_path
             self.__pkl_path = f"{self.analysis_save_dir}{self.metainfo['date']}_{self.metainfo['trial']}.pkl"
@@ -102,9 +412,9 @@ class TwoPhotonImaging:
             f'retrieving data-collection metainformation from {microscope} microscope has not been implemented yet')
 
         # set s2p batch size
-        self.__s2p_batch_size = 2000 * (262144 / self.frame_x * self.frame_y)  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
-        self.s2pProcessing(s2p_path=self.suite2p_path,
-                           s2p_batch_size=2000) if hasattr(self, 'suite2p_path') else None  ## TODO set option for providing input for s2p_batch_size
+        # self.__s2p_batch_size = 2000 * (262144 / self.frame_x * self.frame_y)  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
+        self.suite2p = Suite2p(s2p_path=self.suite2p_path, s2p_batch_size=self.s2p_batch_size) if hasattr(self, 'suite2p_path') else None  ## TODO set option for providing input for s2p_batch_size
+
         TwoPhotonImaging.paqProcessing(self, paq_path=self.paq_path) if hasattr(self, 'paq_path') else None
 
         if make_downsampled_tiff:
@@ -170,43 +480,6 @@ class TwoPhotonImaging:
     @pkl_path.setter
     def pkl_path(self, path: str):
         self.__pkl_path = path
-
-    @property
-    def s2p_batch_size(self):
-        # return 2000 * (262144 / self.frame_x * self.frame_y)  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
-        return self.__s2p_batch_size
-
-    @s2p_batch_size.setter
-    def s2p_batch_size(self, value):
-        self.__s2p_batch_size = value
-
-    def s2pRun(self, ops, db, user_batch_size):
-
-        '''run suite2p on the experiment object, using the attributes deteremined directly from the experiment object'''
-
-        num_pixels = self.frame_x * self.frame_y
-        sampling_rate = self.fps / self.n_planes
-        diameter_x = 13 / self.pix_sz_x
-        diameter_y = 13 / self.pix_sz_y
-        diameter = int(diameter_x), int(diameter_y)
-        batch_size = user_batch_size * (
-                    262144 / num_pixels)  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
-
-        if not db:
-            db = {
-                'data_path': [self.tiff_path],
-                'fs': float(sampling_rate),
-                'diameter': diameter,
-                'batch_size': int(batch_size),
-                'nimg_init': int(batch_size),
-                'nplanes': self.n_planes
-            }
-
-        print(db)
-
-        opsEnd = run_s2p(ops=ops, db=db)
-
-        self.suite2p_path = ""  # TODO set the suite2p_path after running suite2p from the experiment object
 
     def _getPVStateShard(self, path, key):
 
@@ -335,110 +608,8 @@ class TwoPhotonImaging:
               '\nscan centre (V):', scan_x, scan_y
               )
 
-    def s2pProcessing(self, s2p_path: str, s2p_batch_size: int, subtract_neuropil: bool = True,
-                      subset_frames: tuple = None,
-                      save: bool = True):
-        """processing of suite2p data from the current t-series
-        :param s2p_path: path to the directory containing suite2p outputs
-        :param subtract_neuropil: choose to subtract neuropil or not when loading s2p traces
-        :param subset_frames: (optional) use to specifiy loading a subset of data from the overall s2p trace
-        :param save: choose to save data object or not
-        """
 
-        if s2p_path is not None and s2p_path != self.suite2p_path:
-            assert os.path.exists(s2p_path), print('ERROR: s2p path provided was not found')
-            print(f"|- Updating suite2p path to newly provided path: {s2p_path}")
-            self.suite2p_path = s2p_path  # update s2p path if provided different path
-        self.s2p_batch_size = s2p_batch_size
-        self.s2p_subset_frames = subset_frames
-        self.cell_id = []
-        self.n_units = []
-        self.cell_plane = []
-        self.cell_med = []
-        self.cell_x = []
-        self.cell_y = []
-        self.raw = []
-        self.mean_img = []
-        self.radius = []
-
-        if self.n_planes == 1:
-            FminusFneu, spks, self.stat, neuropil = s2p_loader(s2p_path,
-                                                               subtract_neuropil)  # s2p_loader() is in Vape/utils_func
-            ops = np.load(os.path.join(s2p_path, 'ops.npy'), allow_pickle=True).item()
-
-            if self.s2p_subset_frames is None:
-                self.raw = FminusFneu
-                self.neuropil = neuropil
-                self.spks = spks
-            elif self.s2p_subset_frames is not None:
-                self.raw = FminusFneu[:, self.s2p_subset_frames[0]:self.s2p_subset_frames[1]]
-                self.spks = spks[:, self.s2p_subset_frames[0]:self.s2p_subset_frames[1]]
-                self.neuropil = neuropil[:, self.s2p_subset_frames[0]:self.s2p_subset_frames[1]]
-            self.mean_img = ops['meanImg']
-            cell_id = []
-            cell_med = []
-            cell_x = []
-            cell_y = []
-            radius = []
-
-            for cell, s in enumerate(self.stat):
-                cell_id.append(s['original_index'])  # stat is an np array of dictionaries!
-                cell_med.append(s['med'])
-                cell_x.append(s['xpix'])
-                cell_y.append(s['ypix'])
-                radius.append(s['radius'])
-
-            self.cell_id = cell_id
-            self.n_units = len(self.cell_id)
-            self.cell_med = cell_med
-            self.cell_x = cell_x
-            self.cell_y = cell_y
-            self.radius = radius
-
-
-        elif self.n_planes > 1:  ## TODO get Rob to review this loop, no experience with multi-plane analysis
-            for plane in range(self.n_planes):
-                # s2p_path = os.path.join(self.tiff_path, 'suite2p', 'plane' + str(plane))
-                FminusFneu, self.spks, self.stat, self.neuro = s2p_loader(s2p_path,
-                                                                          subtract_neuropil)  # s2p_loader() is in utils_func
-                ops = np.load(os.path.join(s2p_path, 'ops.npy'), allow_pickle=True).item()
-
-                self.raw.append(FminusFneu)
-                self.mean_img.append(ops['meanImg'])
-                cell_id = []
-                cell_plane = []
-                cell_med = []
-                cell_x = []
-                cell_y = []
-                radius = []
-
-                for cell, s in enumerate(self.stat):
-                    cell_id.append(s['original_index'])  # stat is an np array of dictionaries!
-                    cell_med.append(s['med'])
-                    cell_x.append(s['xpix'])
-                    cell_y.append(s['ypix'])
-                    radius.append(s['radius'])
-
-                self.cell_id.append(cell_id)
-                self.n_units.append(len(self.cell_id[plane]))
-                self.cell_med.append(cell_med)
-                self.cell_x.append(cell_x)
-                self.cell_y.append(cell_y)
-                self.radius = radius
-
-                cell_plane.extend([plane] * self.n_units[plane])
-                self.cell_plane.append(cell_plane)
-
-        if self.n_units > 1:
-            print(f'|- Loaded {self.n_units} cells, recorded for {round(self.raw.shape[1] / self.fps, 2)} secs')
-        else:
-            print('******* SUITE2P DATA NOT LOADED.')
-
-        self.save() if save else None
-
-    def cellAreas(self, x=None, y=None):
-
-        '''not sure what this function does'''  ## TODO Rob check
+    def cellAreas(self, x=None, y=None):  # '''not sure what this function does'''  ## TODO Rob check
 
         self.cell_area = []
 
@@ -728,64 +899,6 @@ class TwoPhotonImaging:
 
     def save(self):
         self.save_pkl()
-
-
-class WideFieldImaging:
-    """
-    WideField imaging data object.
-
-    """
-
-    def __init__(self, tiff_path, paq_path, exp_metainfo, pkl_path):
-        self.tiff_path = tiff_path
-        self.paq_path = paq_path
-        self.metainfo = exp_metainfo
-        # set and create analysis save path directory
-        self.analysis_save_dir = self.pkl_path[:[(s.start(), s.end()) for s in re.finditer('/', self.pkl_path)][-1][0]]
-        if not os.path.exists(self.analysis_save_dir):
-            print('making analysis save folder at: \n  %s' % self.analysis_save_dir)
-            os.makedirs(self.analysis_save_dir)
-
-        self.save_pkl(pkl_path=pkl_path)  # save experiment object to pkl_path
-
-    def __repr__(self):
-        if self.pkl_path:
-            lastmod = time.ctime(os.path.getmtime(self.pkl_path))
-        else:
-            lastmod = "(unsaved pkl object)"
-        if not hasattr(self, 'metainfo'):
-            information = f"uninitialized"
-        else:
-            information = self.t_series_name
-
-        return repr(f"({information}) WidefieldImaging experimental data object, last saved: {lastmod}")
-
-    @property
-    def t_series_name(self):
-        if 't series id' in self.metainfo.keys():
-            return f"{self.metainfo['t series id']}"
-        elif "animal prep." in self.metainfo.keys() and "trial" in self.metainfo.keys():
-            return f'{self.metainfo["animal prep."]} {self.metainfo["trial"]}'
-        else:
-            raise ValueError('no information found to retrieve t series id')
-
-    def save_pkl(self, pkl_path: str = None):
-        if pkl_path is None:
-            if hasattr(self, 'pkl_path'):
-                pkl_path = self.pkl_path
-            else:
-                raise ValueError(
-                    'pkl path for saving was not found in data object attributes, please provide pkl_path to save to')
-        else:
-            self.pkl_path = pkl_path
-
-        with open(self.pkl_path, 'wb') as f:
-            pickle.dump(self, f)
-        print("\n\t -- data object saved to %s -- " % pkl_path)
-
-    def save(self):
-        self.save_pkl()
-
 
 class AllOptical(TwoPhotonImaging):
     """This class provides methods for All Optical experiments"""
@@ -2745,3 +2858,59 @@ class AllOptical(TwoPhotonImaging):
 
             tf.imwrite(save_path, stack, photometric='minisblack')
             print('\ns2p ROI + photostim targets masks saved in TIFF to: ', save_path)
+
+class WideFieldImaging:
+    """
+    WideField imaging data object.
+
+    """
+
+    def __init__(self, tiff_path, paq_path, exp_metainfo, pkl_path):
+        self.tiff_path = tiff_path
+        self.paq_path = paq_path
+        self.metainfo = exp_metainfo
+        # set and create analysis save path directory
+        self.analysis_save_dir = self.pkl_path[:[(s.start(), s.end()) for s in re.finditer('/', self.pkl_path)][-1][0]]
+        if not os.path.exists(self.analysis_save_dir):
+            print('making analysis save folder at: \n  %s' % self.analysis_save_dir)
+            os.makedirs(self.analysis_save_dir)
+
+        self.save_pkl(pkl_path=pkl_path)  # save experiment object to pkl_path
+
+    def __repr__(self):
+        if self.pkl_path:
+            lastmod = time.ctime(os.path.getmtime(self.pkl_path))
+        else:
+            lastmod = "(unsaved pkl object)"
+        if not hasattr(self, 'metainfo'):
+            information = f"uninitialized"
+        else:
+            information = self.t_series_name
+
+        return repr(f"({information}) WidefieldImaging experimental data object, last saved: {lastmod}")
+
+    @property
+    def t_series_name(self):
+        if 't series id' in self.metainfo.keys():
+            return f"{self.metainfo['t series id']}"
+        elif "animal prep." in self.metainfo.keys() and "trial" in self.metainfo.keys():
+            return f'{self.metainfo["animal prep."]} {self.metainfo["trial"]}'
+        else:
+            raise ValueError('no information found to retrieve t series id')
+
+    def save_pkl(self, pkl_path: str = None):
+        if pkl_path is None:
+            if hasattr(self, 'pkl_path'):
+                pkl_path = self.pkl_path
+            else:
+                raise ValueError(
+                    'pkl path for saving was not found in data object attributes, please provide pkl_path to save to')
+        else:
+            self.pkl_path = pkl_path
+
+        with open(self.pkl_path, 'wb') as f:
+            pickle.dump(self, f)
+        print("\n\t -- data object saved to %s -- " % pkl_path)
+
+    def save(self):
+        self.save_pkl()

@@ -57,7 +57,6 @@ def normalize_dff(arr, threshold_pct=20, threshold_val=None):
 
     return new_array
 
-
 # calculates average over sliding window for an array
 def moving_average(arr, n=4):
     """
@@ -127,7 +126,6 @@ def threshold_detect(signal, threshold):
     thresh_signal[1:][thresh_signal[:-1] & thresh_signal[1:]] = False
     frames = np.where(thresh_signal)
     return frames[0]
-
 
 # simple ZProfile function for any sized square in the frame (equivalent to ZProfile function in Fiji)
 def ZProfile(movie, area_center_coords: tuple = None, area_size: int = -1, plot_trace: bool = True,
@@ -329,6 +327,11 @@ def convert_to_8bit(img, target_type_min=0, target_type_max=255):
 
 
 ##### PRAJAY'S FUNCTIONS THAT MIGHT BE APPROP FOR THIS SCRIPT ####### / end
+
+def _check_path_exists(path_arg: str, path: str):
+    assert os.path.exists(path), f"{path_arg} path not found: {path}"
+    return True
+
 
 # paq2py by Llyod Russel
 def paq_read(file_path=None, plot=False):

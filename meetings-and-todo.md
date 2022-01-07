@@ -33,3 +33,10 @@ TODO:
 
 Rob:
 - look through attr's for alloptical object and add to __init__ to initialize the attr's
+
+
+## Jan 7 2022
+- discuss implementation of parent experiment class for handling multiple sub-experiment objects, and used to run suite2p from
+- 
+
+
