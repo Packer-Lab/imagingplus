@@ -6,6 +6,9 @@
   (can even create a pipeline to quickly jot down the flow of functions that will be used for an alloptical experiment)
 -- then I can handle putting the structure of everything together.
 
+Next big tasks:
+[] test linking of Suite2p class to experiment object 
+[] link Suite2p class to trial objects 
 
 
 ## Dec 22 2021

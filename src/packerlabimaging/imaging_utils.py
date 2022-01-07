@@ -82,10 +82,9 @@ class Experiment:
     def __post_init__(self):
         self._parsePVMetadata()
         if self.use_suite2p:
-            __s2p_batch_size: int = int(2000 * (262144 / self.frame_x * self.frame_y))  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
             self.suite2pPath = self.analysisSavePath + '/suite2p/' if self.suite2pPath is None else self.suite2pPath
             self.trialsSuite2P = list(self.trialsInformation.keys())
-            self.Suite2p = Suite2p(trialsSuite2P=self.trialsSuite2P, s2p_path=self.suite2pPath, s2p_batch_size = self.__s2p_batch_size, subtract_neuropil=True)
+            self.Suite2p = Suite2p(trialsSuite2P=self.trialsSuite2P, s2p_path=self.suite2pPath, subtract_neuropil=True)
         self._runExpTrialsProcessing()
 
         # set and/or create analysis save path directory
@@ -314,25 +313,25 @@ class Experiment:
     def save(self):
         self.save_pkl()
 
-class Suite2p:
-    """used to read in and save suite2p processed data and analysis."""
-    def __init__(self, trialsSuite2P: list, s2p_path: str, s2p_batch_size: int, subtract_neuropil: bool = True, subset_frames: tuple = None,
+class Suite2pExperiment:
+    """used to run and further process suite2p processed data, and analysis associated with suite2p processed data."""
+
+    def __init__(self, trialsSuite2P: list, s2p_path: str, subtract_neuropil: bool = True, subset_frames: tuple = None,
                  save: bool = True):
         # set trials to run together in suite2p for Experiment
         self.trialsSuite2P = trialsSuite2P
-        assert len(self.trialsSuite2P) > 1, "no trials found to run suite2p, option available to provide list of trial IDs in `trialsSuite2P`"
+        assert len(self.trialsSuite2P) > 0, "no trials found to run suite2p, option available to provide list of trial IDs in `trialsSuite2P`"
         self.s2pRunComplete = False
 
         if self.s2pRunComplete or s2p_path:
             try:
-                self.s2pProcessing(s2p_path, s2p_batch_size, subtract_neuropil, subset_frames, save)  ## TODO confirm and specify values for args
+                self.s2pProcessing(s2p_path, subtract_neuropil, subset_frames, save)  ## TODO confirm and specify values for args
                 self.s2pRunComplete = True
             except:
                 raise ValueError(f'suite2p processed data could not be loaded from the provided `s2p_path`: {s2p_path}')
 
 
-
-    def s2pProcessing(self, s2p_path: str, s2p_batch_size: int, subtract_neuropil: bool = True,
+    def s2pProcessing(self, s2p_path: str, subtract_neuropil: bool = True,
                       subset_frames: tuple = None,
                       save: bool = True):
         """processing of suite2p data from the current t-series
@@ -346,7 +345,6 @@ class Suite2p:
             assert os.path.exists(s2p_path), print('ERROR: s2p path provided was not found')
             print(f"|- Updating suite2p path to newly provided path: {s2p_path}")
             self.suite2p_path = s2p_path  # update s2p path if provided different path
-        self.s2p_batch_size = s2p_batch_size  ## TODO refactor
         self.s2p_subset_frames = subset_frames
         self.cell_id = []
         self.n_units = []
@@ -434,7 +432,7 @@ class Suite2p:
         self.save() if save else None
 
 
-    def s2pRun(self, ops, db, user_batch_size, trialsSuite2P: list = None):
+    def s2pRun(self, ops, db, user_batch_size=2000, trialsSuite2P: list = None):
         """run suite2p on the experiment object, using trials specified in current experiment object, using the attributes determined directly from the experiment object."""
 
 
@@ -443,12 +441,14 @@ class Suite2p:
             tiffs_to_s2p.append(self.trialsInformation[trial]['tiff_path'])
 
 
-        num_pixels = self.frame_x * self.frame_y
+
         sampling_rate = self.fps / self.n_planes
         diameter_x = 13 / self.pix_sz_x
         diameter_y = 13 / self.pix_sz_y
         diameter = int(diameter_x), int(diameter_y)
-        batch_size = user_batch_size * (
+        self.__s2p_batch_size = user_batch_size
+        num_pixels = self.frame_x * self.frame_y
+        batch_size = self.s2p_batch_size * (
                     262144 / num_pixels)  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
 
         if not db:
@@ -566,6 +566,296 @@ class Suite2p:
 
     ### insert methods for processing suite2p ROIs
 
+class Suite2pTrial:
+    """used to process suite2p processed data for one trial - out of overall experiment."""
+
+    def __init__(self, trialsSuite2P: list, s2p_path: str, subtract_neuropil: bool = True, subset_frames: tuple = None,
+                 save: bool = True):
+        # set trials to run together in suite2p for Experiment
+        self.trialsSuite2P = trialsSuite2P
+        assert len(self.trialsSuite2P) > 1, "no trials found to run suite2p, option available to provide list of trial IDs in `trialsSuite2P`"
+        self.s2pRunComplete = False
+
+        if self.s2pRunComplete or s2p_path:
+            try:
+                self.s2pProcessing(s2p_path, subtract_neuropil, subset_frames, save)  ## TODO confirm and specify values for args
+                self.s2pRunComplete = True
+            except:
+                raise ValueError(f'suite2p processed data could not be loaded from the provided `s2p_path`: {s2p_path}')
+
+
+    def s2pProcessing(self, s2p_path: str, subtract_neuropil: bool = True,
+                      subset_frames: tuple = None,
+                      save: bool = True):
+        """processing of suite2p data from the current t-series
+        :param s2p_path: path to the directory containing suite2p outputs
+        :param subtract_neuropil: choose to subtract neuropil or not when loading s2p traces
+        :param subset_frames: (optional) use to specifiy loading a subset of data from the overall s2p trace
+        :param save: choose to save data object or not
+        """
+
+        if s2p_path is not None and s2p_path != self.suite2p_path:
+            assert os.path.exists(s2p_path), print('ERROR: s2p path provided was not found')
+            print(f"|- Updating suite2p path to newly provided path: {s2p_path}")
+            self.suite2p_path = s2p_path  # update s2p path if provided different path
+        self.s2p_subset_frames = subset_frames
+        self.cell_id = []
+        self.n_units = []
+        self.cell_plane = []
+        self.cell_med = []
+        self.cell_x = []
+        self.cell_y = []
+        self.raw = []
+        self.mean_img = []
+        self.radius = []
+
+        if self.n_planes == 1:
+            FminusFneu, spks, self.stat, neuropil = s2p_loader(s2p_path,
+                                                               subtract_neuropil)  # s2p_loader() is in Vape/utils_func
+            ops = np.load(os.path.join(s2p_path, 'ops.npy'), allow_pickle=True).item()
+
+            if self.s2p_subset_frames is None:
+                self.raw = FminusFneu
+                self.neuropil = neuropil
+                self.spks = spks
+            elif self.s2p_subset_frames is not None:
+                self.raw = FminusFneu[:, self.s2p_subset_frames[0]:self.s2p_subset_frames[1]]
+                self.spks = spks[:, self.s2p_subset_frames[0]:self.s2p_subset_frames[1]]
+                self.neuropil = neuropil[:, self.s2p_subset_frames[0]:self.s2p_subset_frames[1]]
+            self.mean_img = ops['meanImg']
+            cell_id = []
+            cell_med = []
+            cell_x = []
+            cell_y = []
+            radius = []
+
+            for cell, s in enumerate(self.stat):
+                cell_id.append(s['original_index'])  # stat is an np array of dictionaries!
+                cell_med.append(s['med'])
+                cell_x.append(s['xpix'])
+                cell_y.append(s['ypix'])
+                radius.append(s['radius'])
+
+            self.cell_id = cell_id
+            self.n_units = len(self.cell_id)
+            self.cell_med = cell_med
+            self.cell_x = cell_x
+            self.cell_y = cell_y
+            self.radius = radius
+
+
+        elif self.n_planes > 1:  ## TODO get Rob to review this loop, no experience with multi-plane analysis
+            for plane in range(self.n_planes):
+                # s2p_path = os.path.join(self.tiff_path, 'suite2p', 'plane' + str(plane))
+                FminusFneu, self.spks, self.stat, self.neuro = s2p_loader(s2p_path,
+                                                                          subtract_neuropil)  # s2p_loader() is in utils_func
+                ops = np.load(os.path.join(s2p_path, 'ops.npy'), allow_pickle=True).item()
+
+                self.raw.append(FminusFneu)
+                self.mean_img.append(ops['meanImg'])
+                cell_id = []
+                cell_plane = []
+                cell_med = []
+                cell_x = []
+                cell_y = []
+                radius = []
+
+                for cell, s in enumerate(self.stat):
+                    cell_id.append(s['original_index'])  # stat is an np array of dictionaries!
+                    cell_med.append(s['med'])
+                    cell_x.append(s['xpix'])
+                    cell_y.append(s['ypix'])
+                    radius.append(s['radius'])
+
+                self.cell_id.append(cell_id)
+                self.n_units.append(len(self.cell_id[plane]))
+                self.cell_med.append(cell_med)
+                self.cell_x.append(cell_x)
+                self.cell_y.append(cell_y)
+                self.radius = radius
+
+                cell_plane.extend([plane] * self.n_units[plane])
+                self.cell_plane.append(cell_plane)
+
+        if self.n_units > 1:
+            print(f'|- Loaded {self.n_units} cells, recorded for {round(self.raw.shape[1] / self.fps, 2)} secs')
+        else:
+            print('******* SUITE2P DATA NOT LOADED.')
+
+        self.save() if save else None
+
+    def stitch_reg_tiffs(self, first_frame: int, last_frame: int, reg_tif_folder: str = None, force_crop: bool = False,
+                         s2p_run_batch: int = 2000):
+        """
+        Stitches together registered tiffs outputs from suite2p from the provided imaging frame start and end values.
+
+        :param first_frame: first frame from the overall s2p run to start stitching from
+        :param last_frame: last frame from the overall s2p run to end stitching at
+        :param force_crop:
+        :param force_stack:
+        :param s2p_run_batch: batch size for suite2p run (defaults to 2000 because that is usually the batch size while running suite2p processing)
+        """
+
+        if reg_tif_folder is None:
+            if self.suite2p_path:
+                reg_tif_folder = self.suite2p_path + '/reg_tif/'
+                print(f"\- trying to load registerred tiffs from: {reg_tif_folder}")
+        else:
+            raise Exception(f"Must provide reg_tif_folder path for loading registered tiffs")
+        if not os.path.exists(reg_tif_folder):
+            raise Exception(f"no registered tiffs found at path: {reg_tif_folder}")
+
+        frame_range = [first_frame, last_frame]
+
+        start = first_frame // s2p_run_batch
+        end = last_frame // s2p_run_batch + 1
+
+        # set tiff paths to save registered tiffs:
+        tif_path_save = self.analysis_save_dir + 'reg_tiff_%s.tif' % self.metainfo['trial']
+        tif_path_save2 = self.analysis_save_dir + 'reg_tiff_%s_r.tif' % self.metainfo['trial']
+        reg_tif_list = os.listdir(reg_tif_folder)
+        reg_tif_list.sort()
+        sorted_paths = [reg_tif_folder + tif for tif in reg_tif_list][start:end + 1]
+
+        print(tif_path_save)
+        print(sorted_paths)
+
+        if os.path.exists(tif_path_save):
+            make_tiff_stack(sorted_paths, save_as=tif_path_save)
+
+        if not os.path.exists(tif_path_save2) or force_crop:
+            with tf.TiffWriter(tif_path_save2, bigtiff=True) as tif:
+                with tf.TiffFile(tif_path_save, multifile=False) as input_tif:
+                    print('cropping registered tiff')
+                    data = input_tif.asarray()
+                    print('shape of stitched tiff: ', data.shape)
+                reg_tif_crop = data[frame_range[0] - start * s2p_run_batch: frame_range[1] - (
+                            frame_range[0] - start * s2p_run_batch)]
+                print('saving cropped tiff ', reg_tif_crop.shape)
+                tif.save(reg_tif_crop)
+
+    def s2pMeanImage(self, s2p_path: str = None, plot: bool = True):
+        """
+        Return array of the s2p mean image.
+        :param s2p_path: (optional) path to location of s2p data
+        :param plot: (optional) option to plot the s2p mean image
+        :return:
+        """
+
+        if s2p_path is None:  # TODO try to catch and handle the actual error
+            if hasattr(self, 'suite2p_path'):
+                s2p_path = self.suite2p_path
+            else:
+                ValueError(
+                    'ERROR: no suite2p path defined for data object, please provide s2p_path to use for locating s2p data.')
+
+        print(f'Plotting s2p mean image from {s2p_path}')
+
+        os.chdir(s2p_path)
+
+        ops = np.load('ops.npy', allow_pickle=True).item()
+
+        mean_img = ops['meanImg']
+
+        mean_img = np.array(mean_img, dtype='uint16')
+
+        if plot:
+            plt.imshow(mean_img, cmap='gray')
+            plt.suptitle('s2p mean image')
+            plt.show()
+
+        return mean_img
+
+    def _good_cells(self, cell_ids: list, raws: np.ndarray, photostim_frames: list, std_thresh: int,
+                    radiuses: list = None,
+                    min_radius_pix: int = 2.5, max_radius_pix: int = 10, save=True):
+        """
+        This function is used for filtering for "good" cells based on detection of Flu deflections that are above some std threshold based on std_thresh.
+        Note: a moving averaging window of 4 frames is used to find Flu deflections above std threshold.
+
+        :param cell_ids: ls of cell ids to iterate over
+        :param raws: raw flu values corresponding to the cell ls in cell_ids
+        :param photostim_frames: frames to delete from the raw flu traces across all cells (because they are photostim frames)
+        :param std_thresh: std. factor above which to define reliable Flu events
+        :param radiuses: radiuses of the s2p ROI mask of all cells in the same order as cell_ids
+        :param min_radius_pix:
+        :param max_radius_pix:
+        :return:
+            good_cells: ls of cell_ids that had atleast 1 event above the std_thresh
+            events_loc_cells: dictionary containing locations for each cell_id where the moving averaged Flu trace passes the std_thresh
+            flu_events_cells: dictionary containing the dff Flu value corresponding to events_loc_cells
+            stds = dictionary containing the dFF trace std value for each cell_id
+        """
+
+        print('\n----------------------------------------------------------------')
+        print('running finding of good cells for suite2p ROIs ')
+        print('----------------------------------------------------------------')
+
+        good_cells = []
+        events_loc_cells = {}
+        flu_events_cells = {}
+        stds = {}  # collect the std values for all filtered cells used later for identifying high and low std cells
+        for i in range(len(cell_ids)):
+            cell_id = cell_ids[i]
+
+            if i % 100 == 0:  # print the progress once every 100 cell iterations
+                print(i, " out of ", len(cell_ids), " cells done", end='\r')
+
+            # print(i, " out of ", len(cell_ids), " cells")
+            raw = raws[i]
+            if np.mean(raw) > 1:  # exclude all negative raw traces and very small mean raw traces
+                raw_ = np.delete(raw, photostim_frames)
+                raw_dff = normalize_dff(
+                    raw_)  # note that this function is defined in this file a little further down
+                std_ = raw_dff.std()
+
+                raw_dff_ = moving_average(raw_dff, n=4)
+
+                thr = np.mean(raw_dff) + std_thresh * std_
+                events = np.where(raw_dff_ > thr)
+                flu_values = raw_dff[events]
+
+                if radiuses is not None:
+                    radius = radiuses[i]
+                    if len(events[0]) > 0 and radius > min_radius_pix and radius < max_radius_pix:
+                        events_loc_cells[cell_id] = events
+                        flu_events_cells[cell_id] = flu_values
+                        stds[cell_id] = std_
+                        good_cells.append(cell_id)
+                elif len(events[0]) > 0:
+                    events_loc_cells[cell_id] = events
+                    flu_events_cells[cell_id] = flu_values
+                    good_cells.append(cell_id)
+                    stds[cell_id] = std_
+
+                # if i == 465:  # just using this here if ever need to check back with specific cells if function seems to be misbehaving
+                #     print(events, len(events[0]), thr)
+
+        print('# of good cells found: ', len(good_cells), ' (out of ', len(cell_ids), ' ROIs)')
+        self.good_cells = good_cells
+        self.save() if save else None
+
+        return good_cells, events_loc_cells, flu_events_cells, stds
+
+    def cellAreas(self, x=None, y=None):  # '''not sure what this function does'''  ## TODO Rob check
+
+        self.cell_area = []
+
+        if x:
+            for i, _ in enumerate(self.cell_id):
+                if self.cell_med[i][1] < x:
+                    self.cell_area.append(0)
+                else:
+                    self.cell_area.append(1)
+
+        if y:
+            for i, _ in enumerate(self.cell_id):
+                if self.cell_med[i][1] < y:
+                    self.cell_area.append(0)
+                else:
+                    self.cell_area.append(1)
+    ### insert methods for processing suite2p ROIs
+
 class TwoPhotonImaging:
     """Just two photon imaging related functions - currently set up for data collected from Bruker microscopes and
     suite2p processed Ca2+ imaging data """
@@ -584,9 +874,14 @@ class TwoPhotonImaging:
 
         print('\n***** CREATING NEW TwoPhotonImaging with the following metainfo: ', metainfo)
 
-        self.tiff_path = tiff_path if _check_path_exists('tiff_path', tiff_path) else None
-        if paq_path: self.paq_path = paq_path if _check_path_exists('paq_path', paq_path) else None
-        if suite2p_path: self.suite2p_path = suite2p_path if _check_path_exists('suite2p_path', suite2p_path) else None
+        if _check_path_exists('tiff_path', tiff_path): self.tiff_path = tiff_path
+        else: raise FileNotFoundError(f'tiff_path does not exist: {tiff_path}')
+        if paq_path: 
+            if _check_path_exists('paq_path', paq_path): self.paq_path = paq_path 
+            else: raise FileNotFoundError(f'paq_path does not exist: {paq_path}')
+        if suite2p_path: 
+            if _check_path_exists('suite2p_path', suite2p_path): self.suite2p_path = suite2p_path 
+            else: raise FileNotFoundError(f'suite2p_path does not exist: {suite2p_path}')
         if 'date' in metainfo.keys() and 'trial' in metainfo.keys() and 'animal prep.' in metainfo.keys() and 't series id' in metainfo.keys(): self.metainfo = metainfo
         else: raise ValueError("Metainfo argument must contain the minimum fields: 'date', 'trial', 'animal prep.' and 't series id'")
 
@@ -807,96 +1102,6 @@ class TwoPhotonImaging:
               '\nscan centre (V):', scan_x, scan_y
               )
 
-
-    def cellAreas(self, x=None, y=None):  # '''not sure what this function does'''  ## TODO Rob check
-
-        self.cell_area = []
-
-        if x:
-            for i, _ in enumerate(self.cell_id):
-                if self.cell_med[i][1] < x:
-                    self.cell_area.append(0)
-                else:
-                    self.cell_area.append(1)
-
-        if y:
-            for i, _ in enumerate(self.cell_id):
-                if self.cell_med[i][1] < y:
-                    self.cell_area.append(0)
-                else:
-                    self.cell_area.append(1)
-
-    def _good_cells(self, cell_ids: list, raws: np.ndarray, photostim_frames: list, std_thresh: int,
-                    radiuses: list = None,
-                    min_radius_pix: int = 2.5, max_radius_pix: int = 10, save=True):
-        """
-        This function is used for filtering for "good" cells based on detection of Flu deflections that are above some std threshold based on std_thresh.
-        Note: a moving averaging window of 4 frames is used to find Flu deflections above std threshold.
-
-        :param cell_ids: ls of cell ids to iterate over
-        :param raws: raw flu values corresponding to the cell ls in cell_ids
-        :param photostim_frames: frames to delete from the raw flu traces across all cells (because they are photostim frames)
-        :param std_thresh: std. factor above which to define reliable Flu events
-        :param radiuses: radiuses of the s2p ROI mask of all cells in the same order as cell_ids
-        :param min_radius_pix:
-        :param max_radius_pix:
-        :return:
-            good_cells: ls of cell_ids that had atleast 1 event above the std_thresh
-            events_loc_cells: dictionary containing locations for each cell_id where the moving averaged Flu trace passes the std_thresh
-            flu_events_cells: dictionary containing the dff Flu value corresponding to events_loc_cells
-            stds = dictionary containing the dFF trace std value for each cell_id
-        """
-
-        print('\n----------------------------------------------------------------')
-        print('running finding of good cells for suite2p ROIs ')
-        print('----------------------------------------------------------------')
-
-        good_cells = []
-        events_loc_cells = {}
-        flu_events_cells = {}
-        stds = {}  # collect the std values for all filtered cells used later for identifying high and low std cells
-        for i in range(len(cell_ids)):
-            cell_id = cell_ids[i]
-
-            if i % 100 == 0:  # print the progress once every 100 cell iterations
-                print(i, " out of ", len(cell_ids), " cells done", end='\r')
-
-            # print(i, " out of ", len(cell_ids), " cells")
-            raw = raws[i]
-            if np.mean(raw) > 1:  # exclude all negative raw traces and very small mean raw traces
-                raw_ = np.delete(raw, photostim_frames)
-                raw_dff = normalize_dff(
-                    raw_)  # note that this function is defined in this file a little further down
-                std_ = raw_dff.std()
-
-                raw_dff_ = moving_average(raw_dff, n=4)
-
-                thr = np.mean(raw_dff) + std_thresh * std_
-                events = np.where(raw_dff_ > thr)
-                flu_values = raw_dff[events]
-
-                if radiuses is not None:
-                    radius = radiuses[i]
-                    if len(events[0]) > 0 and radius > min_radius_pix and radius < max_radius_pix:
-                        events_loc_cells[cell_id] = events
-                        flu_events_cells[cell_id] = flu_values
-                        stds[cell_id] = std_
-                        good_cells.append(cell_id)
-                elif len(events[0]) > 0:
-                    events_loc_cells[cell_id] = events
-                    flu_events_cells[cell_id] = flu_values
-                    good_cells.append(cell_id)
-                    stds[cell_id] = std_
-
-                # if i == 465:  # just using this here if ever need to check back with specific cells if function seems to be misbehaving
-                #     print(events, len(events[0]), thr)
-
-        print('# of good cells found: ', len(good_cells), ' (out of ', len(cell_ids), ' ROIs)')
-        self.good_cells = good_cells
-        self.save() if save else None
-
-        return good_cells, events_loc_cells, flu_events_cells, stds
-
     def paqProcessing(self, paq_path: str = None):
         """
         Loads .paq file and saves data from individual channels.
@@ -996,7 +1201,6 @@ class TwoPhotonImaging:
         plt.show()
         return stack
 
-
     def save_pkl(self, pkl_path: str = None):
         ## commented out after setting pkl_path as a @property
         # if pkl_path is None:
@@ -1023,7 +1227,7 @@ class AllOptical(TwoPhotonImaging):
 
     def __init__(self, microscope: str, tiff_path: str, paq_path: str, naparm_path: str, analysis_save_path: str, metainfo: dict,
                  suite2p_path:str = None, pre_stim: float = 1.0, post_stim: float = 3.0, pre_stim_response_window: float = 0.500,
-                 post_stim_response_window: float = 0.500):
+                 post_stim_response_window: float = 0.500, **kwargs):
 
         """
         :param tiff_path: path to t-series .tiff
@@ -1058,9 +1262,11 @@ class AllOptical(TwoPhotonImaging):
         # self._set_photostim_windows(pre_stim, post_stim, pre_stim_response_window, post_stim_response_window)  -- delete line
 
         # running photostimulation experiment processing
-        self.stimProcessing(stim_channel='markpoints2packio')
+        self.stim_channel = kwargs['stim_channel'] if 'stim_channel' in [*kwargs] else 'markpoints2packio'
+        self._stimProcessing(stim_channel=self.stim_channel)
         self._findTargetsAreas()
-        self.find_photostim_frames()
+        self.photostim_frames = ['not-yet-processed']
+        self._photostim_to_bad_framesnpy()
 
         #### initializing data processing, data analysis and/or results associated attr's
 
@@ -1303,7 +1509,9 @@ class AllOptical(TwoPhotonImaging):
 
             self.stim_start_frames = stim_start_frames
 
-    def photostimProcessing(self):  ## TODO need to figure out how to handle different types of photostimulation experiment setups
+    ### KEY FUNCTIONS TO REVIEW WITH ROB FOR ALLOPTICAL WORKFLOW
+
+    def _photostimProcessing(self):  ## TODO need to figure out how to handle different types of photostimulation experiment setups
 
         """
         remember that this is currently configured for only the interleaved photostim, not the really fast photostim of multi-groups
@@ -1334,238 +1542,30 @@ class AllOptical(TwoPhotonImaging):
 
         self.paqProcessing(plot=False)
 
-    def stimProcessing(self, stim_channel):
+    def _stimProcessing(self, stim_channel):
         self.stim_channel = stim_channel
-        self.photostimProcessing()
-
-    def collect_traces_from_targets(self, curr_trial_frames: list, reg_tif_folder: str, save: bool = True):
-        """uses registered tiffs to collect raw traces from SLM target areas"""
-
-        if reg_tif_folder is None:
-            if self.suite2p_path:
-                reg_tif_folder = self.suite2p_path + '/reg_tif/'
-                print(f"\- trying to load registerred tiffs from: {reg_tif_folder}")
-        else:
-            raise Exception(f"Must provide reg_tif_folder path for loading registered tiffs")
-        if not os.path.exists(reg_tif_folder):
-            raise Exception(f"no registered tiffs found at path: {reg_tif_folder}")
-
-        print(
-            f'\n\ncollecting raw Flu traces from SLM target coord. areas from registered TIFFs from: {reg_tif_folder}')
-        # read in registered tiff
-        reg_tif_list = os.listdir(reg_tif_folder)
-        reg_tif_list.sort()
-        start = curr_trial_frames[0] // 2000  # 2000 because that is the batch size for suite2p run
-        end = curr_trial_frames[1] // 2000 + 1
-
-        mean_img_stack = np.zeros([end - start, self.frame_x, self.frame_y])
-        # collect mean traces from target areas of each target coordinate by reading in individual registered tiffs that contain frames for current trial
-        targets_trace_full = np.zeros([len(self.target_coords_all), (end - start) * 2000], dtype='float32')
-        counter = 0
-        for i in range(start, end):
-            tif_path_save2 = self.suite2p_path + '/reg_tif/' + reg_tif_list[i]
-            with tf.TiffFile(tif_path_save2, multifile=False) as input_tif:
-                print('|- reading tiff: %s' % tif_path_save2)
-                data = input_tif.asarray()
-
-            targets_trace = np.zeros([len(self.target_coords_all), data.shape[0]], dtype='float32')
-            for coord in range(len(self.target_coords_all)):
-                target_areas = np.array(
-                    self.target_areas)  # TODO update this so that it doesn't include the extra exclusion zone
-                x = data[:, target_areas[coord, :, 1], target_areas[coord, :, 0]]  # = 1
-                targets_trace[coord] = np.mean(x, axis=1)
-
-            targets_trace_full[:, (i - start) * 2000: ((i - start) * 2000) + data.shape[
-                0]] = targets_trace  # iteratively write to each successive segment of the targets_trace array based on the length of the reg_tiff that is read in.
-
-            mean_img_stack[counter] = np.mean(data, axis=0)
-            counter += 1
-
-        # final part, crop to the *exact* frames for current trial
-        self.raw_SLMTargets = targets_trace_full[:, curr_trial_frames[0] - start * 2000: curr_trial_frames[1] - (start * 2000)]
-
-        self.dFF_SLMTargets = normalize_dff(self.raw_SLMTargets, threshold_pct=10)
-
-        self.meanFluImg_registered = np.mean(mean_img_stack, axis=0)
-
-        self.save() if save else None
-
-    def cellStaProcessing(self, test='t_test'):
-
-        if self.stim_start_frames:
-
-            # this is the key parameter for the sta, how many frames before and after the stim onset do you want to use
-            self.pre_frames = int(np.ceil(self.fps * 0.5))  # 500 ms pre-stim period
-            self.post_frames = int(np.ceil(self.fps * 3))  # 3000 ms post-stim period
-
-            # ls of cell pixel intensity values during each stim on each trial
-            self.all_trials = []  # ls 1 = cells, ls 2 = trials, ls 3 = dff vector
-
-            # the average of every trial
-            self.stas = []  # ls 1 = cells, ls 2 = sta vector
-
-            self.all_amplitudes = []
-            self.sta_amplitudes = []
-
-            self.t_tests = []
-            self.wilcoxons = []
-
-            for plane in range(self.n_planes):
-
-                all_trials = []  # ls 1 = cells, ls 2 = trials, ls 3 = dff vector
-
-                stas = []  # ls 1 = cells, ls 2 = sta vector
-
-                all_amplitudes = []
-                sta_amplitudes = []
-
-                t_tests = []
-                wilcoxons = []
-
-                # loop through each cell
-                for i, unit in enumerate(self.raw[plane]):
-
-                    trials = []
-                    amplitudes = []
-                    df = []
-
-                    # a flat ls of all observations before stim occured
-                    pre_obs = []
-                    # a flat ls of all observations after stim occured
-                    post_obs = []
-
-                    for stim in self.stim_start_frames[plane]:
-                        # get baseline values from pre_stim_sec
-                        pre_stim_f = unit[stim - self.pre_frames: stim]
-                        baseline = np.mean(pre_stim_f)
-
-                        # the whole trial and dfof using baseline
-                        trial = unit[stim - self.pre_frames: stim + self.post_frames]
-                        trial = [((f - baseline) / baseline) * 100 for f in trial]  # dff calc
-                        trials.append(trial)
-
-                        # calc amplitude of response
-                        pre_f = trial[: self.pre_frames - 1]
-                        pre_f = np.mean(pre_f)
-
-                        avg_post_start = self.pre_frames + (self.stim_duration_frames + 1)
-                        avg_post_end = avg_post_start + int(np.ceil(self.fps * 0.5))  # post-stim period of 500 ms
-
-                        post_f = trial[avg_post_start: avg_post_end]
-                        post_f = np.mean(post_f)
-                        amplitude = post_f - pre_f
-                        amplitudes.append(amplitude)
-
-                        # append to flat lists
-                        pre_obs.append(pre_f)
-                        post_obs.append(post_f)
-
-                    trials = np.array(trials)
-                    all_trials.append(trials)
-
-                    # average amplitudes across trials
-                    amplitudes = np.array(amplitudes)
-                    all_amplitudes.append(amplitudes)
-                    sta_amplitude = np.mean(amplitudes, 0)
-                    sta_amplitudes.append(sta_amplitude)
-
-                    # average across all trials
-                    sta = np.mean(trials, 0)
-                    stas.append(sta)
-
-                    # remove nans from flat lists
-                    pre_obs = [x for x in pre_obs if ~np.isnan(x)]
-                    post_obs = [x for x in post_obs if ~np.isnan(x)]
-
-                    # t_test and man whit test pre and post stim (any other test could also be used here)
-                    t_test = stats.ttest_rel(pre_obs, post_obs)
-                    t_tests.append(t_test)
-
-                    wilcoxon = stats.wilcoxon(pre_obs, post_obs)
-                    wilcoxons.append(wilcoxon)
-
-                self.all_trials.append(np.array(all_trials))
-                self.stas.append(np.array(stas))
-
-                self.all_amplitudes.append(np.array(all_amplitudes))
-                self.sta_amplitudes.append(np.array(sta_amplitudes))
-
-                self.t_tests.append(np.array(t_tests))
-                self.wilcoxons.append(np.array(wilcoxons))
-
-            plt.figure()
-            plt.plot([avg_post_start] * 2, [-1000, 1000])
-            plt.plot([avg_post_end] * 2, [-1000, 1000])
-            plt.plot([self.pre_frames - 1] * 2, [-1000, 1000])
-            plt.plot([0] * 2, [-1000, 1000])
-            plt.plot(stas[5])
-            plt.plot(stas[10])
-            plt.plot(stas[15])
-            plt.ylim([-100, 200])
-
-            self.staSignificance(test)
-            self.singleTrialSignificance()
-
-    def staSignificance(self, test):
-
-        self.sta_sig = []
-
-        for plane in range(self.n_planes):
-
-            # set this to true if you want to multiple comparisons correct for the number of cells
-            multi_comp_correction = True
-            if not multi_comp_correction:
-                divisor = 1
-            else:
-                divisor = self.n_units[plane]
-
-            if test == 't_test':
-                p_vals = [t[1] for t in self.t_tests[plane]]
-            if test == 'wilcoxon':
-                p_vals = [t[1] for t in self.wilcoxons[plane]]
-
-            if multi_comp_correction:
-                print('performing t-test on cells with mutliple comparisons correction')
-            else:
-                print('performing t-test on cells without mutliple comparisons correction')
-
-            sig_units = []
-
-            for i, p in enumerate(p_vals):
-                if p < (0.05 / divisor):
-                    unit_index = self.cell_id[plane][i]
-                    # print('stimulation has significantly changed fluoresence of s2p unit {}, its P value is {}'.format(unit_index, p))
-                    sig_units.append(unit_index)  # significant units
-
-            self.sta_sig.append(sig_units)
-
-    def singleTrialSignificance(self):
-
-        self.single_sig = []  # single trial significance value for each trial for each cell in each plane
-
-        for plane in range(self.n_planes):
-
-            single_sigs = []
-
-            for cell, _ in enumerate(self.cell_id[plane]):
-
-                single_sig = []
-
-                for trial in range(self.n_trials):
-
-                    pre_f_trial = self.all_trials[plane][cell][trial][: self.pre_frames]
-                    std = np.std(pre_f_trial)
-
-                    if np.absolute(self.all_amplitudes[plane][cell][trial]) >= 2 * std:
-                        single_sig.append(True)
-                    else:
-                        single_sig.append(False)
-
-                single_sigs.append(single_sig)
-
-            self.single_sig.append(single_sigs)
-
-    ### KEY FUNCTIONS TO REVIEW WITH ROB FOR ALLOPTICAL WORKFLOW
+        self._photostimProcessing()
+
+    def _photostim_to_bad_framesnpy(self):
+        """finds all photostim frames and saves them into the bad_frames attribute for the exp object and saves bad_frames.npy"""
+        print('\n-----calculating photostimulation frames...')
+        print('# of photostim frames calculated per stim. trial: ', self.stim_duration_frames + 1)
+
+        photostim_frames = []
+        for j in self.stim_start_frames:
+            for i in range(
+                    self.stim_duration_frames + 1):  # usually need to remove 1 more frame than the stim duration, as the stim isn't perfectly aligned with the start of the imaging frame
+                photostim_frames.append(j + i)
+
+        self.photostim_frames = photostim_frames
+        # print(photostim_frames)
+        print('|-- Original # of frames:', self.n_frames, 'frames')
+        print('|-- # of Photostim frames:', len(photostim_frames), 'frames')
+        print('|-- Minus photostim. frames total:', self.n_frames - len(photostim_frames), 'frames')
+
+        if len(self.photostim_frames) > 0:
+            print(f'***Saving a total of {len(self.photostim_frames)} photostim frames to bad_frames.npy at: {tiffs_loc_dir}/bad_frames.npy')
+            np.save(f'{tiffs_loc_dir}/bad_frames.npy', self.photostim_frames)  # save to npy file and remember to move npy file to tiff folder before running with suite2p
 
     def get_alltargets_stim_traces_norm(self, process: str, targets_idx: int = None, subselect_cells: list = None,
                                         pre_stim=15, post_stim=200, filter_sz: bool = False, stims: list = None):
@@ -1950,351 +1950,58 @@ class AllOptical(TwoPhotonImaging):
             #     ax.scatter(x=x, y=y, edgecolors='white', facecolors='none', linewidths=1.0)
             fig.show()
 
-    def _findTargets_naparm(self):
+    def collect_traces_from_targets(self, curr_trial_frames: list, reg_tif_folder: str, save: bool = True):
+        """uses registered tiffs to collect raw traces from SLM target areas"""
 
-        '''
-        For gathering coordinates and circular areas of targets from naparm
-        '''
-
-        self.target_coords = []
-        self.target_areas = []
-        self.target_coords_all = []
-
-        # load naparm targets file for this experiment
-        naparm_path = os.path.join(self.naparm_path, 'Targets')
-
-        listdir = os.listdir(naparm_path)
-
-        targets_path = []
-        for path in listdir:
-            if 'FOVTargets_0' in path:
-                targets_path.append(path)
-        targets_path = sorted(targets_path)
-
-        print(targets_path)
-
-        target_groups = []
-        scale_factor = self.frame_x / 512
-        for target_tiff in targets_path:
-            target_image_slm = tf.imread(os.path.join(naparm_path, target_tiff))
-
-            targets = np.where(target_image_slm > 0)
-
-            targetCoordinates = list(zip(targets[0] * scale_factor, targets[1] * scale_factor))
-            target_groups.append(targetCoordinates)
-
-        self.target_coords = target_groups
-        for group in self.target_coords:
-            for coord in group:
-                self.target_coords_all.append(coord)
-
-        self.n_targets = len(self.target_coords_all)
-
-        radius = self.spiral_size / self.pix_sz_x
-
-        target_areas = []
-        for group in self.target_coords:
-            a = []
-            for target in group:
-                target_area = ([item for item in points_in_circle_np(radius, x0=target[0], y0=target[1])])
-                a.append(target_area)
-            target_areas.append(a)
-
-        self.target_areas = target_areas
-
-        print('Got targets...')
-
-    def find_s2p_targets_naparm(self):
-        '''finding s2p cells that were SLM targets - naparm, lots of different SLM groups version'''
-
-        print('searching for targeted cells...')
-
-        self.s2p_targets_naparm = []
-        self.n_targeted_cells = 0
-        for slm_group in self.target_coords:
-            # print(' ')
-            print('\nSLM Group # %s' % self.target_coords.index(slm_group))
-            targeted_cells = []
-            for cell in range(self.n_units):
-                flag = 0
-                for x, y in zip(self.cell_x[cell], self.cell_y[cell]):
-                    if (y, x) in slm_group:
-                        print('Cell # %s' % self.cell_id[cell], ('y%s' % y, 'x%s' % x))
-                        flag = 1
-
-                if flag == 1:
-                    targeted_cells.append(1)
-                else:
-                    targeted_cells.append(0)
-
-            s2p_cell_targets = [self.cell_id[i] for i, x in enumerate(targeted_cells) if
-                                x == 1]  # get ls of s2p cells that were photostim targetted
-            self.s2p_targets_naparm.append(s2p_cell_targets)
-            print('Number of targeted cells:', len(s2p_cell_targets))
-            self.n_targeted_cells += len(s2p_cell_targets)
-
-        self.targeted_cells_all = [x for y in self.s2p_targets_naparm for x in y]
-
-        print('Search completed.')
-        print('Total number of targeted cells: ', self.n_targeted_cells)
-
-    ### END
-
-    # other useful functions for all-optical analysis
-
-    def whiten_photostim_frame(self, tiff_path, save_as=''):
-        im_stack = tf.imread(tiff_path, key=range(self.n_frames))
-
-        frames_to_whiten = []
-        for j in self.stim_start_frames:
-            frames_to_whiten.append(j)
-
-        im_stack_1 = im_stack
-        a = np.full_like(im_stack_1[0], fill_value=0)
-        a[0:100, 0:100] = 5000.
-        for frame in frames_to_whiten:
-            im_stack_1[frame - 3] = im_stack_1[frame - 3] + a
-            im_stack_1[frame - 2] = im_stack_1[frame - 2] + a
-            im_stack_1[frame - 1] = im_stack_1[frame - 1] + a
-
-        frames_to_remove = []
-        for j in self.stim_start_frames:
-            for i in range(0,
-                           self.stim_duration_frames + 1):  # usually need to remove 1 more frame than the stim duration, as the stim isn't perfectly aligned with the start of the imaging frame
-                frames_to_remove.append(j + i)
-
-        im_stack_1 = np.delete(im_stack, frames_to_remove, axis=0)
-
-        tf.imwrite(save_as, im_stack_1, photometric='minisblack')
-
-    def find_photostim_frames(self):
-        """finds all photostim frames and saves them into the bad_frames attribute for the exp object"""
-        print('\n-----calculating photostimulation frames...')
-        print('# of photostim frames calculated per stim. trial: ', self.stim_duration_frames + 1)
-
-        photostim_frames = []
-        for j in self.stim_start_frames:
-            for i in range(
-                    self.stim_duration_frames + 1):  # usually need to remove 1 more frame than the stim duration, as the stim isn't perfectly aligned with the start of the imaging frame
-                photostim_frames.append(j + i)
-
-        self.photostim_frames = photostim_frames
-        # print(photostim_frames)
-        print('|-- Original # of frames:', self.n_frames, 'frames')
-        print('|-- # of Photostim frames:', len(photostim_frames), 'frames')
-        print('|-- Minus photostim. frames total:', self.n_frames - len(photostim_frames), 'frames')
-        self.bad_frames = photostim_frames
-
-    def append_bad_frames(self, bad_frames=[]):
-        '''appends bad frames given as additional frames (e.g. seizure/CSD frames)'''
-
-        if len(bad_frames) > 0:
-            # self.seizure_frames = [i for i in bad_frames]
-            self.bad_frames = list(np.unique([bad_frames + self.photostim_frames][0]))
-            print('\nlen of bad frames total', len(self.bad_frames))
+        if reg_tif_folder is None:
+            if self.suite2p_path:
+                reg_tif_folder = self.suite2p_path + '/reg_tif/'
+                print(f"\- trying to load registerred tiffs from: {reg_tif_folder}")
         else:
-            self.seizure_frames = []
+            raise Exception(f"Must provide reg_tif_folder path for loading registered tiffs")
+        if not os.path.exists(reg_tif_folder):
+            raise Exception(f"no registered tiffs found at path: {reg_tif_folder}")
 
-        print('len of seizures_frames:', len(self.seizure_frames))
-        print('len of photostim_frames:', len(self.photostim_frames))
+        print(
+            f'\n\ncollecting raw Flu traces from SLM target coord. areas from registered TIFFs from: {reg_tif_folder}')
+        # read in registered tiff
+        reg_tif_list = os.listdir(reg_tif_folder)
+        reg_tif_list.sort()
+        start = curr_trial_frames[0] // 2000  # 2000 because that is the batch size for suite2p run
+        end = curr_trial_frames[1] // 2000 + 1
 
-    def avg_stim_images(self, peri_frames: int = 100, stim_timings: list = [], save_img=False, to_plot=False,
-                        verbose=False, force_redo=False):
-        """
-        Outputs (either by saving or plotting, or both) images from raw t-series TIFF for a trial around each individual
-        stim timings.
+        mean_img_stack = np.zeros([end - start, self.frame_x, self.frame_y])
+        # collect mean traces from target areas of each target coordinate by reading in individual registered tiffs that contain frames for current trial
+        targets_trace_full = np.zeros([len(self.target_coords_all), (end - start) * 2000], dtype='float32')
+        counter = 0
+        for i in range(start, end):
+            tif_path_save2 = self.suite2p_path + '/reg_tif/' + reg_tif_list[i]
+            with tf.TiffFile(tif_path_save2, multifile=False) as input_tif:
+                print('|- reading tiff: %s' % tif_path_save2)
+                data = input_tif.asarray()
 
-        :param peri_frames:
-        :param stim_timings:
-        :param save_img:
-        :param to_plot:
-        :param force_redo:
-        :param verbose:
-        :return:
-        """
+            targets_trace = np.zeros([len(self.target_coords_all), data.shape[0]], dtype='float32')
+            for coord in range(len(self.target_coords_all)):
+                target_areas = np.array(
+                    self.target_areas)  # TODO update this so that it doesn't include the extra exclusion zone
+                x = data[:, target_areas[coord, :, 1], target_areas[coord, :, 0]]  # = 1
+                targets_trace[coord] = np.mean(x, axis=1)
 
-        if force_redo:
-            continu = True
-        elif hasattr(self, 'avgstimimages_r'):
-            if self.avgstimimages_r is True:
-                continu = False
-            else:
-                continu = True
-        else:
-            continu = True
+            targets_trace_full[:, (i - start) * 2000: ((i - start) * 2000) + data.shape[
+                0]] = targets_trace  # iteratively write to each successive segment of the targets_trace array based on the length of the reg_tiff that is read in.
 
-        if continu:
-            print('making stim images...')
-            if hasattr(self, 'stim_images'):
-                x = [0 for stim in stim_timings if stim not in self.stim_images.keys()]
-            else:
-                self.stim_images = {}
-                x = [0] * len(stim_timings)
-            if 0 in x:
-                tiffs_loc = '%s/*Ch3.tif' % self.tiff_path_dir
-                tiff_path = glob.glob(tiffs_loc)[0]
-                print('working on loading up %s tiff from: ' % self.metainfo['trial'], tiff_path)
-                im_stack = tf.imread(tiff_path, key=range(self.n_frames))
-                print('Processing seizures from experiment tiff (wait for all seizure comparisons to be processed), \n '
-                      'total tiff shape: ', im_stack.shape)
+            mean_img_stack[counter] = np.mean(data, axis=0)
+            counter += 1
 
-            for stim in stim_timings:
-                message = '|- stim # %s out of %s' % (stim_timings.index(stim), len(stim_timings))
-                print(message, end='\r')
-                if stim in self.stim_images.keys():
-                    avg_sub = self.stim_images[stim]
-                else:
-                    if stim < peri_frames:
-                        peri_frames = stim
-                    im_sub = im_stack[stim - peri_frames: stim + peri_frames]
-                    avg_sub = np.mean(im_sub, axis=0)
-                    self.stim_images[stim] = avg_sub
+        # final part, crop to the *exact* frames for current trial
+        self.raw_SLMTargets = targets_trace_full[:, curr_trial_frames[0] - start * 2000: curr_trial_frames[1] - (start * 2000)]
 
-                if save_img:
-                    # save in a subdirectory under the ANALYSIS folder path from whence t-series TIFF came from
-                    save_path = self.analysis_save_dir + 'avg_stim_images'
-                    save_path_stim = save_path + '/%s_%s_stim-%s.tif' % (
-                        self.metainfo['date'], self.metainfo['trial'], stim)
-                    if os.path.exists(save_path):
-                        print("saving stim_img tiff to... %s" % save_path_stim) if verbose else None
-                        avg_sub8 = convert_to_8bit(avg_sub, 0, 255)
-                        tf.imwrite(save_path_stim,
-                                   avg_sub8, photometric='minisblack')
-                    else:
-                        print('making new directory for saving images at:', save_path)
-                        os.mkdir(save_path)
-                        print("saving as... %s" % save_path_stim)
-                        avg_sub8 = convert_to_8bit(avg_sub, 0, 255)
-                        tf.imwrite(save_path_stim,
-                                   avg_sub, photometric='minisblack')
+        self.dFF_SLMTargets = normalize_dff(self.raw_SLMTargets, threshold_pct=10)
 
-                if to_plot:
-                    plt.imshow(avg_sub, cmap='gray')
-                    plt.suptitle('avg image from %s frames around stim_start_frame %s' % (peri_frames, stim))
-                    plt.show()  # just plot for now to make sure that you are doing things correctly so far
+        self.meanFluImg_registered = np.mean(mean_img_stack, axis=0)
 
-            if hasattr(self, 'pkl_path'):
-                self.save_pkl()
-            else:
-                print('note: pkl not saved yet...')
+        self.save() if save else None
 
-            self.avgstimimages_r = True
-
-        else:
-            print('skipping remaking of avg stim images')
-
-    def run_stamm_nogui(self, numDiffStims, startOnStim, everyXStims, preSeconds=0.75, postSeconds=1.25):
-        """run STAmoviemaker for the expobj's trial"""
-        qnap_path = os.path.expanduser('/home/pshah/mnt/qnap')
-
-        ## data path
-        movie_path = self.tiff_path
-        sync_path = self.paq_path
-
-        ## stamm save path
-        stam_save_path = os.path.join(qnap_path, 'Analysis', self.metainfo['date'], 'STA_Movies',
-                                      '%s_%s_%s' % (self.metainfo['date'],
-                                                    self.metainfo['animal prep.'],
-                                                    self.metainfo['trial']))
-        os.makedirs(stam_save_path, exist_ok=True)
-
-        ##
-        assert os.path.exists(stam_save_path)
-
-        print('QNAP_path:', qnap_path,
-              '\ndata path:', movie_path,
-              '\nsync path:', sync_path,
-              '\nSTA movie save path:', stam_save_path)
-
-        # define STAmm parameters
-        frameRate = int(self.fps)
-
-        arg_dict = {'moviePath': movie_path,  # hard-code this
-                    'savePath': stam_save_path,
-                    'syncFrameChannel': 'frame_clock',
-                    'syncStimChannel': 'packio2markpoints',
-                    'syncStartSec': 0,
-                    'syncStopSec': 0,
-                    'numDiffStims': numDiffStims,
-                    'startOnStim': startOnStim,
-                    'everyXStims': everyXStims,
-                    'preSeconds': preSeconds,
-                    'postSeconds': postSeconds,
-                    'frameRate': frameRate,
-                    'averageImageStart': 0.5,
-                    'averageImageStop': 1.5,
-                    'methodDF': False,
-                    'methodDFF': True,
-                    'methodZscore': False,
-                    'syncPath': sync_path,
-                    'zPlanes': 1,
-                    'useStimOrder': False,
-                    'stimOrder': [],
-                    'useSingleTrials': False,
-                    'doThreshold': False,
-                    'threshold': 0,
-                    'colourByTime': False,
-                    'useCorrelationImage': False,
-                    'blurHandS': False,
-                    'makeMaxImage': True,
-                    'makeColourImage': False
-                    }
-
-        # # run STAmm
-        # STAMM.STAMovieMaker(arg_dict)
-
-        # show the MaxResponseImage
-        img = glob.glob(stam_save_path + '/*MaxResponseImage.tif')[0]
-        plotting.plot_single_tiff(img, frame_num=0)
-
-    # def _good_cells(self, min_radius_pix, max_radius_pix):
-    #     '''
-    #     This function filters each cell for two criteria. 1) at least 1 flu change greater than 2.5std above mean,
-    #     and 2) a minimum cell radius (in pixels) of the given value.
-    #
-    #     :param min_radius_pix:
-    #     :return: a ls of
-    #     '''
-    #
-    #     good_cells = []
-    #     for i in range(len(self.cell_id)):
-    #         raw = self.raw[i]
-    #         raw_ = ls(np.delete(raw, self.photostim_frames, None))
-    #         raw_dff = normalize_dff(raw_)
-    #         std = np.std(raw_dff, axis=0)
-    #
-    #         z = []
-    #         avg_std = []
-    #         for j in np.arange(len(raw_dff), step=4):
-    #             avg = np.mean(raw_dff[j:j + 4])
-    #             if avg > np.mean(raw_dff) + 2.5 * std:
-    #                 z.append(j)
-    #                 avg_std.append(avg)
-    #
-    #         radius = self.radius[i]
-    #
-    #         if len(z) > 0 and radius > min_radius_pix and radius < max_radius_pix:
-    #             good_cells.append(self.cell_id[i])
-    #
-    #     print('# of good cells found: %s (out of %s ROIs) ' % (len(good_cells), len(self.cell_id)))
-    #     self.good_cells = good_cells
-    #
-    # def _good_cells_jit(self, min_radius_pix, max_radius_pix):
-    #     good_cells = []
-    #     for i in range(len(self.cell_id)):
-    #         radius = self.radius[i]
-    #
-    #         raw = self.raw[i]
-    #         raw_ = ls(np.delete(raw, self.photostim_frames, None))
-    #         raw_dff = normalize_dff(raw_)
-    #         std = np.std(raw_dff, axis=0)
-    #
-    #         x = self.sliding_window_std(raw_dff, std)
-    #
-    #         if len(x) > 0 and radius > min_radius_pix and radius < max_radius_pix:
-    #             good_cells.append(self.cell_id[i])
-    #     print('# of good cells found: %s (out of %s ROIs)' % (len(good_cells), len(self.cell_id)))
-    #     return good_cells
 
     # calculate reliability of photostim responsiveness of all of the targeted cells (found in s2p output)
     def get_SLMTarget_responses_dff(self, process: str, threshold=10, stims_to_use: list = None):
@@ -2438,99 +2145,6 @@ class AllOptical(TwoPhotonImaging):
                 traces_SLMtargets_failures_avg_dict[target_idx] = np.mean(traces_SLMtargets_failures_l, axis=0)
 
         return reliability_slmtargets, traces_SLMtargets_successes_avg_dict, traces_SLMtargets_failures_avg_dict
-
-    # def get_alltargets_stim_traces_norm(self, pre_stim_sec=15, post_stim_sec=200, filter_sz: bool = False, stims_idx_l: ls = None):
-    #     """
-    #     primary function to measure the dFF and dF/setdF traces for photostimulated targets.
-    #     :param stims:
-    #     :param targets_idx: integer for the index of target cell to process
-    #     :param subselect_cells: ls of cells to subset from the overall set of traces (use in place of targets_idx if desired)
-    #     :param pre_stim_sec: number of frames to use as pre-stim
-    #     :param post_stim_sec: number of frames to use as post-stim
-    #     :param filter_sz: whether to filter out stims that are occuring seizures
-    #     :return: lists of individual targets dFF traces, and averaged targets dFF over all stims for each target
-    #     """
-    #
-    #     if filter_sz:
-    #         print('\n -- working on getting stim traces for cells inside sz boundary --')
-    #
-    #     if stims_idx_l is None:
-    #         stim_timings = self.stim_start_frames
-    #     else:
-    #         stim_timings = [self.stim_start_frames[stim_idx] for stim_idx in stims_idx_l]
-    #
-    #     self.s2p_rois_nontargets = [cell for cell in self.cell_id if cell not in self.s2p_cell_targets]  # need to also detect (and exclude) ROIs that are within some radius of the SLM targets
-    #     num_cells = len(self.s2p_rois_nontargets)
-    #     targets_trace = self.raw
-    #
-    #     # collect photostim timed average dff traces of photostim nontargets
-    #     nontargets_dff = np.zeros(
-    #         [num_cells, len(self.stim_start_frames), pre_stim_sec + self.stim_duration_frames + post_stim_sec])
-    #     # nontargets_dff_avg = np.zeros([num_cells, pre_stim_sec + post_stim_sec])
-    #
-    #     nontargets_dfstdF = np.zeros(
-    #         [num_cells, len(self.stim_start_frames), pre_stim_sec + self.stim_duration_frames + post_stim_sec])
-    #     # nontargets_dfstdF_avg = np.zeros([num_cells, pre_stim_sec + post_stim_sec])
-    #
-    #     nontargets_raw = np.zeros(
-    #         [num_cells, len(self.stim_start_frames), pre_stim_sec + self.stim_duration_frames + post_stim_sec])
-    #     # nontargets_raw_avg = np.zeros([num_cells, pre_stim_sec + post_stim_sec])
-    #
-    #
-    #     for cell_idx in range(num_cells):
-    #
-    #         if filter_sz:
-    #             if hasattr(self, 'slmtargets_szboundary_stim'):  ## change to ROIs in sz for each stim -- has this classification been done for non-targets ROIs?
-    #                 flu = []
-    #                 for stim in stim_timings:
-    #                     if stim in self.slmtargets_szboundary_stim.keys():  # some stims dont have sz boundaries because of issues with their TIFFs not being made properly (not readable in Fiji), usually it is the first TIFF in a seizure
-    #                         if cell_idx not in self.slmtargets_szboundary_stim[stim]:
-    #                             flu.append(targets_trace[cell_idx][stim - pre_stim_sec: stim + self.stim_duration_frames + post_stim_sec])
-    #             else:
-    #                 flu = []
-    #                 print('classifying of sz boundaries not completed for this expobj', self.metainfo['animal prep.'], self.metainfo['trial'])
-    #             # flu = [targets_trace[cell_idx][stim - pre_stim_sec: stim + self.stim_duration_frames + post_stim_sec] for
-    #             #        stim
-    #             #        in stim_timings if
-    #             #        stim not in self.seizure_frames]
-    #         else:
-    #             flu = [targets_trace[cell_idx][stim - pre_stim_sec: stim + self.stim_duration_frames + post_stim_sec] for
-    #                    stim
-    #                    in stim_timings]
-    #
-    #         # flu_dfstdF = []
-    #         # flu_dff = []
-    #         # flu = []
-    #         if len(flu) > 0:
-    #             for i in range(len(flu)):
-    #                 trace = flu[i]
-    #                 mean_pre = np.mean(trace[0:pre_stim_sec])
-    #                 trace_dff = ((trace - mean_pre) / mean_pre) * 100
-    #                 std_pre = np.std(trace[0:pre_stim_sec])
-    #                 dFstdF = (trace - mean_pre) / std_pre  # make dF divided by std of pre-stim F trace
-    #
-    #                 targets_raw[cell_idx, i] = trace
-    #                 targets_dff[cell_idx, i] = trace_dff
-    #                 targets_dfstdF[cell_idx, i] = dFstdF
-    #                 # flu_dfstdF.append(dFstdF)
-    #                 # flu_dff.append(trace_dff)
-    #
-    #         # targets_dff.append(flu_dff)  # contains all individual dFF traces for all stim times
-    #         # targets_dff_avg.append(np.nanmean(flu_dff, axis=0))  # contains the dFF trace averaged across all stim times
-    #
-    #         # targets_dfstdF.append(flu_dfstdF)
-    #         # targets_dfstdF_avg.append(np.nanmean(flu_dfstdF, axis=0))
-    #
-    #         # SLMTargets_stims_raw.append(flu)
-    #         # targets_raw_avg.append(np.nanmean(flu, axis=0))
-    #
-    #     targets_dff_avg = np.mean(targets_dff, axis=1)
-    #     targets_dfstdF_avg = np.mean(targets_dfstdF, axis=1)
-    #     targets_raw_avg = np.mean(targets_raw, axis=1)
-    #
-    #     print(targets_dff_avg.shape)
-    #
-    #     return targets_dff, targets_dff_avg, targets_dfstdF, targets_dfstdF_avg, targets_raw, targets_raw_avg
 
     def _makeNontargetsStimTracesArray(self, stim_timings, normalize_to='pre-stim', save=True):
         """
@@ -2714,6 +2328,183 @@ class AllOptical(TwoPhotonImaging):
 
         expobj.save() if save else None
 
+
+    #### STATISTICS FOR PHOTOSTIM RESPONSES
+    def cellStaProcessing(self, test='t_test'):
+
+        if self.stim_start_frames:
+
+            # this is the key parameter for the sta, how many frames before and after the stim onset do you want to use
+            self.pre_frames = int(np.ceil(self.fps * 0.5))  # 500 ms pre-stim period
+            self.post_frames = int(np.ceil(self.fps * 3))  # 3000 ms post-stim period
+
+            # ls of cell pixel intensity values during each stim on each trial
+            self.all_trials = []  # ls 1 = cells, ls 2 = trials, ls 3 = dff vector
+
+            # the average of every trial
+            self.stas = []  # ls 1 = cells, ls 2 = sta vector
+
+            self.all_amplitudes = []
+            self.sta_amplitudes = []
+
+            self.t_tests = []
+            self.wilcoxons = []
+
+            for plane in range(self.n_planes):
+
+                all_trials = []  # ls 1 = cells, ls 2 = trials, ls 3 = dff vector
+
+                stas = []  # ls 1 = cells, ls 2 = sta vector
+
+                all_amplitudes = []
+                sta_amplitudes = []
+
+                t_tests = []
+                wilcoxons = []
+
+                # loop through each cell
+                for i, unit in enumerate(self.raw[plane]):
+
+                    trials = []
+                    amplitudes = []
+                    df = []
+
+                    # a flat ls of all observations before stim occured
+                    pre_obs = []
+                    # a flat ls of all observations after stim occured
+                    post_obs = []
+
+                    for stim in self.stim_start_frames[plane]:
+                        # get baseline values from pre_stim_sec
+                        pre_stim_f = unit[stim - self.pre_frames: stim]
+                        baseline = np.mean(pre_stim_f)
+
+                        # the whole trial and dfof using baseline
+                        trial = unit[stim - self.pre_frames: stim + self.post_frames]
+                        trial = [((f - baseline) / baseline) * 100 for f in trial]  # dff calc
+                        trials.append(trial)
+
+                        # calc amplitude of response
+                        pre_f = trial[: self.pre_frames - 1]
+                        pre_f = np.mean(pre_f)
+
+                        avg_post_start = self.pre_frames + (self.stim_duration_frames + 1)
+                        avg_post_end = avg_post_start + int(np.ceil(self.fps * 0.5))  # post-stim period of 500 ms
+
+                        post_f = trial[avg_post_start: avg_post_end]
+                        post_f = np.mean(post_f)
+                        amplitude = post_f - pre_f
+                        amplitudes.append(amplitude)
+
+                        # append to flat lists
+                        pre_obs.append(pre_f)
+                        post_obs.append(post_f)
+
+                    trials = np.array(trials)
+                    all_trials.append(trials)
+
+                    # average amplitudes across trials
+                    amplitudes = np.array(amplitudes)
+                    all_amplitudes.append(amplitudes)
+                    sta_amplitude = np.mean(amplitudes, 0)
+                    sta_amplitudes.append(sta_amplitude)
+
+                    # average across all trials
+                    sta = np.mean(trials, 0)
+                    stas.append(sta)
+
+                    # remove nans from flat lists
+                    pre_obs = [x for x in pre_obs if ~np.isnan(x)]
+                    post_obs = [x for x in post_obs if ~np.isnan(x)]
+
+                    # t_test and man whit test pre and post stim (any other test could also be used here)
+                    t_test = stats.ttest_rel(pre_obs, post_obs)
+                    t_tests.append(t_test)
+
+                    wilcoxon = stats.wilcoxon(pre_obs, post_obs)
+                    wilcoxons.append(wilcoxon)
+
+                self.all_trials.append(np.array(all_trials))
+                self.stas.append(np.array(stas))
+
+                self.all_amplitudes.append(np.array(all_amplitudes))
+                self.sta_amplitudes.append(np.array(sta_amplitudes))
+
+                self.t_tests.append(np.array(t_tests))
+                self.wilcoxons.append(np.array(wilcoxons))
+
+            plt.figure()
+            plt.plot([avg_post_start] * 2, [-1000, 1000])
+            plt.plot([avg_post_end] * 2, [-1000, 1000])
+            plt.plot([self.pre_frames - 1] * 2, [-1000, 1000])
+            plt.plot([0] * 2, [-1000, 1000])
+            plt.plot(stas[5])
+            plt.plot(stas[10])
+            plt.plot(stas[15])
+            plt.ylim([-100, 200])
+
+            self.staSignificance(test)
+            self.singleTrialSignificance()
+
+    def staSignificance(self, test):
+
+        self.sta_sig = []
+
+        for plane in range(self.n_planes):
+
+            # set this to true if you want to multiple comparisons correct for the number of cells
+            multi_comp_correction = True
+            if not multi_comp_correction:
+                divisor = 1
+            else:
+                divisor = self.n_units[plane]
+
+            if test == 't_test':
+                p_vals = [t[1] for t in self.t_tests[plane]]
+            if test == 'wilcoxon':
+                p_vals = [t[1] for t in self.wilcoxons[plane]]
+
+            if multi_comp_correction:
+                print('performing t-test on cells with mutliple comparisons correction')
+            else:
+                print('performing t-test on cells without mutliple comparisons correction')
+
+            sig_units = []
+
+            for i, p in enumerate(p_vals):
+                if p < (0.05 / divisor):
+                    unit_index = self.cell_id[plane][i]
+                    # print('stimulation has significantly changed fluoresence of s2p unit {}, its P value is {}'.format(unit_index, p))
+                    sig_units.append(unit_index)  # significant units
+
+            self.sta_sig.append(sig_units)
+
+    def singleTrialSignificance(self):
+
+        self.single_sig = []  # single trial significance value for each trial for each cell in each plane
+
+        for plane in range(self.n_planes):
+
+            single_sigs = []
+
+            for cell, _ in enumerate(self.cell_id[plane]):
+
+                single_sig = []
+
+                for trial in range(self.n_trials):
+
+                    pre_f_trial = self.all_trials[plane][cell][trial][: self.pre_frames]
+                    std = np.std(pre_f_trial)
+
+                    if np.absolute(self.all_amplitudes[plane][cell][trial]) >= 2 * std:
+                        single_sig.append(True)
+                    else:
+                        single_sig.append(False)
+
+                single_sigs.append(single_sig)
+
+            self.single_sig.append(single_sigs)
+
     def _runWilcoxonsTest(expobj, array1=None, array2=None):
 
         if array1 is None and array2 is None:
@@ -2762,6 +2553,181 @@ class AllOptical(TwoPhotonImaging):
         #         sig_units[bonf_corr] = True
 
         return sig_units
+
+    # other useful functions for all-optical analysis
+    def whiten_photostim_frame(self, tiff_path, save_as=''):
+        im_stack = tf.imread(tiff_path, key=range(self.n_frames))
+
+        frames_to_whiten = []
+        for j in self.stim_start_frames:
+            frames_to_whiten.append(j)
+
+        im_stack_1 = im_stack
+        a = np.full_like(im_stack_1[0], fill_value=0)
+        a[0:100, 0:100] = 5000.
+        for frame in frames_to_whiten:
+            im_stack_1[frame - 3] = im_stack_1[frame - 3] + a
+            im_stack_1[frame - 2] = im_stack_1[frame - 2] + a
+            im_stack_1[frame - 1] = im_stack_1[frame - 1] + a
+
+        frames_to_remove = []
+        for j in self.stim_start_frames:
+            for i in range(0,
+                           self.stim_duration_frames + 1):  # usually need to remove 1 more frame than the stim duration, as the stim isn't perfectly aligned with the start of the imaging frame
+                frames_to_remove.append(j + i)
+
+        im_stack_1 = np.delete(im_stack, frames_to_remove, axis=0)
+
+        tf.imwrite(save_as, im_stack_1, photometric='minisblack')
+
+    def avg_stim_images(self, peri_frames: int = 100, stim_timings: list = [], save_img=False, to_plot=False,
+                        verbose=False, force_redo=False):
+        """
+        Outputs (either by saving or plotting, or both) images from raw t-series TIFF for a trial around each individual
+        stim timings.
+
+        :param peri_frames:
+        :param stim_timings:
+        :param save_img:
+        :param to_plot:
+        :param force_redo:
+        :param verbose:
+        :return:
+        """
+
+        if force_redo:
+            continu = True
+        elif hasattr(self, 'avgstimimages_r'):
+            if self.avgstimimages_r is True:
+                continu = False
+            else:
+                continu = True
+        else:
+            continu = True
+
+        if continu:
+            print('making stim images...')
+            if hasattr(self, 'stim_images'):
+                x = [0 for stim in stim_timings if stim not in self.stim_images.keys()]
+            else:
+                self.stim_images = {}
+                x = [0] * len(stim_timings)
+            if 0 in x:
+                tiffs_loc = '%s/*Ch3.tif' % self.tiff_path_dir
+                tiff_path = glob.glob(tiffs_loc)[0]
+                print('working on loading up %s tiff from: ' % self.metainfo['trial'], tiff_path)
+                im_stack = tf.imread(tiff_path, key=range(self.n_frames))
+                print('Processing seizures from experiment tiff (wait for all seizure comparisons to be processed), \n '
+                      'total tiff shape: ', im_stack.shape)
+
+            for stim in stim_timings:
+                message = '|- stim # %s out of %s' % (stim_timings.index(stim), len(stim_timings))
+                print(message, end='\r')
+                if stim in self.stim_images.keys():
+                    avg_sub = self.stim_images[stim]
+                else:
+                    if stim < peri_frames:
+                        peri_frames = stim
+                    im_sub = im_stack[stim - peri_frames: stim + peri_frames]
+                    avg_sub = np.mean(im_sub, axis=0)
+                    self.stim_images[stim] = avg_sub
+
+                if save_img:
+                    # save in a subdirectory under the ANALYSIS folder path from whence t-series TIFF came from
+                    save_path = self.analysis_save_dir + 'avg_stim_images'
+                    save_path_stim = save_path + '/%s_%s_stim-%s.tif' % (
+                        self.metainfo['date'], self.metainfo['trial'], stim)
+                    if os.path.exists(save_path):
+                        print("saving stim_img tiff to... %s" % save_path_stim) if verbose else None
+                        avg_sub8 = convert_to_8bit(avg_sub, 0, 255)
+                        tf.imwrite(save_path_stim,
+                                   avg_sub8, photometric='minisblack')
+                    else:
+                        print('making new directory for saving images at:', save_path)
+                        os.mkdir(save_path)
+                        print("saving as... %s" % save_path_stim)
+                        avg_sub8 = convert_to_8bit(avg_sub, 0, 255)
+                        tf.imwrite(save_path_stim,
+                                   avg_sub, photometric='minisblack')
+
+                if to_plot:
+                    plt.imshow(avg_sub, cmap='gray')
+                    plt.suptitle('avg image from %s frames around stim_start_frame %s' % (peri_frames, stim))
+                    plt.show()  # just plot for now to make sure that you are doing things correctly so far
+
+            if hasattr(self, 'pkl_path'):
+                self.save_pkl()
+            else:
+                print('note: pkl not saved yet...')
+
+            self.avgstimimages_r = True
+
+        else:
+            print('skipping remaking of avg stim images')
+
+    def run_stamm_nogui(self, numDiffStims, startOnStim, everyXStims, preSeconds=0.75, postSeconds=1.25):
+        """run STAmoviemaker for the expobj's trial"""
+        qnap_path = os.path.expanduser('/home/pshah/mnt/qnap')
+
+        ## data path
+        movie_path = self.tiff_path
+        sync_path = self.paq_path
+
+        ## stamm save path
+        stam_save_path = os.path.join(qnap_path, 'Analysis', self.metainfo['date'], 'STA_Movies',
+                                      '%s_%s_%s' % (self.metainfo['date'],
+                                                    self.metainfo['animal prep.'],
+                                                    self.metainfo['trial']))
+        os.makedirs(stam_save_path, exist_ok=True)
+
+        ##
+        assert os.path.exists(stam_save_path)
+
+        print('QNAP_path:', qnap_path,
+              '\ndata path:', movie_path,
+              '\nsync path:', sync_path,
+              '\nSTA movie save path:', stam_save_path)
+
+        # define STAmm parameters
+        frameRate = int(self.fps)
+
+        arg_dict = {'moviePath': movie_path,  # hard-code this
+                    'savePath': stam_save_path,
+                    'syncFrameChannel': 'frame_clock',
+                    'syncStimChannel': 'packio2markpoints',
+                    'syncStartSec': 0,
+                    'syncStopSec': 0,
+                    'numDiffStims': numDiffStims,
+                    'startOnStim': startOnStim,
+                    'everyXStims': everyXStims,
+                    'preSeconds': preSeconds,
+                    'postSeconds': postSeconds,
+                    'frameRate': frameRate,
+                    'averageImageStart': 0.5,
+                    'averageImageStop': 1.5,
+                    'methodDF': False,
+                    'methodDFF': True,
+                    'methodZscore': False,
+                    'syncPath': sync_path,
+                    'zPlanes': 1,
+                    'useStimOrder': False,
+                    'stimOrder': [],
+                    'useSingleTrials': False,
+                    'doThreshold': False,
+                    'threshold': 0,
+                    'colourByTime': False,
+                    'useCorrelationImage': False,
+                    'blurHandS': False,
+                    'makeMaxImage': True,
+                    'makeColourImage': False
+                    }
+
+        # # run STAmm
+        # STAMM.STAMovieMaker(arg_dict)
+
+        # show the MaxResponseImage
+        img = glob.glob(stam_save_path + '/*MaxResponseImage.tif')[0]
+        plotting.plot_single_tiff(img, frame_num=0)
 
     # used for creating tiffs that remove artifacts from alloptical experiments with photostim artifacts
     def rm_artifacts_tiffs(expobj, tiffs_loc, new_tiffs):
@@ -2976,9 +2942,6 @@ class AllOptical(TwoPhotonImaging):
 
             tf.imwrite(save_path, stack, photometric='minisblack')
             print('\ns2p ROI + photostim targets masks saved in TIFF to: ', save_path)
-
-
-
 
 
 

@@ -329,8 +329,11 @@ def convert_to_8bit(img, target_type_min=0, target_type_max=255):
 ##### PRAJAY'S FUNCTIONS THAT MIGHT BE APPROP FOR THIS SCRIPT ####### / end
 
 def _check_path_exists(path_arg: str, path: str):
-    assert os.path.exists(path), f"{path_arg} path not found: {path}"
-    return True
+    try:
+        assert os.path.exists(path), f"{path_arg} path not found: {path}"
+        return True
+    except AssertionError:
+        return False
 
 
 # paq2py by Llyod Russel
