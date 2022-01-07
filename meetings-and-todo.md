@@ -8,7 +8,8 @@
 
 Next big tasks:
 [] test linking of Suite2p class to experiment object 
-[] link Suite2p class to trial objects 
+[] link Suite2p class to trial objects
+[] review Rob's notes on attr's and functions for alloptical and 2p imaging classes
 
 
 ## Dec 22 2021
