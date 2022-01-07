@@ -348,7 +348,7 @@ class Suite2p:
 
         # specify tiff list to suite2p and data path
         db['tiff_list'] = tiffs_to_s2p
-        db['data_path'] = self.dataPath
+        db['data_path'] = self.dataPath  ## this is where the bad_frames.npy file will be stored for suite2p to use.
         db['save_folder'] = self.suite2pPath
 
         print(db)

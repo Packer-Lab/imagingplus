@@ -1,20 +1,11 @@
 # Record for meeting agendas, notes and todo's 
 
-## Dec 6 2021
-- get Rob setup with development installation of the package
-  - installation in new environment was successful
-  - had problems with dependencies (need to figure out how to set dependencies)
+## Jan 7 2022
+- discuss implementation of parent experiment class for handling multiple sub-experiment objects, and used to run suite2p from
+- main todo with Rob: go through and ensure that all the alloptical functions are in place, correct and uptodate with his versions
+  (can even create a pipeline to quickly jot down the flow of functions that will be used for an alloptical experiment)
+-- then I can handle putting the structure of everything together.
 
-
-- discuss first example Jupyter notebook of simple standard TwoPhoton imaging only workflow - thoughts, suggestions, ideas for improvements?
-- discuss next workflows to work on.
-
-
-Next TODOs:
-  - add necessary dependencies to the setup.py 
-    - also CLEAN UP IMPORT STATEMENTS and do testing with new dependencies
-  - Prajay will work on creating a barebones alloptical initial object
-    - next time: work on going through the code together and see alloptical  
 
 
 ## Dec 22 2021
@@ -35,8 +26,19 @@ Rob:
 - look through attr's for alloptical object and add to __init__ to initialize the attr's
 
 
-## Jan 7 2022
-- discuss implementation of parent experiment class for handling multiple sub-experiment objects, and used to run suite2p from
-- 
+
+## Dec 6 2021
+- get Rob setup with development installation of the package
+  - installation in new environment was successful
+  - had problems with dependencies (need to figure out how to set dependencies)
 
 
+- discuss first example Jupyter notebook of simple standard TwoPhoton imaging only workflow - thoughts, suggestions, ideas for improvements?
+- discuss next workflows to work on.
+
+
+Next TODOs:
+  - add necessary dependencies to the setup.py 
+    - also CLEAN UP IMPORT STATEMENTS and do testing with new dependencies
+  - Prajay will work on creating a barebones alloptical initial object
+    - next time: work on going through the code together and see alloptical  
