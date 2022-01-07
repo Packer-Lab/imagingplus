@@ -44,7 +44,6 @@ terms_dictionary = {
     'ROI': "a single ROI from the imaging data"
 }
 
-
 def define_term(x):
     try:
         print(f"{x}:    {terms_dictionary[x]}") if type(x) is str else print(
@@ -52,7 +51,19 @@ def define_term(x):
     except KeyError:
         print('input not found in dictionary')
 
+# import .pkl'd objects
+def import_obj(pkl_path):
+    if not os.path.exists(pkl_path):
+        raise Exception('pkl path NOT found: ' + pkl_path)
+    with open(pkl_path, 'rb') as f:
+        print(f'\- loading {pkl_path}', end='\r')
+        try:
+            obj = pickle.load(f)
+        except pickle.UnpicklingError:
+            raise pickle.UnpicklingError(f"\n** FAILED IMPORT OF * {prep} {trial} * from {pkl_path}\n")
+        print(f'|- loading {pkl_path} .. DONE')
 
+    return obj
 
 ## CLASS DEFINITIONS
 from dataclasses import dataclass
@@ -82,6 +93,15 @@ class Experiment:
         self.__pkl_path = f"{self.analysisSavePath}{self.expID}_analysis.pkl"
         os.makedirs(self.analysisSavePath, exist_ok=True)
         self.save_pkl(pkl_path=self.pkl_path)
+
+    def __repr__(self):
+        print(f"Experiment object, expID: {self.expID}, microscope: {self.microscope}")
+        __return_information = ""
+        for trial in self.trialsInformation:
+            # print(f"\t{trial}: {self.trialsInformation[trial]['expType']} {self.trialsInformation[trial]['expGroup']}")
+            __return_information = __return_information + f"\n\t{trial}: {self.trialsInformation[trial]['expType']} {self.trialsInformation[trial]['expGroup']}"
+        return __return_information
+
 
     def _runExpTrialsProcessing(self):
         for trial in self.trialsInformation:
@@ -278,12 +298,12 @@ class Experiment:
         # else:
         #     self.pkl_path = pkl_path
         if pkl_path:
-            print(f'saving new pkl object at: {pkl_path}')
+            print(f'\nsaving new pkl object at: {pkl_path}')
             self.pkl_path = pkl_path
 
         with open(self.pkl_path, 'wb') as f:
             pickle.dump(self, f)
-        print("\n\t -- Experiment analysis object saved to %s -- " % self.pkl_path)
+        print("\t -- Experiment analysis object saved to %s -- " % self.pkl_path)
 
     def save(self):
         self.save_pkl()
