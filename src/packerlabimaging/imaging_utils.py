@@ -62,35 +62,74 @@ class Experiment:
     dataPath: str
     analysisSavePath: str  # main dir where the experiment object and the trial objects will be saved to
     microscope: str
-    animalID: str
-    trialsInformation: dict[{'trial ID': {'exp_type': None, 'tiff_path': None}}]
-    metainfo: dict
-    trialsSuite2P: list = list(trialsInformation.keys())
-    suite2pPath: str = analysisSavePath + '/suite2p/'
-    __s2p_batch_size: int = int(2000 * (262144 / self.frame_x * self.frame_y))  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
+    expID: str
+    trialsInformation: dict # {'trial ID': {'expType': None, 'tiff_path': None, 'expGroup': None}}
+    metainfo: dict # {'date'}  # is providing date absolutely necessary?
+    use_suite2p: bool = False
+    suite2pPath: str = None
     trials_pkl_paths: list = None
     def __post_init__(self):
-        self.Suite2p = Suite2p(trialsSuite2P=self.trialsSuite2P, s2p_path=self.suite2pPath, s2p_batch_size = self.__s2p_batch_size, subtract_neuropil=True)
+        self._parsePVMetadata()
+        if self.use_suite2p:
+            __s2p_batch_size: int = int(2000 * (262144 / self.frame_x * self.frame_y))  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
+            self.suite2pPath = self.analysisSavePath + '/suite2p/' if self.suite2pPath is None else self.suite2pPath
+            self.trialsSuite2P = list(self.trialsInformation.keys())
+            self.Suite2p = Suite2p(trialsSuite2P=self.trialsSuite2P, s2p_path=self.suite2pPath, s2p_batch_size = self.__s2p_batch_size, subtract_neuropil=True)
+        self._runExpTrialsProcessing()
+
+        # set and/or create analysis save path directory
+        self.analysisSavePath = self.analysisSavePath + '/' if self.analysisSavePath[-1] != '/' else self.analysisSavePath
+        self.__pkl_path = f"{self.analysisSavePath}{self.expID}_analysis.pkl"
+        os.makedirs(self.analysisSavePath, exist_ok=True)
+        self.save_pkl(pkl_path=self.pkl_path)
 
     def _runExpTrialsProcessing(self):
         for trial in self.trialsInformation:
-            if self.trialsInformation[trial]['exp_type'] == 'TwoPhotonImaging':
-                if 'tiff_path' not in trialsInformation[trial].keys() or 'paq_path' not in self.trialsInformation[trial].keys() \
-                        or 'naparm_path' not in self.trialsInformation[trial].keys():
+            if self.trialsInformation[trial]['expType'] == 'TwoPhotonImaging':
+                if 'tiff_path' not in self.trialsInformation[trial].keys():
                     raise ValueError('TwoPhotonImaging experiment trial requires `tiff_path` field defined in .trialsInformation dictionary for each trial')
-                trial_obj = TwoPhotonImaging(tiff_path=self.trialsInformation[trial]['tiff_path'], metainfo=self.metainfo,
+                __metainfo =  {
+                    'animal prep.': self.expID,
+                    'trial': trial,
+                    'date': self.metainfo['date'],  # is requesting date absolutely necessary?
+                    't series id': f"{self.metainfo['date']}_{trial}",
+                    'exptype': self.trialsInformation[trial]['expGroup']
+                }
+                trial_obj = TwoPhotonImaging(tiff_path=self.trialsInformation[trial]['tiff_path'], metainfo=__metainfo,
                                              analysis_save_path=self.analysisSavePath, microscope = self.microscope, paq_path= None,
                                              suite2p_path= None, make_downsampled_tiff= False)
+                # update self.trialsInformation using the information from new trial_obj
+                self.trialsInformation[trial]['analysis Object Information'] = {'series ID': trial_obj.t_series_name,
+                                                                                'repr': trial_obj.__repr__(),
+                                                                                'pkl path': trial_obj.pkl_path}
 
-            elif self.trialsInformation[trial]['exp_type'] == 'AllOptical':
+            elif self.trialsInformation[trial]['expType'] == 'AllOptical':
                 if 'tiff_path' not in self.trialsInformation[trial].keys() or 'paq_path' not in self.trialsInformation[trial].keys() \
                         or 'naparm_path' not in self.trialsInformation[trial].keys():
-                    raise ValueError('AllOptical experiment trial requires `tiff_path`, `paq_path` and `naparm_path` fields defined in .trialsInformation dictionary for each alloptical trial')
+                    raise ValueError(f'AllOptical experiment trial requires `tiff_path`, `paq_path` and `naparm_path` fields defined in .trialsInformation dictionary for each alloptical trial. '
+                                     f'\n{self.trialsInformation[trial]}')
+                __metainfo =  {
+                    'animal prep.': self.expID,
+                    'trial': trial,
+                    'date': self.metainfo['date'],  # is requesting date absolutely necessary?
+                    't series id': f"{self.metainfo['date']}_{trial}",
+                    'exptype': self.trialsInformation[trial]['expGroup']
+                }
                 trial_obj = AllOptical(microscope=self.microscope, tiff_path=self.trialsInformation[trial]['tiff_path'],
                                        paq_path=self.trialsInformation[trial]['paq_path'], naparm_path=self.trialsInformation[trial]['naparm_path'],
-                                       analysis_save_path=self.analysisSavePath, metainfo=self.metainfo, suite2p_path= None,
+                                       analysis_save_path=self.analysisSavePath, metainfo=__metainfo, suite2p_path= None,
                                        pre_stim= 1.0, post_stim= 3.0, pre_stim_response_window = 0.500, post_stim_response_window = 0.500)
+                # update self.trialsInformation using the information from new trial_obj
+                self.trialsInformation[trial]['analysis Object Information'] = {'series ID': trial_obj.t_series_name,
+                                                                                'repr': trial_obj.__repr__(),
+                                                                                'pkl path': trial_obj.pkl_path}
 
+    @property
+    def tiff_path_dir(self):
+        # __first_trial_in_experiment = list(self.trialsInformation.keys())[0]
+        __first_trial_in_experiment = [*self.trialsInformation][0]
+        __tiff_path_first_trial = self.trialsInformation[__first_trial_in_experiment]['tiff_path']
+        return __tiff_path_first_trial[:[(s.start(), s.end()) for s in re.finditer('/', __tiff_path_first_trial)][-1][0]]  # this is the directory where the Bruker xml files associated with the 2p imaging TIFF are located
 
     def _parsePVMetadata(self):
 
@@ -176,6 +215,57 @@ class Experiment:
               '\npixel size (um):', pix_sz_x, pix_sz_y,
               '\nscan centre (V):', scan_x, scan_y
               )
+    def _getPVStateShard(self, path, key):
+
+        '''
+        Used in function PV metadata below
+        '''
+
+        value = []
+        description = []
+        index = []
+
+        xml_tree = ET.parse(path)  # parse xml from a path
+        root = xml_tree.getroot()  # make xml tree structure
+
+        pv_state_shard = root.find('PVStateShard')  # find pv state shard element in root
+
+        for elem in pv_state_shard:  # for each element in pv state shard, find the value for the specified key
+
+            if elem.get('key') == key:
+
+                if len(elem) == 0:  # if the element has only one subelement
+                    value = elem.get('value')
+                    break
+
+                else:  # if the element has many subelements (i.e. lots of entries for that key)
+                    for subelem in elem:
+                        value.append(subelem.get('value'))
+                        description.append(subelem.get('description'))
+                        index.append(subelem.get('index'))
+            else:
+                for subelem in elem:  # if key not in element, try subelements
+                    if subelem.get('key') == key:
+                        value = elem.get('value')
+                        break
+
+            if value:  # if found key in subelement, break the loop
+                break
+
+        if not value:  # if no value found at all, raise exception
+            raise Exception('ERROR: no element or subelement with that key')
+
+        return value, description, index
+
+    @property
+    def pkl_path(self):
+        "path in Analysis folder to save pkl object"
+        # return f"{self.analysis_save_dir}{self.metainfo['date']}_{self.metainfo['trial']}.pkl"
+        return self.__pkl_path
+
+    @pkl_path.setter
+    def pkl_path(self, path: str):
+        self.__pkl_path = path
 
     def save_pkl(self, pkl_path: str = None):
         ## commented out after setting pkl_path as a @property
@@ -193,15 +283,14 @@ class Experiment:
 
         with open(self.pkl_path, 'wb') as f:
             pickle.dump(self, f)
-        print("\n\t -- data object saved to %s -- " % self.pkl_path)
+        print("\n\t -- Experiment analysis object saved to %s -- " % self.pkl_path)
 
     def save(self):
         self.save_pkl()
 
-
 class Suite2p:
     """used to read in and save suite2p processed data and analysis."""
-    def __init__(self, trialsSuite2P: list['trial IDs'], s2p_path: str, s2p_batch_size: int, subtract_neuropil: bool = True, subset_frames: tuple = None,
+    def __init__(self, trialsSuite2P: list, s2p_path: str, s2p_batch_size: int, subtract_neuropil: bool = True, subset_frames: tuple = None,
                  save: bool = True):
         # set trials to run together in suite2p for Experiment
         self.trialsSuite2P = trialsSuite2P
@@ -214,7 +303,6 @@ class Suite2p:
                 self.s2pRunComplete = True
             except:
                 raise ValueError(f'suite2p processed data could not be loaded from the provided `s2p_path`: {s2p_path}')
-
 
 
 
@@ -366,6 +454,91 @@ class Suite2p:
     @s2p_batch_size.setter
     def s2p_batch_size(self, value):
         self.__s2p_batch_size = value
+
+
+    def stitch_reg_tiffs(self, first_frame: int, last_frame: int, reg_tif_folder: str = None, force_crop: bool = False,
+                         s2p_run_batch: int = 2000):
+        """
+        Stitches together registered tiffs outputs from suite2p from the provided imaging frame start and end values.
+
+        :param first_frame: first frame from the overall s2p run to start stitching from
+        :param last_frame: last frame from the overall s2p run to end stitching at
+        :param force_crop:
+        :param force_stack:
+        :param s2p_run_batch: batch size for suite2p run (defaults to 2000 because that is usually the batch size while running suite2p processing)
+        """
+
+        if reg_tif_folder is None:
+            if self.suite2p_path:
+                reg_tif_folder = self.suite2p_path + '/reg_tif/'
+                print(f"\- trying to load registerred tiffs from: {reg_tif_folder}")
+        else:
+            raise Exception(f"Must provide reg_tif_folder path for loading registered tiffs")
+        if not os.path.exists(reg_tif_folder):
+            raise Exception(f"no registered tiffs found at path: {reg_tif_folder}")
+
+        frame_range = [first_frame, last_frame]
+
+        start = first_frame // s2p_run_batch
+        end = last_frame // s2p_run_batch + 1
+
+        # set tiff paths to save registered tiffs:
+        tif_path_save = self.analysis_save_dir + 'reg_tiff_%s.tif' % self.metainfo['trial']
+        tif_path_save2 = self.analysis_save_dir + 'reg_tiff_%s_r.tif' % self.metainfo['trial']
+        reg_tif_list = os.listdir(reg_tif_folder)
+        reg_tif_list.sort()
+        sorted_paths = [reg_tif_folder + tif for tif in reg_tif_list][start:end + 1]
+
+        print(tif_path_save)
+        print(sorted_paths)
+
+        if os.path.exists(tif_path_save):
+            make_tiff_stack(sorted_paths, save_as=tif_path_save)
+
+        if not os.path.exists(tif_path_save2) or force_crop:
+            with tf.TiffWriter(tif_path_save2, bigtiff=True) as tif:
+                with tf.TiffFile(tif_path_save, multifile=False) as input_tif:
+                    print('cropping registered tiff')
+                    data = input_tif.asarray()
+                    print('shape of stitched tiff: ', data.shape)
+                reg_tif_crop = data[frame_range[0] - start * s2p_run_batch: frame_range[1] - (
+                            frame_range[0] - start * s2p_run_batch)]
+                print('saving cropped tiff ', reg_tif_crop.shape)
+                tif.save(reg_tif_crop)
+
+    def s2pMeanImage(self, s2p_path: str = None, plot: bool = True):
+        """
+        Return array of the s2p mean image.
+        :param s2p_path: (optional) path to location of s2p data
+        :param plot: (optional) option to plot the s2p mean image
+        :return:
+        """
+
+        if s2p_path is None:  # TODO try to catch and handle the actual error
+            if hasattr(self, 'suite2p_path'):
+                s2p_path = self.suite2p_path
+            else:
+                ValueError(
+                    'ERROR: no suite2p path defined for data object, please provide s2p_path to use for locating s2p data.')
+
+        print(f'Plotting s2p mean image from {s2p_path}')
+
+        os.chdir(s2p_path)
+
+        ops = np.load('ops.npy', allow_pickle=True).item()
+
+        mean_img = ops['meanImg']
+
+        mean_img = np.array(mean_img, dtype='uint16')
+
+        if plot:
+            plt.imshow(mean_img, cmap='gray')
+            plt.suptitle('s2p mean image')
+            plt.show()
+
+        return mean_img
+
+    ### insert methods for processing suite2p ROIs
 
 class TwoPhotonImaging:
     """Just two photon imaging related functions - currently set up for data collected from Bruker microscopes and
@@ -797,87 +970,6 @@ class TwoPhotonImaging:
         plt.show()
         return stack
 
-    def stitch_reg_tiffs(self, first_frame: int, last_frame: int, reg_tif_folder: str = None, force_crop: bool = False,
-                         s2p_run_batch: int = 2000):
-        """
-        Stitches together registered tiffs outputs from suite2p from the provided imaging frame start and end values.
-
-        :param first_frame: first frame from the overall s2p run to start stitching from
-        :param last_frame: last frame from the overall s2p run to end stitching at
-        :param force_crop:
-        :param force_stack:
-        :param s2p_run_batch: batch size for suite2p run (defaults to 2000 because that is usually the batch size while running suite2p processing)
-        """
-
-        if reg_tif_folder is None:
-            if self.suite2p_path:
-                reg_tif_folder = self.suite2p_path + '/reg_tif/'
-                print(f"\- trying to load registerred tiffs from: {reg_tif_folder}")
-        else:
-            raise Exception(f"Must provide reg_tif_folder path for loading registered tiffs")
-        if not os.path.exists(reg_tif_folder):
-            raise Exception(f"no registered tiffs found at path: {reg_tif_folder}")
-
-        frame_range = [first_frame, last_frame]
-
-        start = first_frame // s2p_run_batch
-        end = last_frame // s2p_run_batch + 1
-
-        # set tiff paths to save registered tiffs:
-        tif_path_save = self.analysis_save_dir + 'reg_tiff_%s.tif' % self.metainfo['trial']
-        tif_path_save2 = self.analysis_save_dir + 'reg_tiff_%s_r.tif' % self.metainfo['trial']
-        reg_tif_list = os.listdir(reg_tif_folder)
-        reg_tif_list.sort()
-        sorted_paths = [reg_tif_folder + tif for tif in reg_tif_list][start:end + 1]
-
-        print(tif_path_save)
-        print(sorted_paths)
-
-        if os.path.exists(tif_path_save):
-            make_tiff_stack(sorted_paths, save_as=tif_path_save)
-
-        if not os.path.exists(tif_path_save2) or force_crop:
-            with tf.TiffWriter(tif_path_save2, bigtiff=True) as tif:
-                with tf.TiffFile(tif_path_save, multifile=False) as input_tif:
-                    print('cropping registered tiff')
-                    data = input_tif.asarray()
-                    print('shape of stitched tiff: ', data.shape)
-                reg_tif_crop = data[frame_range[0] - start * s2p_run_batch: frame_range[1] - (
-                            frame_range[0] - start * s2p_run_batch)]
-                print('saving cropped tiff ', reg_tif_crop.shape)
-                tif.save(reg_tif_crop)
-
-    def s2pMeanImage(self, s2p_path: str = None, plot: bool = True):
-        """
-        Return array of the s2p mean image.
-        :param s2p_path: (optional) path to location of s2p data
-        :param plot: (optional) option to plot the s2p mean image
-        :return:
-        """
-
-        if s2p_path is None:  # TODO try to catch and handle the actual error
-            if hasattr(self, 'suite2p_path'):
-                s2p_path = self.suite2p_path
-            else:
-                ValueError(
-                    'ERROR: no suite2p path defined for data object, please provide s2p_path to use for locating s2p data.')
-
-        print(f'Plotting s2p mean image from {s2p_path}')
-
-        os.chdir(s2p_path)
-
-        ops = np.load('ops.npy', allow_pickle=True).item()
-
-        mean_img = ops['meanImg']
-
-        mean_img = np.array(mean_img, dtype='uint16')
-
-        if plot:
-            plt.imshow(mean_img, cmap='gray')
-            plt.suptitle('s2p mean image')
-            plt.show()
-
-        return mean_img
 
     def save_pkl(self, pkl_path: str = None):
         ## commented out after setting pkl_path as a @property
@@ -2858,6 +2950,12 @@ class AllOptical(TwoPhotonImaging):
 
             tf.imwrite(save_path, stack, photometric='minisblack')
             print('\ns2p ROI + photostim targets masks saved in TIFF to: ', save_path)
+
+
+
+
+
+
 
 class WideFieldImaging:
     """
