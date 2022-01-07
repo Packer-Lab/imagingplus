@@ -89,14 +89,20 @@ class Experiment:
         self._runExpTrialsProcessing()
 
         # set and/or create analysis save path directory
-        self.analysisSavePath = self.analysisSavePath + '/' if self.analysisSavePath[-1] != '/' else self.analysisSavePath
-        self.__pkl_path = f"{self.analysisSavePath}{self.expID}_analysis.pkl"
+        if self.analysisSavePath[-4:] == '.pkl':
+            self.__pkl_path = analysis_save_path
+            self.analysisSavePath = self.analysisSavePath[:[(s.start(), s.end()) for s in re.finditer('/', self.analysisSavePath)][-1][0]]
+        else:
+            self.analysisSavePath = self.analysisSavePath + '/' if self.analysisSavePath[-1] != '/' else self.analysisSavePath
+            self.__pkl_path = f"{self.analysisSavePath}{self.expID}_analysis.pkl"
         os.makedirs(self.analysisSavePath, exist_ok=True)
         self.save_pkl(pkl_path=self.pkl_path)
 
     def __repr__(self):
-        print(f"Experiment object, expID: {self.expID}, microscope: {self.microscope}")
-        __return_information = ""
+        lastmod = time.ctime(os.path.getmtime(self.pkl_path))
+        __return_information = f"Experiment object (last saved: {lastmod}), expID: {self.expID}, microscope: {self.microscope}"
+        __return_information = __return_information + f"\npkl path: {self.pkl_path}"
+        __return_information = __return_information + f"\ntrials in Experiment object:"
         for trial in self.trialsInformation:
             # print(f"\t{trial}: {self.trialsInformation[trial]['expType']} {self.trialsInformation[trial]['expGroup']}")
             __return_information = __return_information + f"\n\t{trial}: {self.trialsInformation[trial]['expType']} {self.trialsInformation[trial]['expGroup']}"
