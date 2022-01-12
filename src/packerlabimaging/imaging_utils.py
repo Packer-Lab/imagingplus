@@ -66,7 +66,7 @@ def import_obj(pkl_path):
     return obj
 
 
-# TODO: option for pre-loading s2p results, and loading Experiment with some trials included in s2p results and some not.
+# option for pre-loading s2p results, and loading Experiment with some trials included in s2p results and some not. -- use s2p_use arg in trialsInformation dict
 
 
 ## CLASS DEFINITIONS
@@ -85,36 +85,38 @@ class Experiment:
     # s2pResultsPath: bool = False
     s2pResultsPath: str = None  ## path to the parent directory containing the ops.npy file
     def __post_init__(self):
+        ## need to check that the required keys are provided in trialsInformation
+        for i in ['expType', 'tiff_path', 'expGroup']:
+            assert i in [*self.trialsInformation[trial]], f"must provide {f} as a key in the trialsInformation dictionary"
+
         # start processing for experiment imaging:
         self._parsePVMetadata()
 
         # start suite2p action:
         if self.useSuite2p or self.s2pResultsPath:
+            self.__trialsSuite2p = []
+            for trial in [*self.trialsInformation]:
+                assert 's2p_use' in [*self.trialsInformation[trial]], 'when trying to utilize suite2p , must provide value for `s2p_use` ' \
+                             'in trialsInformation[trial] for each trial to specify if to use trial for this suite2p associated with this experiment'
+                self.__trialsSuite2p.append(trial) if self.trialsInformation[trial]['s2p_use'] else None
 
-            if self.s2pResultsPath:
-                self.__trialsSuite2p = []
-                for trial in [*self.trialsInformation]:
-                    assert 's2p_use' in [*self.trialsInformation[trial]], 'when trying to pre-load s2p Results, must provide value for `s2p_use` ' \
-                                                                          'in trialsInformation[trial] for each trial to specify if given trial was used in suite2p run'
-                    self.__trialsSuite2p.append(trial) if self.trialsInformation[trial]['s2p_use'] else None
+            if self.s2pResultsPath:  # if s2pResultsPath provided then try to find and pre-load results from provided path, raise error if cannot find results
 
                 # search for suite2p results items in self.suite2pPath, and auto-assign s2pRunComplete --> True if found successfully
                 __suite2p_path_files = os.listdir(self.s2pResultsPath)
-                self.__s2pRunComplete = False
+                self.__s2pResultExists = False
                 for filepath in __suite2p_path_files:
                     if 'ops.npy' in filepath:
-                        self.__s2pRunComplete = True
+                        self.__s2pResultExists = True
                         break
-                if self.__s2pRunComplete:
-                    self.Suite2p = Suite2pResultsExperiment(expobj=self, s2p_path=self.s2pResultsPath, trialsSuite2p = self.__trialsSuite2p)
+                if self.__s2pResultExists:
+                    self.Suite2p = Suite2pResultsExperiment(s2pResultsPath=self.s2pResultsPath, trialsSuite2p = self.__trialsSuite2p)
                 else:
                     raise ValueError(f"suite2p results could not be found. `suite2pPath` provided was: {self.suite2pPath}")
-            else:
-                self.__trialsSuite2p = [*trialsInformation]  # default list for trials to run/process together through suite2p
-
-                self.__s2pRunComplete = False
-                __suite2p_save_path = self.analysisSavePath + '/suite2p/'
-                self.Suite2p = Suite2pResultsExperiment(expobj=self, s2pSavePath=__suite2p_save_path, trialsInformation = self.__trialsSuite2p)
+            elif self.useSuite2p:  # no s2pResultsPath provided, so initialize without pre-loading any results
+                self.__s2pResultExists = False
+                self.__suite2p_save_path = self.analysisSavePath + '/suite2p/'
+                self.Suite2p = Suite2pResultsExperiment(s2pSavePath=self.__suite2p_save_path, trialsSuite2p = self.__trialsSuite2p)
 
         # create individual trial objects
         self._runExpTrialsProcessing()
@@ -184,6 +186,13 @@ class Experiment:
                 self.trialsInformation[trial]['analysis Object Information'] = {'series ID': trial_obj.t_series_name,
                                                                                 'repr': trial_obj.__repr__(),
                                                                                 'pkl path': trial_obj.pkl_path}
+
+            if trial in self.__trialsSuite2p:
+                # initialize suite2p for trial objects
+                if self.__s2pResultExists:
+                    trial_obj.Suite2p = Suite2pResultsTrial(s2p_path=self.s2pResultsPath)
+                elif self.useSuite2p and self.__s2pResultExists is False:
+                    trial_obj.Suite2p = Suite2pResultsTrial()
 
     @property
     def tiff_path_dir(self):
@@ -380,41 +389,36 @@ class Experiment:
 
         opsEnd = run_s2p(ops=ops, db=db)
 
-        self.__s2pRunComplete = True
+        self.__s2pResultExists = True
+        self.s2pResultsPath = self.__suite2p_save_path + '/plane0/'
 
 
 class Suite2pResultsExperiment:
     """used to run and further process suite2p processed data, and analysis associated with suite2p processed data."""
 
-    def __init__(self, trialsSuite2p: list, s2p_path: str = None, s2pSavePath: str = None, subtract_neuropil: bool = True,
-                 subset_frames: tuple = None, save: bool = True):
+    def __init__(self, trialsSuite2p: list, s2pResultsPath: str = None, subtract_neuropil: bool = True):
         # set trials to run together in suite2p for Experiment
         self.trials = trialsSuite2p
         assert len(self.trials) > 0, "no trials found to run suite2p, option available to provide list of trial IDs in `trialsSuite2P`"
 
-        if s2p_path is None:
+        if s2pResultsPath is None:
             ## initialize needed variables and attr's for future calling of s2pRun
             self.ops = {}
             self.db = {}
         else:
+            self.__s2pResultsPath = s2pResultsPath
             try:
-                self.s2pProcessing(s2p_path, subtract_neuropil, subset_frames, save)  ## TODO confirm and specify values for args
+                self.s2pProcessing(self.__s2pResultsPath, subtract_neuropil, subset_frames, save)
             except:
-                raise ValueError(f'suite2p processed data could not be loaded from the provided `s2p_path`: {s2p_path}')
+                raise ValueError(f'suite2p processed data could not be loaded from the provided `s2pResultsPath`: {s2pResultsPath}')
 
-    def s2pProcessing(self, s2p_path: str, subtract_neuropil: bool = True, subset_frames: tuple = None, save: bool = True):
+    def s2pProcessing(self, s2p_path: str, subtract_neuropil: bool = True, save: bool = True):
         """processing of suite2p data from the current t-series
         :param s2p_path: path to the directory containing suite2p outputs
         :param subtract_neuropil: choose to subtract neuropil or not when loading s2p traces
-        :param subset_frames: (optional) use to specifiy loading a subset of data from the overall s2p trace
         :param save: choose to save data object or not
         """
 
-        if s2p_path is not None and s2p_path != self.suite2p_path:
-            assert os.path.exists(s2p_path), print('ERROR: s2p path provided was not found')
-            print(f"|- Updating suite2p path to newly provided path: {s2p_path}")
-            self.suite2p_path = s2p_path  # update s2p path if provided different path
-        self.s2p_subset_frames = subset_frames
         self.cell_id = []
         self.n_units = []
         self.cell_plane = []
@@ -462,7 +466,7 @@ class Suite2pResultsExperiment:
 
         elif self.n_planes > 1:  ## TODO get Rob to review this loop, no experience with multi-plane analysis
             for plane in range(self.n_planes):
-                # s2p_path = os.path.join(self.tiff_path, 'suite2p', 'plane' + str(plane))
+                # s2pResultsPath = os.path.join(self.tiff_path, 'suite2p', 'plane' + str(plane))
                 FminusFneu, self.spks, self.stat, self.neuro = s2p_loader(s2p_path,
                                                                           subtract_neuropil)  # s2p_loader() is in utils_func
                 ops = np.load(os.path.join(s2p_path, 'ops.npy'), allow_pickle=True).item()
@@ -498,12 +502,9 @@ class Suite2pResultsExperiment:
         else:
             print('******* SUITE2P DATA NOT LOADED.')
 
-        self.save() if save else None
-
-
 
     def stitch_reg_tiffs(self, first_frame: int, last_frame: int, reg_tif_folder: str = None, force_crop: bool = False,
-                         s2p_run_batch: int = 2000):
+                         s2p_run_batch: int = 2000):  # TODO refactor as method for trial object
         """
         Stitches together registered tiffs outputs from suite2p from the provided imaging frame start and end values.
 
@@ -552,7 +553,7 @@ class Suite2pResultsExperiment:
                 print('saving cropped tiff ', reg_tif_crop.shape)
                 tif.save(reg_tif_crop)
 
-    def s2pMeanImage(self, s2p_path: str = None, plot: bool = True):
+    def s2pMeanImage(self, plot: bool = True):
         """
         Return array of the s2p mean image.
         :param s2p_path: (optional) path to location of s2p data
@@ -560,16 +561,9 @@ class Suite2pResultsExperiment:
         :return:
         """
 
-        if s2p_path is None:  # TODO try to catch and handle the actual error
-            if hasattr(self, 'suite2p_path'):
-                s2p_path = self.suite2p_path
-            else:
-                ValueError(
-                    'ERROR: no suite2p path defined for data object, please provide s2p_path to use for locating s2p data.')
+        print(f'Plotting s2p mean image .. {self.__s2pResultsPath}')
 
-        print(f'Plotting s2p mean image from {s2p_path}')
-
-        os.chdir(s2p_path)
+        os.chdir(self.__s2pResultsPath)
 
         ops = np.load('ops.npy', allow_pickle=True).item()
 
@@ -584,13 +578,14 @@ class Suite2pResultsExperiment:
 
         return mean_img
 
-    ### insert methods for processing suite2p ROIs
+    ### TODO add methods for processing suite2p ROIs
+
 
 class Suite2pResultsTrial:
     """used to process suite2p processed data for one trial - out of overall experiment."""
 
-    def __init__(self, trialsSuite2P: list, s2p_path: str, subtract_neuropil: bool = True, subset_frames: tuple = None,
-                 save: bool = True):
+    def __init__(self, trialsSuite2p: list, s2pResultsPath: str = None, subtract_neuropil: bool = True,
+                 subset_frames: tuple = None, save: bool = True):
         # set trials to run together in suite2p for Experiment
         self.trialsSuite2P = trialsSuite2P
         assert len(self.trialsSuite2P) > 1, "no trials found to run suite2p, option available to provide list of trial IDs in `trialsSuite2P`"
@@ -601,7 +596,7 @@ class Suite2pResultsTrial:
                 self.s2pProcessing(s2p_path, subtract_neuropil, subset_frames, save)  ## TODO confirm and specify values for args
                 self.s2pRunComplete = True
             except:
-                raise ValueError(f'suite2p processed data could not be loaded from the provided `s2p_path`: {s2p_path}')
+                raise ValueError(f'suite2p processed data could not be loaded from the provided `s2pResultsPath`: {s2p_path}')
 
 
     def s2pProcessing(self, s2p_path: str, subtract_neuropil: bool = True,
@@ -666,7 +661,7 @@ class Suite2pResultsTrial:
 
         elif self.n_planes > 1:  ## TODO get Rob to review this loop, no experience with multi-plane analysis
             for plane in range(self.n_planes):
-                # s2p_path = os.path.join(self.tiff_path, 'suite2p', 'plane' + str(plane))
+                # s2pResultsPath = os.path.join(self.tiff_path, 'suite2p', 'plane' + str(plane))
                 FminusFneu, self.spks, self.stat, self.neuro = s2p_loader(s2p_path,
                                                                           subtract_neuropil)  # s2p_loader() is in utils_func
                 ops = np.load(os.path.join(s2p_path, 'ops.npy'), allow_pickle=True).item()
@@ -767,7 +762,7 @@ class Suite2pResultsTrial:
                 s2p_path = self.suite2p_path
             else:
                 ValueError(
-                    'ERROR: no suite2p path defined for data object, please provide s2p_path to use for locating s2p data.')
+                    'ERROR: no suite2p path defined for data object, please provide s2pResultsPath to use for locating s2p data.')
 
         print(f'Plotting s2p mean image from {s2p_path}')
 
@@ -874,7 +869,9 @@ class Suite2pResultsTrial:
                     self.cell_area.append(0)
                 else:
                     self.cell_area.append(1)
-    ### insert methods for processing suite2p ROIs
+
+    ### TODO add methods for processing suite2p ROIs
+
 
 class TwoPhotonImaging:
     """Just two photon imaging related functions - currently set up for data collected from Bruker microscopes and
@@ -1584,8 +1581,8 @@ class AllOptical(TwoPhotonImaging):
         print('|-- Minus photostim. frames total:', self.n_frames - len(photostim_frames), 'frames')
 
         if len(self.photostim_frames) > 0:
-            print(f'***Saving a total of {len(self.photostim_frames)} photostim frames to bad_frames.npy at: {tiffs_loc_dir}/bad_frames.npy')
-            np.save(f'{tiffs_loc_dir}/bad_frames.npy', self.photostim_frames)  # save to npy file and remember to move npy file to tiff folder before running with suite2p
+            print(f'***Saving a total of {len(self.photostim_frames)} photostim frames to bad_frames.npy at: {self.tiff_path_dir}/bad_frames.npy')
+            np.save(f'{self.tiff_path_dir}/bad_frames.npy', self.photostim_frames)  # save to npy file and remember to move npy file to tiff folder before running with suite2p
 
     def get_alltargets_stim_traces_norm(self, process: str, targets_idx: int = None, subselect_cells: list = None,
                                         pre_stim=15, post_stim=200, filter_sz: bool = False, stims: list = None):

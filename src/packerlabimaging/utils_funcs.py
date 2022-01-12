@@ -567,7 +567,7 @@ def s2p_loader(s2p_path, subtract_neuropil=True, neuropil_coeff=0.7):
 
     if not found_stat:
         raise FileNotFoundError('Could not find stat, '
-                                'this is likely not a suit2p folder, s2p_path: ', s2p_path)
+                                'this is likely not a suit2p folder, s2pResultsPath: ', s2p_path)
     for i, s in enumerate(stat):
         s['original_index'] = i
 

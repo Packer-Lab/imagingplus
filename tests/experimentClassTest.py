@@ -55,6 +55,5 @@ for idx, trial in enumerate(trials_list_alloptical):
                                         'naparm_path': naparms_list[trial]
                                                         }
 
-# %%
 expobj = pkg.Experiment(**initialization_dict)
 
