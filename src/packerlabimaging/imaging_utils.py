@@ -368,8 +368,8 @@ class Experiment:
         diameter_x = 13 / self.pix_sz_x
         diameter_y = 13 / self.pix_sz_y
         diameter = int(diameter_x), int(diameter_y)
-        self.user_batch_size = user_batch_size
-        batch_size = self.user_batch_size * (262144 / (self.frame_x * self.frame_y))  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
+        self.Suite2p.user_batch_size = user_batch_size
+        batch_size = self.Suite2p.user_batch_size * (262144 / (self.frame_x * self.frame_y))  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
 
         if not db:
             db = {
@@ -581,126 +581,16 @@ class Suite2pResultsExperiment:
     ### TODO add methods for processing suite2p ROIs
 
 
-class Suite2pResultsTrial:
+class Suite2pResultsTrial(Suite2pResultsExperiment):
     """used to process suite2p processed data for one trial - out of overall experiment."""
 
-    def __init__(self, trialsSuite2p: list, s2pResultsPath: str = None, subtract_neuropil: bool = True,
-                 subset_frames: tuple = None, save: bool = True):
-        # set trials to run together in suite2p for Experiment
-        self.trialsSuite2P = trialsSuite2P
-        assert len(self.trialsSuite2P) > 1, "no trials found to run suite2p, option available to provide list of trial IDs in `trialsSuite2P`"
-        self.s2pRunComplete = False
-
-        if self.s2pRunComplete or s2p_path:
-            try:
-                self.s2pProcessing(s2p_path, subtract_neuropil, subset_frames, save)  ## TODO confirm and specify values for args
-                self.s2pRunComplete = True
-            except:
-                raise ValueError(f'suite2p processed data could not be loaded from the provided `s2pResultsPath`: {s2p_path}')
-
-
-    def s2pProcessing(self, s2p_path: str, subtract_neuropil: bool = True,
-                      subset_frames: tuple = None,
-                      save: bool = True):
-        """processing of suite2p data from the current t-series
-        :param s2p_path: path to the directory containing suite2p outputs
-        :param subtract_neuropil: choose to subtract neuropil or not when loading s2p traces
-        :param subset_frames: (optional) use to specifiy loading a subset of data from the overall s2p trace
-        :param save: choose to save data object or not
-        """
-
-        if s2p_path is not None and s2p_path != self.suite2p_path:
-            assert os.path.exists(s2p_path), print('ERROR: s2p path provided was not found')
-            print(f"|- Updating suite2p path to newly provided path: {s2p_path}")
-            self.suite2p_path = s2p_path  # update s2p path if provided different path
-        self.s2p_subset_frames = subset_frames
-        self.cell_id = []
-        self.n_units = []
-        self.cell_plane = []
-        self.cell_med = []
-        self.cell_x = []
-        self.cell_y = []
-        self.raw = []
-        self.mean_img = []
-        self.radius = []
-
-        if self.n_planes == 1:
-            FminusFneu, spks, self.stat, neuropil = s2p_loader(s2p_path,
-                                                               subtract_neuropil)  # s2p_loader() is in Vape/utils_func
-            ops = np.load(os.path.join(s2p_path, 'ops.npy'), allow_pickle=True).item()
-
-            if self.s2p_subset_frames is None:
-                self.raw = FminusFneu
-                self.neuropil = neuropil
-                self.spks = spks
-            elif self.s2p_subset_frames is not None:
-                self.raw = FminusFneu[:, self.s2p_subset_frames[0]:self.s2p_subset_frames[1]]
-                self.spks = spks[:, self.s2p_subset_frames[0]:self.s2p_subset_frames[1]]
-                self.neuropil = neuropil[:, self.s2p_subset_frames[0]:self.s2p_subset_frames[1]]
-            self.mean_img = ops['meanImg']
-            cell_id = []
-            cell_med = []
-            cell_x = []
-            cell_y = []
-            radius = []
-
-            for cell, s in enumerate(self.stat):
-                cell_id.append(s['original_index'])  # stat is an np array of dictionaries!
-                cell_med.append(s['med'])
-                cell_x.append(s['xpix'])
-                cell_y.append(s['ypix'])
-                radius.append(s['radius'])
-
-            self.cell_id = cell_id
-            self.n_units = len(self.cell_id)
-            self.cell_med = cell_med
-            self.cell_x = cell_x
-            self.cell_y = cell_y
-            self.radius = radius
-
-
-        elif self.n_planes > 1:  ## TODO get Rob to review this loop, no experience with multi-plane analysis
-            for plane in range(self.n_planes):
-                # s2pResultsPath = os.path.join(self.tiff_path, 'suite2p', 'plane' + str(plane))
-                FminusFneu, self.spks, self.stat, self.neuro = s2p_loader(s2p_path,
-                                                                          subtract_neuropil)  # s2p_loader() is in utils_func
-                ops = np.load(os.path.join(s2p_path, 'ops.npy'), allow_pickle=True).item()
-
-                self.raw.append(FminusFneu)
-                self.mean_img.append(ops['meanImg'])
-                cell_id = []
-                cell_plane = []
-                cell_med = []
-                cell_x = []
-                cell_y = []
-                radius = []
-
-                for cell, s in enumerate(self.stat):
-                    cell_id.append(s['original_index'])  # stat is an np array of dictionaries!
-                    cell_med.append(s['med'])
-                    cell_x.append(s['xpix'])
-                    cell_y.append(s['ypix'])
-                    radius.append(s['radius'])
-
-                self.cell_id.append(cell_id)
-                self.n_units.append(len(self.cell_id[plane]))
-                self.cell_med.append(cell_med)
-                self.cell_x.append(cell_x)
-                self.cell_y.append(cell_y)
-                self.radius = radius
-
-                cell_plane.extend([plane] * self.n_units[plane])
-                self.cell_plane.append(cell_plane)
-
-        if self.n_units > 1:
-            print(f'|- Loaded {self.n_units} cells, recorded for {round(self.raw.shape[1] / self.fps, 2)} secs')
-        else:
-            print('******* SUITE2P DATA NOT LOADED.')
-
-        self.save() if save else None
+    def __init__(self, trial_frames: tuple = None):
+        self.trial_frames = subset_frames
+        Suite2pResultsExperiment.__init__(trialsSuite2p, s2pResultsPath, subtract_neuropil)
 
     def stitch_reg_tiffs(self, first_frame: int, last_frame: int, reg_tif_folder: str = None, force_crop: bool = False,
                          s2p_run_batch: int = 2000):
+
         """
         Stitches together registered tiffs outputs from suite2p from the provided imaging frame start and end values.
 
@@ -711,15 +601,19 @@ class Suite2pResultsTrial:
         :param s2p_run_batch: batch size for suite2p run (defaults to 2000 because that is usually the batch size while running suite2p processing)
         """
 
+        assert hasattr(self, 'user_batch_size'), 'No user_batch_size set for Suite2pResultsTrial, please create new attr for .Suite2p.user_batch_size, before continuing'
+
         if reg_tif_folder is None:
-            if self.suite2p_path:
-                reg_tif_folder = self.suite2p_path + '/reg_tif/'
+            if self.s2pResultsPath:
+                reg_tif_folder = self.s2pResultsPath + '/reg_tif/'
                 print(f"\- trying to load registerred tiffs from: {reg_tif_folder}")
         else:
             raise Exception(f"Must provide reg_tif_folder path for loading registered tiffs")
         if not os.path.exists(reg_tif_folder):
             raise Exception(f"no registered tiffs found at path: {reg_tif_folder}")
 
+        first_frame = self.trial_frames[0]
+        last_frame = self.trial_frames[-1]
         frame_range = [first_frame, last_frame]
 
         start = first_frame // s2p_run_batch
@@ -748,129 +642,6 @@ class Suite2pResultsTrial:
                             frame_range[0] - start * s2p_run_batch)]
                 print('saving cropped tiff ', reg_tif_crop.shape)
                 tif.save(reg_tif_crop)
-
-    def s2pMeanImage(self, s2p_path: str = None, plot: bool = True):
-        """
-        Return array of the s2p mean image.
-        :param s2p_path: (optional) path to location of s2p data
-        :param plot: (optional) option to plot the s2p mean image
-        :return:
-        """
-
-        if s2p_path is None:  # TODO try to catch and handle the actual error
-            if hasattr(self, 'suite2p_path'):
-                s2p_path = self.suite2p_path
-            else:
-                ValueError(
-                    'ERROR: no suite2p path defined for data object, please provide s2pResultsPath to use for locating s2p data.')
-
-        print(f'Plotting s2p mean image from {s2p_path}')
-
-        os.chdir(s2p_path)
-
-        ops = np.load('ops.npy', allow_pickle=True).item()
-
-        mean_img = ops['meanImg']
-
-        mean_img = np.array(mean_img, dtype='uint16')
-
-        if plot:
-            plt.imshow(mean_img, cmap='gray')
-            plt.suptitle('s2p mean image')
-            plt.show()
-
-        return mean_img
-
-    def _good_cells(self, cell_ids: list, raws: np.ndarray, photostim_frames: list, std_thresh: int,
-                    radiuses: list = None,
-                    min_radius_pix: int = 2.5, max_radius_pix: int = 10, save=True):
-        """
-        This function is used for filtering for "good" cells based on detection of Flu deflections that are above some std threshold based on std_thresh.
-        Note: a moving averaging window of 4 frames is used to find Flu deflections above std threshold.
-
-        :param cell_ids: ls of cell ids to iterate over
-        :param raws: raw flu values corresponding to the cell ls in cell_ids
-        :param photostim_frames: frames to delete from the raw flu traces across all cells (because they are photostim frames)
-        :param std_thresh: std. factor above which to define reliable Flu events
-        :param radiuses: radiuses of the s2p ROI mask of all cells in the same order as cell_ids
-        :param min_radius_pix:
-        :param max_radius_pix:
-        :return:
-            good_cells: ls of cell_ids that had atleast 1 event above the std_thresh
-            events_loc_cells: dictionary containing locations for each cell_id where the moving averaged Flu trace passes the std_thresh
-            flu_events_cells: dictionary containing the dff Flu value corresponding to events_loc_cells
-            stds = dictionary containing the dFF trace std value for each cell_id
-        """
-
-        print('\n----------------------------------------------------------------')
-        print('running finding of good cells for suite2p ROIs ')
-        print('----------------------------------------------------------------')
-
-        good_cells = []
-        events_loc_cells = {}
-        flu_events_cells = {}
-        stds = {}  # collect the std values for all filtered cells used later for identifying high and low std cells
-        for i in range(len(cell_ids)):
-            cell_id = cell_ids[i]
-
-            if i % 100 == 0:  # print the progress once every 100 cell iterations
-                print(i, " out of ", len(cell_ids), " cells done", end='\r')
-
-            # print(i, " out of ", len(cell_ids), " cells")
-            raw = raws[i]
-            if np.mean(raw) > 1:  # exclude all negative raw traces and very small mean raw traces
-                raw_ = np.delete(raw, photostim_frames)
-                raw_dff = normalize_dff(
-                    raw_)  # note that this function is defined in this file a little further down
-                std_ = raw_dff.std()
-
-                raw_dff_ = moving_average(raw_dff, n=4)
-
-                thr = np.mean(raw_dff) + std_thresh * std_
-                events = np.where(raw_dff_ > thr)
-                flu_values = raw_dff[events]
-
-                if radiuses is not None:
-                    radius = radiuses[i]
-                    if len(events[0]) > 0 and radius > min_radius_pix and radius < max_radius_pix:
-                        events_loc_cells[cell_id] = events
-                        flu_events_cells[cell_id] = flu_values
-                        stds[cell_id] = std_
-                        good_cells.append(cell_id)
-                elif len(events[0]) > 0:
-                    events_loc_cells[cell_id] = events
-                    flu_events_cells[cell_id] = flu_values
-                    good_cells.append(cell_id)
-                    stds[cell_id] = std_
-
-                # if i == 465:  # just using this here if ever need to check back with specific cells if function seems to be misbehaving
-                #     print(events, len(events[0]), thr)
-
-        print('# of good cells found: ', len(good_cells), ' (out of ', len(cell_ids), ' ROIs)')
-        self.good_cells = good_cells
-        self.save() if save else None
-
-        return good_cells, events_loc_cells, flu_events_cells, stds
-
-    def cellAreas(self, x=None, y=None):  # '''not sure what this function does'''  ## TODO Rob check
-
-        self.cell_area = []
-
-        if x:
-            for i, _ in enumerate(self.cell_id):
-                if self.cell_med[i][1] < x:
-                    self.cell_area.append(0)
-                else:
-                    self.cell_area.append(1)
-
-        if y:
-            for i, _ in enumerate(self.cell_id):
-                if self.cell_med[i][1] < y:
-                    self.cell_area.append(0)
-                else:
-                    self.cell_area.append(1)
-
-    ### TODO add methods for processing suite2p ROIs
 
 
 class TwoPhotonImaging:
