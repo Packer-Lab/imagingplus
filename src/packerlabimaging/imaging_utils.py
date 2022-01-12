@@ -65,28 +65,62 @@ def import_obj(pkl_path):
 
     return obj
 
+
+# TODO: option for pre-loading s2p results, and loading Experiment with some trials included in s2p results and some not.
+
+
 ## CLASS DEFINITIONS
 from dataclasses import dataclass
 
 @dataclass
 class Experiment:
+    date: str
+    comments: str
     dataPath: str
     analysisSavePath: str  # main dir where the experiment object and the trial objects will be saved to
     microscope: str
     expID: str
     trialsInformation: dict # {'trial ID': {'expType': None, 'tiff_path': None, 'expGroup': None}}
-    metainfo: dict # {'date'}  # is providing date absolutely necessary?
-    use_suite2p: bool = False
-    suite2pPath: str = None
-    trials_pkl_paths: list = None
+    useSuite2p: bool = False
+    # s2pResultsPath: bool = False
+    s2pResultsPath: str = None  ## path to the parent directory containing the ops.npy file
     def __post_init__(self):
+        # start processing for experiment imaging:
         self._parsePVMetadata()
-        if self.use_suite2p:
-            self.suite2pPath = self.analysisSavePath + '/suite2p/' if self.suite2pPath is None else self.suite2pPath
-            self.trialsSuite2P = list(self.trialsInformation.keys())
-            self.Suite2p = Suite2p(trialsSuite2P=self.trialsSuite2P, s2p_path=self.suite2pPath, subtract_neuropil=True)
+
+        # start suite2p action:
+        if self.useSuite2p or self.s2pResultsPath:
+
+            if self.s2pResultsPath:
+                self.__trialsSuite2p = []
+                for trial in [*self.trialsInformation]:
+                    assert 's2p_use' in [*self.trialsInformation[trial]], 'when trying to pre-load s2p Results, must provide value for `s2p_use` ' \
+                                                                          'in trialsInformation[trial] for each trial to specify if given trial was used in suite2p run'
+                    self.__trialsSuite2p.append(trial) if self.trialsInformation[trial]['s2p_use'] else None
+
+                # search for suite2p results items in self.suite2pPath, and auto-assign s2pRunComplete --> True if found successfully
+                __suite2p_path_files = os.listdir(self.s2pResultsPath)
+                self.__s2pRunComplete = False
+                for filepath in __suite2p_path_files:
+                    if 'ops.npy' in filepath:
+                        self.__s2pRunComplete = True
+                        break
+                if self.__s2pRunComplete:
+                    self.Suite2p = Suite2pResultsExperiment(expobj=self, s2p_path=self.s2pResultsPath, trialsSuite2p = self.__trialsSuite2p)
+                else:
+                    raise ValueError(f"suite2p results could not be found. `suite2pPath` provided was: {self.suite2pPath}")
+            else:
+                self.__trialsSuite2p = [*trialsInformation]  # default list for trials to run/process together through suite2p
+
+                self.__s2pRunComplete = False
+                __suite2p_save_path = self.analysisSavePath + '/suite2p/'
+                self.Suite2p = Suite2pResultsExperiment(expobj=self, s2pSavePath=__suite2p_save_path, trialsInformation = self.__trialsSuite2p)
+
+        # create individual trial objects
         self._runExpTrialsProcessing()
 
+
+        # save Experiment object:
         # set and/or create analysis save path directory
         if self.analysisSavePath[-4:] == '.pkl':
             self.__pkl_path = analysis_save_path
@@ -98,15 +132,17 @@ class Experiment:
         self.save_pkl(pkl_path=self.pkl_path)
 
     def __repr__(self):
-        lastmod = time.ctime(os.path.getmtime(self.pkl_path))
-        __return_information = f"Experiment object (last saved: {lastmod}), expID: {self.expID}, microscope: {self.microscope}"
+        return f"Experiment object (date: {self.date}, expID: {self.expID}, microscope: {self.microscope})"
+
+    def __str__(self):
+        lastsaved = time.ctime(os.path.getmtime(self.pkl_path))
+        __return_information = f"Experiment object (last saved: {lastsaved}), date: {self.date}, expID: {self.expID}, microscope: {self.microscope}"
         __return_information = __return_information + f"\npkl path: {self.pkl_path}"
         __return_information = __return_information + f"\ntrials in Experiment object:"
         for trial in self.trialsInformation:
             # print(f"\t{trial}: {self.trialsInformation[trial]['expType']} {self.trialsInformation[trial]['expGroup']}")
             __return_information = __return_information + f"\n\t{trial}: {self.trialsInformation[trial]['expType']} {self.trialsInformation[trial]['expGroup']}"
         return __return_information
-
 
     def _runExpTrialsProcessing(self):
         for trial in self.trialsInformation:
@@ -116,8 +152,8 @@ class Experiment:
                 __metainfo =  {
                     'animal prep.': self.expID,
                     'trial': trial,
-                    'date': self.metainfo['date'],  # is requesting date absolutely necessary?
-                    't series id': f"{self.metainfo['date']}_{trial}",
+                    'date': self.date,
+                    't series id': f"{self.date}_{trial}",
                     'exptype': self.trialsInformation[trial]['expGroup']
                 }
                 trial_obj = TwoPhotonImaging(tiff_path=self.trialsInformation[trial]['tiff_path'], metainfo=__metainfo,
@@ -133,11 +169,11 @@ class Experiment:
                         or 'naparm_path' not in self.trialsInformation[trial].keys():
                     raise ValueError(f'AllOptical experiment trial requires `tiff_path`, `paq_path` and `naparm_path` fields defined in .trialsInformation dictionary for each alloptical trial. '
                                      f'\n{self.trialsInformation[trial]}')
-                __metainfo =  {
+                __metainfo = {
                     'animal prep.': self.expID,
                     'trial': trial,
-                    'date': self.metainfo['date'],  # is requesting date absolutely necessary?
-                    't series id': f"{self.metainfo['date']}_{trial}",
+                    'date': self.date,
+                    't series id': f"{self.date}_{trial}",
                     'exptype': self.trialsInformation[trial]['expGroup']
                 }
                 trial_obj = AllOptical(microscope=self.microscope, tiff_path=self.trialsInformation[trial]['tiff_path'],
@@ -293,15 +329,6 @@ class Experiment:
         self.__pkl_path = path
 
     def save_pkl(self, pkl_path: str = None):
-        ## commented out after setting pkl_path as a @property
-        # if pkl_path is None:
-        #     if hasattr(self, 'pkl_path'):
-        #         pkl_path = self.pkl_path
-        #     else:
-        #         raise ValueError(
-        #             'pkl path for saving was not found in data object attributes, please provide pkl_path to save to')
-        # else:
-        #     self.pkl_path = pkl_path
         if pkl_path:
             print(f'\nsaving new pkl object at: {pkl_path}')
             self.pkl_path = pkl_path
@@ -313,27 +340,69 @@ class Experiment:
     def save(self):
         self.save_pkl()
 
-class Suite2pExperiment:
+    ## suite2p methods
+    def s2pRun(self, user_batch_size=2000, trialsSuite2P: list = None):
+        """run suite2p on the experiment object, using trials specified in current experiment object, using the attributes
+        determined directly from the experiment object."""
+
+        ops = self.Suite2p.ops
+        db = self.Suite2p.db
+
+        self.Suite2p.trials = trialsSuite2P if trialsSuite2P else self.Suite2p.trials
+        self.__trialsSuite2p = trialsSuite2P if trialsSuite2P else self.__trialsSuite2p
+
+        tiffs_to_use_s2p = []
+        for trial in self.Suite2p.trials:
+            tiffs_to_use_s2p.append(self.trialsInformation[trial]['tiff_path'])
+
+        sampling_rate = self.fps / self.n_planes
+        diameter_x = 13 / self.pix_sz_x
+        diameter_y = 13 / self.pix_sz_y
+        diameter = int(diameter_x), int(diameter_y)
+        self.user_batch_size = user_batch_size
+        batch_size = self.user_batch_size * (262144 / (self.frame_x * self.frame_y))  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
+
+        if not db:
+            db = {
+                'fs': float(sampling_rate),
+                'diameter': diameter,
+                'batch_size': int(batch_size),
+                'nimg_init': int(batch_size),
+                'nplanes': self.n_planes
+            }
+
+        # specify tiff list to suite2p and data path
+        db['tiff_list'] = tiffs_to_s2p
+        db['data_path'] = self.dataPath  ## this is where the bad_frames.npy file will be stored for suite2p to use.
+        db['save_folder'] = self.suite2pPath
+
+        print(db)
+
+        opsEnd = run_s2p(ops=ops, db=db)
+
+        self.__s2pRunComplete = True
+
+
+class Suite2pResultsExperiment:
     """used to run and further process suite2p processed data, and analysis associated with suite2p processed data."""
 
-    def __init__(self, trialsSuite2P: list, s2p_path: str, subtract_neuropil: bool = True, subset_frames: tuple = None,
-                 save: bool = True):
+    def __init__(self, trialsSuite2p: list, s2p_path: str = None, s2pSavePath: str = None, subtract_neuropil: bool = True,
+                 subset_frames: tuple = None, save: bool = True):
         # set trials to run together in suite2p for Experiment
-        self.trialsSuite2P = trialsSuite2P
-        assert len(self.trialsSuite2P) > 0, "no trials found to run suite2p, option available to provide list of trial IDs in `trialsSuite2P`"
-        self.s2pRunComplete = False
+        self.trials = trialsSuite2p
+        assert len(self.trials) > 0, "no trials found to run suite2p, option available to provide list of trial IDs in `trialsSuite2P`"
 
-        if self.s2pRunComplete or s2p_path:
+        if s2p_path is None:
+            ## initialize needed variables and attr's for future calling of s2pRun
+            self.ops = {}
+            self.db = {}
+        else:
             try:
                 self.s2pProcessing(s2p_path, subtract_neuropil, subset_frames, save)  ## TODO confirm and specify values for args
-                self.s2pRunComplete = True
             except:
                 raise ValueError(f'suite2p processed data could not be loaded from the provided `s2p_path`: {s2p_path}')
 
-
-    def s2pProcessing(self, s2p_path: str, subtract_neuropil: bool = True,
-                      subset_frames: tuple = None,
-                      save: bool = True):
+    def s2pProcessing(self, s2p_path: str, subtract_neuropil: bool = True, subset_frames: tuple = None, save: bool = True):
         """processing of suite2p data from the current t-series
         :param s2p_path: path to the directory containing suite2p outputs
         :param subtract_neuropil: choose to subtract neuropil or not when loading s2p traces
@@ -432,55 +501,6 @@ class Suite2pExperiment:
         self.save() if save else None
 
 
-    def s2pRun(self, ops, db, user_batch_size=2000, trialsSuite2P: list = None):
-        """run suite2p on the experiment object, using trials specified in current experiment object, using the attributes determined directly from the experiment object."""
-
-
-        tiffs_to_s2p = []
-        for trial in self.trialsSuite2P:
-            tiffs_to_s2p.append(self.trialsInformation[trial]['tiff_path'])
-
-
-
-        sampling_rate = self.fps / self.n_planes
-        diameter_x = 13 / self.pix_sz_x
-        diameter_y = 13 / self.pix_sz_y
-        diameter = int(diameter_x), int(diameter_y)
-        self.__s2p_batch_size = user_batch_size
-        num_pixels = self.frame_x * self.frame_y
-        batch_size = self.s2p_batch_size * (
-                    262144 / num_pixels)  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
-
-        if not db:
-            db = {
-                'fs': float(sampling_rate),
-                'diameter': diameter,
-                'batch_size': int(batch_size),
-                'nimg_init': int(batch_size),
-                'nplanes': self.n_planes
-            }
-
-        # specify tiff list to suite2p and data path
-        db['tiff_list'] = tiffs_to_s2p
-        db['data_path'] = self.dataPath  ## this is where the bad_frames.npy file will be stored for suite2p to use.
-        db['save_folder'] = self.suite2pPath
-
-        print(db)
-
-        opsEnd = run_s2p(ops=ops, db=db)
-
-        self.s2pRunComplete = True
-
-
-    @property
-    def s2p_batch_size(self):
-        # return 2000 * (262144 / self.frame_x * self.frame_y)  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
-        return self.__s2p_batch_size
-
-    @s2p_batch_size.setter
-    def s2p_batch_size(self, value):
-        self.__s2p_batch_size = value
-
 
     def stitch_reg_tiffs(self, first_frame: int, last_frame: int, reg_tif_folder: str = None, force_crop: bool = False,
                          s2p_run_batch: int = 2000):
@@ -566,7 +586,7 @@ class Suite2pExperiment:
 
     ### insert methods for processing suite2p ROIs
 
-class Suite2pTrial:
+class Suite2pResultsTrial:
     """used to process suite2p processed data for one trial - out of overall experiment."""
 
     def __init__(self, trialsSuite2P: list, s2p_path: str, subtract_neuropil: bool = True, subset_frames: tuple = None,
