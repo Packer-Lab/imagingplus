@@ -192,6 +192,7 @@ class Experiment:
 
             # initialize suite2p for trial objects
             if trial in self.__trialsSuite2p:
+                print(f"\- ADDING Suite2p class to Trial object")
                 trial_obj.Suite2p = Suite2pResultsTrial(suite2p_experiment_obj=self.Suite2p,
                                                         trial_frames=[total_frames_stitched, total_frames_stitched + trial_obj.n_frames])  # use trial obj's current trial frames
                 total_frames_stitched += trial_obj.n_frames
@@ -275,7 +276,6 @@ class Suite2pResultsExperiment:
     """used to run and further process suite2p processed data, and analysis associated with suite2p processed data."""
 
     def __init__(self, trialsSuite2p: list, s2pResultsPath: str = None, subtract_neuropil: bool = True):
-        print(f"\---- ADDING Suite2p class to Experiment object")
 
         # set trials to run together in suite2p for Experiment
         self.trials = trialsSuite2p
@@ -463,16 +463,16 @@ class Suite2pResultsExperiment:
     ### TODO add methods for processing suite2p ROIs
 
 
-class Suite2pResultsTrial(Suite2pResultsExperiment):
+class Suite2pResultsTrial:
     """used to process suite2p processed data for one trial - out of overall experiment."""
 
     def __init__(self, suite2p_experiment_obj: Suite2pResultsExperiment, trial_frames: tuple = None):
-        print(f"\- ADDING Suite2p class to Trial object")
         self.trial_frames = trial_frames
+        self.Suite2p = suite2p_experiment_obj
 
-        __s2pResultsPath = suite2p_experiment_obj.__s2pResultsPath if hasattr(suite2p_experiment_obj, '__s2pResultsPath') else None
-        Suite2pResultsExperiment.__init__(self, trialsSuite2p = suite2p_experiment_obj.trials, s2pResultsPath=__s2pResultsPath,
-                                          subtract_neuropil=suite2p_experiment_obj.subtract_neuropil)
+        # __s2pResultsPath = suite2p_experiment_obj.__s2pResultsPath if hasattr(suite2p_experiment_obj, '__s2pResultsPath') else None
+        # Suite2pResultsExperiment.__init__(self, trialsSuite2p = suite2p_experiment_obj.trials, s2pResultsPath=__s2pResultsPath,
+        #                                   subtract_neuropil=suite2p_experiment_obj.subtract_neuropil)
 
     def stitch_reg_tiffs(self, first_frame: int, last_frame: int, reg_tif_folder: str = None, force_crop: bool = False,
                          s2p_run_batch: int = 2000):
@@ -566,7 +566,7 @@ class TwoPhotonImagingTrial:
                                                                        f'{microscope} microscope has not been implemented yet')
 
         # run paq processing if paq_path is provided for trial
-        TwoPhotonImagingTrial.paqProcessing(self, paq_path=self.paq_path) if hasattr(self, 'paq_path') else None
+        TwoPhotonImagingTrial.paqProcessing(self, paq_path=self.paq_path, plot=False) if hasattr(self, 'paq_path') else None
 
         self.save()
 
@@ -754,7 +754,7 @@ class TwoPhotonImagingTrial:
               '\nscan centre (V):', scan_x, scan_y
               )
 
-    def paqProcessing(self, paq_path: str = None):
+    def paqProcessing(self, paq_path: str = None, plot: bool = False):
         """
         Loads .paq file and saves data from individual channels.
 
@@ -776,8 +776,10 @@ class TwoPhotonImagingTrial:
 
         print('|- loading paq data from:', self.paq_path)
 
-        paq, _ = paq_read(self.paq_path, plot=True)
+        paq, _ = paq_read(self.paq_path, plot=plot)
         self.paq_rate = paq['rate']
+
+        ## TODO print the paq channels that were loaded. and some useful metadata about the paq channels.
 
         # find frame times
         clock_idx = paq['chan_names'].index('frame_clock')
@@ -785,12 +787,6 @@ class TwoPhotonImagingTrial:
 
         frame_clock = threshold_detect(clock_voltage, 1)
         self.frame_clock = frame_clock
-        plt.figure(figsize=(10, 5))
-        plt.plot(clock_voltage)
-        plt.plot(frame_clock, np.ones(len(frame_clock)), '.')
-        plt.suptitle('frame clock from paq, with detected frame clock instances as scatter')
-        sns.despine()
-        plt.show()
 
         # find start and stop frame_clock times -- there might be multiple 2p imaging starts/stops in the paq trial (hence multiple frame start and end times)
         self.frame_start_times = [self.frame_clock[0]]  # initialize list
@@ -882,7 +878,7 @@ class TwoPhotonImagingTrial:
 class AllOpticalTrial(TwoPhotonImagingTrial):
     """This class provides methods for All Optical experiments"""
 
-    def __init__(self, metainfo: dict, naparm_path: str, analysis_save_path: str, microscope: str,
+    def __init__(self, metainfo: dict, naparm_path: str, analysis_save_path: str, microscope: str, analysisOptions: dict = {},
                  pre_stim: float = 1.0, post_stim: float = 3.0, pre_stim_response_window: float = 0.500,
                  post_stim_response_window: float = 0.500):
 
@@ -920,7 +916,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         # self._set_photostim_windows(pre_stim, post_stim, pre_stim_response_window, post_stim_response_window)  -- delete line
 
         # running photostimulation experiment processing
-        self.stim_channel = kwargs['stim_channel'] if 'stim_channel' in [*kwargs] else 'markpoints2packio'
+        self.stim_channel = kwargs['stim_channel'] if 'stim_channel' in [*analysisOptions] else 'markpoints2packio'
         self._stimProcessing(stim_channel=self.stim_channel)
         self._findTargetsAreas()
         self.photostim_frames = ['not-yet-processed']
