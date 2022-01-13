@@ -85,7 +85,7 @@ class Experiment:
     # s2pResultsPath: bool = False
     s2pResultsPath: str = None  ## path to the parent directory containing the ops.npy file
     def __post_init__(self):
-        print(f'\n\- CREATING new Experiment: \n\t{self.__repr__()}')
+        print(f'\nCREATING new Experiment: \n\t{self.__repr__()}')
 
 
         ## need to check that the required keys are provided in trialsInformation
@@ -153,6 +153,7 @@ class Experiment:
 
         total_frames_stitched = 0  # used in calculating # of frames from a single trial in the overall suite2p run
         for trial in self.trialsInformation:
+            print(f"\n\-PROCESSING trial: {trial}, expID: ({self.expID})")
             _metainfo = {
                 'animal prep.': self.expID,
                 'trial': trial,
@@ -192,7 +193,7 @@ class Experiment:
 
             # initialize suite2p for trial objects
             if trial in self.__trialsSuite2p:
-                print(f"\- ADDING Suite2p class to Trial object")
+                print(f"\n\----- ADDING Suite2p class to Trial object ... ")
                 trial_obj.Suite2p = Suite2pResultsTrial(suite2p_experiment_obj=self.Suite2p,
                                                         trial_frames=[total_frames_stitched, total_frames_stitched + trial_obj.n_frames])  # use trial obj's current trial frames
                 total_frames_stitched += trial_obj.n_frames
@@ -276,6 +277,7 @@ class Suite2pResultsExperiment:
     """used to run and further process suite2p processed data, and analysis associated with suite2p processed data."""
 
     def __init__(self, trialsSuite2p: list, s2pResultsPath: str = None, subtract_neuropil: bool = True):
+        print(f"\- ADDING Suite2p class to Experiment object ... ")
 
         # set trials to run together in suite2p for Experiment
         self.trials = trialsSuite2p
@@ -546,7 +548,7 @@ class TwoPhotonImagingTrial:
         :param make_downsampled_tiff: flag to run generation and saving of downsampled tiff of t-series (saves to the analysis save location)
         """
 
-        print(f'\n\t\----- CREATING TwoPhotonImagingTrial for {metainfo["t series id"]}')
+        print(f'\----- CREATING TwoPhotonImagingTrial for trial: {metainfo["trial"]},  {metainfo["t series id"]}')
 
         if 'date' in metainfo.keys() and 'trial' in metainfo.keys() and 'animal prep.' in metainfo.keys() and 't series id' in metainfo.keys(): self.__metainfo = metainfo
         else: raise ValueError("dev error: __metainfo argument must contain the minimum fields: 'date', 'trial', 'animal prep.' and 't series id'")
@@ -671,7 +673,7 @@ class TwoPhotonImagingTrial:
 
     def _parsePVMetadata(self):
 
-        print('\n-----parsing PV Metadata for Bruker microscope')
+        print('\n\----- Parsing PV Metadata for Bruker microscope...')
 
         tiff_path = self.tiff_path_dir
         path = []
@@ -745,13 +747,13 @@ class TwoPhotonImagingTrial:
         self.zoom = zoom
         self.n_frames = int(n_frames)
 
-        print('n planes:', n_planes,
-              '\nn frames:', int(n_frames),
-              '\nfps:', fps,
-              '\nframe size (px):', frame_x, 'x', frame_y,
-              '\nzoom:', zoom,
-              '\npixel size (um):', pix_sz_x, pix_sz_y,
-              '\nscan centre (V):', scan_x, scan_y
+        print('\tn planes:', n_planes,
+              '\n\tn frames:', int(n_frames),
+              '\n\tfps:', fps,
+              '\n\tframe size (px):', frame_x, 'x', frame_y,
+              '\n\tzoom:', zoom,
+              '\n\tpixel size (um):', pix_sz_x, pix_sz_y,
+              '\n\tscan centre (V):', scan_x, scan_y
               )
 
     def paqProcessing(self, paq_path: str = None, plot: bool = False):
@@ -761,7 +763,7 @@ class TwoPhotonImagingTrial:
         :param paq_path: (optional) path to the .paq file for this data object
         """
 
-        print('\n\n-----processing paq file...')
+        print('\n\----- Processing paq file ...')
 
         if not hasattr(self, 'paq_path'):
             if paq_path is not None:
@@ -774,10 +776,11 @@ class TwoPhotonImagingTrial:
             print(f"|- Updating paq_path to newly provided path: {paq_path}")
             self.paq_path = paq_path  # update paq_path if provided different path
 
-        print('|- loading paq data from:', self.paq_path)
+        print(f'\tloading paq data from: {self.paq_path}')
 
         paq, _ = paq_read(self.paq_path, plot=plot)
         self.paq_rate = paq['rate']
+        print(f"\t|- loaded {len(paq['chan_names'])} channels from .paq file: {paq['chan_names']}")
 
         ## TODO print the paq channels that were loaded. and some useful metadata about the paq channels.
 
@@ -865,7 +868,7 @@ class TwoPhotonImagingTrial:
         # else:
         #     self.pkl_path = pkl_path
         if pkl_path:
-            print(f'saving new pkl object at: {pkl_path}')
+            print(f'saving new trial object to: {pkl_path}')
             self.pkl_path = pkl_path
 
         with open(self.pkl_path, 'wb') as f:
@@ -900,7 +903,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         :kwargs (optional):
         """
 
-        print(f'\n\t\----- CREATING AllOpticalTrial data object for {metainfo["t series id"]}')
+        print(f'\----- CREATING AllOpticalTrial data object for {metainfo["t series id"]}')
 
         if os.path.exists(naparm_path): self.__naparm_path = naparm_path
         else: raise FileNotFoundError(f"path not found, naparm_path: {naparm_path}")
@@ -920,7 +923,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self._stimProcessing(stim_channel=self.stim_channel)
         self._findTargetsAreas()
         self.photostim_frames = ['not-yet-processed']
-        self._photostim_to_bad_framesnpy()
+        self._find_photostim_add_bad_framesnpy()
 
         #### initializing data processing, data analysis and/or results associated attr's
 
@@ -1007,7 +1010,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
     def _parseNAPARMxml(self):
 
-        print('\n-----parsing Naparm xml file...')
+        print('\n\t\----- parsing Naparm xml file...')
 
         print('loading NAPARM_xml_path:')
         NAPARM_xml_path = path_finder(self.naparm_path, '.xml')[0]
@@ -1027,9 +1030,9 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         n_groups, n_reps, n_shots = [int(s) for s in re.findall(r'\d+', title)]
 
-        print('Numbers of trials:', n_trials, '\nNumber of groups:', n_groups, '\nNumber of shots:', n_shots,
-              '\nNumber of sequence reps:', n_reps, '\nInter-point delay:', inter_point_delay,
-              '\nSpiral Duration (ms):', spiral_duration)
+        print('\tNumbers of trials:', n_trials, '\n\tNumber of groups:', n_groups, '\n\tNumber of shots:', n_shots,
+              '\n\tNumber of sequence reps:', n_reps, '\n\tInter-point delay:', inter_point_delay,
+              '\n\tSpiral Duration (ms):', spiral_duration)
 
         # repetitions = int(root[1].get('Repetitions'))
         # print('Repetitions:', repetitions)
@@ -1043,7 +1046,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
     def _parseNAPARMgpl(self):
 
-        print('\n-----parsing Naparm gpl file...')
+        print('\n\t\----- parsing Naparm gpl file...')
 
         NAPARM_gpl_path = path_finder(self.naparm_path, '.gpl')[0]
         print('loading NAPARM_gpl_path: ', NAPARM_gpl_path)
@@ -1075,8 +1078,10 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         print('loading', self.paq_path)
 
-        paq, _ = paq_read(self.paq_path, plot=True)
+        paq, _ = paq_read(self.paq_path, plot=plot)
         self.paq_rate = paq['rate']
+
+        print(f"\t|- loaded {len(paq['chan_names'])} channels from .paq file: {paq['chan_names']}")
 
         # find frame times
 
@@ -1200,9 +1205,9 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.stim_channel = stim_channel
         self._photostimProcessing()
 
-    def _photostim_to_bad_framesnpy(self):
+    def _find_photostim_add_bad_framesnpy(self):
         """finds all photostim frames and saves them into the bad_frames attribute for the exp object and saves bad_frames.npy"""
-        print('\n-----calculating photostimulation frames...')
+        print('\n\t\-----Finding photostimulation frames in imaging frames ...')
         print('# of photostim frames calculated per stim. trial: ', self.stim_duration_frames + 1)
 
         photostim_frames = []
@@ -1213,9 +1218,9 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         self.photostim_frames = photostim_frames
         # print(photostim_frames)
-        print('|-- Original # of frames:', self.n_frames, 'frames')
-        print('|-- # of Photostim frames:', len(photostim_frames), 'frames')
-        print('|-- Minus photostim. frames total:', self.n_frames - len(photostim_frames), 'frames')
+        print('\t\t|- Original # of frames:', self.n_frames, 'frames')
+        print('\t\t|- # of Photostim frames:', len(photostim_frames), 'frames')
+        print('\t\t|- Minus photostim. frames total:', self.n_frames - len(photostim_frames), 'frames')
 
         if len(self.photostim_frames) > 0:
             print(f'***Saving a total of {len(self.photostim_frames)} photostim frames to bad_frames.npy at: {self.tiff_path_dir}/bad_frames.npy')
@@ -1364,7 +1369,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         Note this is not done by target groups however. So all of the targets are just in one big ls.
         '''
 
-        print('\n-----Loading up target coordinates...')
+        print('\n\t\-----Loading up target coordinates...')
 
         self.n_targets = []
         self.target_coords = []
@@ -1510,7 +1515,6 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             print('Number of targets (in SLM group %s): ' % (counter + 1), len(targetCoordinates))
             counter += 1
 
-        print('FIN. -----Loading up target coordinates-----')
 
     def _findTargetedS2pROIs(self, plot: bool = True):
         """finding s2p cell ROIs that were also SLM targets (or more specifically within the target areas as specified by _findTargetAreas - include 15um radius from center coordinate of spiral)
