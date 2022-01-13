@@ -136,8 +136,14 @@ class Experiment:
         os.makedirs(self.analysisSavePath, exist_ok=True)
         self.save_pkl(pkl_path=self.pkl_path)
 
+        # Attributes:
+        self.n_frames = None  # total number of imaging frames in the
+
+
         print(f"\n\n\nNEW Experiment object created: ")
         print(self)
+
+
 
     def __repr__(self):
         return f"Experiment object (date: {self.date}, expID: {self.expID})"
@@ -198,7 +204,7 @@ class Experiment:
             if trial in self.__trialsSuite2p:
                 print(f"\n\----- ADDING Suite2p class to Trial object ... ")
                 trial_obj.Suite2p = Suite2pResultsTrial(suite2p_experiment_obj=self.Suite2p,
-                                                        trial_frames=[total_frames_stitched, total_frames_stitched + trial_obj.n_frames])  # use trial obj's current trial frames
+                                                        trial_frames=(total_frames_stitched, total_frames_stitched + trial_obj.n_frames))  # use trial obj's current trial frames
                 total_frames_stitched += trial_obj.n_frames
 
     @property
@@ -297,6 +303,9 @@ class Suite2pResultsExperiment:
                 self.s2pProcessing(self.__s2pResultsPath, subtract_neuropil, subset_frames, save)
             except:
                 raise ValueError(f'suite2p processed data could not be loaded from the provided `s2pResultsPath`: {s2pResultsPath}')
+
+        # Attributes
+        self.n_frames = None  # total number of imaging frames in the Suite2p run
 
     def s2pProcessing(self, s2p_path: str, subtract_neuropil: bool = True, save: bool = True):
         """processing of suite2p data from the current t-series
@@ -467,11 +476,14 @@ class Suite2pResultsExperiment:
     ### TODO add methods for processing suite2p ROIs
 
 class Suite2pResultsTrial:
-    """used to process suite2p processed data for one trial - out of overall experiment."""
+    """used to collect suite2p processed data for one trial - out of overall experiment."""
 
     def __init__(self, suite2p_experiment_obj: Suite2pResultsExperiment, trial_frames: tuple = None):
-        self.trial_frames = trial_frames
-        self.Suite2p = suite2p_experiment_obj
+        self.trial_frames = trial_frames  # tuple of first and last frame (out of the overall suite2p run) corresponding to the present trial
+
+        ## TODO adding attributes to collect Suite2p results for this specific trial
+
+        self.__overall_suite2p = suite2p_experiment_obj
 
         # __s2pResultsPath = suite2p_experiment_obj.__s2pResultsPath if hasattr(suite2p_experiment_obj, '__s2pResultsPath') else None
         # Suite2pResultsExperiment.__init__(self, trialsSuite2p = suite2p_experiment_obj.trials, s2pResultsPath=__s2pResultsPath,
@@ -550,6 +562,10 @@ class TwoPhotonImagingTrial:
 
         print(f'\----- CREATING TwoPhotonImagingTrial for trial: {metainfo["trial"]},  {metainfo["t series id"]}')
 
+        # Initialize Attributes:
+        self.n_frames = None  # number of imaging frames in the current trial
+
+
         if 'date' in metainfo.keys() and 'trial' in metainfo.keys() and 'animal prep.' in metainfo.keys() and 't series id' in metainfo.keys(): self.__metainfo = metainfo
         else: raise ValueError("dev error: __metainfo argument must contain the minimum fields: 'date', 'trial', 'animal prep.' and 't series id'")
         if os.path.exists(metainfo['trialsInformation']['tiff_path']): self.tiff_path = metainfo['trialsInformation']['tiff_path']
@@ -572,16 +588,16 @@ class TwoPhotonImagingTrial:
 
         self.save()
 
+
+
+
+
     def __repr__(self):
         if self.pkl_path:
             lastmod = time.ctime(os.path.getmtime(self.pkl_path))
         else:
             lastmod = "(unsaved pkl object)"
-        if not hasattr(self, 'metainfo'):
-            information = f"uninitialized"
-        else:
-            information = self.t_series_name
-        return repr(f"({information}) TwoPhotonImagingTrial experimental data object, last saved: {lastmod}")
+        return repr(f"({self.t_series_name}) TwoPhotonImagingTrial experimental data object, last saved: {lastmod}")
 
     @property
     def fig_save_path(self):
@@ -629,25 +645,26 @@ class TwoPhotonImagingTrial:
     def pkl_path(self, path: str):
         self.__pkl_path = path
 
-    def _getPVStateShard(self, path, key):
-
+    def _getPVStateShard(self, root, key):
         '''
-        Used in function PV metadata below
-        '''
+        Find the value, description and indices of a particular parameter from an xml file
 
+        Inputs:
+            path        - path to xml file
+            key         - string corresponding to key in xml tree
+        Outputs:
+            value       - value of the key
+            description - unused
+            index       - index that the key was found at
+        '''
         value = []
         description = []
         index = []
 
-        xml_tree = ET.parse(path)  # parse xml from a path
-        root = xml_tree.getroot()  # make xml tree structure
-
         pv_state_shard = root.find('PVStateShard')  # find pv state shard element in root
 
         for elem in pv_state_shard:  # for each element in pv state shard, find the value for the specified key
-
             if elem.get('key') == key:
-
                 if len(elem) == 0:  # if the element has only one subelement
                     value = elem.get('value')
                     break
@@ -672,27 +689,29 @@ class TwoPhotonImagingTrial:
         return value, description, index
 
     def _parsePVMetadata(self):
+        '''
+        Parse all of the relevant acquisition metadata from the PrairieView xml file for this recording
+        '''
 
         print('\n\----- Parsing PV Metadata for Bruker microscope...')
 
-        tiff_path = self.tiff_path_dir
-        path = []
+
+        tiff_path = self.tiff_path_dir  # starting path
+        xml_path = []  # searching for xml path
 
         try:  # look for xml file in path, or two paths up (achieved by decreasing count in while loop)
             count = 2
-            while count != 0 and not path:
+            while count != 0 and not xml_path:
                 count -= 1
                 for file in os.listdir(tiff_path):
                     if file.endswith('.xml'):
-                        path = os.path.join(tiff_path, file)
-                    if file.endswith('.env'):
-                        env_path = os.path.join(tiff_path, file)
-                tiff_path = os.path.dirname(tiff_path)
+                        xml_path = os.path.join(tiff_path, file)
+                tiff_path = os.path.dirname(tiff_path)  # re-assign tiff_path as next folder up
 
         except:
-            raise Exception('ERROR: Could not find or load xml for this acquisition from %s' % tiff_path)
+            raise Exception('ERROR: Could not find xml for this acquisition, check it exists')
 
-        xml_tree = ET.parse(path)  # parse xml from a path
+        xml_tree = ET.parse(xml_path)  # parse xml from a path
         root = xml_tree.getroot()  # make xml tree structure
 
         sequence = root.find('Sequence')
@@ -700,43 +719,41 @@ class TwoPhotonImagingTrial:
 
         if 'ZSeries' in acq_type:
             n_planes = len(sequence.findall('Frame'))
-
         else:
             n_planes = 1
 
-        frame_period = float(self._getPVStateShard(path, 'framePeriod')[0])
+        frame_branch = root.findall('Sequence/Frame')[-1]
+        #         frame_period = float(self._getPVStateShard(root,'framePeriod')[0])
+        frame_period = float(self._getPVStateShard(frame_branch, 'framePeriod')[0])
         fps = 1 / frame_period
 
-        frame_x = int(self._getPVStateShard(path, 'pixelsPerLine')[0])
+        frame_x = int(self._getPVStateShard(root, 'pixelsPerLine')[0])
+        frame_y = int(self._getPVStateShard(root, 'linesPerFrame')[0])
+        zoom = float(self._getPVStateShard(root, 'opticalZoom')[0])
 
-        frame_y = int(self._getPVStateShard(path, 'linesPerFrame')[0])
-
-        zoom = float(self._getPVStateShard(path, 'opticalZoom')[0])
-
-        scanVolts, _, index = self._getPVStateShard(path, 'currentScanCenter')
-        for scanVolts, index in zip(scanVolts, index):
+        scan_volts, _, index = self._getPVStateShard(root, 'currentScanCenter')
+        for scan_volts, index in zip(scan_volts, index):
             if index == 'XAxis':
-                scan_x = float(scanVolts)
+                scan_x = float(scan_volts)
             if index == 'YAxis':
-                scan_y = float(scanVolts)
+                scan_y = float(scan_volts)
 
-        pixelSize, _, index = self._getPVStateShard(path, 'micronsPerPixel')
-        for pixelSize, index in zip(pixelSize, index):
+        pixel_size, _, index = self._getPVStateShard(root, 'micronsPerPixel')
+        for pixel_size, index in zip(pixel_size, index):
             if index == 'XAxis':
-                pix_sz_x = float(pixelSize)
+                pix_sz_x = float(pixel_size)
             if index == 'YAxis':
-                pix_sz_y = float(pixelSize)
+                pix_sz_y = float(pixel_size)
 
-        env_tree = ET.parse(env_path)
-        env_root = env_tree.getroot()
+        if n_planes == 1:
+            n_frames = root.findall('Sequence/Frame')[-1].get('index')  # use suite2p output instead later
+        else:
+            n_frames = root.findall('Sequence')[-1].get('cycle')
 
-        elem_list = env_root.find('TSeries')
-        # n_frames = elem_list[0].get('repetitions') # Rob would get the n_frames from env file
-        # change this to getting the last actual index from the xml file
+        extra_params = root.find('Sequence/Frame/ExtraParameters')
+        last_good_frame = extra_params.get('lastGoodFrame')
 
-        n_frames = root.findall('Sequence/Frame')[-1].get('index')
-
-        self.fps = fps
+        self.fps = fps / n_planes
         self.frame_x = frame_x
         self.frame_y = frame_y
         self.n_planes = n_planes
@@ -746,6 +763,7 @@ class TwoPhotonImagingTrial:
         self.scan_y = scan_y
         self.zoom = zoom
         self.n_frames = int(n_frames)
+        self.last_good_frame = last_good_frame
 
         print('\tn planes:', n_planes,
               '\n\tn frames:', int(n_frames),
@@ -906,7 +924,23 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         print(f'\----- CREATING AllOpticalTrial data object for {metainfo["t series id"]}')
 
         # setting initial attr's
-        self.stim_channel = kwargs['stim_channel'] if 'stim_channel' in [*analysisOptions] else 'markpoints2packio'
+        self.stim_channel = kwargs['stim_channel'] if 'stim_channel' in [*analysisOptions] else 'markpoints2packio'  # stim_channel = channel on paq file to read for determining stims
+
+
+        #### initializing data processing, data analysis and/or results associated attr's
+        self.n_trials = None  # number of photostimulation trials TODO change to assigning from array: cells x Flu frames x # of photostim trials
+
+
+        ## PHOTOSTIM SLM TARGETS
+        self.responses_SLMtargets = []  # dF/prestimF responses for all SLM targets for each photostim trial
+        self.responses_SLMtargets_tracedFF = []  # poststim dFF - prestim dFF responses for all SLM targets for each photostim trial
+
+        # TODO add attr's related to numpy array's and pandas dataframes for photostim trials - SLM targets
+
+        ## NON PHOTOSTIM SLM TARGETS
+
+        # TODO add attr's related to numpy array's and pandas dataframes for photostim trials - non SLM suite2p ROIs
+
 
         # set photostim analysis time windows
         self.__pre_stim = pre_stim
@@ -930,17 +964,6 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.photostim_frames = ['not-yet-processed']
         self._find_photostim_add_bad_framesnpy()
 
-        #### initializing data processing, data analysis and/or results associated attr's
-
-        ## PHOTOSTIM SLM TARGETS
-        self.responses_SLMtargets = []  # dF/prestimF responses for all SLM targets for each photostim trial
-        self.responses_SLMtargets_tracedFF = []  # poststim dFF - prestim dFF responses for all SLM targets for each photostim trial
-
-        # TODO add attr's related to numpy array's and pandas dataframes for photostim trials - SLM targets
-
-        ## NON PHOTOSTIM SLM TARGETS
-
-        # TODO add attr's related to numpy array's and pandas dataframes for photostim trials - non SLM suite2p ROIs
 
 
         ##
