@@ -27,7 +27,7 @@ for idx, trial in enumerate(trials_list_spont):
     tiffs_loc = f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif'
 
 
-    initialization_dict["trialsInformation"][trial] = {'expType': 'TwoPhotonImaging',
+    initialization_dict["trialsInformation"][trial] = {'expType': 'TwoPhotonImagingTrial',
                                        'tiff_path': f"{tiffs_loc}",
                                        's2p_use': True,
                                        'expGroup': "pre 4ap 2p spont imaging",
@@ -47,7 +47,7 @@ for idx, trial in enumerate(trials_list_alloptical):
     tiffs_loc = f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif'
 
 
-    initialization_dict["trialsInformation"][trial] = {'expType': 'AllOptical',
+    initialization_dict["trialsInformation"][trial] = {'expType': 'AllOpticalTrial',
                                         'tiff_path': f"{tiffs_loc}",
                                         's2p_use': True,
                                         'expGroup': "pre 4ap 2p all optical",
