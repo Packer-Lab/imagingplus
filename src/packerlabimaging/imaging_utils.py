@@ -54,14 +54,14 @@ def define_term(x):
 # import .pkl'd objects
 def import_obj(pkl_path):
     if not os.path.exists(pkl_path):
-        raise Exception('pkl path NOT found: ' + pkl_path)
+        raise FileNotFoundError(f'pkl path NOT found: {pkl_path}' )
     with open(pkl_path, 'rb') as f:
-        print(f'\- loading {pkl_path}', end='\r')
+        print(f'\- loading {pkl_path} ... ', end='\r')
         try:
             obj = pickle.load(f)
         except pickle.UnpicklingError:
-            raise pickle.UnpicklingError(f"\n** FAILED IMPORT OF * {prep} {trial} * from {pkl_path}\n")
-        print(f'|- loading {pkl_path} .. DONE')
+            raise pickle.UnpicklingError(f"\n** FAILED IMPORT from {pkl_path}\n")
+        print(f'|- Loaded {obj.__repr__()}')
 
     return obj
 
@@ -80,18 +80,20 @@ class Experiment:
     analysisSavePath: str  # main dir where the experiment object and the trial objects will be saved to
     microscope: str
     expID: str
-    trialsInformation: dict # {'trial ID': {'expType': None, 'tiff_path': None, 'expGroup': None}}
+    trialsInformation: dict # {'trial ID': {'trialType': None, 'tiff_path': None, 'expGroup': None}}
     useSuite2p: bool = False
     # s2pResultsPath: bool = False
     s2pResultsPath: str = None  ## path to the parent directory containing the ops.npy file
     def __post_init__(self):
+        print(f'\n\---- CREATING new Experiment: \n\t{self.__repr__()}')
+
+
         ## need to check that the required keys are provided in trialsInformation
-        for i in ['expType', 'tiff_path', 'expGroup']:
+        for i in ['trialType', 'tiff_path', 'expGroup']:
             for trial in [*self.trialsInformation]:
                 assert i in [*self.trialsInformation[trial]], f"must provide {i} as a key in the trialsInformation dictionary for trial: {trial}"
 
         # start processing for experiment imaging:
-        self._parsePVMetadata()
 
         # start suite2p action:
         if self.useSuite2p or self.s2pResultsPath:
@@ -135,7 +137,7 @@ class Experiment:
         self.save_pkl(pkl_path=self.pkl_path)
 
     def __repr__(self):
-        return f"Experiment object (date: {self.date}, expID: {self.expID}, microscope: {self.microscope})"
+        return f"Experiment object (date: {self.date}, expID: {self.expID})"
 
     def __str__(self):
         lastsaved = time.ctime(os.path.getmtime(self.pkl_path))
@@ -143,33 +145,32 @@ class Experiment:
         __return_information = __return_information + f"\npkl path: {self.pkl_path}"
         __return_information = __return_information + f"\ntrials in Experiment object:"
         for trial in self.trialsInformation:
-            # print(f"\t{trial}: {self.trialsInformation[trial]['expType']} {self.trialsInformation[trial]['expGroup']}")
-            __return_information = __return_information + f"\n\t{trial}: {self.trialsInformation[trial]['expType']} {self.trialsInformation[trial]['expGroup']}"
+            # print(f"\t{trial}: {self.trialsInformation[trial]['trialType']} {self.trialsInformation[trial]['expGroup']}")
+            __return_information = __return_information + f"\n\t{trial}: {self.trialsInformation[trial]['trialType']}, {self.trialsInformation[trial]['expGroup']}"
         return __return_information
 
     def _runExpTrialsProcessing(self):
 
         total_frames_stitched = 0  # used in calculating # of frames from a single trial in the overall suite2p run
         for trial in self.trialsInformation:
-            if self.trialsInformation[trial]['expType'] == 'TwoPhotonImagingTrial':
+            if self.trialsInformation[trial]['trialType'] == 'TwoPhotonImagingTrial':
                 if 'tiff_path' not in self.trialsInformation[trial].keys():
                     raise ValueError('TwoPhotonImagingTrial experiment trial requires `tiff_path` field defined in .trialsInformation dictionary for each trial')
                 __metainfo =  {
                     'animal prep.': self.expID,
                     'trial': trial,
                     'date': self.date,
-                    't series id': f"{self.date}_{trial}",
-                    'exptype': self.trialsInformation[trial]['expGroup']
+                    't series id': f"{self.expID} {trial}",
+                    'trialsInformation': self.trialsInformation[trial]
                 }
-                trial_obj = TwoPhotonImagingTrial(tiff_path=self.trialsInformation[trial]['tiff_path'], metainfo=__metainfo,
-                                                  analysis_save_path=self.analysisSavePath, microscope = self.microscope, paq_path= None,
-                                                  suite2p_path= None, make_downsampled_tiff= False)
+                trial_obj = TwoPhotonImagingTrial(__metainfo=__metainfo, analysis_save_path=self.analysisSavePath)
+
                 # update self.trialsInformation using the information from new trial_obj
                 self.trialsInformation[trial]['analysis Object Information'] = {'series ID': trial_obj.t_series_name,
                                                                                 'repr': trial_obj.__repr__(),
                                                                                 'pkl path': trial_obj.pkl_path}
 
-            elif self.trialsInformation[trial]['expType'] == 'AllOpticalTrial':
+            elif self.trialsInformation[trial]['trialType'] == 'AllOpticalTrial':
                 if 'tiff_path' not in self.trialsInformation[trial].keys() or 'paq_path' not in self.trialsInformation[trial].keys() \
                         or 'naparm_path' not in self.trialsInformation[trial].keys():
                     raise ValueError(f'AllOpticalTrial experiment trial requires `tiff_path`, `paq_path` and `naparm_path` fields defined in .trialsInformation dictionary for each alloptical trial. '
@@ -179,7 +180,7 @@ class Experiment:
                     'trial': trial,
                     'date': self.date,
                     't series id': f"{self.date}_{trial}",
-                    'exptype': self.trialsInformation[trial]['expGroup']
+                    'trialType': self.trialsInformation[trial]['expGroup']
                 }
                 trial_obj = AllOpticalTrial(microscope=self.microscope, tiff_path=self.trialsInformation[trial]['tiff_path'],
                                             paq_path=self.trialsInformation[trial]['paq_path'], naparm_path=self.trialsInformation[trial]['naparm_path'],
@@ -189,6 +190,8 @@ class Experiment:
                 self.trialsInformation[trial]['analysis Object Information'] = {'series ID': trial_obj.t_series_name,
                                                                                 'repr': trial_obj.__repr__(),
                                                                                 'pkl path': trial_obj.pkl_path}
+            else:
+                raise ValueError(f"unsupported trial type for trial: {trial}. All trials must be of trialType: TwoPhotonImagingTrial or AllOpticalTrial")
 
             if trial in self.__trialsSuite2p:
                 # initialize suite2p for trial objects
@@ -203,131 +206,6 @@ class Experiment:
         __tiff_path_first_trial = self.trialsInformation[__first_trial_in_experiment]['tiff_path']
         return __tiff_path_first_trial[:[(s.start(), s.end()) for s in re.finditer('/', __tiff_path_first_trial)][-1][0]]  # this is the directory where the Bruker xml files associated with the 2p imaging TIFF are located
 
-    def _parsePVMetadata(self):
-
-        print('\n-----parsing PV Metadata for Bruker microscope')
-
-        tiff_path = self.tiff_path_dir
-        path = []
-
-        try:  # look for xml file in path, or two paths up (achieved by decreasing count in while loop)
-            count = 2
-            while count != 0 and not path:
-                count -= 1
-                for file in os.listdir(tiff_path):
-                    if file.endswith('.xml'):
-                        path = os.path.join(tiff_path, file)
-                    if file.endswith('.env'):
-                        env_path = os.path.join(tiff_path, file)
-                tiff_path = os.path.dirname(tiff_path)
-
-        except:
-            raise Exception('ERROR: Could not find or load xml for this acquisition from %s' % tiff_path)
-
-        xml_tree = ET.parse(path)  # parse xml from a path
-        root = xml_tree.getroot()  # make xml tree structure
-
-        sequence = root.find('Sequence')
-        acq_type = sequence.get('type')
-
-        if 'ZSeries' in acq_type:
-            n_planes = len(sequence.findall('Frame'))
-
-        else:
-            n_planes = 1
-
-        frame_period = float(self._getPVStateShard(path, 'framePeriod')[0])
-        fps = 1 / frame_period
-
-        frame_x = int(self._getPVStateShard(path, 'pixelsPerLine')[0])
-
-        frame_y = int(self._getPVStateShard(path, 'linesPerFrame')[0])
-
-        zoom = float(self._getPVStateShard(path, 'opticalZoom')[0])
-
-        scanVolts, _, index = self._getPVStateShard(path, 'currentScanCenter')
-        for scanVolts, index in zip(scanVolts, index):
-            if index == 'XAxis':
-                scan_x = float(scanVolts)
-            if index == 'YAxis':
-                scan_y = float(scanVolts)
-
-        pixelSize, _, index = self._getPVStateShard(path, 'micronsPerPixel')
-        for pixelSize, index in zip(pixelSize, index):
-            if index == 'XAxis':
-                pix_sz_x = float(pixelSize)
-            if index == 'YAxis':
-                pix_sz_y = float(pixelSize)
-
-        env_tree = ET.parse(env_path)
-        env_root = env_tree.getroot()
-
-        elem_list = env_root.find('TSeries')
-        # n_frames = elem_list[0].get('repetitions') # Rob would get the n_frames from env file
-        # change this to getting the last actual index from the xml file
-
-        n_frames = root.findall('Sequence/Frame')[-1].get('index')
-
-        self.fps = fps
-        self.frame_x = frame_x
-        self.frame_y = frame_y
-        self.n_planes = n_planes
-        self.pix_sz_x = pix_sz_x
-        self.pix_sz_y = pix_sz_y
-        self.scan_x = scan_x
-        self.scan_y = scan_y
-        self.zoom = zoom
-        self.n_frames = int(n_frames)
-
-        print('n planes:', n_planes,
-              '\nn frames:', int(n_frames),
-              '\nfps:', fps,
-              '\nframe size (px):', frame_x, 'x', frame_y,
-              '\nzoom:', zoom,
-              '\npixel size (um):', pix_sz_x, pix_sz_y,
-              '\nscan centre (V):', scan_x, scan_y
-              )
-    def _getPVStateShard(self, path, key):
-
-        '''
-        Used in function PV metadata below
-        '''
-
-        value = []
-        description = []
-        index = []
-
-        xml_tree = ET.parse(path)  # parse xml from a path
-        root = xml_tree.getroot()  # make xml tree structure
-
-        pv_state_shard = root.find('PVStateShard')  # find pv state shard element in root
-
-        for elem in pv_state_shard:  # for each element in pv state shard, find the value for the specified key
-
-            if elem.get('key') == key:
-
-                if len(elem) == 0:  # if the element has only one subelement
-                    value = elem.get('value')
-                    break
-
-                else:  # if the element has many subelements (i.e. lots of entries for that key)
-                    for subelem in elem:
-                        value.append(subelem.get('value'))
-                        description.append(subelem.get('description'))
-                        index.append(subelem.get('index'))
-            else:
-                for subelem in elem:  # if key not in element, try subelements
-                    if subelem.get('key') == key:
-                        value = elem.get('value')
-                        break
-
-            if value:  # if found key in subelement, break the loop
-                break
-
-        if not value:  # if no value found at all, raise exception
-            raise Exception('ERROR: no element or subelement with that key')
-
-        return value, description, index
 
     @property
     def pkl_path(self):
@@ -399,6 +277,8 @@ class Suite2pResultsExperiment:
     """used to run and further process suite2p processed data, and analysis associated with suite2p processed data."""
 
     def __init__(self, trialsSuite2p: list, s2pResultsPath: str = None, subtract_neuropil: bool = True):
+        print(f"\- ADDING Suite2p class to Experiment object")
+
         # set trials to run together in suite2p for Experiment
         self.trials = trialsSuite2p
         self.subtract_neuropil = subtract_neuropil
@@ -589,6 +469,7 @@ class Suite2pResultsTrial(Suite2pResultsExperiment):
     """used to process suite2p processed data for one trial - out of overall experiment."""
 
     def __init__(self, suite2p_experiment_obj: Suite2pResultsExperiment, trial_frames: tuple = None):
+        print(f"\- ADDING Suite2p class to Trial object")
         self.trial_frames = trial_frames
 
         __s2pResultsPath = suite2p_experiment_obj.__s2pResultsPath if hasattr(suite2p_experiment_obj, '__s2pResultsPath') else None
@@ -655,9 +536,10 @@ class TwoPhotonImagingTrial:
     """Just two photon imaging related functions - currently set up for data collected from Bruker microscopes and
     suite2p processed Ca2+ imaging data """
 
-    def __init__(self, tiff_path: str, metainfo: dict, analysis_save_path: str, microscope: str = 'Bruker',
+    def __init__(self, __metainfo: dict, analysis_save_path: str, microscope: str = 'Bruker',
                  paq_path: str = None, suite2p_path: str = None, make_downsampled_tiff: bool = False):
         """
+        TODO update function docstring for approp args
         :param tiff_path: path to t-series .tiff
         :param analysis_save_path: path of where to save the experiment analysis object
         :param microscope: name of microscope used to record imaging (options: "Bruker" (default), "Scientifica", "other")
@@ -667,49 +549,28 @@ class TwoPhotonImagingTrial:
         :param make_downsampled_tiff: flag to run generation and saving of downsampled tiff of t-series (saves to the analysis save location)
         """
 
-        print('\n***** CREATING NEW TwoPhotonImagingTrial with the following metainfo: ', metainfo)
+        print(f'\n\t\----- CREATING TwoPhotonImagingTrial for {__metainfo["t series id"]}')
 
-        if _check_path_exists('tiff_path', tiff_path): self.tiff_path = tiff_path
-        else: raise FileNotFoundError(f'tiff_path does not exist: {tiff_path}')
-        if paq_path: 
-            if _check_path_exists('paq_path', paq_path): self.paq_path = paq_path 
-            else: raise FileNotFoundError(f'paq_path does not exist: {paq_path}')
-        if suite2p_path: 
-            if _check_path_exists('suite2p_path', suite2p_path): self.suite2p_path = suite2p_path 
-            else: raise FileNotFoundError(f'suite2p_path does not exist: {suite2p_path}')
-        if 'date' in metainfo.keys() and 'trial' in metainfo.keys() and 'animal prep.' in metainfo.keys() and 't series id' in metainfo.keys(): self.metainfo = metainfo
-        else: raise ValueError("Metainfo argument must contain the minimum fields: 'date', 'trial', 'animal prep.' and 't series id'")
+        if 'date' in __metainfo.keys() and 'trial' in __metainfo.keys() and 'animal prep.' in __metainfo.keys() and 't series id' in __metainfo.keys(): self.__metainfo = __metainfo
+        else: raise ValueError("dev error: __metainfo argument must contain the minimum fields: 'date', 'trial', 'animal prep.' and 't series id'")
+        if os.path.exists(__metainfo[trialsInformation]['tiff_path']): self.tiff_path = __metainfo[trialsInformation]['tiff_path']
+        else: raise FileNotFoundError(f"tiff_path does not exist: {__metainfo[trialsInformation]['tiff_path']}")
+        if 'paq_path' in [*__metainfo[trialsInformation]]:
+            if os.path.exists(__metainfo[trialsInformation]['paq_path']): self.paq_path = __metainfo[trialsInformation]['paq_path']
+            else: raise FileNotFoundError(f"paq_path does not exist: {__metainfo[trialsInformation]['paq_path']}")
 
         # set and create analysis save path directory
-        if not os.path.exists(analysis_save_path):
-            print('making analysis save folder at: \n  %s' % analysis_save_path)
-            os.makedirs(analysis_save_path)
-        if analysis_save_path[-4:] == '.pkl':
-            self.__pkl_path = analysis_save_path
-            self.analysis_save_dir = self.analysis_save_path[:[(s.start(), s.end()) for s in re.finditer('/', self.analysis_save_path)][-1][0]]
-        elif analysis_save_path[-1] == '/':
-            self.analysis_save_dir = analysis_save_path
-            self.__pkl_path = f"{self.analysis_save_dir}{self.metainfo['date']}_{self.metainfo['trial']}.pkl"
-        else:
-            self.analysis_save_dir = analysis_save_path + '/'
-            self.__pkl_path = f"{self.analysis_save_dir}{self.metainfo['date']}_{self.metainfo['trial']}.pkl"
-
+        self.analysis_save_dir = analysis_save_path
+        self.__pkl_path = f"{self.analysis_save_dir}{__metainfo['date']}_{__metainfo['trial']}.pkl"
 
         self.save_pkl(pkl_path=self.pkl_path)  # save experiment object to pkl_path
 
-        self._parsePVMetadata() if 'Bruker' in microscope else Warning(
-            f'retrieving data-collection metainformation from {microscope} microscope has not been implemented yet')
+        self._parsePVMetadata() if 'Bruker' in microscope else Warning(f'retrieving data-collection metainformation from '
+                                                                       f'{microscope} microscope has not been implemented yet')
 
-        # set s2p batch size
-        # self.__s2p_batch_size = 2000 * (262144 / self.frame_x * self.frame_y)  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
-        self.suite2p = Suite2p(s2p_path=self.suite2p_path, s2p_batch_size=self.s2p_batch_size) if hasattr(self, 'suite2p_path') else None  ## TODO set option for providing input for s2p_batch_size
+        self.suite2p = Suite2pResultsTrial(s2p_path=self.suite2p_path, s2p_batch_size=self.s2p_batch_size) if hasattr(self, 'suite2p_path') else None  ## TODO set option for providing input for s2p_batch_size
 
         TwoPhotonImagingTrial.paqProcessing(self, paq_path=self.paq_path) if hasattr(self, 'paq_path') else None
-
-        if make_downsampled_tiff:
-            stack = self.meanRawFluTrace(save_pkl=True)
-            SaveDownsampledTiff(stack=stack,
-                                save_as=f"{self.analysis_save_dir}/{metainfo['date']}_{metainfo['trial']}_downsampled.tif")
 
         self.save()
 
@@ -983,6 +844,11 @@ class TwoPhotonImagingTrial:
 
         return im_stack
 
+    def makeDownsampledTiff(self):
+        stack = self.meanRawFluTrace(save_pkl=True)
+        SaveDownsampledTiff(stack=stack,
+                            save_as=f"{self.analysis_save_dir}/{metainfo['date']}_{metainfo['trial']}_downsampled.tif")
+
     def plotSingleImageFrame(self, frame_num: int = 0, title: str = None):
         """
         plots an image of a single specified tiff frame after reading using tifffile.
@@ -1045,9 +911,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         if naparm_path: self.__naparm_path = naparm_path if _check_path_exists("naparm_path", naparm_path) else None
         else: raise ValueError("Must provide naparm_path argument")
 
-        TwoPhotonImagingTrial.__init__(self, tiff_path=tiff_path, paq_path=paq_path, microscope='Bruker',
-                                       metainfo=metainfo, analysis_save_path=analysis_save_path,
-                                       suite2p_path=suite2p_path)
+        TwoPhotonImagingTrial.__init__(self, __metainfo=metainfo, analysis_save_path=analysis_save_path,
+                                       microscope='Bruker', paq_path=paq_path, suite2p_path=suite2p_path)
 
         # set photostim analysis time windows
         self.__pre_stim = pre_stim
@@ -2028,7 +1893,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
                         # dFstdF = (trace - mean_pre) / std_pre  # make dF divided by std of pre-stim F trace
 
                     # # add nan if cell is inside sz boundary for this stim -- temporarily commented out for a while
-                    # if 'post' in self.metainfo['exptype']:
+                    # if 'post' in self.metainfo['trialType']:
                     #     if hasattr(self, 'slmtargets_szboundary_stim'):
                     #         if self.is_cell_insz(cell=cell, stim=stim_timings[i]):
                     #             trace_dff = [np.nan] * len(trace)
