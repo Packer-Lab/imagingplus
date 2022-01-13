@@ -7,6 +7,7 @@ Especially, there is a fully complete code pipeline for analysis and plotting of
 
 This package is designed to work best with imaging experiments performed using PackIO, a Bruker 2pPlus microscope and using Suite2p for Ca2+ imaging 
 data processing for ROI detection. Ultimately, the goal of this package is to jump-start your own analysis of your awesome experiment. 
+It should be completely usable and understandable for anyone with the correct data in hand and basic knowledge of Python. There are tutorials to help along the way.  
 We hope that it provides a useful structure to organize your experimental data, and some functionality to interact and process your data in an efficient manner. 
 
 **Data Analysis Structure and Organization**

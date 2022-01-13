@@ -67,7 +67,7 @@ def import_obj(pkl_path):
 
 
 # option for pre-loading s2p results, and loading Experiment with some trials included in s2p results and some not. -- use s2p_use arg in trialsInformation dict
-
+## TODO need to figure out where to set option for providing input for s2p_batch_size if pre-loading s2p results
 
 ## CLASS DEFINITIONS
 from dataclasses import dataclass
@@ -85,7 +85,7 @@ class Experiment:
     # s2pResultsPath: bool = False
     s2pResultsPath: str = None  ## path to the parent directory containing the ops.npy file
     def __post_init__(self):
-        print(f'\n\---- CREATING new Experiment: \n\t{self.__repr__()}')
+        print(f'\n\- CREATING new Experiment: \n\t{self.__repr__()}')
 
 
         ## need to check that the required keys are provided in trialsInformation
@@ -153,38 +153,35 @@ class Experiment:
 
         total_frames_stitched = 0  # used in calculating # of frames from a single trial in the overall suite2p run
         for trial in self.trialsInformation:
-            if self.trialsInformation[trial]['trialType'] == 'TwoPhotonImagingTrial':
-                if 'tiff_path' not in self.trialsInformation[trial].keys():
+            _metainfo = {
+                'animal prep.': self.expID,
+                'trial': trial,
+                'date': self.date,
+                't series id': f"{self.expID} {trial}",
+                'trialsInformation': self.trialsInformation[trial]
+            }
+
+            # initialize TwoPhotonImagingTrial
+            if _metainfo['trialsInformation']['trialType'] == 'TwoPhotonImagingTrial':
+                if 'tiff_path' not in [*_metainfo['trialsInformation']]:
                     raise ValueError('TwoPhotonImagingTrial experiment trial requires `tiff_path` field defined in .trialsInformation dictionary for each trial')
-                __metainfo =  {
-                    'animal prep.': self.expID,
-                    'trial': trial,
-                    'date': self.date,
-                    't series id': f"{self.expID} {trial}",
-                    'trialsInformation': self.trialsInformation[trial]
-                }
-                trial_obj = TwoPhotonImagingTrial(__metainfo=__metainfo, analysis_save_path=self.analysisSavePath)
+
+                trial_obj = TwoPhotonImagingTrial(metainfo=_metainfo, analysis_save_path=self.analysisSavePath,
+                                                  microscope=self.microscope)
 
                 # update self.trialsInformation using the information from new trial_obj
                 self.trialsInformation[trial]['analysis Object Information'] = {'series ID': trial_obj.t_series_name,
                                                                                 'repr': trial_obj.__repr__(),
                                                                                 'pkl path': trial_obj.pkl_path}
 
-            elif self.trialsInformation[trial]['trialType'] == 'AllOpticalTrial':
-                if 'tiff_path' not in self.trialsInformation[trial].keys() or 'paq_path' not in self.trialsInformation[trial].keys() \
-                        or 'naparm_path' not in self.trialsInformation[trial].keys():
+            # initialize AllOpticalTrial
+            elif _metainfo['trialsInformation']['trialType'] == 'AllOpticalTrial':
+                if 'tiff_path' not in [*_metainfo['trialsInformation']] or 'paq_path' not in [*_metainfo['trialsInformation']] \
+                        or 'naparm_path' not in [*_metainfo['trialsInformation']]:
                     raise ValueError(f'AllOpticalTrial experiment trial requires `tiff_path`, `paq_path` and `naparm_path` fields defined in .trialsInformation dictionary for each alloptical trial. '
                                      f'\n{self.trialsInformation[trial]}')
-                __metainfo = {
-                    'animal prep.': self.expID,
-                    'trial': trial,
-                    'date': self.date,
-                    't series id': f"{self.date}_{trial}",
-                    'trialType': self.trialsInformation[trial]['expGroup']
-                }
-                trial_obj = AllOpticalTrial(microscope=self.microscope, tiff_path=self.trialsInformation[trial]['tiff_path'],
-                                            paq_path=self.trialsInformation[trial]['paq_path'], naparm_path=self.trialsInformation[trial]['naparm_path'],
-                                            analysis_save_path=self.analysisSavePath, metainfo=__metainfo, suite2p_path= None,
+                trial_obj = AllOpticalTrial(microscope=self.microscope, naparm_path=_metainfo['trialsInformation']['naparm_path'],
+                                            analysis_save_path=self.analysisSavePath, metainfo=_metainfo,
                                             pre_stim= 1.0, post_stim= 3.0, pre_stim_response_window = 0.500, post_stim_response_window = 0.500)
                 # update self.trialsInformation using the information from new trial_obj
                 self.trialsInformation[trial]['analysis Object Information'] = {'series ID': trial_obj.t_series_name,
@@ -193,8 +190,8 @@ class Experiment:
             else:
                 raise ValueError(f"unsupported trial type for trial: {trial}. All trials must be of trialType: TwoPhotonImagingTrial or AllOpticalTrial")
 
+            # initialize suite2p for trial objects
             if trial in self.__trialsSuite2p:
-                # initialize suite2p for trial objects
                 trial_obj.Suite2p = Suite2pResultsTrial(suite2p_experiment_obj=self.Suite2p,
                                                         trial_frames=[total_frames_stitched, total_frames_stitched + trial_obj.n_frames])  # use trial obj's current trial frames
                 total_frames_stitched += trial_obj.n_frames
@@ -269,6 +266,7 @@ class Experiment:
 
         opsEnd = run_s2p(ops=ops, db=db)
 
+        ## TODO update Experiment attr's and Trial attr's to reflect completion of the suite2p RUN
         self.__s2pResultExists = True
         self.s2pResultsPath = self.__suite2p_save_path + '/plane0/'
 
@@ -277,7 +275,7 @@ class Suite2pResultsExperiment:
     """used to run and further process suite2p processed data, and analysis associated with suite2p processed data."""
 
     def __init__(self, trialsSuite2p: list, s2pResultsPath: str = None, subtract_neuropil: bool = True):
-        print(f"\- ADDING Suite2p class to Experiment object")
+        print(f"\---- ADDING Suite2p class to Experiment object")
 
         # set trials to run together in suite2p for Experiment
         self.trials = trialsSuite2p
@@ -536,8 +534,7 @@ class TwoPhotonImagingTrial:
     """Just two photon imaging related functions - currently set up for data collected from Bruker microscopes and
     suite2p processed Ca2+ imaging data """
 
-    def __init__(self, __metainfo: dict, analysis_save_path: str, microscope: str = 'Bruker',
-                 paq_path: str = None, suite2p_path: str = None, make_downsampled_tiff: bool = False):
+    def __init__(self, metainfo: dict, analysis_save_path: str, microscope: str = 'Bruker'):
         """
         TODO update function docstring for approp args
         :param tiff_path: path to t-series .tiff
@@ -549,27 +546,26 @@ class TwoPhotonImagingTrial:
         :param make_downsampled_tiff: flag to run generation and saving of downsampled tiff of t-series (saves to the analysis save location)
         """
 
-        print(f'\n\t\----- CREATING TwoPhotonImagingTrial for {__metainfo["t series id"]}')
+        print(f'\n\t\----- CREATING TwoPhotonImagingTrial for {metainfo["t series id"]}')
 
-        if 'date' in __metainfo.keys() and 'trial' in __metainfo.keys() and 'animal prep.' in __metainfo.keys() and 't series id' in __metainfo.keys(): self.__metainfo = __metainfo
+        if 'date' in metainfo.keys() and 'trial' in metainfo.keys() and 'animal prep.' in metainfo.keys() and 't series id' in metainfo.keys(): self.__metainfo = metainfo
         else: raise ValueError("dev error: __metainfo argument must contain the minimum fields: 'date', 'trial', 'animal prep.' and 't series id'")
-        if os.path.exists(__metainfo[trialsInformation]['tiff_path']): self.tiff_path = __metainfo[trialsInformation]['tiff_path']
-        else: raise FileNotFoundError(f"tiff_path does not exist: {__metainfo[trialsInformation]['tiff_path']}")
-        if 'paq_path' in [*__metainfo[trialsInformation]]:
-            if os.path.exists(__metainfo[trialsInformation]['paq_path']): self.paq_path = __metainfo[trialsInformation]['paq_path']
-            else: raise FileNotFoundError(f"paq_path does not exist: {__metainfo[trialsInformation]['paq_path']}")
+        if os.path.exists(metainfo['trialsInformation']['tiff_path']): self.tiff_path = metainfo['trialsInformation']['tiff_path']
+        else: raise FileNotFoundError(f"tiff_path does not exist: {metainfo['trialsInformation']['tiff_path']}")
+        if 'paq_path' in [*metainfo['trialsInformation']]:
+            if os.path.exists(metainfo['trialsInformation']['paq_path']): self.paq_path = metainfo['trialsInformation']['paq_path']
+            else: raise FileNotFoundError(f"paq_path does not exist: {metainfo['trialsInformation']['paq_path']}")
 
         # set and create analysis save path directory
         self.analysis_save_dir = analysis_save_path
-        self.__pkl_path = f"{self.analysis_save_dir}{__metainfo['date']}_{__metainfo['trial']}.pkl"
+        self.__pkl_path = f"{self.analysis_save_dir}{metainfo['date']}_{metainfo['trial']}.pkl"
 
         self.save_pkl(pkl_path=self.pkl_path)  # save experiment object to pkl_path
 
         self._parsePVMetadata() if 'Bruker' in microscope else Warning(f'retrieving data-collection metainformation from '
                                                                        f'{microscope} microscope has not been implemented yet')
 
-        self.suite2p = Suite2pResultsTrial(s2p_path=self.suite2p_path, s2p_batch_size=self.s2p_batch_size) if hasattr(self, 'suite2p_path') else None  ## TODO set option for providing input for s2p_batch_size
-
+        # run paq processing if paq_path is provided for trial
         TwoPhotonImagingTrial.paqProcessing(self, paq_path=self.paq_path) if hasattr(self, 'paq_path') else None
 
         self.save()
@@ -598,22 +594,22 @@ class TwoPhotonImagingTrial:
     @property
     def date(self):
         "date of the experiment datacollection"
-        return self.metainfo['date']
+        return self.__metainfo['date']
 
     @property
     def prep(self):
-        return self.metainfo['animal prep.']
+        return self.__metainfo['animal prep.']
 
     @property
     def trial(self):
-        return self.metainfo['trial']
+        return self.__metainfo['trial']
 
     @property
     def t_series_name(self):
-        if 't series id' in self.metainfo.keys():
-            return f"{self.metainfo['t series id']}"
-        elif "animal prep." in self.metainfo.keys() and "trial" in self.metainfo.keys():
-            return f'{self.metainfo["animal prep."]} {self.metainfo["trial"]}'
+        if 't series id' in self.__metainfo.keys():
+            return f"{self.__metainfo['t series id']}"
+        elif "animal prep." in self.__metainfo.keys() and "trial" in self.__metainfo.keys():
+            return f'{self.__metainfo["animal prep."]} {self.__metainfo["trial"]}'
         else:
             raise ValueError('no information found to retrieve t series id')
 
@@ -624,7 +620,7 @@ class TwoPhotonImagingTrial:
     @property
     def pkl_path(self):
         "path in Analysis folder to save pkl object"
-        # return f"{self.analysis_save_dir}{self.metainfo['date']}_{self.metainfo['trial']}.pkl"
+        # return f"{self.analysis_save_dir}{self.__metainfo['date']}_{self.__metainfo['trial']}.pkl"
         return self.__pkl_path
 
     @pkl_path.setter
@@ -886,9 +882,11 @@ class TwoPhotonImagingTrial:
 class AllOpticalTrial(TwoPhotonImagingTrial):
     """This class provides methods for All Optical experiments"""
 
-    def __init__(self, microscope: str, tiff_path: str, paq_path: str, naparm_path: str, analysis_save_path: str, metainfo: dict,
-                 suite2p_path:str = None, pre_stim: float = 1.0, post_stim: float = 3.0, pre_stim_response_window: float = 0.500,
-                 post_stim_response_window: float = 0.500, **kwargs):
+    def __init__(self, metainfo: dict, naparm_path: str, analysis_save_path: str, microscope: str,
+                 pre_stim: float = 1.0, post_stim: float = 3.0, pre_stim_response_window: float = 0.500,
+                 post_stim_response_window: float = 0.500):
+
+        # TODO update providing arg values for all optical experiment analysis hyperparameters
 
         """
         :param tiff_path: path to t-series .tiff
@@ -906,13 +904,13 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         :kwargs (optional):
         """
 
-        print('\n***** CREATING NEW TwoPhotonImagingTrial.AllOpticalTrial data object')
+        print(f'\n\t\----- CREATING AllOpticalTrial data object for {metainfo["t series id"]}')
 
-        if naparm_path: self.__naparm_path = naparm_path if _check_path_exists("naparm_path", naparm_path) else None
-        else: raise ValueError("Must provide naparm_path argument")
+        if os.path.exists(naparm_path): self.__naparm_path = naparm_path
+        else: raise FileNotFoundError(f"path not found, naparm_path: {naparm_path}")
 
-        TwoPhotonImagingTrial.__init__(self, __metainfo=metainfo, analysis_save_path=analysis_save_path,
-                                       microscope='Bruker', paq_path=paq_path, suite2p_path=suite2p_path)
+        TwoPhotonImagingTrial.__init__(self, metainfo=metainfo, analysis_save_path=analysis_save_path,
+                                       microscope=microscope)
 
         # set photostim analysis time windows
         self.__pre_stim = pre_stim
