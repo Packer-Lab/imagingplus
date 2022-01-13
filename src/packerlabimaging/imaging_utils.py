@@ -85,7 +85,7 @@ class Experiment:
     # s2pResultsPath: bool = False
     s2pResultsPath: str = None  ## path to the parent directory containing the ops.npy file
     def __post_init__(self):
-        print(f'\nCREATING new Experiment: \n\t{self.__repr__()}')
+        print(f'CREATING new Experiment: \n\t{self.__repr__()}')
 
 
         ## need to check that the required keys are provided in trialsInformation
@@ -153,7 +153,7 @@ class Experiment:
 
         total_frames_stitched = 0  # used in calculating # of frames from a single trial in the overall suite2p run
         for trial in self.trialsInformation:
-            print(f"\n\-PROCESSING trial: {trial}, expID: ({self.expID})")
+            print(f"\n\n\- PROCESSING trial: {trial}, expID: ({self.expID})")
             _metainfo = {
                 'animal prep.': self.expID,
                 'trial': trial,
@@ -271,7 +271,6 @@ class Experiment:
         ## TODO update Experiment attr's and Trial attr's to reflect completion of the suite2p RUN
         self.__s2pResultExists = True
         self.s2pResultsPath = self.__suite2p_save_path + '/plane0/'
-
 
 class Suite2pResultsExperiment:
     """used to run and further process suite2p processed data, and analysis associated with suite2p processed data."""
@@ -464,7 +463,6 @@ class Suite2pResultsExperiment:
 
     ### TODO add methods for processing suite2p ROIs
 
-
 class Suite2pResultsTrial:
     """used to process suite2p processed data for one trial - out of overall experiment."""
 
@@ -530,7 +528,6 @@ class Suite2pResultsTrial:
                             frame_range[0] - start * s2p_run_batch)]
                 print('saving cropped tiff ', reg_tif_crop.shape)
                 tif.save(reg_tif_crop)
-
 
 class TwoPhotonImagingTrial:
     """Just two photon imaging related functions - currently set up for data collected from Bruker microscopes and
@@ -905,11 +902,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         print(f'\----- CREATING AllOpticalTrial data object for {metainfo["t series id"]}')
 
-        if os.path.exists(naparm_path): self.__naparm_path = naparm_path
-        else: raise FileNotFoundError(f"path not found, naparm_path: {naparm_path}")
-
-        TwoPhotonImagingTrial.__init__(self, metainfo=metainfo, analysis_save_path=analysis_save_path,
-                                       microscope=microscope)
+        # setting initial attr's
+        self.stim_channel = kwargs['stim_channel'] if 'stim_channel' in [*analysisOptions] else 'markpoints2packio'
 
         # set photostim analysis time windows
         self.__pre_stim = pre_stim
@@ -918,8 +912,16 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.__post_stim_response_window = post_stim_response_window
         # self._set_photostim_windows(pre_stim, post_stim, pre_stim_response_window, post_stim_response_window)  -- delete line
 
-        # running photostimulation experiment processing
-        self.stim_channel = kwargs['stim_channel'] if 'stim_channel' in [*analysisOptions] else 'markpoints2packio'
+        if os.path.exists(naparm_path): self.__naparm_path = naparm_path
+        else: raise FileNotFoundError(f"path not found, naparm_path: {naparm_path}")
+
+
+        # initialize object as TwoPhotonImagingTrial
+        TwoPhotonImagingTrial.__init__(self, metainfo=metainfo, analysis_save_path=analysis_save_path,
+                                       microscope=microscope)
+
+
+        # continue with photostimulation experiment processing
         self._stimProcessing(stim_channel=self.stim_channel)
         self._findTargetsAreas()
         self.photostim_frames = ['not-yet-processed']
@@ -1010,7 +1012,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
     def _parseNAPARMxml(self):
 
-        print('\n\t\----- parsing Naparm xml file...')
+        print('\n\----- parsing Naparm xml file...')
 
         print('loading NAPARM_xml_path:')
         NAPARM_xml_path = path_finder(self.naparm_path, '.xml')[0]
@@ -1046,7 +1048,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
     def _parseNAPARMgpl(self):
 
-        print('\n\t\----- parsing Naparm gpl file...')
+        print('\n\----- parsing Naparm gpl file...')
 
         NAPARM_gpl_path = path_finder(self.naparm_path, '.gpl')[0]
         print('loading NAPARM_gpl_path: ', NAPARM_gpl_path)
@@ -1072,11 +1074,22 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.spiral_size = np.ceil(spiral_size)
         # self.single_stim_dur = single_stim_dur  # not sure why this was previously getting this value from here, but I'm now getting it from the xml file above
 
-    def paqProcessing(self, plot: bool = True, **kwargs):
+    def paqProcessing(self, paq_path: str = None, plot: bool = True, **kwargs):
 
-        print('\n-----processing paq file...')
+        print('\n\----- processing paq file...')
 
-        print('loading', self.paq_path)
+        if not hasattr(self, 'paq_path'):
+            if paq_path is not None:
+                self.paq_path = paq_path
+            else:
+                ValueError(
+                    'ERROR: no paq_path defined for data object, please provide paq_path to load .paq file from.')
+        elif paq_path is not None and paq_path != self.paq_path:
+            assert os.path.exists(paq_path), print('ERROR: paq_path provided was not found')
+            print(f"|- Updating paq_path to newly provided path: {paq_path}")
+            self.paq_path = paq_path  # update paq_path if provided different path
+
+        print(f'\tloading paq data from: {self.paq_path}')
 
         paq, _ = paq_read(self.paq_path, plot=plot)
         self.paq_rate = paq['rate']
@@ -1207,7 +1220,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
     def _find_photostim_add_bad_framesnpy(self):
         """finds all photostim frames and saves them into the bad_frames attribute for the exp object and saves bad_frames.npy"""
-        print('\n\t\-----Finding photostimulation frames in imaging frames ...')
+        print('\n\-----Finding photostimulation frames in imaging frames ...')
         print('# of photostim frames calculated per stim. trial: ', self.stim_duration_frames + 1)
 
         photostim_frames = []
@@ -1218,9 +1231,9 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         self.photostim_frames = photostim_frames
         # print(photostim_frames)
-        print('\t\t|- Original # of frames:', self.n_frames, 'frames')
-        print('\t\t|- # of Photostim frames:', len(photostim_frames), 'frames')
-        print('\t\t|- Minus photostim. frames total:', self.n_frames - len(photostim_frames), 'frames')
+        print('\t|- Original # of frames:', self.n_frames, 'frames')
+        print('\t|- # of Photostim frames:', len(photostim_frames), 'frames')
+        print('\t|- Minus photostim. frames total:', self.n_frames - len(photostim_frames), 'frames')
 
         if len(self.photostim_frames) > 0:
             print(f'***Saving a total of {len(self.photostim_frames)} photostim frames to bad_frames.npy at: {self.tiff_path_dir}/bad_frames.npy')
@@ -1450,7 +1463,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         # targets_2 = np.where(target_image_scaled_2 > 0)
 
         targetCoordinates = list(zip(targets[1] * scale_factor, targets[0] * scale_factor))
-        print('Number of targets:', len(targetCoordinates))
+        print('\tNumber of targets:', len(targetCoordinates))
 
         # targetCoordinates_1 = ls(zip(targets_1[1], targets_1[0]))
         # print('Number of targets, SLM group #1:', len(targetCoordinates_1))
@@ -1465,9 +1478,9 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         ## specifying target areas in pixels to use for measuring responses of SLM targets
         radius_px = int(np.ceil(((self.spiral_size / 2) + 0) / self.pix_sz_x))
-        print(f"spiral size: {self.spiral_size}um")
-        print(f"pix sz x: {self.pix_sz_x}um")
-        print("radius (in pixels): {:.2f}px".format(radius_px * self.pix_sz_x))
+        print(f"\tspiral size: {self.spiral_size}um")
+        print(f"\tpix sz x: {self.pix_sz_x}um")
+        print("\tradius (in pixels): {:.2f}px".format(radius_px * self.pix_sz_x))
 
         target_areas = []
         for coord in targetCoordinates:
@@ -1477,7 +1490,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         ## target_areas that need to be excluded when filtering for nontarget cells
         radius_px = int(np.ceil(((self.spiral_size / 2) + 2.5) / self.pix_sz_x))
-        print("radius of target exclusion zone (in pixels): {:.2f}px".format(radius_px * self.pix_sz_x))
+        print("\tradius of target exclusion zone (in pixels): {:.2f}px".format(radius_px * self.pix_sz_x))
 
         target_areas = []
         for coord in targetCoordinates:
@@ -1512,7 +1525,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             targets = np.where(target_image > 0)
             targetCoordinates = list(zip(targets[1] * scale_factor, targets[0] * scale_factor))
             self.target_coords.append(targetCoordinates)
-            print('Number of targets (in SLM group %s): ' % (counter + 1), len(targetCoordinates))
+            print('\tNumber of targets (in SLM group %s): ' % (counter + 1), len(targetCoordinates))
             counter += 1
 
 
