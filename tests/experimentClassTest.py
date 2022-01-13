@@ -31,7 +31,7 @@ for idx, trial in enumerate(trials_list_spont):
                                        'tiff_path': f"{tiffs_loc}",
                                        's2p_use': True,
                                        'expGroup': "pre 4ap 2p spont imaging",
-                                       'paq_path': paqs_loc,
+                                       'paq_path': paqs_loc
                                                        }
 
 

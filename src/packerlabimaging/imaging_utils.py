@@ -87,7 +87,8 @@ class Experiment:
     def __post_init__(self):
         ## need to check that the required keys are provided in trialsInformation
         for i in ['expType', 'tiff_path', 'expGroup']:
-            assert i in [*self.trialsInformation[trial]], f"must provide {f} as a key in the trialsInformation dictionary"
+            for trial in [*self.trialsInformation]:
+                assert i in [*self.trialsInformation[trial]], f"must provide {i} as a key in the trialsInformation dictionary for trial: {trial}"
 
         # start processing for experiment imaging:
         self._parsePVMetadata()
@@ -116,7 +117,7 @@ class Experiment:
             elif self.useSuite2p:  # no s2pResultsPath provided, so initialize without pre-loading any results
                 self.__s2pResultExists = False
                 self.__suite2p_save_path = self.analysisSavePath + '/suite2p/'
-                self.Suite2p = Suite2pResultsExperiment(s2pSavePath=self.__suite2p_save_path, trialsSuite2p = self.__trialsSuite2p)
+                self.Suite2p = Suite2pResultsExperiment(trialsSuite2p = self.__trialsSuite2p)
 
         # create individual trial objects
         self._runExpTrialsProcessing()
@@ -147,6 +148,8 @@ class Experiment:
         return __return_information
 
     def _runExpTrialsProcessing(self):
+
+        total_frames_stitched = 0  # used in calculating # of frames from a single trial in the overall suite2p run
         for trial in self.trialsInformation:
             if self.trialsInformation[trial]['expType'] == 'TwoPhotonImaging':
                 if 'tiff_path' not in self.trialsInformation[trial].keys():
@@ -189,10 +192,9 @@ class Experiment:
 
             if trial in self.__trialsSuite2p:
                 # initialize suite2p for trial objects
-                if self.__s2pResultExists:
-                    trial_obj.Suite2p = Suite2pResultsTrial(s2p_path=self.s2pResultsPath)
-                elif self.useSuite2p and self.__s2pResultExists is False:
-                    trial_obj.Suite2p = Suite2pResultsTrial()
+                trial_obj.Suite2p = Suite2pResultsTrial(suite2p_experiment_obj=self.Suite2p,
+                                                        trial_frames=[total_frames_stitched, total_frames_stitched + trial_obj.n_frames])  # use trial obj's current trial frames
+                total_frames_stitched += trial_obj.n_frames
 
     @property
     def tiff_path_dir(self):
@@ -399,10 +401,12 @@ class Suite2pResultsExperiment:
     def __init__(self, trialsSuite2p: list, s2pResultsPath: str = None, subtract_neuropil: bool = True):
         # set trials to run together in suite2p for Experiment
         self.trials = trialsSuite2p
+        self.subtract_neuropil = subtract_neuropil
         assert len(self.trials) > 0, "no trials found to run suite2p, option available to provide list of trial IDs in `trialsSuite2P`"
 
         if s2pResultsPath is None:
             ## initialize needed variables and attr's for future calling of s2pRun
+            self.__s2pResultsPath = None
             self.ops = {}
             self.db = {}
         else:
@@ -584,9 +588,12 @@ class Suite2pResultsExperiment:
 class Suite2pResultsTrial(Suite2pResultsExperiment):
     """used to process suite2p processed data for one trial - out of overall experiment."""
 
-    def __init__(self, trial_frames: tuple = None):
-        self.trial_frames = subset_frames
-        Suite2pResultsExperiment.__init__(trialsSuite2p, s2pResultsPath, subtract_neuropil)
+    def __init__(self, suite2p_experiment_obj: Suite2pResultsExperiment, trial_frames: tuple = None):
+        self.trial_frames = trial_frames
+
+        __s2pResultsPath = suite2p_experiment_obj.__s2pResultsPath if hasattr(suite2p_experiment_obj, '__s2pResultsPath') else None
+        Suite2pResultsExperiment.__init__(self, trialsSuite2p = suite2p_experiment_obj.trials, s2pResultsPath=__s2pResultsPath,
+                                          subtract_neuropil=suite2p_experiment_obj.subtract_neuropil)
 
     def stitch_reg_tiffs(self, first_frame: int, last_frame: int, reg_tif_folder: str = None, force_crop: bool = False,
                          s2p_run_batch: int = 2000):
