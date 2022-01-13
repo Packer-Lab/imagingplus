@@ -1,5 +1,24 @@
 # Record for meeting agendas, notes and todo's 
 
+## Jan 14 2022
+- lots of work on smoothing out and cleaning up workflow of Experiment class and trial objects, and their Suite2p classes and individual Twophoton imaging and alloptical trial classes
+- working on getting attr's in place in the __init__ for the TwoPhotonImaging and AllOptical Trial objects (and also implementing code for some of them)
+
+Remaining attr's that need code refinement/implementation:
+- 
+
+Items done of note:
+- copy pasted + integrated Rob's code for:
+  - _parsePVMetadata and _getPVStateShard
+  - _retrieveSuite2pData, (_detrendFluTrial, _makeFluTrials, baselined_flu_trial) - for last three see Question below 
+  - added the .time attr as a property under Alloptical
+
+Questions for Rob:
+- (_detrendFluTrial, _makeFluTrials, baselined_flu_trial) - ASK: is it necessary to have them run on pre, poststim trace snippets trial_array? or can they be run directly on the suite2p traces dfof array?
+
+Todos:
+- update comments descriptions for statistical analysis of photostim attr's (under AllOpticalTrial class) - tagged Rob  
+
 ## Jan 7 2022
 - discuss implementation of parent experiment class for handling multiple sub-experiment objects, and used to run suite2p from
 - main todo with Rob: go through and ensure that all the alloptical functions are in place, correct and uptodate with his versions

@@ -1,6 +1,8 @@
 ### DRAFT SCRIPT FOR FUNCS
 
-### TODO consider creating an independent submodule for suite2p_data, and image_processing
+# option for pre-loading s2p results, and loading Experiment with some trials included in s2p results and some not. -- use s2p_use arg in trialsInformation dict
+## TODO need to figure out where to set option for providing input for s2p_batch_size if pre-loading s2p results
+## TODO consider providing arg values for all optical experiment analysis hyperparameters
 
 """
 This is the main collection of functions for processing and analysis of calcium imaging data in the Packer lab.
@@ -66,8 +68,6 @@ def import_obj(pkl_path):
     return obj
 
 
-# option for pre-loading s2p results, and loading Experiment with some trials included in s2p results and some not. -- use s2p_use arg in trialsInformation dict
-## TODO need to figure out where to set option for providing input for s2p_batch_size if pre-loading s2p results
 
 ## CLASS DEFINITIONS
 from dataclasses import dataclass
@@ -190,9 +190,11 @@ class Experiment:
                         or 'naparm_path' not in [*_metainfo['trialsInformation']]:
                     raise ValueError(f'AllOpticalTrial experiment trial requires `tiff_path`, `paq_path` and `naparm_path` fields defined in .trialsInformation dictionary for each alloptical trial. '
                                      f'\n{self.trialsInformation[trial]}')
-                trial_obj = AllOpticalTrial(microscope=self.microscope, naparm_path=_metainfo['trialsInformation']['naparm_path'],
-                                            analysis_save_path=self.analysisSavePath, metainfo=_metainfo,
-                                            pre_stim= 1.0, post_stim= 3.0, pre_stim_response_window = 0.500, post_stim_response_window = 0.500)
+                trial_obj = AllOpticalTrial(metainfo=_metainfo,
+                                            naparm_path=_metainfo['trialsInformation']['naparm_path'],
+                                            analysis_save_path=self.analysisSavePath, microscope=self.microscope,
+                                            prestim_sec=1.0, poststim_sec=3.0, pre_stim_response_window=0.500,
+                                            post_stim_response_window=0.500)
                 # update self.trialsInformation using the information from new trial_obj
                 self.trialsInformation[trial]['analysis Object Information'] = {'series ID': trial_obj.t_series_name,
                                                                                 'repr': trial_obj.__repr__(),
@@ -287,6 +289,20 @@ class Suite2pResultsExperiment:
     def __init__(self, trialsSuite2p: list, s2pResultsPath: str = None, subtract_neuropil: bool = True):
         print(f"\- ADDING Suite2p class to Experiment object ... ")
 
+        ## initialize attr's
+        self.cell_id = []       # cell ROI # id
+        self.n_units = None     # num of ROIs in suite2p result
+        self.cell_plane = []    # the corresponding imaging plane for each cell
+        self.cell_med = []      # y, x location of each cell in the imaging frame
+        self.cell_x = []        # TODO ROB
+        self.cell_y = []        # TODO ROB
+        self.raw = []           # [cells x num frames], raw traces for each cell from suite2p
+        self.mean_img = []      # mean img output from suite2p
+        self.mean_imgE = []     # mean img Enhanced output from suite2p
+        self.radius = []        # cell radius from suite2p
+        self.xoff = []          # motion correction info
+        self.yoff = []          # motion correction info
+
         # set trials to run together in suite2p for Experiment
         self.trials = trialsSuite2p
         self.subtract_neuropil = subtract_neuropil
@@ -300,103 +316,151 @@ class Suite2pResultsExperiment:
         else:
             self.__s2pResultsPath = s2pResultsPath
             try:
-                self.s2pProcessing(self.__s2pResultsPath, subtract_neuropil, subset_frames, save)
+                self._retrieveSuite2pData(self.__s2pResultsPath, subtract_neuropil, subset_frames, save)
             except:
                 raise ValueError(f'suite2p processed data could not be loaded from the provided `s2pResultsPath`: {s2pResultsPath}')
 
         # Attributes
         self.n_frames = None  # total number of imaging frames in the Suite2p run
 
-    def s2pProcessing(self, s2p_path: str, subtract_neuropil: bool = True, save: bool = True):
+    def _retrieveSuite2pData(self, s2p_path: str, neuropil_coeff: float = 0.7, save: bool = True):
         """processing of suite2p data from the current t-series
         :param s2p_path: path to the directory containing suite2p outputs
-        :param subtract_neuropil: choose to subtract neuropil or not when loading s2p traces
+        :param neuropil_coeff: choose to subtract neuropil or not when loading s2p traces
         :param save: choose to save data object or not
         """
 
-        self.cell_id = []
-        self.n_units = []
-        self.cell_plane = []
-        self.cell_med = []
-        self.cell_x = []
-        self.cell_y = []
-        self.raw = []
-        self.mean_img = []
-        self.radius = []
+        for plane in range(self.n_planes):
 
-        if self.n_planes == 1:
-            FminusFneu, spks, self.stat, neuropil = s2p_loader(s2p_path,
-                                                               subtract_neuropil)  # s2p_loader() is in Vape/utils_func
+            # extract suite2p stat.npy and neuropil-subtracted F
+            s2p_path = self.s2p_path
+            substract_neuropil = True if neuropil_coeff > 0 else False
+            FminusFneu, _, stat = s2p_loader(s2p_path, subtract_neuropil=substract_neuropil, neuropil_coeff=neuropil_coeff)
+            self.dfof.append(dfof2(FminusFneu[:, self.frames]))  # calculate df/f based on relevant frames
+            self.raw.append(FminusFneu[:, self.frames])  # raw F of each cell
+
             ops = np.load(os.path.join(s2p_path, 'ops.npy'), allow_pickle=True).item()
+            self.mean_img.append(ops['meanImg'])
+            self.mean_imgE.append(ops['meanImgE'])  # enhanced mean image from suite2p
+            self.xoff = ops['xoff']  # motion correction info
+            self.yoff = ops['yoff']
 
-            if self.s2p_subset_frames is None:
-                self.raw = FminusFneu
-                self.neuropil = neuropil
-                self.spks = spks
-            elif self.s2p_subset_frames is not None:
-                self.raw = FminusFneu[:, self.s2p_subset_frames[0]:self.s2p_subset_frames[1]]
-                self.spks = spks[:, self.s2p_subset_frames[0]:self.s2p_subset_frames[1]]
-                self.neuropil = neuropil[:, self.s2p_subset_frames[0]:self.s2p_subset_frames[1]]
-            self.mean_img = ops['meanImg']
             cell_id = []
+            cell_plane = []
             cell_med = []
             cell_x = []
             cell_y = []
-            radius = []
 
-            for cell, s in enumerate(self.stat):
-                cell_id.append(s['original_index'])  # stat is an np array of dictionaries!
+            # stat is an np array of dictionaries
+            for cell, s in enumerate(stat):
+                cell_id.append(s['original_index'])
                 cell_med.append(s['med'])
+
                 cell_x.append(s['xpix'])
                 cell_y.append(s['ypix'])
-                radius.append(s['radius'])
 
-            self.cell_id = cell_id
-            self.n_units = len(self.cell_id)
-            self.cell_med = cell_med
-            self.cell_x = cell_x
-            self.cell_y = cell_y
-            self.radius = radius
+            self.cell_id.append(cell_id)
+            self.n_units.append(len(self.cell_id[plane]))
+            self.cell_med.append(cell_med)
+            self.cell_x.append(cell_x)
+            self.cell_y.append(cell_y)
 
-
-        elif self.n_planes > 1:  ## TODO get Rob to review this loop, no experience with multi-plane analysis
-            for plane in range(self.n_planes):
-                # s2pResultsPath = os.path.join(self.tiff_path, 'suite2p', 'plane' + str(plane))
-                FminusFneu, self.spks, self.stat, self.neuro = s2p_loader(s2p_path,
-                                                                          subtract_neuropil)  # s2p_loader() is in utils_func
-                ops = np.load(os.path.join(s2p_path, 'ops.npy'), allow_pickle=True).item()
-
-                self.raw.append(FminusFneu)
-                self.mean_img.append(ops['meanImg'])
-                cell_id = []
-                cell_plane = []
-                cell_med = []
-                cell_x = []
-                cell_y = []
-                radius = []
-
-                for cell, s in enumerate(self.stat):
-                    cell_id.append(s['original_index'])  # stat is an np array of dictionaries!
-                    cell_med.append(s['med'])
-                    cell_x.append(s['xpix'])
-                    cell_y.append(s['ypix'])
-                    radius.append(s['radius'])
-
-                self.cell_id.append(cell_id)
-                self.n_units.append(len(self.cell_id[plane]))
-                self.cell_med.append(cell_med)
-                self.cell_x.append(cell_x)
-                self.cell_y.append(cell_y)
-                self.radius = radius
-
-                cell_plane.extend([plane] * self.n_units[plane])
-                self.cell_plane.append(cell_plane)
+            num_units = FminusFneu.shape[0]
+            cell_plane.extend([plane] * num_units)
+            self.cell_plane.append(cell_plane)
 
         if self.n_units > 1:
             print(f'|- Loaded {self.n_units} cells, recorded for {round(self.raw.shape[1] / self.fps, 2)} secs')
         else:
             print('******* SUITE2P DATA NOT LOADED.')
 
+
+    #### TEMP - need to ask about these functions from ROB TODO
+    def _baselineFluTrial(self, flu_trial, stim_end):
+        '''
+        Subtract baseline from dff trials to normalise across cells
+
+        Inputs:
+            flu_trial           - [cell x frame] dff trial for all cells
+        Outputs:
+            baselined_flu_trial - detrended dff trial with zeros replacing stim artifact
+        '''
+        # baseline the flu_trial using pre-stim period mean flu for each cell
+        baseline_flu = np.mean(flu_trial[:, :self.pre_frames], axis=1)
+        # repeat the baseline_flu value across all frames for each cell
+        baseline_flu_stack = np.repeat(baseline_flu, flu_trial.shape[1]).reshape(flu_trial.shape)
+        # subtract baseline values for each cell
+        baselined_flu_trial = flu_trial - baseline_flu_stack
+
+        # set stim artifact period to 0
+        baselined_flu_trial[:, self.pre_frames:stim_end] = 0
+
+        return baselined_flu_trial
+
+    def _detrendFluTrial(self, flu_trial, stim_end):
+        '''
+        Detrend dff trials to account for drift of signal over a trial
+
+        Inputs:
+            flu_trial           - [cell x frame] dff trial for all cells
+            stim_end            - frame n of the stim end
+        Outputs:
+            detrended_flu_trial - detrended dff trial with zeros replacing stim artifact
+        '''
+        # set stim artifact period to 0
+        flu_trial[:, self.pre_frames:stim_end] = 0
+
+        # detrend and baseline-subtract the flu trial for all cells
+        detrended_flu_trial = signal.detrend(no_stim_flu_trial, axis=1)
+        baselined_flu_trial = self._baselineFluTrial(detrended_flu_trial)
+
+        return baselined_flu_trial
+
+    def _makeFluTrials(self, plane_flu, plane):
+        '''
+        Take dff trace and for each trial, correct for drift in the recording and baseline subtract
+
+        Inputs:
+            plane_flu   - dff traces for all cells for this plane only
+            plane       - imaging plane n
+        Outputs:
+            trial_array - detrended, baseline-subtracted trial array [cell x frame x trial]
+        '''
+
+        print('finding trials')
+
+        trial_array = []
+
+        for i, stim in enumerate(self.stim_start_frames[plane]):
+            # get frame indices of entire trial from pre-stim start to post-stim end
+            trial_frames = np.s_[stim - self.pre_frames: stim + self.post_frames]
+
+            # use trial frames to extract this trial for every cell
+            flu_trial = plane_flu[:, trial_frames]
+            flu_trial_len = self.pre_frames + self.post_frames
+            stim_end = self.pre_frames + self.duration_frames
+
+            # catch timeseries which ended too early
+            if flu_trial.shape[1] == flu_trial_len:
+                # don't detrend whisker stim data
+                if any(s in self.stim_type for s in ['pr', 'ps', 'none']):
+                    # detrend only the flu_trial outside of stim artifact and baseline
+                    #                     flu_trial = self._detrendFluTrial(flu_trial, stim_end)
+                    flu_trial = self._baselineFluTrial(flu_trial, stim_end)
+                else:
+                    flu_trial = self._baselineFluTrial(flu_trial, stim_end)
+
+                # only append trials of the correct length - will catch corrupt/incomplete data and not include
+                if len(trial_array) == 0:
+                    trial_array = flu_trial
+                else:
+                    trial_array = np.dstack((trial_array, flu_trial))
+            else:
+                print('**incomplete trial detected and not appended to trial_array**', end='\r')
+
+        return trial_array
+
+    #### TEMP
 
     def stitch_reg_tiffs(self, first_frame: int, last_frame: int, reg_tif_folder: str = None, force_crop: bool = False,
                          s2p_run_batch: int = 2000):  # TODO refactor as method for trial object
@@ -480,6 +544,7 @@ class Suite2pResultsTrial:
 
     def __init__(self, suite2p_experiment_obj: Suite2pResultsExperiment, trial_frames: tuple = None):
         self.trial_frames = trial_frames  # tuple of first and last frame (out of the overall suite2p run) corresponding to the present trial
+        self._get_suite2pResults()
 
         ## TODO adding attributes to collect Suite2p results for this specific trial
 
@@ -543,6 +608,13 @@ class Suite2pResultsTrial:
                             frame_range[0] - start * s2p_run_batch)]
                 print('saving cropped tiff ', reg_tif_crop.shape)
                 tif.save(reg_tif_crop)
+                
+    def _get_suite2pResults(self):
+        """crop suite2p data for frames only for the present trial"""
+        self.raw = FminusFneu[:, self.trial_frames[0]:self.trial_frames[1]]
+        self.spks = spks[:, self.trial_frames[0]:self.trial_frames[1]]
+        self.neuropil = neuropil[:, self.trial_frames[0]:self.trial_frames[1]]
+
 
 class TwoPhotonImagingTrial:
     """Just two photon imaging related functions - currently set up for data collected from Bruker microscopes and
@@ -563,7 +635,19 @@ class TwoPhotonImagingTrial:
         print(f'\----- CREATING TwoPhotonImagingTrial for trial: {metainfo["trial"]},  {metainfo["t series id"]}')
 
         # Initialize Attributes:
+
+        # Imaging acquisition attr's:
         self.n_frames = None  # number of imaging frames in the current trial
+        self.fps = None  # rate of imaging acquisition (frames per second)
+        self.frame_x = frame_x  # num of pixels in the x direction of a single frame
+        self.frame_y = frame_y  # num of pixels in the y direction of a single frame
+        self.n_planes = n_planes  # num of FOV planes in imaging acquisition
+        self.pix_sz_x = pix_sz_x  # size of a single imaging pixel in x direction (microns)
+        self.pix_sz_y = pix_sz_y  # size of a single imaging pixel in y direction (microns)
+        self.scan_x = scan_x  # TODO ROB
+        self.scan_y = scan_y  # TODO ROB
+        self.zoom = zoom  # zoom level on Bruker microscope
+        self.last_good_frame = last_good_frame  # indicates when the last good frame was during the t-series recording, if nothing was wrong the value is 0, otherwise it is >0 and that indicates that PV is not sure what happened after the frame listed, but it could be corrupt data
 
 
         if 'date' in metainfo.keys() and 'trial' in metainfo.keys() and 'animal prep.' in metainfo.keys() and 't series id' in metainfo.keys(): self.__metainfo = metainfo
@@ -765,13 +849,13 @@ class TwoPhotonImagingTrial:
         self.n_frames = int(n_frames)
         self.last_good_frame = last_good_frame
 
-        print('\tn planes:', n_planes,
-              '\n\tn frames:', int(n_frames),
-              '\n\tfps:', fps,
-              '\n\tframe size (px):', frame_x, 'x', frame_y,
-              '\n\tzoom:', zoom,
-              '\n\tpixel size (um):', pix_sz_x, pix_sz_y,
-              '\n\tscan centre (V):', scan_x, scan_y
+        print('\tn planes:', self.n_planes,
+              '\n\tn frames:', self.n_frames,
+              '\n\tfps:', self.fps,
+              '\n\tframe size (px):', self.frame_x, 'x', self.frame_y,
+              '\n\tzoom:', self.zoom,
+              '\n\tpixel size (um):', self.pix_sz_x, self.pix_sz_y,
+              '\n\tscan centre (V):', self.scan_x, self.scan_y
               )
 
     def paqProcessing(self, paq_path: str = None, plot: bool = False):
@@ -900,10 +984,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
     """This class provides methods for All Optical experiments"""
 
     def __init__(self, metainfo: dict, naparm_path: str, analysis_save_path: str, microscope: str, analysisOptions: dict = {},
-                 pre_stim: float = 1.0, post_stim: float = 3.0, pre_stim_response_window: float = 0.500,
-                 post_stim_response_window: float = 0.500):
+                 prestim_sec: float = 1.0, poststim_sec: float = 3.0, pre_stim_response_window: float = 0.500, post_stim_response_window: float = 0.500):
 
-        # TODO update providing arg values for all optical experiment analysis hyperparameters
 
         """
         :param tiff_path: path to t-series .tiff
@@ -914,8 +996,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         :param microscope: name of microscope used to record imaging (options: "Bruker" (default), "Scientifica", "other")
         :param suite2p_path: (optional) path to suite2p outputs folder associated with this t-series (plane0 file? or ops file? not sure yet)
         :param make_downsampled_tiff: flag to run generation and saving of downsampled tiff of t-series (saves to the analysis save location)
-        :param pre_stim:
-        :param post_stim:
+        :param prestim_sec:
+        :param poststim_sec:
         :param pre_stim_response_window:
         :param post_stim_response_window:
         :kwargs (optional):
@@ -923,8 +1005,34 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         print(f'\----- CREATING AllOpticalTrial data object for {metainfo["t series id"]}')
 
-        # setting initial attr's
+        # Initialize Attributes:
+
         self.stim_channel = kwargs['stim_channel'] if 'stim_channel' in [*analysisOptions] else 'markpoints2packio'  # stim_channel = channel on paq file to read for determining stims
+        self.stim_freq = None       # frequency of photostim protocol (of a single photostim trial? or time between individual photostim trials?)
+
+        # set photostim trial Flu trace snippet collection and response measurement analysis time windows
+        self.prestim_sec = prestim_sec        # length of pre stim trace collected (in frames)
+        self.poststim_sec = poststim_sec      # length of post stim trace collected (in frames)
+        self.pre_stim_response_window_msec = pre_stim_response_window       # time window for collecting pre-stim measurement (units: msec)
+        self.post_stim_response_window_msec = post_stim_response_window     # time window for collecting post-stim measurement (units: msec)
+
+        # attr's for statistical analysis of photostim trials responses
+
+        ######## TODO update comment descriptions - ROB?
+        self.all_trials = []        # all trials for each cell, dff detrended
+        self.all_amplitudes = []    # all amplitudes of response between dff test periods
+
+        self.stas = []              # avg of all trials for each cell, dff
+        self.sta_amplitudes = []    # avg amplitude of response between dff test periods
+
+        self.prob_response = None   # probability of response of cell to photostim trial; obtained from single trial significance (ROB suggestion)
+        self.t_tests = []           # result from related samples t-test between dff test periods
+        self.wilcoxons = []
+        self.trial_sig_dff = []     # based on dff increase above std of baseline
+        self.trial_sig_dfsf = []    # based on df/std(f) increase in test period post-stim
+        self.sta_sig = []           # based on t-test between dff test periods
+        self.sta_sig_nomulti = []   # as above, no multiple comparisons correction
+        ########
 
 
         #### initializing data processing, data analysis and/or results associated attr's
@@ -937,17 +1045,13 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         # TODO add attr's related to numpy array's and pandas dataframes for photostim trials - SLM targets
 
-        ## NON PHOTOSTIM SLM TARGETS
+        ## ALL CELLS (from suite2p ROIs)
+        self.dfof = None  #
+
 
         # TODO add attr's related to numpy array's and pandas dataframes for photostim trials - non SLM suite2p ROIs
 
 
-        # set photostim analysis time windows
-        self.__pre_stim = pre_stim
-        self.__post_stim = post_stim
-        self.__pre_stim_response_window = pre_stim_response_window
-        self.__post_stim_response_window = post_stim_response_window
-        # self._set_photostim_windows(pre_stim, post_stim, pre_stim_response_window, post_stim_response_window)  -- delete line
 
         if os.path.exists(naparm_path): self.__naparm_path = naparm_path
         else: raise FileNotFoundError(f"path not found, naparm_path: {naparm_path}")
@@ -963,7 +1067,6 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self._findTargetsAreas()
         self.photostim_frames = ['not-yet-processed']
         self._find_photostim_add_bad_framesnpy()
-
 
 
         ##
@@ -993,48 +1096,31 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             return self.__naparm_path + '/'
 
     @property
-    def pre_stim(self):
-        """setting time window for collecting Flu trace before each photostimulation trial"""
-        return self.__pre_stim
-
-    @pre_stim.setter
-    def pre_stim(self, value):
-        self.__pre_stim = value
-
-    @property
-    def post_stim(self):
-        """setting time window for collecting Flu trace after each photostimulation trial"""
-        return self.__post_stim
-
-    @post_stim.setter
-    def post_stim(self, value):
-        self.__post_stim = value
-
-    @property
-    def pre_stim_response_window(self):
-        """setting time window for measuring Flu trace before each photostimulation trial"""
-        return self.__pre_stim_response_window
-
-    @pre_stim_response_window.setter
-    def pre_stim_response_window(self, value):
-        self.__pre_stim_response_window = value
-
-    @property
-    def post_stim_response_window(self):
-        """setting time window for measuring Flu trace after each photostimulation trial"""
-        return self.__post_stim_response_window
-
-    @post_stim_response_window.setter
-    def post_stim_response_window(self, value):
-        self.__post_stim_response_window = value
-
-    @property
     def pre_stim_response_frames_window(self):
-        return int(self.fps * self.pre_stim_response_window)  # length of the pre stim response test window (in frames)
+        """num frames for measuring Flu trace before each photostimulation trial during photostim response measurement (units: frames)"""
+        return int(self.fps * self.pre_stim_response_window_msec / 1000)
+
+    @property
+    def pre_stim_frames(self):
+        """num frames for collecting Flu trace after each photostimulation trial (units: frames)"""
+        return int(self.pre_stim * self.fps)
+
+    @property
+    def post_stim_frames(self):
+        """num frames for collecting Flu trace after each photostimulation trial (units: frames)"""
+        return int(self.post_stim * self.fps)
 
     @property
     def post_stim_response_frames_window(self):
-        return int(self.fps * self.post_stim_response_frames_window)  # length of the post stim response test window (in frames)
+        """num frames for collecting Flu trace after each photostimulation trial (units: frames)"""
+        return int(self.fps * self.post_stim_response_window_msec)  # length of the post stim response test window (in frames)
+
+    @property
+    def timeVector(self):
+        "vector of frame times in milliseconds rather than frames"
+        n_frames = self.all_trials[0].shape[1]  ## <--- TODO double check this line returns as expected
+        self.time = np.linspace(-self.prestim_sec, self.poststim_sec, self.n_frames)
+
 
     def _parseNAPARMxml(self):
 
@@ -1208,7 +1294,6 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             self.stim_start_frames = stim_start_frames
 
     ### KEY FUNCTIONS TO REVIEW WITH ROB FOR ALLOPTICAL WORKFLOW
-
     def _photostimProcessing(self):  ## TODO need to figure out how to handle different types of photostimulation experiment setups
 
         """
