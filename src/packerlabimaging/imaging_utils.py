@@ -136,7 +136,7 @@ class Experiment:
         os.makedirs(self.analysisSavePath, exist_ok=True)
         self.save_pkl(pkl_path=self.pkl_path)
 
-        print(f"\n\n\n NEW Experiment object created: ")
+        print(f"\n\n\nNEW Experiment object created: ")
         print(self)
 
     def __repr__(self):
