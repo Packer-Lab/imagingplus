@@ -18,6 +18,7 @@ Questions for Rob:
 
 Todos:
 - update comments descriptions for statistical analysis of photostim attr's (under AllOpticalTrial class) - tagged Rob  
+- retrieving stim_freq
 
 ## Jan 7 2022
 - discuss implementation of parent experiment class for handling multiple sub-experiment objects, and used to run suite2p from
