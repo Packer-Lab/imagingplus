@@ -4,19 +4,17 @@
 - lots of work on smoothing out and cleaning up workflow of Experiment class and trial objects, and their Suite2p classes and individual Twophoton imaging and alloptical trial classes
 - working on getting attr's in place in the __init__ for the TwoPhotonImaging and AllOptical Trial objects (and also implementing code for some of them)
 
-Remaining attr's that need code refinement/implementation:
-- 
 
 Items done of note:
 - copy pasted + integrated Rob's code for:
   - _parsePVMetadata and _getPVStateShard
-  - _retrieveSuite2pData, (_detrendFluTrial, _makeFluTrials, baselined_flu_trial) - for last three see Question below 
+  - _retrieveSuite2pData, _makeFluTrials, (_detrendFluTrial, baselined_flu_trial) - for last two see Question below
   - added the .time attr as a property under Alloptical
 
 Questions for Rob:
-- (_detrendFluTrial, _makeFluTrials, baselined_flu_trial) - ASK: is it necessary to have them run on pre, poststim trace snippets trial_array? or can they be run directly on the suite2p traces dfof array? also see that detrending is commented out in makeFluTrials - so, should we include or not?
+- (_detrendFluTrial, baselined_flu_trial) - ASK: how important are these functions? also see that detrending is commented out in makeFluTrials - should we include or not?
 
-Todos:
+- Todos:
 - update comments descriptions for statistical analysis of photostim attr's (under AllOpticalTrial class) - tagged Rob
 
 

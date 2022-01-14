@@ -375,93 +375,6 @@ class Suite2pResultsExperiment:
             print('******* SUITE2P DATA NOT LOADED.')
 
 
-    #### TEMP - need to ask about these functions from ROB TODO
-    def _baselineFluTrial(self, flu_trial, stim_end):
-        '''
-        Subtract baseline from dff trials to normalise across cells
-
-        Inputs:
-            flu_trial           - [cell x frame] dff trial for all cells
-        Outputs:
-            baselined_flu_trial - detrended dff trial with zeros replacing stim artifact
-        '''
-        # baseline the flu_trial using pre-stim period mean flu for each cell
-        baseline_flu = np.mean(flu_trial[:, :self.pre_frames], axis=1)
-        # repeat the baseline_flu value across all frames for each cell
-        baseline_flu_stack = np.repeat(baseline_flu, flu_trial.shape[1]).reshape(flu_trial.shape)
-        # subtract baseline values for each cell
-        baselined_flu_trial = flu_trial - baseline_flu_stack
-
-        # set stim artifact period to 0
-        baselined_flu_trial[:, self.pre_frames:stim_end] = 0
-
-        return baselined_flu_trial
-
-    def _detrendFluTrial(self, flu_trial, stim_end):
-        '''
-        Detrend dff trials to account for drift of signal over a trial
-
-        Inputs:
-            flu_trial           - [cell x frame] dff trial for all cells
-            stim_end            - frame n of the stim end
-        Outputs:
-            detrended_flu_trial - detrended dff trial with zeros replacing stim artifact
-        '''
-        # set stim artifact period to 0
-        flu_trial[:, self.pre_frames:stim_end] = 0
-
-        # detrend and baseline-subtract the flu trial for all cells
-        detrended_flu_trial = signal.detrend(no_stim_flu_trial, axis=1)
-        baselined_flu_trial = self._baselineFluTrial(detrended_flu_trial)
-
-        return baselined_flu_trial
-
-    def _makeFluTrials(self, plane_flu, plane):
-        '''
-        Take dff trace and for each trial, correct for drift in the recording and baseline subtract
-
-        Inputs:
-            plane_flu   - dff traces for all cells for this plane only
-            plane       - imaging plane n
-        Outputs:
-            trial_array - detrended, baseline-subtracted trial array [cell x frame x trial]
-        '''
-
-        print('finding trials')
-
-        trial_array = []
-
-        for i, stim in enumerate(self.stim_start_frames[plane]):
-            # get frame indices of entire trial from pre-stim start to post-stim end
-            trial_frames = np.s_[stim - self.pre_frames: stim + self.post_frames]
-
-            # use trial frames to extract this trial for every cell
-            flu_trial = plane_flu[:, trial_frames]
-            flu_trial_len = self.pre_frames + self.post_frames
-            stim_end = self.pre_frames + self.duration_frames
-
-            # catch timeseries which ended too early
-            if flu_trial.shape[1] == flu_trial_len:
-                # don't detrend whisker stim data
-                if any(s in self.stim_type for s in ['pr', 'ps', 'none']):
-                    # detrend only the flu_trial outside of stim artifact and baseline
-                    #                     flu_trial = self._detrendFluTrial(flu_trial, stim_end)
-                    flu_trial = self._baselineFluTrial(flu_trial, stim_end)
-                else:
-                    flu_trial = self._baselineFluTrial(flu_trial, stim_end)
-
-                # only append trials of the correct length - will catch corrupt/incomplete data and not include
-                if len(trial_array) == 0:
-                    trial_array = flu_trial
-                else:
-                    trial_array = np.dstack((trial_array, flu_trial))
-            else:
-                print('**incomplete trial detected and not appended to trial_array**', end='\r')
-
-        return trial_array
-
-    #### TEMP
-
     def stitch_reg_tiffs(self, first_frame: int, last_frame: int, reg_tif_folder: str = None, force_crop: bool = False,
                          s2p_run_batch: int = 2000):  # TODO refactor as method for trial object
         """
@@ -547,6 +460,9 @@ class Suite2pResultsTrial:
         self._get_suite2pResults()
 
         ## TODO adding attributes to collect Suite2p results for this specific trial
+        self.dfof: np.ndarray= None                     # array of dFF normalized Flu values from suite2p output [num cells x length of imaging acquisition]
+        self.raw: np.ndarray = None                     # array of raw Flu values from suite2p output [num cells x length of imaging acquisition]
+
 
         self.__overall_suite2p = suite2p_experiment_obj
 
@@ -609,11 +525,18 @@ class Suite2pResultsTrial:
                 print('saving cropped tiff ', reg_tif_crop.shape)
                 tif.save(reg_tif_crop)
                 
-    def _get_suite2pResults(self):
+    def _get_suite2pResults(self): # TODO complete code for getting suite2p results for trial
         """crop suite2p data for frames only for the present trial"""
         self.raw = FminusFneu[:, self.trial_frames[0]:self.trial_frames[1]]
         self.spks = spks[:, self.trial_frames[0]:self.trial_frames[1]]
         self.neuropil = neuropil[:, self.trial_frames[0]:self.trial_frames[1]]
+
+        for plane in range(self.n_planes):
+            # extract suite2p stat.npy and neuropil-subtracted F
+            s2p_path = self.s2p_path
+            FminusFneu, _, stat = s2p_loader(s2p_path, subtract_neuropil=True, neuropil_coeff=0.7)
+            self.dfof.append(dfof2(FminusFneu[:, self.trial_frames]))  # calculate df/f based on relevant frames
+            self.raw.append(FminusFneu[:, self.trial_frames])  # raw F of each cell
 
 
 class TwoPhotonImagingTrial:
@@ -1070,10 +993,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         ## ALL CELLS (from suite2p ROIs)
         # TODO add attr's related to numpy array's and pandas dataframes for photostim trials - suite2p ROIs
-        self.dfof: np.ndarray= None                     # array of dFF normalized Flu values from suite2p output [num cells x length of imaging acquisition]
-        self.raw: np.ndarray = None                     # array of raw Flu values from suite2p output [num cells x length of imaging acquisition]
         self.photostimFluArray: np.ndarray = None       # array of dFF pre + post stim Flu snippets for each stim and cell [num cells x num peri-stim frames collected x num stims]  TODO need to write a quick func to collect over all planes to allow for multiplane imaging
-
+        self.photostimResponseAmplitudes: pd.DataFrame = None       # photostim response amplitudes in a dataframe for each cell and each photostim
 
 
 
@@ -1304,7 +1225,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.spiral_size = np.ceil(spiral_size)
         # self.single_stim_dur = single_stim_dur  # not sure why this was previously getting this value from here, but I'm now getting it from the xml file above
 
-    def _photostimProcessing(self):  # TODO need to figure out how to handle different types of photostimulation experiment setups - think through in detail with Rob at a later date
+    def _photostimProcessing(self):  # TODO need to figure out how to handle different types of photostimulation experiment setups - think through in detail with Rob at a later date?
 
         """
         remember that this is currently configured for only the interleaved photostim, not the really fast photostim of multi-groups
@@ -1330,7 +1251,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         total_single_stim = single_stim * self.n_shots * self.n_groups * self.n_reps
 
         self.stim_dur = total_single_stim
-        self.stim_freq = self.n_shots / self.stim_dur  # TODO Rob how to retrieve?
+        self.stim_freq = self.n_shots / self.stim_dur  # TODO Rob is this correct?
         print('Single stim. Duration (ms): ', self.single_stim_dur)
         print('Total stim. Duration per trial (ms): ', self.stim_dur)
 
@@ -1340,7 +1261,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.stim_channel = stim_channel
         self._photostimProcessing()
 
-    def _findTargetsAreas(self):  # TODO needs review by Rob to change any necessary code for multi SLM groups?
+    def _findTargetsAreas(self):  # TODO needs review by Rob - any bits of code missing under here? for e.g. maybe for target coords under multiple SLM groups?
 
         '''
         Finds cells that have been targeted for optogenetic photostimulation using Naparm in all-optical type experiments.
@@ -1429,16 +1350,16 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             print('\tNumber of targets (in SLM group %s): ' % (counter + 1), len(targetCoordinates))
             counter += 1
 
-    def _findTargetedS2pROIs(self, plot: bool = True):
+    def _findTargetedS2pROIs(self, plot: bool = True): # function code not reviewed yet!
         """finding s2p cell ROIs that were also SLM targets (or more specifically within the target areas as specified by _findTargetAreas - include 15um radius from center coordinate of spiral)
         Make a binary mask of the targets and multiply by an image of the cells
         to find cells that were targeted
 
-        --- LAST UPDATED NOV 6 2021 - copied over from Rob's ---
+        --- LAST UPDATED NOV 6 2021 - copied over from Vape ---
         """
 
 
-        print('searching for targeted cells... [Rob version]')
+        print('searching for targeted cells... [Vape version]')
         ##### IDENTIFYING S2P ROIs THAT ARE WITHIN THE SLM TARGET SPIRAL AREAS
         # make all target area coords in to a binary mask
         targ_img = np.zeros([self.frame_x, self.frame_y], dtype='uint16')
@@ -1874,8 +1795,11 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             self.sta_amplitudes.append(sta_amplitudes)
     ####                                                                    // end
 
+    ### ALLOPTICAL PROCESSING OF TRACES
+    ## ... no methods determined here yet...
 
-    ### ALLOPTICAL ANALYSIS - FOCUS ON SLM TARGETS RELATED METHODS
+
+    ### ALLOPTICAL ANALYSIS - FOCUS ON SLM TARGETS RELATED METHODS TODO need to review this whole section
     def collect_traces_from_targets(self, curr_trial_frames: list, reg_tif_folder: str, save: bool = True):
         """uses registered tiffs to collect raw traces from SLM target areas"""
 
@@ -2207,8 +2131,55 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         return reliability_slmtargets, traces_SLMtargets_successes_avg_dict, traces_SLMtargets_failures_avg_dict
 
 
-    ### ALLOPTICAL ANALYSIS - FOR ALL CELLS FROM SUITE2P
-    def _makePhotostimTrialFluSnippets(self, plane_flu: np.ndarray, plane: int = 0, stim_frames: list = None):  # base code copied from Rob's _makeFluTrials
+    ### ALLOPTICAL ANALYSIS - FOR ALL CELLS FROM SUITE2P  # good progress on this, almost done reviewing
+    #### TEMP - need to ask about these two functions from
+
+    ### TODO ROB: how important are these two functions? I also see that detrending is commented out in makeFluTrials - should we include or not?
+
+    def _baselineFluTrial(self, flu_trial, stim_end):
+        '''
+        Subtract baseline from dff trials to normalise across cells
+
+        Inputs:
+            flu_trial           - [cell x frame] dff trial for all cells
+        Outputs:
+            baselined_flu_trial - detrended dff trial with zeros replacing stim artifact
+        '''
+        # baseline the flu_trial using pre-stim period mean flu for each cell
+        baseline_flu = np.mean(flu_trial[:, :self.pre_frames], axis=1)
+        # repeat the baseline_flu value across all frames for each cell
+        baseline_flu_stack = np.repeat(baseline_flu, flu_trial.shape[1]).reshape(flu_trial.shape)
+        # subtract baseline values for each cell
+        baselined_flu_trial = flu_trial - baseline_flu_stack
+
+        # set stim artifact period to 0
+        baselined_flu_trial[:, self.pre_frames:stim_end] = 0
+
+        return baselined_flu_trial
+
+    def _detrendFluTrial(self, flu_trial, stim_end):
+        '''
+        Detrend dff trials to account for drift of signal over a trial
+
+        Inputs:
+            flu_trial           - [cell x frame] dff trial for all cells
+            stim_end            - frame n of the stim end
+        Outputs:
+            detrended_flu_trial - detrended dff trial with zeros replacing stim artifact
+        '''
+        # set stim artifact period to 0
+        flu_trial[:, self.pre_frames:stim_end] = 0
+
+        # detrend and baseline-subtract the flu trial for all cells
+        detrended_flu_trial = signal.detrend(no_stim_flu_trial, axis=1)
+        baselined_flu_trial = self._baselineFluTrial(detrended_flu_trial)
+
+        return baselined_flu_trial
+
+    #### TEMP // end
+
+
+    def _makePhotostimTrialFluSnippets(self, plane_flu: np.ndarray, plane: int = 0, stim_frames: list = None):  # base code copied from Vape's _makeFluTrials
         '''
         Take dff trace and for each trial, correct for drift in the recording and baseline subtract
 
@@ -2251,59 +2222,71 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         return trial_array
 
+    def _collectPhotostimResponses(self):
+        pass
 
 
-    def _trialProcessing_nontargets(expobj, normalize_to='pre-stim', save=True):
+    @property
+    def pre_stim_test_slice(self):
+        "num of prestim frames used for quantification of photostim responses"
+        return np.s_[self.pre_stim - self.pre_stim_response_frames_window: self.pre_stim]
+
+    @property
+    def post_stim_test_slice(self):
+        "num of poststim frames used for quantification of photostim responses"
+        stim_end = self.pre_stim + self.stim_duration_frames
+        return np.s_[stim_end: stim_end + self.post_stim_response_frames_window]
+    
+    def photostimProcessingAllCells(self, plane):
         '''
-        Uses dfstdf traces for individual cells and photostim trials, calculate the mean amplitudes of response and
-        statistical significance across all trials for all cells
+        Take dfof trace for entire timeseries and break it up in to individual trials, calculate
+        the mean amplitudes of response and statistical significance across all trials
 
         Inputs:
             plane             - imaging plane n
         '''
-
         print('\n----------------------------------------------------------------')
         print('running trial Processing for all cells ')
         print('----------------------------------------------------------------')
 
         # make trial arrays from dff data shape: [cells x stims x frames]
-        expobj._makeNontargetsStimTracesArray(stim_timings=expobj.stim_start_frames, normalize_to=normalize_to,
-                                              save=False)
+        self.photostimFluArray = self._makePhotostimTrialFluSnippets(plane_flu=self.Suite2p.dfof[plane])
 
         # create parameters, slices, and subsets for making pre-stim and post-stim arrays to use in stats comparison
-        # test_period = expobj.pre_stim_response_window / 1000  # sec
-        # expobj.test_frames = int(expobj.fps * test_period)  # test period for stats
-        expobj.pre_stim_frames_test = np.s_[expobj.pre_stim - expobj.pre_stim_response_frames_window: expobj.pre_stim]
-        stim_end = expobj.pre_stim + expobj.stim_duration_frames
-        expobj.post_stim_frames_slice = np.s_[stim_end: stim_end + expobj.post_stim_response_frames_window]
+        # test_period = self.pre_stim_response_window / 1000  # sec
+        # self.test_frames = int(self.fps * test_period)  # test period for stats
 
         # mean pre and post stimulus (within post-stim response window) flu trace values for all cells, all trials
-        expobj.analysis_array = expobj.dfstdF_traces  # NOTE: USING dF/stdF TRACES
-        expobj.pre_array = np.mean(expobj.analysis_array[:, :, expobj.pre_stim_frames_test],
-                                   axis=1)  # [cells x prestim frames] (avg'd taken over all stims)
-        expobj.post_array = np.mean(expobj.analysis_array[:, :, expobj.post_stim_frames_slice],
-                                    axis=1)  # [cells x poststim frames] (avg'd taken over all stims)
+        self.__analysis_array = self.photostimFluArray
+        __pre_array = np.mean(self.__analysis_array[:, :, self.pre_stim_test_slice],
+                              axis=1)  # [cells x prestim frames] (avg'd taken over all stims)
+        __post_array = np.mean(self.__analysis_array[:, :, self.post_stim_test_slice],
+                               axis=1)  # [cells x poststim frames] (avg'd taken over all stims)
 
-        # ar2 = expobj.analysis_array[18, :, expobj.post_stim_frames_slice]
-        # ar3 = ar2[~np.isnan(ar2).any(axis=1)]
-        # assert np.nanmean(ar2) == np.nanmean(ar3)
-        # expobj.analysis_array = expobj.analysis_array[~np.isnan(expobj.analysis_array).any(axis=1)]
+
+        # Vape's version for collection photostim response amplitudes
+        # calculate amplitude of response for all cells, all trials
+        all_amplitudes = __post_array - __pre_array
+        self.photostimResponseAmplitudes.append(all_amplitudes)
+
+        ## TODO add func for collecting photostim response amplitudes in a dataframe for each cell and each photostim
+        self._collectPhotostimResponses()
 
         # measure avg response value for each trial, all cells --> return array with 3 axes [cells x response_magnitude_per_stim (avg'd taken over response window)]
-        expobj.post_array_responses = []  ### this and the for loop below was implemented to try to root out stims with nan's but it's likley not necessary...
-        for i in np.arange(expobj.analysis_array.shape[0]):
-            a = expobj.analysis_array[i][~np.isnan(expobj.analysis_array[i]).any(axis=1)]
+        __post_array_responses = []  ### this and the for loop below was implemented to try to root out stims with nan's but it's likley not necessary...
+        for i in np.arange(self.__analysis_array.shape[0]):
+            a = self.__analysis_array[i][~np.isnan(self.__analysis_array[i]).any(axis=1)]
             responses = a.mean(axis=1)
-            expobj.post_array_responses.append(responses)
+            __post_array_responses.append(responses)
 
-        expobj.post_array_responses = np.mean(expobj.analysis_array[:, :, expobj.post_stim_frames_slice], axis=2)
-        expobj.wilcoxons = expobj._runWilcoxonsTest()
+        __post_array_responses = np.mean(self.__analysis_array[:, :, self.post_stim_test_slice], axis=2)
+        self.wilcoxons = self._runWilcoxonsTest(array1=__pre_array, array2=__post_array)
 
-        expobj.save() if save else None
+        self.save() if save else None
 
 
     #### STATISTICS FOR PHOTOSTIM RESPONSES
-    def _probResponse(self, plane, trial_sig_calc):  ## FROM ROB'S CODE, TODO NEED TO CHOOSE BETWEEN HERE AND BOTTOM RELIABILITY CODE
+    def _probResponse(self, plane, trial_sig_calc):  ## FROM VAPE'S CODE, TODO NEED TO CHOOSE BETWEEN HERE AND BOTTOM RELIABILITY CODE
         '''
         Calculate the response probability, i.e. proportion of trials that each cell responded on
 
@@ -2497,11 +2480,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
             self.single_sig.append(single_sigs)
 
-    def _runWilcoxonsTest(expobj, array1=None, array2=None):
-
-        if array1 is None and array2 is None:
-            array1 = expobj.pre_array;
-            array2 = expobj.post_array
+    def _runWilcoxonsTest(expobj, array1, array2):
 
         # check if the two distributions of flu values (pre/post) are different
         assert array1.shape == array2.shape, 'shapes for expobj.pre_array and expobj.post_array need to be the same for wilcoxon test'
