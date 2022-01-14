@@ -14,11 +14,11 @@ Items done of note:
   - added the .time attr as a property under Alloptical
 
 Questions for Rob:
-- (_detrendFluTrial, _makeFluTrials, baselined_flu_trial) - ASK: is it necessary to have them run on pre, poststim trace snippets trial_array? or can they be run directly on the suite2p traces dfof array?
+- (_detrendFluTrial, _makeFluTrials, baselined_flu_trial) - ASK: is it necessary to have them run on pre, poststim trace snippets trial_array? or can they be run directly on the suite2p traces dfof array? also see that detrending is commented out in makeFluTrials - so, should we include or not?
 
 Todos:
-- update comments descriptions for statistical analysis of photostim attr's (under AllOpticalTrial class) - tagged Rob  
-- retrieving stim_freq
+- update comments descriptions for statistical analysis of photostim attr's (under AllOpticalTrial class) - tagged Rob
+
 
 ## Jan 7 2022
 - discuss implementation of parent experiment class for handling multiple sub-experiment objects, and used to run suite2p from

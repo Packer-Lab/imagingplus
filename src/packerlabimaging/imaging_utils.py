@@ -1022,8 +1022,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         # paq file attr's
         self.paq_rate: int = None               # PackIO acquisition rate for .paq file
         self.frame_clock: list = None           # paq clock timestamps of imaging acquisition frames
-        self.frame_start_times: list            # paq clock timestamps of the first imaging acquisition frame of t-series
-        self.frame_end_times: list              # paq clock timestamps of the last imaging acquisition frame of t-series
+        self.frame_start_times: list = None     # paq clock timestamps of the first imaging acquisition frame of t-series
+        self.frame_end_times: list = None       # paq clock timestamps of the last imaging acquisition frame of t-series
 
         # SLM target coords attr's
         self.n_targets = []                     # total number of target coordinates per SLM group
@@ -1070,8 +1070,9 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         ## ALL CELLS (from suite2p ROIs)
         # TODO add attr's related to numpy array's and pandas dataframes for photostim trials - suite2p ROIs
-        self.dfof = None  #
-
+        self.dfof: np.ndarray= None                     # array of dFF normalized Flu values from suite2p output [num cells x length of imaging acquisition]
+        self.raw: np.ndarray = None                     # array of raw Flu values from suite2p output [num cells x length of imaging acquisition]
+        self.photostimFluArray: np.ndarray = None       # array of dFF pre + post stim Flu snippets for each stim and cell [num cells x num peri-stim frames collected x num stims]  TODO need to write a quick func to collect over all planes to allow for multiplane imaging
 
 
 
@@ -1854,7 +1855,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         self.sta_euclid_dist = dist
 
-    def _STAProcessing(self, plane):
+    def STAProcessing(self, plane):
             '''
             Make stimulus triggered average (STA) traces and calculate the STA amplitude
             of response
@@ -2206,140 +2207,51 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         return reliability_slmtargets, traces_SLMtargets_successes_avg_dict, traces_SLMtargets_failures_avg_dict
 
 
-    ### ALLOPTICAL ANALYSIS - FOCUS ON ALL CELLS - FROM SUITE2P
-    def _makeNontargetsStimTracesArray(self, stim_timings, normalize_to='pre-stim', save=True):
-        """
-        primary function to retrieve photostimulation trial timed Fluorescence traces for non-targets (ROIs taken from suite2p).
-        :param self: alloptical experiment object
-        :param normalize_to: str; either "baseline" or "pre-stim" or "whole-trace"
-        :return: plot of avg_dFF of 100 randomly selected nontargets
-        """
-        print('\nCollecting peri-stim traces ')
+    ### ALLOPTICAL ANALYSIS - FOR ALL CELLS FROM SUITE2P
+    def _makePhotostimTrialFluSnippets(self, plane_flu: np.ndarray, plane: int = 0, stim_frames: list = None):  # base code copied from Rob's _makeFluTrials
+        '''
+        Take dff trace and for each trial, correct for drift in the recording and baseline subtract
 
-        # collect photostim timed average dff traces of photostim targets
-        dff_traces = []
-        dff_traces_avg = []
+        Inputs:
+            plane_flu   - array of dff traces for all cells for this plane only
+            plane       - imaging plane corresponding to plane_flu, default = 0 (for one plane datasets)
+            stim_frames - optional, if provided then only use these photostim frames to collect photostim_array
+        Outputs:
+            photostim_array     - dFF peri-photostim Flu array [cell x frame x trial]
+        '''
 
-        dfstdF_traces = []
-        dfstdF_traces_avg = []
+        print('\n\-Collecting peri-stim traces ...')
 
-        raw_traces = []
-        raw_traces_avg = []
+        trial_array = []
+        _stims = self.stim_start_frames[plane] if stim_frames is None else stim_frames
 
-        for cell in self.s2p_nontargets:
-            # print('considering cell # %s' % cell)
-            cell_idx = self.cell_id.index(cell)
-            flu_trials = [self.raw[cell_idx][stim - self.pre_stim: stim + self.stim_duration_frames + self.post_stim]
-                          for stim in stim_timings]
+        assert _stims in self.stim_start_frames[plane], "stims not found in the stim frames list of this plane"
 
-            dff_trace = normalize_dff(self.raw[cell_idx],
-                                      threshold_pct=50)  # normalize trace (dFF) to mean of whole trace
+        for i, stim in enumerate(_stims):
+            # get frame indices of entire trial from pre-stim start to post-stim end
+            trial_frames = np.s_[stim - self.pre_stim_frames: stim + self.post_stim_frames]
 
-            if normalize_to == 'baseline':  # probably gonna ax this anyways
-                flu_dff = []
-                mean_spont_baseline = np.mean(self.baseline_raw[cell_idx])
-                for i in range(len(flu_trials)):
-                    trace_dff = ((flu_trials[i] - mean_spont_baseline) / mean_spont_baseline) * 100
+            # use trial frames to extract this trial for every cell
+            flu_trial = plane_flu[:, trial_frames]
+            flu_trial_len = self.pre_stim_frames + self.post_stim_frames
+            stim_end = self.pre_stim_frames + self.stim_duration_frames
 
-                    # add nan if cell is inside sz boundary for this stim
-                    if hasattr(self, 'slmtargets_szboundary_stim'):
-                        if self.is_cell_insz(cell=cell, stim=stim_timings[i]):
-                            trace_dff = [np.nan] * len(flu_trials[i])
-
-                    flu_dff.append(trace_dff)
-
-            elif normalize_to == 'whole-trace':
-                print('s2p neu. corrected trace statistics: mean: %s (min: %s, max: %s, std: %s)' %
-                      (np.mean(self.raw[cell_idx]), np.min(self.raw[cell_idx]), np.max(self.raw[cell_idx]),
-                       np.std(self.raw[cell_idx], ddof=1)))
-                # dfstdf_trace = (self.raw[cell_idx] - np.mean(self.raw[cell_idx])) / np.std(self.raw[cell_idx], ddof=1)  # normalize trace (dFstdF) to std of whole trace
-                flu_dfstdF = []
-                flu_dff = []
-                flu_dff_ = [dff_trace[stim - self.pre_stim: stim + self.stim_duration_frames + self.post_stim] for
-                            stim in stim_timings if
-                            stim not in self.seizure_frames]
-
-                for i in range(len(flu_dff_)):
-                    trace = flu_dff_[i]
-                    mean_pre = np.mean(trace[0:self.pre_stim])
-                    trace_dff = trace - mean_pre  # correct dFF of this trial to mean of pre-stim dFF
-                    std_pre = np.std(trace[0:self.pre_stim], ddof=1)
-                    dFstdF = trace_dff / std_pre  # normalize dFF of this trial by std of pre-stim dFF
-
-                    flu_dff.append(trace_dff)
-                    flu_dfstdF.append(dFstdF)
-
-            elif normalize_to == 'pre-stim':
-                flu_dff = []
-                flu_dfstdF = []
-                # print('|- splitting trace by photostim. trials and correcting by pre-stim period')
-                for i in range(len(flu_trials)):
-                    trace = flu_trials[i]
-                    mean_pre = np.mean(trace[0:self.pre_stim])
-
-                    std_pre = np.std(trace[0:self.pre_stim], ddof=1)
-                    # dFstdF = (((trace - mean_pre) / mean_pre) * 100) / std_pre  # make dF divided by std of pre-stim F trace
-                    dFstdF = (trace - mean_pre) / std_pre  # make dF divided by std of pre-stim F trace
-
-                    if mean_pre < 1:
-                        # print('risky cell here at cell # %s, trial # %s, mean pre: %s [1.1]' % (cell, i+1, mean_pre))
-                        trace_dff = [np.nan] * len(trace)
-                        dFstdF = [np.nan] * len(
-                            trace)  # - commented out to test if we need to exclude cells for this correction with low mean_pre since you're not dividing by a bad mean_pre value
-                    else:
-                        # trace_dff = ((trace - mean_pre) / mean_pre) * 100
-                        trace_dff = normalize_dff(trace, threshold_val=mean_pre)
-                        # std_pre = np.std(trace[0:self.pre_stim], ddof=1)
-                        # # dFstdF = (((trace - mean_pre) / mean_pre) * 100) / std_pre  # make dF divided by std of pre-stim F trace
-                        # dFstdF = (trace - mean_pre) / std_pre  # make dF divided by std of pre-stim F trace
-
-                    # # add nan if cell is inside sz boundary for this stim -- temporarily commented out for a while
-                    # if 'post' in self.metainfo['trialType']:
-                    #     if hasattr(self, 'slmtargets_szboundary_stim'):
-                    #         if self.is_cell_insz(cell=cell, stim=stim_timings[i]):
-                    #             trace_dff = [np.nan] * len(trace)
-                    #             dFstdF = [np.nan] * len(trace)
-                    #     else:
-                    #         AttributeError(
-                    #             'no slmtargets_szboundary_stim attr, so classify cells in sz boundary hasnot been saved for this expobj')
-
-                    flu_dff.append(trace_dff)
-                    flu_dfstdF.append(dFstdF)
-
+            # catch timeseries which ended in the middle of an ongoing photostim instance
+            if flu_trial.shape[1] == flu_trial_len:
+                flu_trial = self._baselineFluTrial(flu_trial, stim_end)
+                # only append trials of the correct length - will catch corrupt/incomplete data and not include
+                if len(trial_array) == 0:
+                    trial_array = flu_trial
+                else:
+                    trial_array = np.dstack((trial_array, flu_trial))
             else:
-                TypeError('need to specify what to normalize to in get_targets_dFF (choose "baseline" or "pre-stim")')
+                print('**incomplete trial detected and not appended to trial_array**', end='\r')
 
-            dff_traces.append(flu_dff)  # contains all individual dFF traces for all stim times
-            dff_traces_avg.append(np.nanmean(flu_dff, axis=0))  # contains the dFF trace averaged across all stim times
+        print(f'\nFinished collecting peri-stim traces, out shape: {trial_array.shape}')
 
-            dfstdF_traces.append(flu_dfstdF)
-            dfstdF_traces_avg.append(np.nanmean(flu_dfstdF, axis=0))
+        return trial_array
 
-            raw_traces.append(flu_trials)
-            raw_traces_avg.append(np.nanmean(flu_trials, axis=0))
 
-        if normalize_to == 'baseline':
-            print(
-                '\nCompleted collecting pre to post stim traces -- normalized to spont imaging as baseline -- for %s cells' % len(
-                    dff_traces_avg))
-            self.dff_traces = dff_traces
-            self.dff_traces_avg = dff_traces_avg
-            # return dff_traces, dff_traces_avg
-        elif normalize_to == 'pre-stim' or normalize_to == 'whole-trace':
-            print(
-                f'\nCompleted collecting pre to post stim traces -- normalized to pre-stim period or maybe whole-trace -- for {len(dff_traces_avg)} cells, {len(flu_trials)} stims')
-            self.dff_traces = np.asarray(dff_traces)
-            self.dff_traces_avg = np.asarray([i for i in dff_traces_avg])
-            self.dfstdF_traces = np.asarray(dfstdF_traces)
-            self.dfstdF_traces_avg = np.asarray([i for i in dfstdF_traces_avg])
-            self.raw_traces = np.asarray(raw_traces)
-            self.raw_traces_avg = np.asarray([i for i in raw_traces_avg])
-
-        print('\nFinished collecting peri-stim traces ')
-
-        self.save() if save else None
-
-        # return dff_traces, dff_traces_avg, dfstdF_traces, dfstdF_traces_avg, raw_traces, raw_traces_avg
 
     def _trialProcessing_nontargets(expobj, normalize_to='pre-stim', save=True):
         '''
@@ -2351,7 +2263,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         '''
 
         print('\n----------------------------------------------------------------')
-        print('running trial Processing for nontargets ')
+        print('running trial Processing for all cells ')
         print('----------------------------------------------------------------')
 
         # make trial arrays from dff data shape: [cells x stims x frames]
