@@ -22,7 +22,6 @@ from .utils import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert
     s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff, paq_read, _check_path_exists
 
 from . import suite2p_integration
-from TwoPhotonImaging import TwoPhotonImagingTrial
 from . import plotting
 
 

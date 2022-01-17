@@ -13,6 +13,7 @@ import anndata
 import scipy.stats as stats
 import signal
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 import statsmodels.api
 import statsmodels as sm
@@ -25,7 +26,7 @@ from .utils import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert
     s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff, paq_read, _check_path_exists
 
 from . import suite2p_integration
-from TwoPhotonImaging import TwoPhotonImagingTrial
+from . TwoPhotonImaging import TwoPhotonImagingTrial
 from . import plotting
 
 # %%
@@ -33,9 +34,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
     """This class provides methods for All Optical experiments"""
 
     def __init__(self, metainfo: dict, naparm_path: str, analysis_save_path: str, microscope: str,
-                 analysisOptions: dict = {},
-                 prestim_sec: float = 1.0, poststim_sec: float = 3.0, pre_stim_response_window: float = 0.500,
-                 post_stim_response_window: float = 0.500):
+                 analysisOptions: dict = {}, prestim_sec: float = 1.0, poststim_sec: float = 3.0, pre_stim_response_window: float = 0.500,
+                 post_stim_response_window: float = 0.500, **kwargs):
 
         """
         :param tiff_path: path to t-series .tiff

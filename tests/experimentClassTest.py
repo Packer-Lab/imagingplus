@@ -1,6 +1,5 @@
 import packerlabimaging as pkg
 
-
 # %% INITIALIZING ALLOPTICAL + TWOPHOTON IMAGING EXPERIMENT OBJECT FROM SCRATCH
 # experiment dictionary
 initialization_dict = {
