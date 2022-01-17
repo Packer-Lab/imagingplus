@@ -1,5 +1,4 @@
-import packerlabimaging.imaging_utils as pkg
-
+import packerlabimaging.packerlabimaging as pkg
 
 
 # experiment dictionary
@@ -11,7 +10,8 @@ initialization_dict = {
     'date': '2020-12-19',
     'comments': '',
     'trialsInformation': {},
-    'useSuite2p': True
+    'useSuite2p': True,
+    's2pResultsPath': "/home/pshah/mnt/qnap/Analysis/2020-12-19/suite2p/alloptical-2p-1x-alltrials/plane0"
 }
 
 

@@ -1,9 +1,4 @@
-### DRAFT SCRIPT FOR FUNCS
-
-# option for pre-loading s2p results, and loading Experiment with some trials included in s2p results and some not. -- use s2p_use arg in trialsInformation dict
-## TODO need to figure out where to set option for providing input for s2p_batch_size if pre-loading s2p results
-## TODO consider providing arg values for all optical experiment analysis hyperparameters
-
+### MAIN SCRIPT
 """
 This is the main collection of functions for processing and analysis of calcium imaging data in the Packer lab.
 
@@ -12,31 +7,39 @@ from the microscope during data collection, and any user generated files associa
 
 """
 
-import re
-import glob
-import pandas as pd
-import time
-import datetime
+
+# option for pre-loading s2p results, and loading Experiment with some trials included in s2p results and some not. -- use s2p_use arg in trialsInformation dict
+## TODO need to figure out where to set option for providing input for s2p_batch_size if pre-loading s2p results
+## TODO consider providing arg values for all optical experiment analysis hyperparameters
+
+
+from __future__ import absolute_import
+
 import os
 import sys
+import time
+import datetime
+import re
+import glob
 
-# grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from packerlabimaging.utils_funcs import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, \
-    s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff, paq_read, _check_path_exists
+import pickle
 
-from matplotlib.colors import ColorConverter
+import numpy as np
+import pandas as pd
+import anndata
 import scipy.stats as stats
+
 import statsmodels.api
 import statsmodels as sm
-from suite2p.run_s2p import run_s2p
-import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np
 import xml.etree.ElementTree as ET
 import tifffile as tf
+from suite2p.run_s2p import run_s2p
 
-from packerlabimaging import plotting_utils as plotting
-import pickle
+# grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
+from .utils import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, \
+    s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff, paq_read, _check_path_exists
+
+from . import plotting
 
 ###### UTILITIES
 
@@ -67,7 +70,10 @@ def import_obj(pkl_path):
 
     return obj
 
+# TEMP VARIABLES FOR DEVELOPMENT USAGES
 
+N_PLANES = 1
+NEUROPIL_COEFF = 0.7
 
 ## CLASS DEFINITIONS
 from dataclasses import dataclass
@@ -137,13 +143,9 @@ class Experiment:
         self.save_pkl(pkl_path=self.pkl_path)
 
         # Attributes:
-        self.n_frames = None  # total number of imaging frames in the
-
 
         print(f"\n\n\nNEW Experiment object created: ")
         print(self)
-
-
 
     def __repr__(self):
         return f"Experiment object (date: {self.date}, expID: {self.expID})"
@@ -156,7 +158,7 @@ class Experiment:
         for trial in self.trialsInformation:
             # print(f"\t{trial}: {self.trialsInformation[trial]['trialType']} {self.trialsInformation[trial]['expGroup']}")
             __return_information = __return_information + f"\n\t{trial}: {self.trialsInformation[trial]['trialType']}, {self.trialsInformation[trial]['expGroup']}"
-        return __return_information
+        return f"{__return_information}\n"
 
     def _runExpTrialsProcessing(self):
 
@@ -216,7 +218,6 @@ class Experiment:
         __tiff_path_first_trial = self.trialsInformation[__first_trial_in_experiment]['tiff_path']
         return __tiff_path_first_trial[:[(s.start(), s.end()) for s in re.finditer('/', __tiff_path_first_trial)][-1][0]]  # this is the directory where the Bruker xml files associated with the 2p imaging TIFF are located
 
-
     @property
     def pkl_path(self):
         "path in Analysis folder to save pkl object"
@@ -240,7 +241,7 @@ class Experiment:
         self.save_pkl()
 
     ## suite2p methods
-    def s2pRun(self, user_batch_size=2000, trialsSuite2P: list = None):
+    def s2pRun(self, user_batch_size=2000, trialsSuite2P: list = None):  ## TODO gotta specify # of planes somewhere here
         """run suite2p on the experiment object, using trials specified in current experiment object, using the attributes
         determined directly from the experiment object."""
 
@@ -273,7 +274,7 @@ class Experiment:
         # specify tiff list to suite2p and data path
         db['tiff_list'] = tiffs_to_s2p
         db['data_path'] = self.dataPath  ## this is where the bad_frames.npy file will be stored for suite2p to use.
-        db['save_folder'] = self.suite2pPath
+        db['save_folder'] = self.__suite2p_save_path
 
         print(db)
 
@@ -281,17 +282,22 @@ class Experiment:
 
         ## TODO update Experiment attr's and Trial attr's to reflect completion of the suite2p RUN
         self.__s2pResultExists = True
-        self.s2pResultsPath = self.__suite2p_save_path + '/plane0/'
+        self.s2pResultsPath = self.__suite2p_save_path + '/plane0/'  ## need to further debug that the flow of the suite2p path makes sense
+
+    # trial level methods
+    def _convert_to_anndata(self):
+        adata = anndata.AnnData(X=self.Suite2p.raw)
+
 
 class Suite2pResultsExperiment:
     """used to run and further process suite2p processed data, and analysis associated with suite2p processed data."""
 
     def __init__(self, trialsSuite2p: list, s2pResultsPath: str = None, subtract_neuropil: bool = True):
-        print(f"\- ADDING Suite2p class to Experiment object ... ")
+        print(f"\- ADDING Suite2p Results to Experiment object ... ")
 
         ## initialize attr's
-        self.cell_id = []       # cell ROI # id
-        self.n_units = None     # num of ROIs in suite2p result
+        self.cell_id = []       # cell ROI # id per plane
+        self.n_units = []       # num of ROIs in suite2p result per plane
         self.cell_plane = []    # the corresponding imaging plane for each cell
         self.cell_med = []      # y, x location of each cell in the imaging frame
         self.cell_x = []        # TODO ROB
@@ -303,6 +309,12 @@ class Suite2pResultsExperiment:
         self.xoff = []          # motion correction info
         self.yoff = []          # motion correction info
 
+        # TODO add attr comments
+        self.n_planes: int = N_PLANES
+        self.stat = []
+        self.spks = []
+        self.neuropil = []
+
         # set trials to run together in suite2p for Experiment
         self.trials = trialsSuite2p
         self.subtract_neuropil = subtract_neuropil
@@ -310,18 +322,22 @@ class Suite2pResultsExperiment:
 
         if s2pResultsPath is None:
             ## initialize needed variables and attr's for future calling of s2pRun
-            self.__s2pResultsPath = None
+            self.path = None
             self.ops = {}
             self.db = {}
         else:
-            self.__s2pResultsPath = s2pResultsPath
+            self.path = s2pResultsPath
             try:
-                self._retrieveSuite2pData(self.__s2pResultsPath, subtract_neuropil, subset_frames, save)
+                neuropil_coeff = NEUROPIL_COEFF if subtract_neuropil else 0
+                self._retrieveSuite2pData(self.path, neuropil_coeff=neuropil_coeff)
             except:
                 raise ValueError(f'suite2p processed data could not be loaded from the provided `s2pResultsPath`: {s2pResultsPath}')
 
         # Attributes
         self.n_frames = None  # total number of imaging frames in the Suite2p run
+
+    def __repr__(self):
+        return('Suite2p Results - Experiment level Object')
 
     def _retrieveSuite2pData(self, s2p_path: str, neuropil_coeff: float = 0.7, save: bool = True):
         """processing of suite2p data from the current t-series
@@ -330,20 +346,22 @@ class Suite2pResultsExperiment:
         :param save: choose to save data object or not
         """
 
-        for plane in range(self.n_planes):
+
+        for plane in range(self.n_planes):  ## TODO really don't know how planes are collected and fed into suite2p
 
             # extract suite2p stat.npy and neuropil-subtracted F
-            s2p_path = self.s2p_path
             substract_neuropil = True if neuropil_coeff > 0 else False
-            FminusFneu, _, stat = s2p_loader(s2p_path, subtract_neuropil=substract_neuropil, neuropil_coeff=neuropil_coeff)
-            self.dfof.append(dfof2(FminusFneu[:, self.frames]))  # calculate df/f based on relevant frames
-            self.raw.append(FminusFneu[:, self.frames])  # raw F of each cell
+            FminusFneu, spks, stat, neuropil = s2p_loader(self.path, subtract_neuropil=substract_neuropil, neuropil_coeff=neuropil_coeff)
+            self.raw.append(FminusFneu)  # raw F of each suite2p ROI
+            self.spks.append(spks)  # deconvolved spikes each suite2p ROI
+            self.neuropil.append(neuropil)  # neuropil value of each suite2p ROI
+            self.stat.append(stat)          # stat dictionary for each suite2p ROI
 
-            ops = np.load(os.path.join(s2p_path, 'ops.npy'), allow_pickle=True).item()
-            self.mean_img.append(ops['meanImg'])
-            self.mean_imgE.append(ops['meanImgE'])  # enhanced mean image from suite2p
-            self.xoff = ops['xoff']  # motion correction info
-            self.yoff = ops['yoff']
+            self.ops = np.load(os.path.join(s2p_path, 'ops.npy'), allow_pickle=True).item()
+            self.mean_img.append(self.ops['meanImg'])
+            self.mean_imgE.append(self.ops['meanImgE'])  # enhanced mean image from suite2p
+            self.xoff = self.ops['xoff']  # motion correction info
+            self.yoff = self.ops['yoff']
 
             cell_id = []
             cell_plane = []
@@ -360,7 +378,7 @@ class Suite2pResultsExperiment:
                 cell_y.append(s['ypix'])
 
             self.cell_id.append(cell_id)
-            self.n_units.append(len(self.cell_id[plane]))
+            self.n_units = len(self.cell_id[plane])
             self.cell_med.append(cell_med)
             self.cell_x.append(cell_x)
             self.cell_y.append(cell_y)
@@ -369,10 +387,7 @@ class Suite2pResultsExperiment:
             cell_plane.extend([plane] * num_units)
             self.cell_plane.append(cell_plane)
 
-        if self.n_units > 1:
-            print(f'|- Loaded {self.n_units} cells, recorded for {round(self.raw.shape[1] / self.fps, 2)} secs')
-        else:
-            print('******* SUITE2P DATA NOT LOADED.')
+            print(f'|- Loaded {self.n_units} suite2p classified cells from plane {plane}, recorded for {round(self.raw[plane].shape[1] / self.ops["fs"], 2)} secs total')
 
 
     def stitch_reg_tiffs(self, first_frame: int, last_frame: int, reg_tif_folder: str = None, force_crop: bool = False,
@@ -433,9 +448,9 @@ class Suite2pResultsExperiment:
         :return:
         """
 
-        print(f'Plotting s2p mean image .. {self.__s2pResultsPath}')
+        print(f'Plotting s2p mean image .. {self.path}')
 
-        os.chdir(self.__s2pResultsPath)
+        os.chdir(self.path)
 
         ops = np.load('ops.npy', allow_pickle=True).item()
 
@@ -456,18 +471,22 @@ class Suite2pResultsTrial:
     """used to collect suite2p processed data for one trial - out of overall experiment."""
 
     def __init__(self, suite2p_experiment_obj: Suite2pResultsExperiment, trial_frames: tuple = None):
+
+        ## initializing attributes to collect Suite2p results for this specific trial
+        self.dfof: List(np.ndarray) = []                     # array of dFF normalized Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
+        self.raw: List(np.ndarray) = []                      # array of raw Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
+        self.spks: List(np.ndarray) = []                      # array of deconvolved spks values from suite2p output [num cells x length of imaging acquisition], one per plane
+        self.neuropil: List(np.ndarray) = []                      # array of neuropil Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
+
+
         self.trial_frames = trial_frames  # tuple of first and last frame (out of the overall suite2p run) corresponding to the present trial
-        self._get_suite2pResults()
+        self.suite2p_overall = suite2p_experiment_obj
 
-        ## TODO adding attributes to collect Suite2p results for this specific trial
-        self.dfof: np.ndarray= None                     # array of dFF normalized Flu values from suite2p output [num cells x length of imaging acquisition]
-        self.raw: np.ndarray = None                     # array of raw Flu values from suite2p output [num cells x length of imaging acquisition]
+        self._get_suite2pResults() if self.suite2p_overall.path else None
 
 
-        self.__overall_suite2p = suite2p_experiment_obj
-
-        # __s2pResultsPath = suite2p_experiment_obj.__s2pResultsPath if hasattr(suite2p_experiment_obj, '__s2pResultsPath') else None
-        # Suite2pResultsExperiment.__init__(self, trialsSuite2p = suite2p_experiment_obj.trials, s2pResultsPath=__s2pResultsPath,
+        # path = suite2p_experiment_obj.path if hasattr(suite2p_experiment_obj, 'path') else None
+        # Suite2pResultsExperiment.__init__(self, trialsSuite2p = suite2p_experiment_obj.trials, s2pResultsPath=path,
         #                                   subtract_neuropil=suite2p_experiment_obj.subtract_neuropil)
 
     def stitch_reg_tiffs(self, first_frame: int, last_frame: int, reg_tif_folder: str = None, force_crop: bool = False,
@@ -527,16 +546,15 @@ class Suite2pResultsTrial:
                 
     def _get_suite2pResults(self): # TODO complete code for getting suite2p results for trial
         """crop suite2p data for frames only for the present trial"""
-        self.raw = FminusFneu[:, self.trial_frames[0]:self.trial_frames[1]]
-        self.spks = spks[:, self.trial_frames[0]:self.trial_frames[1]]
-        self.neuropil = neuropil[:, self.trial_frames[0]:self.trial_frames[1]]
 
-        for plane in range(self.n_planes):
-            # extract suite2p stat.npy and neuropil-subtracted F
-            s2p_path = self.s2p_path
-            FminusFneu, _, stat = s2p_loader(s2p_path, subtract_neuropil=True, neuropil_coeff=0.7)
-            self.dfof.append(dfof2(FminusFneu[:, self.trial_frames]))  # calculate df/f based on relevant frames
-            self.raw.append(FminusFneu[:, self.trial_frames])  # raw F of each cell
+        for plane in range(self.suite2p_overall.n_planes):
+
+            self.raw.append(self.suite2p_overall.raw[plane][:, self.trial_frames[0]:self.trial_frames[1]])
+            self.spks.append(self.suite2p_overall.spks[plane][:, self.trial_frames[0]:self.trial_frames[1]])
+            self.neuropil.append(self.suite2p_overall.neuropil[plane][:, self.trial_frames[0]:self.trial_frames[1]])
+
+            self.dfof.append(normalize_dff(self.raw[plane]))  # calculate df/f based on relevant frames
+
 
 
 class TwoPhotonImagingTrial:
@@ -594,10 +612,6 @@ class TwoPhotonImagingTrial:
         TwoPhotonImagingTrial.paqProcessing(self, paq_path=self.paq_path, plot=False) if hasattr(self, 'paq_path') else None
 
         self.save()
-
-
-
-
 
     def __repr__(self):
         if self.pkl_path:
@@ -973,7 +987,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         self.prob_response = None   # probability of response of cell to photostim trial; obtained from single trial significance (ROB suggestion)
         self.t_tests = []           # result from related samples t-test between dff test periods
-        self.wilcoxons = []
+        self.wilcoxons = []         #
         self.trial_sig_dff = []     # based on dff increase above std of baseline
         self.trial_sig_dfsf = []    # based on df/std(f) increase in test period post-stim
         self.sta_sig = []           # based on t-test between dff test periods
@@ -1290,7 +1304,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         # targets_2 = np.where(target_image_scaled_2 > 0)
 
         targetCoordinates = list(zip(targets[1] * scale_factor, targets[0] * scale_factor))
-        print('\tNumber of targets:', len(targetCoordinates))
+        print('\t\tNumber of targets:', len(targetCoordinates))
 
         # targetCoordinates_1 = ls(zip(targets_1[1], targets_1[0]))
         # print('Number of targets, SLM group #1:', len(targetCoordinates_1))
@@ -1305,9 +1319,9 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         ## specifying target areas in pixels to use for measuring responses of SLM targets
         radius_px = int(np.ceil(((self.spiral_size / 2) + 0) / self.pix_sz_x))
-        print(f"\tspiral size: {self.spiral_size}um")
-        print(f"\tpix sz x: {self.pix_sz_x}um")
-        print("\tradius (in pixels): {:.2f}px".format(radius_px * self.pix_sz_x))
+        print(f"\t\tspiral size: {self.spiral_size}um")
+        print(f"\t\tpix sz x: {self.pix_sz_x}um")
+        print("\t\tradius (in pixels): {:.2f}px".format(radius_px * self.pix_sz_x))
 
         for coord in targetCoordinates:
             target_area = ([item for item in points_in_circle_np(radius_px, x0=coord[0], y0=coord[1])])
@@ -1315,7 +1329,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         ## target_areas that need to be excluded when filtering for nontarget cells
         radius_px = int(np.ceil(((self.spiral_size / 2) + 2.5) / self.pix_sz_x))
-        print("\tradius of target exclusion zone (in pixels): {:.2f}px".format(radius_px * self.pix_sz_x))
+        print("\t\tradius of target exclusion zone (in pixels): {:.2f}px".format(radius_px * self.pix_sz_x))
 
         for coord in targetCoordinates:
             target_area = ([item for item in points_in_circle_np(radius_px, x0=coord[0], y0=coord[1])])
@@ -1347,7 +1361,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             targets = np.where(target_image > 0)
             targetCoordinates = list(zip(targets[1] * scale_factor, targets[0] * scale_factor))
             self.target_coords.append(targetCoordinates)
-            print('\tNumber of targets (in SLM group %s): ' % (counter + 1), len(targetCoordinates))
+            print('\t\tNumber of targets (in SLM group %s): ' % (counter + 1), len(targetCoordinates))
             counter += 1
 
     def _findTargetedS2pROIs(self, plot: bool = True): # function code not reviewed yet!
