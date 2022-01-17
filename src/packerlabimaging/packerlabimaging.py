@@ -37,12 +37,11 @@ from suite2p.run_s2p import run_s2p
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
 from .utils import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, \
-    s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff, paq_read, _check_path_exists
+    s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff, _check_path_exists
 
-from . import suite2p_integration
 from .TwoPhotonImaging import TwoPhotonImagingTrial
 from .AllOptical import AllOpticalTrial
-from . import plotting
+from . import _suite2p, plotting
 
 ###### UTILITIES
 
@@ -108,13 +107,13 @@ class Experiment:
                         self.__s2pResultExists = True
                         break
                 if self.__s2pResultExists:
-                    self.Suite2p = suite2p_integration.Suite2pResultsExperiment(s2pResultsPath=self.s2pResultsPath, trialsSuite2p = self.__trialsSuite2p)
+                    self.Suite2p = _suite2p.Suite2pResultsExperiment(s2pResultsPath=self.s2pResultsPath, trialsSuite2p = self.__trialsSuite2p)
                 else:
                     raise ValueError(f"suite2p results could not be found. `suite2pPath` provided was: {self.suite2pPath}")
             elif self.useSuite2p:  # no s2pResultsPath provided, so initialize without pre-loading any results
                 self.__s2pResultExists = False
                 self.__suite2p_save_path = self.analysisSavePath + '/suite2p/'
-                self.Suite2p = suite2p_integration.Suite2pResultsExperiment(trialsSuite2p = self.__trialsSuite2p)
+                self.Suite2p = _suite2p.Suite2pResultsExperiment(trialsSuite2p = self.__trialsSuite2p)
 
         # create individual trial objects
         self._runExpTrialsProcessing()
@@ -196,9 +195,10 @@ class Experiment:
             # initialize suite2p for trial objects
             if trial in self.__trialsSuite2p:
                 print(f"\n\----- ADDING Suite2p class to Trial object ... ")
-                trial_obj.Suite2p = suite2p_integration.Suite2pResultsTrial(suite2p_experiment_obj=self.Suite2p,
+                trial_obj.Suite2p = _suite2p.Suite2pResultsTrial(suite2p_experiment_obj=self.Suite2p,
                                                         trial_frames=(total_frames_stitched, total_frames_stitched + trial_obj.n_frames))  # use trial obj's current trial frames
                 total_frames_stitched += trial_obj.n_frames
+                trial_obj.save()
 
     @property
     def tiff_path_dir(self):

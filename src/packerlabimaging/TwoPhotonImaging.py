@@ -19,9 +19,9 @@ from suite2p.run_s2p import run_s2p
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
 from .utils import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, \
-    s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff, paq_read, _check_path_exists
-
-from . import suite2p_integration
+    s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff, _check_path_exists
+from ._paq import paq_read
+from . import _suite2p
 from . import plotting
 
 
@@ -77,7 +77,8 @@ class TwoPhotonImagingTrial:
                                                                        f'{microscope} microscope has not been implemented yet')
 
         # run paq processing if paq_path is provided for trial
-        TwoPhotonImagingTrial.paqProcessing(self, paq_path=self.paq_path, plot=False) if hasattr(self, 'paq_path') else None
+        self.paq = TwoPhotonImagingTrial.paqProcessing(self, paq_path=self.paq_path, plot=False) if hasattr(self, 'paq_path') else None
+        # self.paq = _paq.paqProcessing(self, paq_path=self.paq_path, plot=False) if hasattr(self, 'paq_path') else None  ## TODO not implemented as unique class yet
 
         self.save()
 
@@ -287,9 +288,10 @@ class TwoPhotonImagingTrial:
 
         paq, _ = paq_read(self.paq_path, plot=plot)
         self.paq_rate = paq['rate']
+        self.paq_channels = paq['chan_names']
+        ## TODO print the paq channels that were loaded. and some useful metadata about the paq channels.
         print(f"\t|- loaded {len(paq['chan_names'])} channels from .paq file: {paq['chan_names']}")
 
-        ## TODO print the paq channels that were loaded. and some useful metadata about the paq channels.
 
         # find frame times
         clock_idx = paq['chan_names'].index('frame_clock')
@@ -322,6 +324,13 @@ class TwoPhotonImagingTrial:
             self.frame_start_time_actual = self.frame_start_times[0]
             self.frame_end_time_actual = self.frame_end_times[0]
             self.frame_clock_actual = self.frame_clock
+
+        # read in and save sparse version of all paq channels (only save data from timepoints at frame clock times)
+        self.sparse_paq_data = {}
+        for idx, chan in enumerate(self.paq_channels):
+            if chan != 'frame_clock':
+                self.sparse_paq_data[chan] = paq['data'][idx, self.frame_clock_actual]
+
 
     def stitch_reg_tiffs(self, first_frame: int, last_frame: int, reg_tif_folder: str = None, force_crop: bool = False,
                          s2p_run_batch: int = 2000):
