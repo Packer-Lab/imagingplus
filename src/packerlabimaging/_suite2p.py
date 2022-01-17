@@ -60,7 +60,7 @@ class Suite2pResultsExperiment:
         self.n_frames = None  # total number of imaging frames in the Suite2p run
 
     def __repr__(self):
-        return ('Suite2p Results (Experiment level) Object')
+        return 'Suite2p Results (Experiment level) Object'
 
     def _retrieveSuite2pData(self, s2p_path: str, neuropil_coeff: float = 0.7, save: bool = True):
         """processing of suite2p data from the current t-series
@@ -220,7 +220,6 @@ class Suite2pResultsExperiment:
 
     ### TODO add methods for processing suite2p ROIs
 
-
 class Suite2pResultsTrial:
     """used to collect suite2p processed data for one trial - out of overall experiment."""
 
@@ -241,7 +240,8 @@ class Suite2pResultsTrial:
         # Suite2pResultsExperiment.__init__(self, trialsSuite2p = suite2p_experiment_obj.trials, s2pResultsPath=path,
         #                                   subtract_neuropil=suite2p_experiment_obj.subtract_neuropil)
 
-
+    def __repr__(self):
+        return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} frames x {self.suite2p_overall.n_units} s2p ROIs'
 
     def _get_suite2pResults(self):  # TODO complete code for getting suite2p results for trial
         """crop suite2p data for frames only for the present trial"""
@@ -250,8 +250,10 @@ class Suite2pResultsTrial:
             self.raw = self.suite2p_overall.raw[:, self.trial_frames[0]:self.trial_frames[1]]
             self.spks = self.suite2p_overall.spks[:, self.trial_frames[0]:self.trial_frames[1]]
             self.neuropil = self.suite2p_overall.neuropil[:, self.trial_frames[0]:self.trial_frames[1]]
+            self.stat = self.suite2p_overall.stat
 
             self.dfof.append(normalize_dff(self.raw))  # calculate df/f based on relevant frames
+
         else:
             for plane in range(self.suite2p_overall.n_planes):
                 self.raw.append(self.suite2p_overall.raw[plane][:, self.trial_frames[0]:self.trial_frames[1]])
@@ -259,3 +261,10 @@ class Suite2pResultsTrial:
                 self.neuropil.append(self.suite2p_overall.neuropil[plane][:, self.trial_frames[0]:self.trial_frames[1]])
 
                 self.dfof.append(normalize_dff(self.raw[plane]))  # calculate df/f based on relevant frames
+
+    @property
+    def stat(self):
+        if self.suite2p_overall.n_planes == 1:
+            return self.suite2p_overall.stat[0]
+        else:
+            return self.suite2p_overall.stat
