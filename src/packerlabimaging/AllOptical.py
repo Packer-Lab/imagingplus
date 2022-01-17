@@ -9,7 +9,6 @@ import pickle
 
 import numpy as np
 import pandas as pd
-import anndata
 import scipy.stats as stats
 import signal
 import matplotlib.pyplot as plt
@@ -26,7 +25,7 @@ from .utils import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert
     s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff, _check_path_exists
 from ._paq import paq_read
 
-from . import _suite2p
+from . import _suite2p, _anndata
 from . TwoPhotonImaging import TwoPhotonImagingTrial
 from . import plotting
 
@@ -73,7 +72,6 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         # paq file attr's
         self.paq_rate: int = None  # PackIO acquisition rate for .paq file
-        self.frame_clock: list = None  # paq clock timestamps of imaging acquisition frames
         self.frame_start_times: list = None  # paq clock timestamps of the first imaging acquisition frame of t-series
         self.frame_end_times: list = None  # paq clock timestamps of the last imaging acquisition frame of t-series
 
@@ -129,12 +127,15 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         # initialize object as TwoPhotonImagingTrial
         TwoPhotonImagingTrial.__init__(self, metainfo=metainfo, analysis_save_path=analysis_save_path,
-                                       microscope=microscope)
+                                       microscope=microscope, **kwargs)
 
         # continue with photostimulation experiment processing
         self._stimProcessing(stim_channel=self.stim_channel)
         self._findTargetsAreas()
         self._find_photostim_add_bad_framesnpy()
+
+        #
+        self.anndata = _anndata.convert_to_anndata(self)  ## TODO create a _anndata method for extending existing 2p imaging anndata
 
         ##
         self.save()
@@ -245,12 +246,12 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
                 max(diff))  # choose the longest imaging sequence in the paq file as the actual frame clocks for the present trial's acquisition
             self.frame_start_times = self.__frame_start_times[idx]
             self.frame_end_times = self.__frame_end_times[idx]
-            self.frame_clock = [frame for frame in self.__frame_clock if
+            self.__frame_clock_actual = [frame for frame in self.__frame_clock if
                                 self.frame_start_times <= frame <= self.frame_end_times]  #
         else:
             self.frame_start_times = self.__frame_start_times[0]
             self.frame_end_times = self.__frame_end_times[0]
-            self.frame_clock = self.__frame_clock
+            self.__frame_clock_actual = self.__frame_clock
 
         # find stim times
         stim_idx = paq['chan_names'].index(self.stim_channel)

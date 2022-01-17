@@ -26,7 +26,6 @@ import pickle
 
 import numpy as np
 import pandas as pd
-import anndata
 import scipy.stats as stats
 
 import statsmodels.api
@@ -166,8 +165,13 @@ class Experiment:
                 if 'tiff_path' not in [*_metainfo['trialsInformation']]:
                     raise ValueError('TwoPhotonImagingTrial experiment trial requires `tiff_path` field defined in .trialsInformation dictionary for each trial')
 
-                trial_obj = TwoPhotonImagingTrial(metainfo=_metainfo, analysis_save_path=self.analysisSavePath,
-                                                  microscope=self.microscope)
+                if trial in self.__trialsSuite2p:  # TODO could use switch statements in the 2p imaging trial class...
+                    trial_obj = TwoPhotonImagingTrial(metainfo=_metainfo, analysis_save_path=self.analysisSavePath,
+                                                      microscope=self.microscope, total_frames_stitched=total_frames_stitched, suite2p_experiment_obj=self.Suite2p)
+                else:
+                    trial_obj = TwoPhotonImagingTrial(metainfo=_metainfo, analysis_save_path=self.analysisSavePath,
+                                                      microscope=self.microscope, total_frames_stitched=total_frames_stitched, suite2p_experiment_obj=self.Suite2p)
+
 
                 # update self.trialsInformation using the information from new trial_obj
                 self.trialsInformation[trial]['analysis Object Information'] = {'series ID': trial_obj.t_series_name,
@@ -180,11 +184,16 @@ class Experiment:
                         or 'naparm_path' not in [*_metainfo['trialsInformation']]:
                     raise ValueError(f'AllOpticalTrial experiment trial requires `tiff_path`, `paq_path` and `naparm_path` fields defined in .trialsInformation dictionary for each alloptical trial. '
                                      f'\n{self.trialsInformation[trial]}')
-                trial_obj = AllOpticalTrial(metainfo=_metainfo,
-                                            naparm_path=_metainfo['trialsInformation']['naparm_path'],
-                                            analysis_save_path=self.analysisSavePath, microscope=self.microscope,
-                                            prestim_sec=1.0, poststim_sec=3.0, pre_stim_response_window=0.500,
-                                            post_stim_response_window=0.500)
+                if trial in self.__trialsSuite2p:  # TODO could use switch statements in the 2p imaging trial class...
+                    trial_obj = AllOpticalTrial(metainfo=_metainfo, naparm_path=_metainfo['trialsInformation']['naparm_path'],
+                                                analysis_save_path=self.analysisSavePath, microscope=self.microscope, prestim_sec=1.0,
+                                                poststim_sec=3.0, pre_stim_response_window=0.500, post_stim_response_window=0.500,
+                                                total_frames_stitched=total_frames_stitched, suite2p_experiment_obj=self.Suite2p)
+                else:
+                    trial_obj = AllOpticalTrial(metainfo=_metainfo, naparm_path=_metainfo['trialsInformation']['naparm_path'],
+                                                analysis_save_path=self.analysisSavePath, microscope=self.microscope, prestim_sec=1.0,
+                                                poststim_sec=3.0, pre_stim_response_window=0.500, post_stim_response_window=0.500)
+
                 # update self.trialsInformation using the information from new trial_obj
                 self.trialsInformation[trial]['analysis Object Information'] = {'series ID': trial_obj.t_series_name,
                                                                                 'repr': trial_obj.__repr__(),
@@ -194,9 +203,8 @@ class Experiment:
 
             # initialize suite2p for trial objects
             if trial in self.__trialsSuite2p:
-                print(f"\n\----- ADDING Suite2p class to Trial object ... ")
-                trial_obj.Suite2p = _suite2p.Suite2pResultsTrial(suite2p_experiment_obj=self.Suite2p,
-                                                        trial_frames=(total_frames_stitched, total_frames_stitched + trial_obj.n_frames))  # use trial obj's current trial frames
+                # trial_obj.Suite2p = _suite2p.Suite2pResultsTrial(suite2p_experiment_obj=self.Suite2p,
+                #                                         trial_frames=(total_frames_stitched, total_frames_stitched + trial_obj.n_frames))  # use trial obj's current trial frames
                 total_frames_stitched += trial_obj.n_frames
                 trial_obj.save()
 

@@ -1,6 +1,6 @@
 import packerlabimaging as pkg
 
-# %% INITIALIZING ALLOPTICAL + TWOPHOTON IMAGING EXPERIMENT OBJECT FROM SCRATCH
+# INITIALIZING ALLOPTICAL + TWOPHOTON IMAGING EXPERIMENT OBJECT FROM SCRATCH
 # experiment dictionary
 initialization_dict = {
     'dataPath': '/home/pshah/mnt/qnap/Data/2020-12-19',
@@ -8,7 +8,7 @@ initialization_dict = {
     'microscope': "Bruker",
     "expID": 'RL109',
     'date': '2020-12-19',
-    'comments': '',
+    'comments': 'testing out analysis workflow',
     'trialsInformation': {},
     'useSuite2p': True,
     's2pResultsPath': "/home/pshah/mnt/qnap/Analysis/2020-12-19/suite2p/alloptical-2p-1x-alltrials/plane0"
@@ -57,6 +57,6 @@ for idx, trial in enumerate(trials_list_alloptical):
 
 expobj = pkg.Experiment(**initialization_dict)
 
-# %% Import and using expobj
+# Import and using expobj
 
 expobj = pkg.import_obj(pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')

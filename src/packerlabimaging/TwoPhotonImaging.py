@@ -7,7 +7,6 @@ import re
 import pickle
 
 import numpy as np
-import anndata
 import scipy.stats as stats
 import matplotlib.pyplot as plt
 
@@ -23,13 +22,15 @@ from .utils import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert
 from ._paq import paq_read
 from . import _suite2p
 from . import plotting
+from . import _anndata
 
 
 class TwoPhotonImagingTrial:
     """Just two photon imaging related functions - currently set up for data collected from Bruker microscopes and
     suite2p processed Ca2+ imaging data """
 
-    def __init__(self, metainfo: dict, analysis_save_path: str, microscope: str = 'Bruker'):
+    def __init__(self, metainfo: dict, analysis_save_path: str, microscope: str = 'Bruker',
+                 **kwargs):
         """
         TODO update function docstring for approp args
         :param tiff_path: path to t-series .tiff
@@ -77,9 +78,21 @@ class TwoPhotonImagingTrial:
                                                                        f'{microscope} microscope has not been implemented yet')
 
         # run paq processing if paq_path is provided for trial
-        self.paq = TwoPhotonImagingTrial.paqProcessing(self, paq_path=self.paq_path, plot=False) if hasattr(self, 'paq_path') else None
+        TwoPhotonImagingTrial.paqProcessing(self, paq_path=self.paq_path, plot=False) if hasattr(self, 'paq_path') else None
         # self.paq = _paq.paqProcessing(self, paq_path=self.paq_path, plot=False) if hasattr(self, 'paq_path') else None  ## TODO not implemented as unique class yet
 
+        # if provided, run getting Suite2p results for trial
+        for i in ['suite2p_experiment_obj', 'total_frames_stitched']:
+            assert i in [*kwargs], f'{i} required in Suite2pResultsTrial call'
+            assert kwargs[i] is not None, f'{i} Suite2pResultsTrial call is None'
+        if 'suite2p_experiment_obj' in [*kwargs] and 'total_frames_stitched' in [*kwargs]:
+            self.Suite2p = _suite2p.Suite2pResultsTrial(suite2p_experiment_obj=kwargs['suite2p_experiment_obj'],
+                                                             trial_frames=(kwargs['total_frames_stitched'],
+                                                                           kwargs['total_frames_stitched'] + self.n_frames))  # use trial obj's current trial frames
+
+
+        # create anndata object
+        self.anndata = _anndata.convert_to_anndata(self)
         self.save()
 
     def __repr__(self):
@@ -328,8 +341,7 @@ class TwoPhotonImagingTrial:
         # read in and save sparse version of all paq channels (only save data from timepoints at frame clock times)
         self.sparse_paq_data = {}
         for idx, chan in enumerate(self.paq_channels):
-            if chan != '__frame_clock':
-                self.sparse_paq_data[chan] = paq['data'][idx, self.__frame_clock_actual]
+            self.sparse_paq_data[chan] = paq['data'][idx, self.__frame_clock_actual]
     
     @property
     def frame_clock(self):

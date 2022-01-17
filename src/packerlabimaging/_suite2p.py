@@ -224,6 +224,7 @@ class Suite2pResultsTrial:
     """used to collect suite2p processed data for one trial - out of overall experiment."""
 
     def __init__(self, suite2p_experiment_obj: Suite2pResultsExperiment, trial_frames: tuple = None):
+        print(f"\n\----- ADDING Suite2p class to Trial object ... ")
 
         ## initializing attributes to collect Suite2p results for this specific trial
         self.dfof: list(np.ndarray) = []  # array of dFF normalized Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
@@ -250,9 +251,9 @@ class Suite2pResultsTrial:
             self.raw = self.suite2p_overall.raw[:, self.trial_frames[0]:self.trial_frames[1]]
             self.spks = self.suite2p_overall.spks[:, self.trial_frames[0]:self.trial_frames[1]]
             self.neuropil = self.suite2p_overall.neuropil[:, self.trial_frames[0]:self.trial_frames[1]]
-            self.stat = self.suite2p_overall.stat
 
             self.dfof.append(normalize_dff(self.raw))  # calculate df/f based on relevant frames
+            self._s2pResultExists = True
 
         else:
             for plane in range(self.suite2p_overall.n_planes):
@@ -261,6 +262,7 @@ class Suite2pResultsTrial:
                 self.neuropil.append(self.suite2p_overall.neuropil[plane][:, self.trial_frames[0]:self.trial_frames[1]])
 
                 self.dfof.append(normalize_dff(self.raw[plane]))  # calculate df/f based on relevant frames
+                self._s2pResultExists = True
 
     @property
     def stat(self):
