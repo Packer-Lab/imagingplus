@@ -1,6 +1,7 @@
-import packerlabimaging.packerlabimaging as pkg
+import packerlabimaging as pkg
 
 
+# %% INITIALIZING ALLOPTICAL + TWOPHOTON IMAGING EXPERIMENT OBJECT FROM SCRATCH
 # experiment dictionary
 initialization_dict = {
     'dataPath': '/home/pshah/mnt/qnap/Data/2020-12-19',

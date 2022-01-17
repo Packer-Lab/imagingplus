@@ -7,3 +7,6 @@ from the microscope during data collection, and any user generated files associa
 """
 
 from .version import __version__
+from .io import import_obj
+from .packerlabimaging import Experiment, define_term
+# from .packerlabimaging import Experiment, import_obj, define_term
