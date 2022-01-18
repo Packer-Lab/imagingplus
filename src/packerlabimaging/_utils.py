@@ -1,4 +1,3 @@
-### draft script - currently COPIED FROM PRAJAY'S vape.utils_func copy on Nov 22
 ## TODO - Rob to update with current utils_func from Vape
 
 import io
