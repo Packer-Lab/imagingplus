@@ -12,3 +12,4 @@ warnings.filterwarnings("ignore")
 from ._version import __version__
 from packerlabimaging._io import import_obj
 from .main import Experiment, define_term
+from packerlabimaging._utils import Utils

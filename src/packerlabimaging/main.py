@@ -260,7 +260,7 @@ class Experiment:
     def save(self):
         self.save_pkl()
 
-    ## suite2p methods - refactored currently to _utils.py !!!!!
+    ## suite2p methods - refactored currently to _utils.Utils !!!!!
     def s2pRun(expobj, user_batch_size=2000, trialsSuite2P: list = None):  ## TODO gotta specify # of planes somewhere here
         """run suite2p on the experiment object, using trials specified in current experiment object, using the attributes
         determined directly from the experiment object."""

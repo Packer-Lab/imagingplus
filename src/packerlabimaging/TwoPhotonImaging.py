@@ -12,27 +12,21 @@ import anndata
 import scipy.stats as stats
 import matplotlib.pyplot as plt
 
-import statsmodels.api
-import statsmodels as sm
 import xml.etree.ElementTree as ET
 import tifffile as tf
-from suite2p.run_s2p import run_s2p
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from ._utils import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, \
-    s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff, _check_path_exists
+from ._utils import SaveDownsampledTiff, make_tiff_stack, threshold_detect, normalize_dff, Utils
 from ._paq import paq_read
 from . import _suite2p
 from . import plotting
-from . import _anndata_funcs
 
 
 class TwoPhotonImagingTrial:
     """Just two photon imaging related functions - currently set up for data collected from Bruker microscopes and
     suite2p processed Ca2+ imaging data """
 
-    def __init__(self, metainfo: dict, analysis_save_path: str, microscope: str = 'Bruker',
-                 **kwargs):
+    def __init__(self, metainfo: dict, analysis_save_path: str, microscope: str = 'Bruker', **kwargs):
         """
         TODO update function docstring for approp args
         :param tiff_path: path to t-series .tiff
@@ -97,7 +91,10 @@ class TwoPhotonImagingTrial:
         self.dfof()
 
         # create annotated data object
-        self.data = self.create_anndata()
+        self.data = Utils.create_anndata(self)
+
+
+        ##### SAVE Trial OBJECT
         self.save()
 
     def __repr__(self):
@@ -241,17 +238,13 @@ class TwoPhotonImagingTrial:
 
         scan_volts, _, index = self._getPVStateShard(root, 'currentScanCenter')
         for scan_volts, index in zip(scan_volts, index):
-            if index == 'XAxis':
-                scan_x = float(scan_volts)
-            if index == 'YAxis':
-                scan_y = float(scan_volts)
+            scan_x = float(scan_volts) if index == 'XAxis' else -1
+            scan_y = float(scan_volts) if index == 'YAxis' else -1
 
         pixel_size, _, index = self._getPVStateShard(root, 'micronsPerPixel')
         for pixel_size, index in zip(pixel_size, index):
-            if index == 'XAxis':
-                pix_sz_x = float(pixel_size)
-            if index == 'YAxis':
-                pix_sz_y = float(pixel_size)
+            pix_sz_x = float(pixel_size) if index == 'XAxis' else -1
+            pix_sz_y = float(pixel_size) if index == 'YAxis' else -1
 
         if n_planes == 1:
             n_frames = root.findall('Sequence/Frame')[-1].get('index')  # use suite2p output instead later
@@ -408,6 +401,7 @@ class TwoPhotonImagingTrial:
                 print('saving cropped tiff ', reg_tif_crop.shape)
                 tif.save(reg_tif_crop)
 
+    # refactored to _utils.Utils
     def create_anndata(self):
         """
         Creates annotated data (see anndata library) object based around the Ca2+ matrix of the imaging trial.
