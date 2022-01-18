@@ -3,7 +3,10 @@
 ## Jan 21 2022
 - tested suite2p integration and results loading
 - added integration of anndata data org package
-- anndata seems like a nice, useful data structure for handling the multi-dimensional nature of our experiments
+- anndata is a nice, useful data structure for handling the multi-dimensional nature of our experiments
+
+TODO:
+- jupyter notebook tutorial for the experiment class
 
 ## Jan 14 2022
 - lots of work on smoothing out and cleaning up workflow of Experiment class and trial objects, and their Suite2p classes and individual Twophoton imaging and alloptical trial classes

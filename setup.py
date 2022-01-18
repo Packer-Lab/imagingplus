@@ -11,6 +11,7 @@ setup(
     package_dir={'': 'src'},
     packages=find_packages(where='src'),
     install_requires=[
+        'anndata',
         'tifffile',
         'numpy',
         'seaborn',
