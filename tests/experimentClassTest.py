@@ -60,3 +60,5 @@ expobj = pkg.Experiment(**initialization_dict)
 # Import and using expobj
 
 expobj = pkg.import_obj(pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
+
+trialobj = pkg.import_obj(pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/2020-12-19_t-013.pkl')

@@ -7,6 +7,8 @@ import re
 import pickle
 
 import numpy as np
+import pandas as pd
+import anndata
 import scipy.stats as stats
 import matplotlib.pyplot as plt
 
@@ -22,7 +24,7 @@ from .utils import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert
 from ._paq import paq_read
 from . import _suite2p
 from . import plotting
-from . import _anndata
+from . import _anndataImaging
 
 
 class TwoPhotonImagingTrial:
@@ -81,7 +83,7 @@ class TwoPhotonImagingTrial:
         TwoPhotonImagingTrial.paqProcessing(self, paq_path=self.paq_path, plot=False) if hasattr(self, 'paq_path') else None
         # self.paq = _paq.paqProcessing(self, paq_path=self.paq_path, plot=False) if hasattr(self, 'paq_path') else None  ## TODO not implemented as unique class yet
 
-        # if provided, run getting Suite2p results for trial
+        # if provided, add Suite2p results for trial
         for i in ['suite2p_experiment_obj', 'total_frames_stitched']:
             assert i in [*kwargs], f'{i} required in Suite2pResultsTrial call'
             assert kwargs[i] is not None, f'{i} Suite2pResultsTrial call is None'
@@ -95,7 +97,7 @@ class TwoPhotonImagingTrial:
         self.dfof()
 
         # create annotated data object
-        self.data = _anndata.create_anndata(self)
+        self.data = self.create_anndata()
         self.save()
 
     def __repr__(self):
@@ -405,6 +407,50 @@ class TwoPhotonImagingTrial:
                         frame_range[0] - start * s2p_run_batch)]
                 print('saving cropped tiff ', reg_tif_crop.shape)
                 tif.save(reg_tif_crop)
+
+    def create_anndata(self):
+        """
+        Creates annotated data (see anndata library) object based around the Ca2+ matrix of the imaging trial.
+
+        """
+
+        if self.Suite2p._s2pResultExists and self.paq_channels:
+            # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
+            # build dataframe for obs_meta from suite2p stat information
+            obs_meta = pd.DataFrame(columns=['original_index', 'footprint', 'mrs', 'mrs0', 'compact', 'med', 'npix', 'radius',
+                                             'aspect_ratio', 'npix_norm', 'skew', 'std'], index=range(len(self.Suite2p.stat)))
+            for idx, __stat in enumerate(self.Suite2p.stat):
+                for __column in obs_meta:
+                    obs_meta.loc[idx, __column] = __stat[__column]
+
+            # build numpy array for multidimensional obs metadata
+            obs_m = {'ypix': [],
+                     'xpix': []}
+            for col in [*obs_m]:
+                for idx, __stat in enumerate(self.Suite2p.stat):
+                    obs_m[col].append(__stat[col])
+                obs_m[col] = np.asarray(obs_m[col])
+
+            # SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata
+            # build dataframe for var annot's from paq file
+            var_meta = pd.DataFrame(index=self.paq_channels, columns=range(self.n_frames))
+            for fr_idx in range(self.n_frames):
+                for index in [*self.sparse_paq_data]:
+                    var_meta.loc[index, fr_idx] = self.sparse_paq_data[index][fr_idx]
+
+            # BUILD LAYERS TO ADD TO anndata OBJECT
+            layers = {'dFF': self.dFF
+                      }
+
+            print(f"\n\----- CREATING annotated data object using AnnData:")
+            adata = anndata.AnnData(X=self.Suite2p.raw, obs=obs_meta, var=var_meta.T, obsm=obs_m,
+                                    layers=layers)
+
+            print(f"\t{adata}")
+            return adata
+        else:
+            Warning('did not create anndata. anndata creation only available if experiments were processed with suite2p and .paq file(s) provided for temporal synchronization')
+
 
     def dfof(self):
         if self.Suite2p._s2pResultExists:

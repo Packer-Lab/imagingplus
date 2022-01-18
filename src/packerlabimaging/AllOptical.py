@@ -25,9 +25,9 @@ from .utils import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert
     s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff, _check_path_exists
 from ._paq import paq_read
 
-from . import _anndata
 from . TwoPhotonImaging import TwoPhotonImagingTrial
-from . import plotting
+from . import plotting, _anndataImaging
+
 
 # %%
 class AllOpticalTrial(TwoPhotonImagingTrial):
@@ -138,9 +138,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         __frames_in_stim = [False] * self.n_frames
         for frame in self.photostim_frames:
             __frames_in_stim[frame] = True
-        _anndata.add_variables(self.data, var_name='photostim',values=__frames_in_stim)
-
-        # self.data = _anndata.create_anndata(self)  ## TODO create a _anndata method for extending existing 2p imaging anndata
+        _anndataImaging.add_variables(self.data, var_name='photostim',values=__frames_in_stim)
 
         ##
         self.save()
