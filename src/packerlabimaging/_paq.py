@@ -157,7 +157,7 @@ class paqData:
 
         paq, _ = paq_read(self.paq_path, plot=plot)
         self.paq_rate = paq['rate']
-
+        self.paq_channels = paq['chan_names']
         ## TODO print the paq channels that were loaded. and some useful metadata about the paq channels.
         print(f"\t|- loaded {len(paq['chan_names'])} channels from .paq file: {paq['chan_names']}")
 
@@ -165,19 +165,19 @@ class paqData:
         clock_idx = paq['chan_names'].index('frame_clock')
         clock_voltage = paq['data'][clock_idx, :]
 
-        frame_clock = threshold_detect(clock_voltage, 1)
-        self.frame_clock = frame_clock
+        __frame_clock = threshold_detect(clock_voltage, 1)
+        self.__frame_clock = __frame_clock
 
-        # find start and stop frame_clock times -- there might be multiple 2p imaging starts/stops in the paq trial (hence multiple frame start and end times)
-        self.frame_start_times = [self.frame_clock[0]]  # initialize list
+        # find start and stop __frame_clock times -- there might be multiple 2p imaging starts/stops in the paq trial (hence multiple frame start and end times)
+        self.frame_start_times = [self.__frame_clock[0]]  # initialize list
         self.frame_end_times = []
         i = len(self.frame_start_times)
-        for idx in range(1, len(self.frame_clock) - 1):
-            if (self.frame_clock[idx + 1] - self.frame_clock[idx]) > 2e3:
+        for idx in range(1, len(self.__frame_clock) - 1):
+            if (self.__frame_clock[idx + 1] - self.__frame_clock[idx]) > 2e3:
                 i += 1
-                self.frame_end_times.append(self.frame_clock[idx])
-                self.frame_start_times.append(self.frame_clock[idx + 1])
-        self.frame_end_times.append(self.frame_clock[-1])
+                self.frame_end_times.append(self.__frame_clock[idx])
+                self.frame_start_times.append(self.__frame_clock[idx + 1])
+        self.frame_end_times.append(self.__frame_clock[-1])
 
         # handling cases where 2p imaging clock has been started/stopped >1 in the paq trial
         if len(self.frame_start_times) > 1:
@@ -186,11 +186,15 @@ class paqData:
             idx = diff.index(max(diff))
             self.frame_start_time_actual = self.frame_start_times[idx]
             self.frame_end_time_actual = self.frame_end_times[idx]
-            self.frame_clock_actual = [frame for frame in self.frame_clock if
-                                       self.frame_start_time_actual <= frame <= self.frame_end_time_actual]
+            self.__frame_clock_actual = [frame for frame in self.__frame_clock if
+                                         self.frame_start_time_actual <= frame <= self.frame_end_time_actual]
         else:
             self.frame_start_time_actual = self.frame_start_times[0]
             self.frame_end_time_actual = self.frame_end_times[0]
-            self.frame_clock_actual = self.frame_clock
+            self.__frame_clock_actual = self.__frame_clock
 
         # read in and save sparse version of all paq channels (only save data from timepoints at frame clock times)
+        self.sparse_paq_data = {}
+        for idx, chan in enumerate(self.paq_channels):
+            self.sparse_paq_data[chan] = paq['data'][idx, self.__frame_clock_actual]
+

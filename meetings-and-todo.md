@@ -1,5 +1,9 @@
 # Record for meeting agendas, notes and todo's 
 
+## Jan 21 2022
+- tested suite2p integration and results loading
+- added integration of anndata data org package
+
 ## Jan 14 2022
 - lots of work on smoothing out and cleaning up workflow of Experiment class and trial objects, and their Suite2p classes and individual Twophoton imaging and alloptical trial classes
 - working on getting attr's in place in the __init__ for the TwoPhotonImaging and AllOptical Trial objects (and also implementing code for some of them)

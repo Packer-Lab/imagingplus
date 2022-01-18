@@ -91,8 +91,11 @@ class TwoPhotonImagingTrial:
                                                                            kwargs['total_frames_stitched'] + self.n_frames))  # use trial obj's current trial frames
 
 
+        # normalize dFF for raw Flu
+        self.dfof()
+
         # create anndata object
-        self.anndata = _anndata.convert_to_anndata(self)
+        self.anndata = _anndata.create_anndata(self)
         self.save()
 
     def __repr__(self):
@@ -402,6 +405,10 @@ class TwoPhotonImagingTrial:
                         frame_range[0] - start * s2p_run_batch)]
                 print('saving cropped tiff ', reg_tif_crop.shape)
                 tif.save(reg_tif_crop)
+
+    def dfof(self):
+        if self.Suite2p._s2pResultExists:
+            self.dFF = normalize_dff(self.Suite2p.raw)
 
     def meanRawFluTrace(self, plot: bool = False, save: bool = True):
         """

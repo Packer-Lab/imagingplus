@@ -227,7 +227,7 @@ class Suite2pResultsTrial:
         print(f"\n\----- ADDING Suite2p class to Trial object ... ")
 
         ## initializing attributes to collect Suite2p results for this specific trial
-        self.dfof: list(np.ndarray) = []  # array of dFF normalized Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
+        # self.dfof: list(np.ndarray) = []  # array of dFF normalized Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
         self.raw: list(np.ndarray) = []  # array of raw Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
         self.spks: list(np.ndarray) = []  # array of deconvolved spks values from suite2p output [num cells x length of imaging acquisition], one per plane
         self.neuropil: list(np.ndarray) = []  # array of neuropil Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
@@ -252,7 +252,6 @@ class Suite2pResultsTrial:
             self.spks = self.suite2p_overall.spks[:, self.trial_frames[0]:self.trial_frames[1]]
             self.neuropil = self.suite2p_overall.neuropil[:, self.trial_frames[0]:self.trial_frames[1]]
 
-            self.dfof.append(normalize_dff(self.raw))  # calculate df/f based on relevant frames
             self._s2pResultExists = True
 
         else:

@@ -135,7 +135,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self._find_photostim_add_bad_framesnpy()
 
         #
-        self.anndata = _anndata.convert_to_anndata(self)  ## TODO create a _anndata method for extending existing 2p imaging anndata
+        self.anndata = _anndata.create_anndata(self)  ## TODO create a _anndata method for extending existing 2p imaging anndata
 
         ##
         self.save()
@@ -253,6 +253,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             self.frame_end_times = self.__frame_end_times[0]
             self.__frame_clock_actual = self.__frame_clock
 
+
         # find stim times
         stim_idx = paq['chan_names'].index(self.stim_channel)
         stim_volts = paq['data'][stim_idx, :]
@@ -284,6 +285,12 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
                 stim_start_frame = next(
                     i - 1 for i, sample in enumerate(frame_clock[plane::self.n_planes]) if sample - stim >= 0)
                 self.stim_start_frames.append(stim_start_frame)
+
+        # read in and save sparse version of all paq channels (only save data from timepoints at frame clock times)
+        self.sparse_paq_data = {}
+        for idx, chan in enumerate(self.paq_channels):
+            self.sparse_paq_data[chan] = paq['data'][idx, self.__frame_clock_actual]
+
 
     ### ALLOPTICAL EXPERIMENT PHOTOSTIM PROTOCOL PROCESSING
     def _parseNAPARMxml(self):
