@@ -6,6 +6,9 @@ from the microscope during data collection, and any user generated files associa
 
 """
 
+import warnings
+warnings.filterwarnings("ignore")
+
 from .version import __version__
 from packerlabimaging.io import import_obj
 from .packerlabimaging import Experiment, define_term
