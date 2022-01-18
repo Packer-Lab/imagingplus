@@ -25,7 +25,7 @@ from .utils import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert
     s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff, _check_path_exists
 from ._paq import paq_read
 
-from . import _suite2p, _anndata
+from . import _anndata
 from . TwoPhotonImaging import TwoPhotonImagingTrial
 from . import plotting
 
@@ -61,7 +61,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.stim_channel = kwargs['stim_channel'] if 'stim_channel' in [
             *analysisOptions] else 'markpoints2packio'  # channel on paq file to read for determining stims
 
-        self.photostim_frames = None  # imaging frames that are classified as overlapping with photostimulation
+        self.photostim_frames = []  # imaging frames that are classified as overlapping with photostimulation
         self.stim_start_frames = []  # frame numbers from the start of each photostim trial
         self.stim_freq = None  # frequency of photostim protocol (of a single photostim trial? or time between individual photostim trials?)
         self.stim_dur: float = None  # total duration of a single photostim trial (units: msecs)
@@ -134,8 +134,13 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self._findTargetsAreas()
         self._find_photostim_add_bad_framesnpy()
 
-        #
-        self.anndata = _anndata.create_anndata(self)  ## TODO create a _anndata method for extending existing 2p imaging anndata
+        # extend annotated data object with imaging frames in photostim as another variable
+        __frames_in_stim = [False] * self.n_frames
+        for frame in self.photostim_frames:
+            __frames_in_stim[frame] = True
+        _anndata.add_variables(self.data, var_name='photostim',values=__frames_in_stim)
+
+        # self.data = _anndata.create_anndata(self)  ## TODO create a _anndata method for extending existing 2p imaging anndata
 
         ##
         self.save()
@@ -148,7 +153,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             lastmod = time.ctime(os.path.getmtime(self.pkl_path))
         else:
             lastmod = "(unsaved pkl object)"
-        if not hasattr(self, 'metainfo'):
+        if not hasattr(self, 't_series_name'):
             information = f"uninitialized"
         else:
             information = self.t_series_name
@@ -576,7 +581,6 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         print('\n\-----Finding photostimulation frames in imaging frames ...')
         print('# of photostim frames calculated per stim. trial: ', self.stim_duration_frames + 1)
 
-        self.photostim_frames = []
         for j in self.stim_start_frames:
             for i in range(
                     self.stim_duration_frames + 1):  # usually need to remove 1 more frame than the stim duration, as the stim isn't perfectly aligned with the start of the imaging frame

@@ -39,7 +39,7 @@ def create_anndata(trialobj):
         layers = {'dFF': trialobj.dFF
                   }
 
-        print(f"\----- CREATING annotated data object using AnnData:")
+        print(f"\n\----- CREATING annotated data object using AnnData:")
         adata = anndata.AnnData(X=trialobj.Suite2p.raw, obs=obs_meta, var=var_meta.T, obsm=obs_m,
                                 layers=layers)
 
@@ -50,7 +50,16 @@ def create_anndata(trialobj):
 
 
 
-
 def extend_anndata(adata_obj, additional_adata, axis: int = 0):
     adata = anndata.concat([adata_obj, additional_adata], axis=axis)
     return adata
+
+def add_observation(adata_obj: anndata.AnnData, obs_name: str, values: list):
+    assert len(values) == adata_obj.obs.shape[0], f"# of values to add doesn't match # of observations in anndata"
+    adata_obj.obs[obs_name] = values
+    return adata_obj
+
+def add_variables(adata_obj: anndata.AnnData, var_name: str, values: list):
+    assert len(values) == adata_obj.var.shape[0], f"# of values to add doesn't match # of observations in anndata"
+    adata_obj.var[var_name] = values
+    return adata_obj

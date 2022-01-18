@@ -94,8 +94,8 @@ class TwoPhotonImagingTrial:
         # normalize dFF for raw Flu
         self.dfof()
 
-        # create anndata object
-        self.anndata = _anndata.create_anndata(self)
+        # create annotated data object
+        self.data = _anndata.create_anndata(self)
         self.save()
 
     def __repr__(self):
