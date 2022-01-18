@@ -21,12 +21,12 @@ import tifffile as tf
 from suite2p.run_s2p import run_s2p
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from .utils import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, \
+from ._utils import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, \
     s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff, _check_path_exists
 from ._paq import paq_read
 
 from . TwoPhotonImaging import TwoPhotonImagingTrial
-from . import plotting, _anndataImaging
+from . import plotting, _anndata_funcs
 
 
 # %%

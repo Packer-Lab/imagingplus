@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.ticker as mticker
 
-from .utils import threshold_detect
+from ._utils import threshold_detect
 
 # paq2py by Llyod Russel
 def paq_read(file_path=None, plot=False):

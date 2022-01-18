@@ -19,12 +19,12 @@ import tifffile as tf
 from suite2p.run_s2p import run_s2p
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from .utils import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, \
+from ._utils import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, \
     s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff, _check_path_exists
 from ._paq import paq_read
 from . import _suite2p
 from . import plotting
-from . import _anndataImaging
+from . import _anndata_funcs
 
 
 class TwoPhotonImagingTrial:
@@ -49,7 +49,7 @@ class TwoPhotonImagingTrial:
         # Initialize Attributes:
 
         # Imaging acquisition attr's:
-        self.n_frames: int = None  # number of imaging frames in the current trial
+        self.n_frames: int = 0  # number of imaging frames in the current trial
         self.fps = None  # rate of imaging acquisition (frames per second)
         self.frame_x = None  # num of pixels in the x direction of a single frame
         self.frame_y = None  # num of pixels in the y direction of a single frame
@@ -58,7 +58,7 @@ class TwoPhotonImagingTrial:
         self.pix_sz_y = None  # size of a single imaging pixel in y direction (microns)
         self.scan_x = None  # TODO ROB - not sure what the comment for this is
         self.scan_y = None  # TODO ROB - not sure what the comment for this is
-        self.zoom: float = None # zoom level on Bruker microscope
+        self.zoom: float = 0.0 # zoom level on Bruker microscope
         self.last_good_frame = None  # indicates when the last good frame was during the t-series recording, if nothing was wrong the value is 0, otherwise it is >0 and that indicates that PV is not sure what happened after the frame listed, but it could be corrupt data
 
 

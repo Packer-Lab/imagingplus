@@ -3,6 +3,14 @@ import pickle
 
 # import .pkl'd objects
 def import_obj(pkl_path):
+    """
+    Imports objects that have been saved as .pkl files.
+
+    Example:
+    >>> import packerlabimaging as pkg
+    >>> trialobj = pkg.import_obj(pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/2020-12-19_t-013.pkl')
+    """
+
     if not os.path.exists(pkl_path):
         raise FileNotFoundError(f'pkl path NOT found: {pkl_path}' )
     with open(pkl_path, 'rb') as f:

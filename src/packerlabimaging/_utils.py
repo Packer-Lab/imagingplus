@@ -1,18 +1,18 @@
 ### draft script - currently COPIED FROM PRAJAY'S vape.utils_func copy on Nov 22
 ## TODO - Rob to update with current utils_func from Vape
 
+import io
 import numpy as np
 import tifffile as tf
 import os
 import matplotlib.pyplot as plt
-import matplotlib.ticker as mticker
 import pandas as pd
-import seaborn as sns
+import anndata
 import csv
 import math
 import copy
-import io
-
+from suite2p.run_s2p import run_s2p
+from . import main, _io
 
 # # global plotting params
 # params = {'legend.fontsize': 'x-large',
@@ -25,6 +25,124 @@ import io
 # sns.set_style('white')
 
 ##### PRAJAY'S FUNCTIONS THAT MIGHT BE APPROP FOR THIS SCRIPT ####### / start
+
+
+
+class Utils:
+    ## suite2p methods
+    @staticmethod
+    def s2pRun(expobj: main.Experiment, user_batch_size=2000, trialsSuite2P: list = None, **kwargs):  ## TODO gotta specify # of planes somewhere here
+        """run suite2p for an Experiment object, using trials specified in current experiment object, using the attributes
+        determined directly from the experiment object.
+
+        :param expobj: a packerlabimaging.main.Experiment object
+        :param user_batch_size: batch size for suite2p registration stage - adjust if running into MemmoryError while running suite2p
+        :param trialsSuite2P: list of trialIDs from experiment to use in running suite2p
+        """
+
+        ops = expobj.Suite2p.ops
+
+        expobj.Suite2p.trials = trialsSuite2P if trialsSuite2P else expobj.Suite2p.trials
+        expobj._trialsSuite2p = trialsSuite2P if trialsSuite2P else expobj._trialsSuite2p
+
+        tiffs_to_use_s2p = []
+        for trial in expobj.Suite2p.trials:
+            tiffs_to_use_s2p.append(expobj.trialsInformation[trial]['tiff_path'])
+
+        # load the first tiff in expobj.Suite2p.trials to collect default metainformation about imaging setup parameters
+        trial = expobj.Suite2p.trials[0]
+        trialobj = _io.import_obj(expobj.trialsInformation[trial]['analysis_object_information']['pkl path'])
+
+        # set imaging parameters using defaults or kwargs if provided
+        fps = trialobj.fps if 'fps' not in [*kwargs] else kwargs['fps']
+        n_planes = trialobj.n_planes if 'n_planes' not in [*kwargs] else kwargs['n_planes']
+        pix_sz_x = trialobj.pix_sz_x if 'pix_sz_x' not in [*kwargs] else kwargs['pix_sz_x']
+        pix_sz_y = trialobj.pix_sz_y if 'pix_sz_y' not in [*kwargs] else kwargs['pix_sz_y']
+        frame_x = trialobj.frame_x if 'frame_x' not in [*kwargs] else kwargs['frame_x']
+        frame_y = trialobj.frame_y if 'frame_y' not in [*kwargs] else kwargs['frame_y']
+
+
+        sampling_rate = fps / n_planes
+        diameter_x = 13 / pix_sz_x
+        diameter_y = 13 / pix_sz_y
+        diameter = int(diameter_x), int(diameter_y)
+        expobj.Suite2p.user_batch_size = user_batch_size
+        batch_size = expobj.Suite2p.user_batch_size * (262144 / (frame_x * frame_y))  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
+
+        if expobj.Suite2p.db:
+           db = expobj.Suite2p.db
+        else:
+            db = {
+                'fs': float(sampling_rate),
+                'diameter': diameter,
+                'batch_size': int(batch_size),
+                'nimg_init': int(batch_size),
+                'nplanes': n_planes
+            }
+
+        # specify tiff list to suite2p and data path
+        db['tiff_list'] = tiffs_to_use_s2p
+        db['data_path'] = expobj.dataPath  ## this is where the bad_frames.npy file will be stored for suite2p to use.
+        db['save_folder'] = expobj._suite2p_save_path
+
+        print(db)
+
+        opsEnd = run_s2p(ops=ops, db=db)
+
+        # update expobj.Suite2p.ops
+        expobj.Suite2p.ops = opsEnd
+
+        ## TODO update Experiment attr's and Trial attr's to reflect completion of the suite2p RUN
+        expobj._s2pResultExists = True
+        expobj.s2pResultsPath = expobj._suite2p_save_path + '/plane0/'  ## need to further debug that the flow of the suite2p path makes sense
+
+        expobj.save()
+
+    @staticmethod
+    def create_anndata(self):
+        """
+        Creates annotated data (see anndata library) object based around the Ca2+ matrix of the imaging trial.
+
+        """
+
+        if self.Suite2p._s2pResultExists and self.paq_channels:
+            # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
+            # build dataframe for obs_meta from suite2p stat information
+            obs_meta = pd.DataFrame(columns=['original_index', 'footprint', 'mrs', 'mrs0', 'compact', 'med', 'npix', 'radius',
+                                             'aspect_ratio', 'npix_norm', 'skew', 'std'], index=range(len(self.Suite2p.stat)))
+            for idx, __stat in enumerate(self.Suite2p.stat):
+                for __column in obs_meta:
+                    obs_meta.loc[idx, __column] = __stat[__column]
+
+            # build numpy array for multidimensional obs metadata
+            obs_m = {'ypix': [],
+                     'xpix': []}
+            for col in [*obs_m]:
+                for idx, __stat in enumerate(self.Suite2p.stat):
+                    obs_m[col].append(__stat[col])
+                obs_m[col] = np.asarray(obs_m[col])
+
+            # SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata
+            # build dataframe for var annot's from paq file
+            var_meta = pd.DataFrame(index=self.paq_channels, columns=range(self.n_frames))
+            for fr_idx in range(self.n_frames):
+                for index in [*self.sparse_paq_data]:
+                    var_meta.loc[index, fr_idx] = self.sparse_paq_data[index][fr_idx]
+
+            # BUILD LAYERS TO ADD TO anndata OBJECT
+            layers = {'dFF': self.dFF
+                      }
+
+            print(f"\n\----- CREATING annotated data object using AnnData:")
+            adata = anndata.AnnData(X=self.Suite2p.raw, obs=obs_meta, var=var_meta.T, obsm=obs_m,
+                                    layers=layers)
+
+            print(f"\t{adata}")
+            return adata
+        else:
+            Warning('did not create anndata. anndata creation only available if experiments were processed with suite2p and .paq file(s) provided for temporal synchronization')
+
+
 
 def normalize_dff(arr, threshold_pct=20, threshold_val=None):
     """normalize given array (cells x time) to the mean of the fluorescence values below given threshold. Threshold

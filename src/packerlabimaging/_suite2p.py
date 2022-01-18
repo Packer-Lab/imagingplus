@@ -2,7 +2,7 @@ import os
 import numpy as np
 import tifffile as tf
 import matplotlib.pyplot as plt
-from .utils import make_tiff_stack, s2p_loader, normalize_dff
+from ._utils import make_tiff_stack, s2p_loader, normalize_dff
 
 
 # TEMP VARIABLES FOR DEVELOPMENT USAGES
@@ -45,8 +45,8 @@ class Suite2pResultsExperiment:
         if s2pResultsPath is None:
             ## initialize needed variables and attr's for future calling of s2pRun
             self.path = None
-            self.ops = {}
-            self.db = {}
+            self.ops = {}  ## TODO need to set ops before getting to s2p run fx call
+            self.db = {}  ## TODO need to set db before getting to s2p run fx call
         else:
             self.path = s2pResultsPath
             try:

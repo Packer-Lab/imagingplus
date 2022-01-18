@@ -8,7 +8,7 @@ import random
 import matplotlib.pyplot as plt
 import tifffile as tf
 
-from .utils import normalize_dff
+from ._utils import normalize_dff
 
 # wrapper for piping plots in and out of figures
 def plot_piping_decorator(figsize=(5,5)):
