@@ -2,7 +2,7 @@
 
 import io
 import time
-
+from typing import Union
 import numpy as np
 import tifffile as tf
 import os
@@ -80,7 +80,7 @@ class Utils:
 
     ## suite2p methods
     @staticmethod
-    def s2pRun(expobj, user_batch_size=2000, trialsSuite2P: list = None, **kwargs):  ## TODO gotta specify # of planes somewhere here
+    def s2pRun(expobj: 'main.Experiment', user_batch_size=2000, trialsSuite2P: list = None, **kwargs):  ## TODO gotta specify # of planes somewhere here
         """run suite2p for an Experiment object, using trials specified in current experiment object, using the attributes
         determined directly from the experiment object.
 
@@ -153,10 +153,11 @@ class Utils:
 
 
     @staticmethod
-    def create_anndata(self):
+    def create_anndata(self: Union['main.TwoPhotonImagingTrial', 'main.AllOpticalTrial']):
         """
         Creates annotated data (see anndata library) object based around the Ca2+ matrix of the imaging trial.
 
+        :param self: a main.TwoPhotonImagingTrial object (or derivative)
         """
 
         if self.Suite2p._s2pResultExists and self.paq_channels:
@@ -178,8 +179,8 @@ class Utils:
 
             # SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata
             # build dataframe for var annot's from paq file
-            var_meta = pd.DataFrame(index=self.paq_channels, columns=range(self.Suite2p.n_frames))
-            for fr_idx in range(self.Suite2p.n_frames):
+            var_meta = pd.DataFrame(index=self.paq_channels, columns=range(self.ImagingParams.n_frames))
+            for fr_idx in range(self.ImagingParams.n_frames):
                 for index in [*self.sparse_paq_data]:
                     var_meta.loc[index, fr_idx] = self.sparse_paq_data[index][fr_idx]
 

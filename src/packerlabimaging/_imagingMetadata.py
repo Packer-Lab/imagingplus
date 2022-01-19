@@ -22,15 +22,9 @@ class PrairieViewMetadata:
         self._parsePVMetadata()
 
     def __repr__(self):
-        print('\n\tn planes:', self.n_planes,
-              '\n\tn frames:', self.n_frames,
-              '\n\tfps:', self.fps,
-              '\n\tframe size (px):', self.frame_x, 'x', self.frame_y,
-              '\n\tzoom:', self.zoom,
-              '\n\tpixel size (um):', self.pix_sz_x, self.pix_sz_y,
-              '\n\tscan centre (V):', self.scan_x, self.scan_y
-              )
-        return f'PrairieViewMetadata from: {self.tiff_path_dir}'
+        return(f'PrairieViewMetadata from: {self.tiff_path_dir}\n\tn planes: {self.n_planes} \n\tn frames: {self.n_frames} '
+               f'\n\tfps: {self.fps} \n\tframe size (px): {self.frame_x} x {self.frame_y}  \n\tzoom: {self.zoom} \n\t pixel size (um): {self.pix_sz_x}, {self.pix_sz_y} '
+               f'\n\tscan centre (V):', self.scan_x, self.scan_y)
 
     @staticmethod
     def _getPVStateShard(root, key):
@@ -180,5 +174,12 @@ class PrairieViewMetadata:
         # "last_good_frame": last_good_frame
         # }
 
-
-obj = PrairieViewMetadata(tiff_path_dir='/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-005')
+@dataclass
+class ImagingMetadata:
+    n_frames: int  # number of imaging frames in the current trial
+    fps: str    # rate of imaging acquisition (frames per second)
+    frame_x: int  # num of pixels in the x direction of a single frame
+    frame_y: int  # num of pixels in the y direction of a single frame
+    n_planes: int  # num of FOV planes in imaging acquisition
+    pix_sz_x: float  # size of a single imaging pixel in x direction (microns)
+    pix_sz_y: float  # size of a single imaging pixel in y direction (microns)

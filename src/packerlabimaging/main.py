@@ -221,7 +221,7 @@ class Experiment:
             if trial in self._trialsSuite2p:
                 # trial_obj.Suite2p = _suite2p.Suite2pResultsTrial(suite2p_experiment_obj=self.Suite2p,
                 #                                         trial_frames=(total_frames_stitched, total_frames_stitched + trial_obj.n_frames))  # use trial obj's current trial frames
-                total_frames_stitched += trial_obj.n_frames
+                total_frames_stitched += trial_obj.ImagingParams.n_frames
                 trial_obj.save()
 
 

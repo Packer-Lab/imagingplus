@@ -11,8 +11,8 @@ initialization_dict = {
     'comments': 'testing out analysis workflow',
     'trialsInformation': {},  # NOTE: this dictionary is populated in the code cells below.
     # 'useSuite2p': True,
-    'useSuite2p': False,
-    # 's2pResultsPath': "/home/pshah/mnt/qnap/Analysis/2020-12-19/suite2p/alloptical-2p-1x-alltrials/plane0"
+    # 'useSuite2p': False,
+    's2pResultsPath': "/home/pshah/mnt/qnap/Analysis/2020-12-19/suite2p/alloptical-2p-1x-alltrials/plane0"
 }
 
 

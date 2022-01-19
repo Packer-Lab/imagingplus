@@ -164,12 +164,12 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
     @property
     def pre_stim_frames(self):
         """num frames for collecting Flu trace after each photostimulation trial (units: frames)"""
-        return int(self.pre_stim * self.ImagingParams.fps)
+        return int(self.prestim_sec * self.ImagingParams.fps)
 
     @property
     def post_stim_frames(self):
         """num frames for collecting Flu trace after each photostimulation trial (units: frames)"""
-        return int(self.post_stim * self.ImagingParams.fps)
+        return int(self.poststim_sec * self.ImagingParams.fps)
 
     @property
     def post_stim_response_frames_window(self):
@@ -271,13 +271,15 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         # find stim frames
 
-        for plane in range(self.ImagingParams.n_planes):
-
+        for plane in range(self.ImagingParams.n_planes):  # TODO need to figure out how to handle multi-plane imaging and retrieving stim frame times
+            stim_start_frames = []
             for stim in stim_times:
                 # the index of the frame immediately preceeding stim
                 stim_start_frame = next(
                     i - 1 for i, sample in enumerate(frame_clock[plane::self.ImagingParams.n_planes]) if sample - stim >= 0)
-                self.stim_start_frames.append(stim_start_frame)
+                stim_start_frames.append(stim_start_frame)
+
+            self.stim_start_frames.append(stim_start_frames)
 
         # read in and save sparse version of all paq channels (only save data from timepoints at frame clock times)
         self.sparse_paq_data = {}
@@ -1279,14 +1281,14 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             baselined_flu_trial - detrended dff trial with zeros replacing stim artifact
         '''
         # baseline the flu_trial using pre-stim period mean flu for each cell
-        baseline_flu = np.mean(flu_trial[:, :self.pre_frames], axis=1)
+        baseline_flu = np.mean(flu_trial[:, :self.pre_stim_frames], axis=1)
         # repeat the baseline_flu value across all frames for each cell
         baseline_flu_stack = np.repeat(baseline_flu, flu_trial.shape[1]).reshape(flu_trial.shape)
         # subtract baseline values for each cell
         baselined_flu_trial = flu_trial - baseline_flu_stack
 
         # set stim artifact period to 0
-        baselined_flu_trial[:, self.pre_frames:stim_end] = 0
+        baselined_flu_trial[:, self.pre_stim_frames:stim_end] = 0
 
         return baselined_flu_trial
 
@@ -1311,8 +1313,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
     #### TEMP // end
 
-    def _makePhotostimTrialFluSnippets(self, plane_flu: np.ndarray, plane: int = 0,
-                                       stim_frames: list = None):  # base code copied from Vape's _makeFluTrials
+    def _makePhotostimTrialFluSnippets(self, plane_flu: np.ndarray, plane: int = 0, stim_frames: list = None):  # base code copied from Vape's _makeFluTrials
         '''
         Take dff trace and for each trial, correct for drift in the recording and baseline subtract
 
@@ -1329,7 +1330,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         trial_array = []
         _stims = self.stim_start_frames[plane] if stim_frames is None else stim_frames
 
-        assert _stims in self.stim_start_frames[plane], "stims not found in the stim frames list of this plane"
+        assert plane_flu.ndim == 2, 'plane_flu needs to be of ndim: 2'
+        assert _stims == self.stim_start_frames[plane], "stims not found in the stim frames list of this plane"
 
         for i, stim in enumerate(_stims):
             # get frame indices of entire trial from pre-stim start to post-stim end
@@ -1358,18 +1360,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
     def _collectPhotostimResponses(self):
         pass
 
-    @property
-    def pre_stim_test_slice(self):
-        "num of prestim frames used for quantification of photostim responses"
-        return np.s_[self.pre_stim - self.pre_stim_response_frames_window: self.pre_stim]
-
-    @property
-    def post_stim_test_slice(self):
-        "num of poststim frames used for quantification of photostim responses"
-        stim_end = self.pre_stim + self.stim_duration_frames
-        return np.s_[stim_end: stim_end + self.post_stim_response_frames_window]
-
-    def photostimProcessingAllCells(self, plane):
+    def photostimProcessingAllCells(self, plane):  # NOTE: note setup for multi-plane imaging processing yet...
         '''
         Take dfof trace for entire timeseries and break it up in to individual trials, calculate
         the mean amplitudes of response and statistical significance across all trials
@@ -1382,7 +1373,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         print('----------------------------------------------------------------')
 
         # make trial arrays from dff data shape: [cells x stims x frames]
-        self.photostimFluArray = self._makePhotostimTrialFluSnippets(plane_flu=self.Suite2p.dfof[plane])
+
+        self.photostimFluArray = self._makePhotostimTrialFluSnippets(plane_flu=normalize_dff(self.Suite2p.raw))
 
         # create parameters, slices, and subsets for making pre-stim and post-stim arrays to use in stats comparison
         # test_period = self.pre_stim_response_window / 1000  # sec
@@ -1412,6 +1404,18 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         __post_array_responses = np.mean(self.__analysis_array[:, :, self.post_stim_test_slice], axis=2)
         self.wilcoxons = self._runWilcoxonsTest(array1=__pre_array, array2=__post_array)
+
+    @property
+    def pre_stim_test_slice(self):
+        "num of prestim frames used for quantification of photostim responses"
+        return np.s_[self.pre_stim - self.pre_stim_response_frames_window: self.pre_stim]
+
+    @property
+    def post_stim_test_slice(self):
+        "num of poststim frames used for quantification of photostim responses"
+        stim_end = self.pre_stim + self.stim_duration_frames
+        return np.s_[stim_end: stim_end + self.post_stim_response_frames_window]
+
 
     #### STATISTICS FOR PHOTOSTIM RESPONSES
     def _probResponse(self, plane,
@@ -1828,3 +1832,6 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         # show the MaxResponseImage
         img = glob.glob(stam_save_path + '/*MaxResponseImage.tif')[0]
         plotting.plot_single_tiff(img, frame_num=0)
+
+
+

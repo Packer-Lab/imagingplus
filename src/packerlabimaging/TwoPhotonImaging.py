@@ -3,6 +3,7 @@ import sys
 import time
 import datetime
 import re
+from typing import Optional
 
 import pickle
 
@@ -17,9 +18,8 @@ import tifffile as tf
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
 from ._utils import SaveDownsampledTiff, make_tiff_stack, threshold_detect, normalize_dff, Utils
-from ._prairieview import PrairieViewMetadata
 from ._paq import paq_read
-from . import _suite2p
+from . import _suite2p, _imagingMetadata
 from . import plotting
 
 
@@ -72,7 +72,14 @@ class TwoPhotonImagingTrial:
         self.save_pkl(pkl_path=self.pkl_path)  # save experiment object to pkl_path
 
         # get imaging setup parameters
-        self._getImagingParameters(microscope=microscope)  # CURRENTLY USING REFACTORED PV METADATA CODE
+        if 'Bruker' in microscope:
+            self._getImagingParameters(microscope='Bruker')  # CURRENTLY USING REFACTORED PV METADATA CODE
+        elif 'imagingMicroscopeMetadata' in [*kwargs]:
+            self._getImagingParameters(metadata=kwargs['imagingMicroscopeMetadata'])
+        else:
+            Warning(f"NO imaging microscope parameters set. ")
+
+
         # self._parsePVMetadata() if 'Bruker' in microscope else Warning(f'retrieving data-collection metainformation from '
         #                                                                f'{microscope} microscope has not been implemented yet')
 
@@ -153,21 +160,25 @@ class TwoPhotonImagingTrial:
     def pkl_path(self, path: str):
         self.__pkl_path = path
 
-    def _getImagingParameters(self, microscope = 'Bruker'):
+    def _getImagingParameters(self, metadata: dict, microscope: str = 'Bruker'):
         """retrieves imaging metadata parameters. If using Bruker microscope and PrairieView, then _prairieview module is used to collect this data.
 
         :param microscope: name of the microscope, currently the only supported microscope for parsing metadata directly is Bruker/PrairieView imaging setup.
         """
         if 'Bruker' in microscope:
-            self.ImagingParams = PrairieViewMetadata(tiff_path_dir=self.tiff_path_dir)
+            self.ImagingParams = _imagingMetadata.PrairieViewMetadata(tiff_path_dir=self.tiff_path_dir)
         else:
-            Warning(f'retrieving data-collection metainformation from {microscope} microscope has not been implemented yet.')
+            try:
+                self.ImagingParams = _imagingMetadata.ImagingMetadata(**metadata)
+            except TypeError:
+                Exception('required key not present in metadata')
 
-    def paqProcessing(self, paq_path: str = None, plot: bool = False):
+    def paqProcessing(self, paq_path: Optional[str] = None, plot: Optional[bool] = False):
         """
         Loads .paq file and saves data from individual channels.
 
         :param paq_path: (optional) path to the .paq file for this data object
+        :param plot:
         """
 
         print('\n\----- Processing paq file ...')
@@ -232,6 +243,13 @@ class TwoPhotonImagingTrial:
     @property
     def frame_clock(self):
         return self.__frame_clock_actual
+
+    @property
+    def n_frames(self):
+        try:
+            return self.ImagingParams.n_frames
+        except AttributeError:
+            return -1
 
     def stitch_reg_tiffs(self, first_frame: int, last_frame: int, reg_tif_folder: str = None, force_crop: bool = False,
                          s2p_run_batch: int = 2000):
