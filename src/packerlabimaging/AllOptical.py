@@ -24,6 +24,9 @@ from . import plotting, _anndata_funcs
 
 
 # %%
+
+PLANE = 0
+
 class AllOpticalTrial(TwoPhotonImagingTrial):
     """This class provides methods for All Optical experiments"""
 
@@ -73,8 +76,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.n_targets = []  # total number of target coordinates per SLM group
         self.target_coords = []  # x, y locations of target coordinates per SLM group
         self.target_areas = []  # photostim targeted pixels area coordinates per SLM group
-        self.target_coords_all: list = None  # all SLM target coordinates
-        self.n_targets_total: int = None  # total number of SLM targets
+        self.target_coords_all: list = []  # all SLM target coordinates
+        self.n_targets_total: int = 0  # total number of SLM targets
         self.target_areas_exclude = []  # similar to .target_areas, but area diameter expanded to exclude when filtering for nontarget cells
 
         # set photostim trial Flu trace snippet collection and response measurement analysis time windows
@@ -159,7 +162,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
     @property
     def pre_stim_response_frames_window(self):
         """num frames for measuring Flu trace before each photostimulation trial during photostim response measurement (units: frames)"""
-        return int(self.ImagingParams.fps * self.pre_stim_response_window_msec / 1000)
+        return int(self.ImagingParams.fps * self.pre_stim_response_window_msec)
 
     @property
     def pre_stim_frames(self):
@@ -174,8 +177,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
     @property
     def post_stim_response_frames_window(self):
         """num frames for collecting Flu trace after each photostimulation trial (units: frames)"""
-        return int(
-            self.ImagingParams.fps * self.post_stim_response_window_msec)  # length of the post stim response test window (in frames)
+        return int(self.ImagingParams.fps * self.post_stim_response_window_msec)  # length of the post stim response test window (in frames)
 
     @property
     def timeVector(self):
@@ -475,6 +477,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             targets = np.where(target_image > 0)
             targetCoordinates = list(zip(targets[1] * scale_factor, targets[0] * scale_factor))
             self.target_coords.append(targetCoordinates)
+            self.n_targets += [len(targetCoordinates)]
             print('\t\tNumber of targets (in SLM group %s): ' % (counter + 1), len(targetCoordinates))
             counter += 1
 
@@ -579,7 +582,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         print('\n\-----Finding photostimulation frames in imaging frames ...')
         print('# of photostim frames calculated per stim. trial: ', self.stim_duration_frames + 1)
 
-        for j in self.stim_start_frames:
+        for j in self.stim_start_frames[PLANE]:
             for i in range(
                     self.stim_duration_frames + 1):  # usually need to remove 1 more frame than the stim duration, as the stim isn't perfectly aligned with the start of the imaging frame
                 self.photostim_frames.append(j + i)
@@ -1357,10 +1360,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         return trial_array
 
-    def _collectPhotostimResponses(self):
-        pass
-
-    def photostimProcessingAllCells(self, plane):  # NOTE: note setup for multi-plane imaging processing yet...
+    def photostimProcessingAllCells(self, plane: int = 0):  # NOTE: note setup for multi-plane imaging processing yet...
         '''
         Take dfof trace for entire timeseries and break it up in to individual trials, calculate
         the mean amplitudes of response and statistical significance across all trials
@@ -1376,24 +1376,26 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         self.photostimFluArray = self._makePhotostimTrialFluSnippets(plane_flu=normalize_dff(self.Suite2p.raw))
 
+
+        ## TODO add func for collecting photostim response amplitudes in a dataframe for each cell and each photostim
         # create parameters, slices, and subsets for making pre-stim and post-stim arrays to use in stats comparison
         # test_period = self.pre_stim_response_window / 1000  # sec
         # self.test_frames = int(self.ImagingParams.fps * test_period)  # test period for stats
 
         # mean pre and post stimulus (within post-stim response window) flu trace values for all cells, all trials
         self.__analysis_array = self.photostimFluArray
-        __pre_array = np.mean(self.__analysis_array[:, :, self.pre_stim_test_slice],
+        __pre_array = np.mean(self.__analysis_array[:, self.pre_stim_test_slice, :],
                               axis=1)  # [cells x prestim frames] (avg'd taken over all stims)
-        __post_array = np.mean(self.__analysis_array[:, :, self.post_stim_test_slice],
+        __post_array = np.mean(self.__analysis_array[:, self.post_stim_test_slice, :],
                                axis=1)  # [cells x poststim frames] (avg'd taken over all stims)
 
         # Vape's version for collection photostim response amplitudes
         # calculate amplitude of response for all cells, all trials
         all_amplitudes = __post_array - __pre_array
-        self.photostimResponseAmplitudes.append(all_amplitudes)
 
-        ## TODO add func for collecting photostim response amplitudes in a dataframe for each cell and each photostim
-        self._collectPhotostimResponses()
+        df = pd.DataFrame(index=range(self.Suite2p.n_units), columns=self.stim_start_frames, data=all_amplitudes)
+
+        self.photostimResponseAmplitudes = df
 
         # measure avg response value for each trial, all cells --> return array with 3 axes [cells x response_magnitude_per_stim (avg'd taken over response window)]
         __post_array_responses = []  ### this and the for loop below was implemented to try to root out stims with nan's but it's likley not necessary...
@@ -1408,12 +1410,12 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
     @property
     def pre_stim_test_slice(self):
         "num of prestim frames used for quantification of photostim responses"
-        return np.s_[self.pre_stim - self.pre_stim_response_frames_window: self.pre_stim]
+        return np.s_[self.pre_stim_frames - self.pre_stim_response_frames_window: self.pre_stim_frames]
 
     @property
     def post_stim_test_slice(self):
         "num of poststim frames used for quantification of photostim responses"
-        stim_end = self.pre_stim + self.stim_duration_frames
+        stim_end = self.pre_stim_frames + self.stim_duration_frames
         return np.s_[stim_end: stim_end + self.post_stim_response_frames_window]
 
 

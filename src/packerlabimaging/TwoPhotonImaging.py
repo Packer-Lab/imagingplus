@@ -160,7 +160,7 @@ class TwoPhotonImagingTrial:
     def pkl_path(self, path: str):
         self.__pkl_path = path
 
-    def _getImagingParameters(self, metadata: dict, microscope: str = 'Bruker'):
+    def _getImagingParameters(self, metadata: Optional[dict] = None, microscope: Optional[str] = 'Bruker'):
         """retrieves imaging metadata parameters. If using Bruker microscope and PrairieView, then _prairieview module is used to collect this data.
 
         :param microscope: name of the microscope, currently the only supported microscope for parsing metadata directly is Bruker/PrairieView imaging setup.

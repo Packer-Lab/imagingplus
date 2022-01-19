@@ -237,7 +237,6 @@ class Suite2pResultsTrial:
         self.trial_frames = trial_frames  # tuple of first and last frame (out of the overall suite2p run) corresponding to the present trial
         self.suite2p_overall = suite2p_experiment_obj
         print(f"\t|- current trial frames: {trial_frames} out of {self.suite2p_overall.n_frames} total frames processed through suite2p")
-
         self._get_suite2pResults() if self.suite2p_overall.path else None
 
         # path = suite2p_experiment_obj.path if hasattr(suite2p_experiment_obj, 'path') else None
@@ -250,10 +249,21 @@ class Suite2pResultsTrial:
     def _get_suite2pResults(self):  # TODO complete code for getting suite2p results for trial
         """crop suite2p data for frames only for the present trial"""
 
+        for attr in ['n_units', 'cell_id', 'cell_plane', 'cell_x', 'cell_y', 'xoff', 'yoff', 'raw', 'spks', 'neuropil', 'stat']:
+            try:
+                setattr(self, attr, getattr(self.suite2p_overall, attr))
+            except AttributeError:
+                pass
+
         if self.suite2p_overall.n_planes == 1:
+            self.cell_id = self.cell_id[0]
+            self.stat = self.stat[0]
+
             self.raw = self.suite2p_overall.raw[:, self.trial_frames[0]:self.trial_frames[1]]
             self.spks = self.suite2p_overall.spks[:, self.trial_frames[0]:self.trial_frames[1]]
             self.neuropil = self.suite2p_overall.neuropil[:, self.trial_frames[0]:self.trial_frames[1]]
+
+
 
             self._s2pResultExists = True
 
@@ -266,9 +276,9 @@ class Suite2pResultsTrial:
                 self.dfof.append(normalize_dff(self.raw[plane]))  # calculate df/f based on relevant frames
                 self._s2pResultExists = True
 
-    @property
-    def stat(self):
-        if self.suite2p_overall.n_planes == 1:
-            return self.suite2p_overall.stat[0]
-        else:
-            return self.suite2p_overall.stat
+    # @property
+    # def stat(self):
+    #     if self.suite2p_overall.n_planes == 1:
+    #         return self.suite2p_overall.stat[0]
+    #     else:
+    #         return self.suite2p_overall.stat

@@ -165,9 +165,9 @@ class Utils:
             # build dataframe for obs_meta from suite2p stat information
             obs_meta = pd.DataFrame(columns=['original_index', 'footprint', 'mrs', 'mrs0', 'compact', 'med', 'npix', 'radius',
                                              'aspect_ratio', 'npix_norm', 'skew', 'std'], index=range(len(self.Suite2p.stat)))
-            for idx, __stat in enumerate(self.Suite2p.stat):
+            for idx, stat_ in enumerate(self.Suite2p.stat):
                 for __column in obs_meta:
-                    obs_meta.loc[idx, __column] = __stat[__column]
+                    obs_meta.loc[idx, __column] = stat_[__column]
 
             # build numpy array for multidimensional obs metadata
             obs_m = {'ypix': [],

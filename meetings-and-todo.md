@@ -1,6 +1,6 @@
 # Record for meeting agendas, notes and todo's 
 
-## Jan 21 2022
+## Jan 21 2022 - Meeting with Adam
 - tested suite2p integration and results loading
 - added integration of anndata data org package
 - anndata is a nice, useful data structure for handling the multi-dimensional nature of our experiments
@@ -14,9 +14,10 @@ Meeting with Adam:
 - concerns over code being too ecosystem specific - i.e Bruker imaging, Bruker all optical, NAPARM for photostim protocols, PackIO for synchronization?
   - I think it's quite difficult to avoid the code becoming tied to the ecosystem...
   - but how much should we try to stay open to other ecosystems?
+- which plots do we want to include convenience functions for?
 
 
-## Jan 14 2022
+## Jan 14 2022 - Summary for Rob
 - lots of work on smoothing out and cleaning up workflow of Experiment class and trial objects, and their Suite2p classes and individual Twophoton imaging and alloptical trial classes
 - working on getting attr's in place in the __init__ for the TwoPhotonImaging and AllOptical Trial objects (and also implementing code for some of them)
 
