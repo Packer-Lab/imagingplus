@@ -8,6 +8,13 @@
 
 TODO:
 
+Meeting with Adam:
+- show Adam the basic workflow
+- talk about the AnnData framework
+- concerns over code being too ecosystem specific - i.e Bruker imaging, Bruker all optical, NAPARM for photostim protocols, PackIO for synchronization?
+  - I think it's quite difficult to avoid the code becoming tied to the ecosystem...
+  - but how much should we try to stay open to other ecosystems?
+
 
 ## Jan 14 2022
 - lots of work on smoothing out and cleaning up workflow of Experiment class and trial objects, and their Suite2p classes and individual Twophoton imaging and alloptical trial classes

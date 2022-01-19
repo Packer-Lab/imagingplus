@@ -57,7 +57,7 @@ class Suite2pResultsExperiment:
                     f'suite2p processed data could not be loaded from the provided `s2pResultsPath`: {s2pResultsPath}')
 
         # Attributes
-        self.n_frames = None  # total number of imaging frames in the Suite2p run
+        self.n_frames: int = 0  # total number of imaging frames in the Suite2p run
 
     def __repr__(self):
         return 'Suite2p Results (Experiment level) Object'
@@ -126,6 +126,8 @@ class Suite2pResultsExperiment:
             self.n_units = self.n_units[0]
             self.cell_med = self.cell_med[0]
             self.cell_plane = self.cell_plane[0]
+            self.cell_x = self.cell_x[0]
+            self.cell_y = self.cell_y[0]
 
     # consider use of properties
     # @property
@@ -223,7 +225,7 @@ class Suite2pResultsExperiment:
 class Suite2pResultsTrial:
     """used to collect suite2p processed data for one trial - out of overall experiment."""
 
-    def __init__(self, suite2p_experiment_obj: Suite2pResultsExperiment, trial_frames: tuple = None):
+    def __init__(self, suite2p_experiment_obj: Suite2pResultsExperiment, trial_frames: tuple):
         print(f"\n\----- ADDING Suite2p class to Trial object ... ")
 
         ## initializing attributes to collect Suite2p results for this specific trial
@@ -234,6 +236,7 @@ class Suite2pResultsTrial:
 
         self.trial_frames = trial_frames  # tuple of first and last frame (out of the overall suite2p run) corresponding to the present trial
         self.suite2p_overall = suite2p_experiment_obj
+        print(f"\t|- current trial frames: {trial_frames} out of {self.suite2p_overall.n_frames} total frames processed through suite2p")
 
         self._get_suite2pResults() if self.suite2p_overall.path else None
 

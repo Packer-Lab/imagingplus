@@ -1,11 +1,7 @@
 import os
-import sys
 import time
-import datetime
 import re
 import glob
-
-import pickle
 
 import numpy as np
 import pandas as pd
@@ -18,11 +14,9 @@ import statsmodels.api
 import statsmodels as sm
 import xml.etree.ElementTree as ET
 import tifffile as tf
-from suite2p.run_s2p import run_s2p
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from ._utils import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, \
-    s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff, _check_path_exists
+from ._utils import convert_to_8bit, threshold_detect, path_finder, points_in_circle_np, normalize_dff, Utils
 from ._paq import paq_read
 
 from . TwoPhotonImaging import TwoPhotonImagingTrial
@@ -100,7 +94,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         self.prob_response = None  # probability of response of cell to photostim trial; obtained from single trial significance (ROB suggestion)
         self.t_tests = []  # result from related samples t-test between dff test periods
-        self.wilcoxons = []  #
+        self.wilcoxons = []  # ROB to update
         self.trial_sig_dff = []  # based on dff increase above std of baseline
         self.trial_sig_dfsf = []  # based on df/std(f) increase in test period post-stim
         self.sta_sig = []  # based on t-test between dff test periods
@@ -138,7 +132,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         __frames_in_stim = [False] * self.n_frames
         for frame in self.photostim_frames:
             __frames_in_stim[frame] = True
-        _anndataImaging.add_variables(self.data, var_name='photostim',values=__frames_in_stim)
+        Utils.add_variables(self.data, var_name='photostim_frame',values=__frames_in_stim)
 
         ##
         self.save()
@@ -149,14 +143,10 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
     def __repr__(self):
         if self.pkl_path:
             lastmod = time.ctime(os.path.getmtime(self.pkl_path))
-        else:
-            lastmod = "(unsaved pkl object)"
-        if not hasattr(self, 't_series_name'):
-            information = f"uninitialized"
-        else:
             information = self.t_series_name
-
-        return repr(f"({information}) TwoPhotonImagingTrial.alloptical experimental data object, last saved: {lastmod}")
+            return f"({information}) TwoPhotonImagingTrial.alloptical experimental trial object, last saved: {lastmod}"
+        else:
+            return f" -- unsaved TwoPhotonImagingTrial.alloptical experimental trial object -- "
 
     @property
     def naparm_path(self):
@@ -486,7 +476,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             print('\t\tNumber of targets (in SLM group %s): ' % (counter + 1), len(targetCoordinates))
             counter += 1
 
-    def _findTargetedS2pROIs(self, plot: bool = True):  # function code not reviewed yet!
+    def _findTargetedS2pROIs(self, plot: bool = True):
         """finding s2p cell ROIs that were also SLM targets (or more specifically within the target areas as specified by _findTargetAreas - include 15um radius from center coordinate of spiral)
         Make a binary mask of the targets and multiply by an image of the cells
         to find cells that were targeted
@@ -494,7 +484,10 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         --- LAST UPDATED NOV 6 2021 - copied over from Vape ---
         """
 
-        print('searching for targeted cells... [Vape version]')
+        print('\n\----- Searching for targeted cells in Suite2p ROIs... [Vape version]')
+
+        ## TODO add necessary edits for multi-plane experiments
+
         ##### IDENTIFYING S2P ROIs THAT ARE WITHIN THE SLM TARGET SPIRAL AREAS
         # make all target area coords in to a binary mask
         targ_img = np.zeros([self.frame_x, self.frame_y], dtype='uint16')
@@ -504,8 +497,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         # make an image of every cell area, filled with the index of that cell
         cell_img = np.zeros_like(targ_img)
 
-        cell_y = np.array(self.cell_x)
-        cell_x = np.array(self.cell_y)
+        cell_y = np.array(self.Suite2p.suite2p_overall.cell_x)
+        cell_x = np.array(self.Suite2p.suite2p_overall.cell_y)
 
         for i, coord in enumerate(zip(cell_x, cell_y)):
             cell_img[coord] = i + 1
@@ -514,17 +507,16 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         targ_cell = cell_img * targ_img
 
         targ_cell_ids = np.unique(targ_cell)[1:] - 1  # correct the cell id due to zero indexing
-        self.targeted_cells = np.zeros([self.n_units], dtype='bool')
+        self.targeted_cells = np.zeros([self.Suite2p.suite2p_overall.n_units], dtype='bool')
         self.targeted_cells[targ_cell_ids] = True
         # self.s2p_cell_targets = [self.cell_id[i] for i, x in enumerate(self.targeted_cells) if x is True]  # get ls of s2p cells that were photostim targetted
-        self.s2p_cell_targets = [self.cell_id[i] for i in
-                                 np.where(self.targeted_cells)[0]]  # get ls of s2p cells that were photostim targetted
+        self.s2p_cell_targets = [self.Suite2p.suite2p_overall.cell_id[i] for i in np.where(self.targeted_cells)[0]]  # get ls of s2p cells that were photostim targetted
 
         self.n_targeted_cells = np.sum(self.targeted_cells)
 
-        print('------- Search completed.')
+        print('\t|- Search completed.')
         self.save()
-        print('Number of targeted cells: ', self.n_targeted_cells)
+        print('\t|- Number of targeted cells: ', self.n_targeted_cells)
 
         ##### IDENTIFYING S2P ROIs THAT ARE WITHIN THE EXCLUSION ZONES OF THE SLM TARGETS
         # make all target area coords in to a binary mask
@@ -535,8 +527,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         # make an image of every cell area, filled with the index of that cell
         cell_img = np.zeros_like(targ_img)
 
-        cell_y = np.array(self.cell_x)
-        cell_x = np.array(self.cell_y)
+        cell_y = np.array(self.Suite2p.suite2p_overall.cell_x)
+        cell_x = np.array(self.Suite2p.suite2p_overall.cell_y)
 
         for i, coord in enumerate(zip(cell_x, cell_y)):
             cell_img[coord] = i + 1
@@ -545,22 +537,22 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         targ_cell = cell_img * targ_img
 
         targ_cell_ids = np.unique(targ_cell)[1:] - 1  # correct the cell id due to zero indexing
-        self.exclude_cells = np.zeros([self.n_units], dtype='bool')
+        self.exclude_cells = np.zeros([self.Suite2p.suite2p_overall.n_units], dtype='bool')
         self.exclude_cells[targ_cell_ids] = True
-        self.s2p_cells_exclude = [self.cell_id[i] for i in
+        self.s2p_cells_exclude = [self.Suite2p.suite2p_overall.cell_id[i] for i in
                                   np.where(self.exclude_cells)[0]]  # get ls of s2p cells that were photostim targetted
 
         self.n_exclude_cells = np.sum(self.exclude_cells)
 
-        print('------- Search completed.')
+        print('\t|-Search completed.')
         self.save()
-        print(f"Number of exclude cells: {self.n_exclude_cells}")
+        print(f"\t|-Number of exclude Suite2p ROIs: {self.n_exclude_cells}")
 
         # define non targets from suite2p ROIs (exclude cells in the SLM targets exclusion - .s2p_cells_exclude)
-        self.s2p_nontargets = [cell for cell in self.good_cells if
+        self.s2p_nontargets = [cell for cell in self.Suite2p.suite2p_overall.cell_id if
                                cell not in self.s2p_cells_exclude]  ## exclusion of cells that are classified as s2p_cell_targets
 
-        print(f"Number of good, s2p non_targets: {len(self.s2p_nontargets)}")
+        print(f"\t|-Number of good, s2p non-target ROIs: {len(self.s2p_nontargets)}")
 
         if plot:
             fig, ax = plt.subplots(figsize=[6, 6])
@@ -569,10 +561,16 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             target_areas = np.array(self.target_areas)
             targ_img[target_areas[:, :, 1], target_areas[:, :, 0]] = 1
             ax.imshow(targ_img, cmap='Greys_r', zorder=0)
-            ax.set_title('Targets areas')
+            ax.set_title('SLM targets areas')
             # for (x, y) in self.target_coords_all:
             #     ax.scatter(x=x, y=y, edgecolors='white', facecolors='none', linewidths=1.0)
             fig.show()
+
+
+        # add targets classification as observations annotation to .data anndata
+        self.data = Utils.add_observation(self.data, 'photostim_target', values=list(self.targeted_cells))
+
+
 
     def _find_photostim_add_bad_framesnpy(self):
         """finds all photostim frames and saves them into the bad_frames attribute for the exp object and saves bad_frames.npy"""

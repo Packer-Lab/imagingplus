@@ -125,6 +125,8 @@ class Experiment:
                 self._s2pResultExists = False
                 self._suite2p_save_path = self.analysisSavePath + '/suite2p/'
                 self.Suite2p = _suite2p.Suite2pResultsExperiment(trialsSuite2p = self._trialsSuite2p)
+        else:
+            self._trialsSuite2p = []
 
         # create individual trial objects
         self._runExpTrialsProcessing()
@@ -184,8 +186,7 @@ class Experiment:
                     trial_obj = TwoPhotonImagingTrial(metainfo=_metainfo, analysis_save_path=self.analysisSavePath,
                                                       microscope=self.microscope, total_frames_stitched=total_frames_stitched, suite2p_experiment_obj=self.Suite2p)
                 else:
-                    trial_obj = TwoPhotonImagingTrial(metainfo=_metainfo, analysis_save_path=self.analysisSavePath,
-                                                      microscope=self.microscope, total_frames_stitched=total_frames_stitched, suite2p_experiment_obj=self.Suite2p)
+                    trial_obj = TwoPhotonImagingTrial(metainfo=_metainfo, analysis_save_path=self.analysisSavePath, microscope=self.microscope)
 
 
                 # update self.trialsInformation using the information from new trial_obj

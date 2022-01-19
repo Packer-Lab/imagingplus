@@ -17,6 +17,7 @@ import tifffile as tf
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
 from ._utils import SaveDownsampledTiff, make_tiff_stack, threshold_detect, normalize_dff, Utils
+from ._prairieview import PrairieViewMetadata
 from ._paq import paq_read
 from . import _suite2p
 from . import plotting
@@ -70,8 +71,10 @@ class TwoPhotonImagingTrial:
 
         self.save_pkl(pkl_path=self.pkl_path)  # save experiment object to pkl_path
 
-        self._parsePVMetadata() if 'Bruker' in microscope else Warning(f'retrieving data-collection metainformation from '
-                                                                       f'{microscope} microscope has not been implemented yet')
+        # get imaging setup parameters
+        self._getImagingParameters(microscope=microscope)  # CURRENTLY USING REFACTORED PV METADATA CODE
+        # self._parsePVMetadata() if 'Bruker' in microscope else Warning(f'retrieving data-collection metainformation from '
+        #                                                                f'{microscope} microscope has not been implemented yet')
 
         # run paq processing if paq_path is provided for trial
         TwoPhotonImagingTrial.paqProcessing(self, paq_path=self.paq_path, plot=False) if hasattr(self, 'paq_path') else None
@@ -150,6 +153,17 @@ class TwoPhotonImagingTrial:
     def pkl_path(self, path: str):
         self.__pkl_path = path
 
+    def _getImagingParameters(self, microscope = 'Bruker'):
+        """retrieves imaging metadata parameters. If using Bruker microscope and PrairieView, then _prairieview module is used to collect this data.
+
+        :param microscope: name of the microscope, currently the only supported microscope for parsing metadata directly is Bruker/PrairieView imaging setup.
+        """
+        if 'Bruker' in microscope:
+            self.ImagingParams = PrairieViewMetadata(tiff_path_dir=self.tiff_path_dir)
+        else:
+            Warning(f'retrieving data-collection metainformation from {microscope} microscope has not been implemented yet.')
+
+    ## REFACTORED PV CODE TO PV MODULE.
     def _getPVStateShard(self, root, key):
         '''
         Find the value, description and indices of a particular parameter from an xml file
@@ -238,13 +252,17 @@ class TwoPhotonImagingTrial:
 
         scan_volts, _, index = self._getPVStateShard(root, 'currentScanCenter')
         for scan_volts, index in zip(scan_volts, index):
-            scan_x = float(scan_volts) if index == 'XAxis' else -1
-            scan_y = float(scan_volts) if index == 'YAxis' else -1
+            if index == 'XAxis':
+                scan_x = float(scan_volts)
+            if index == 'YAxis':
+                scan_y = float(scan_volts)
 
         pixel_size, _, index = self._getPVStateShard(root, 'micronsPerPixel')
         for pixel_size, index in zip(pixel_size, index):
-            pix_sz_x = float(pixel_size) if index == 'XAxis' else -1
-            pix_sz_y = float(pixel_size) if index == 'YAxis' else -1
+            if index == 'XAxis':
+                pix_sz_x = float(pixel_size)
+            if index == 'YAxis':
+                pix_sz_y = float(pixel_size)
 
         if n_planes == 1:
             n_frames = root.findall('Sequence/Frame')[-1].get('index')  # use suite2p output instead later
