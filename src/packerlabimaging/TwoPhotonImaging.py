@@ -43,18 +43,18 @@ class TwoPhotonImagingTrial:
 
         # Initialize Attributes:
 
-        # Imaging acquisition attr's:
-        self.n_frames: int = 0  # number of imaging frames in the current trial
-        self.fps = None  # rate of imaging acquisition (frames per second)
-        self.frame_x = None  # num of pixels in the x direction of a single frame
-        self.frame_y = None  # num of pixels in the y direction of a single frame
-        self.n_planes = None  # num of FOV planes in imaging acquisition
-        self.pix_sz_x = None  # size of a single imaging pixel in x direction (microns)
-        self.pix_sz_y = None  # size of a single imaging pixel in y direction (microns)
-        self.scan_x = None  # TODO ROB - not sure what the comment for this is
-        self.scan_y = None  # TODO ROB - not sure what the comment for this is
-        self.zoom: float = 0.0 # zoom level on Bruker microscope
-        self.last_good_frame = None  # indicates when the last good frame was during the t-series recording, if nothing was wrong the value is 0, otherwise it is >0 and that indicates that PV is not sure what happened after the frame listed, but it could be corrupt data
+        # # Imaging acquisition attr's: - refactored to _prairieview
+        # self.n_frames: int = 0  # number of imaging frames in the current trial
+        # self.fps = None  # rate of imaging acquisition (frames per second)
+        # self.frame_x = None  # num of pixels in the x direction of a single frame
+        # self.frame_y = None  # num of pixels in the y direction of a single frame
+        # self.n_planes = None  # num of FOV planes in imaging acquisition
+        # self.pix_sz_x = None  # size of a single imaging pixel in x direction (microns)
+        # self.pix_sz_y = None  # size of a single imaging pixel in y direction (microns)
+        # self.scan_x = None  # TODO ROB - not sure what the comment for this is
+        # self.scan_y = None  # TODO ROB - not sure what the comment for this is
+        # self.zoom: float = 0.0 # zoom level on Bruker microscope
+        # self.last_good_frame = None  # indicates when the last good frame was during the t-series recording, if nothing was wrong the value is 0, otherwise it is >0 and that indicates that PV is not sure what happened after the frame listed, but it could be corrupt data
 
 
         if 'date' in metainfo.keys() and 'trial' in metainfo.keys() and 'animal prep.' in metainfo.keys() and 't series id' in metainfo.keys(): self.__metainfo = metainfo
@@ -87,7 +87,7 @@ class TwoPhotonImagingTrial:
         if 'suite2p_experiment_obj' in [*kwargs] and 'total_frames_stitched' in [*kwargs]:
             self.Suite2p = _suite2p.Suite2pResultsTrial(suite2p_experiment_obj=kwargs['suite2p_experiment_obj'],
                                                              trial_frames=(kwargs['total_frames_stitched'],
-                                                                           kwargs['total_frames_stitched'] + self.n_frames))  # use trial obj's current trial frames
+                                                                           kwargs['total_frames_stitched'] + self.ImagingParams.n_frames))  # use trial obj's current trial frames
 
 
         # normalize dFF for raw Flu
@@ -162,136 +162,6 @@ class TwoPhotonImagingTrial:
             self.ImagingParams = PrairieViewMetadata(tiff_path_dir=self.tiff_path_dir)
         else:
             Warning(f'retrieving data-collection metainformation from {microscope} microscope has not been implemented yet.')
-
-    ## REFACTORED PV CODE TO PV MODULE.
-    def _getPVStateShard(self, root, key):
-        '''
-        Find the value, description and indices of a particular parameter from an xml file
-
-        Inputs:
-            path        - path to xml file
-            key         - string corresponding to key in xml tree
-        Outputs:
-            value       - value of the key
-            description - unused
-            index       - index that the key was found at
-        '''
-        value = []
-        description = []
-        index = []
-
-        pv_state_shard = root.find('PVStateShard')  # find pv state shard element in root
-
-        for elem in pv_state_shard:  # for each element in pv state shard, find the value for the specified key
-            if elem.get('key') == key:
-                if len(elem) == 0:  # if the element has only one subelement
-                    value = elem.get('value')
-                    break
-
-                else:  # if the element has many subelements (i.e. lots of entries for that key)
-                    for subelem in elem:
-                        value.append(subelem.get('value'))
-                        description.append(subelem.get('description'))
-                        index.append(subelem.get('index'))
-            else:
-                for subelem in elem:  # if key not in element, try subelements
-                    if subelem.get('key') == key:
-                        value = elem.get('value')
-                        break
-
-            if value:  # if found key in subelement, break the loop
-                break
-
-        if not value:  # if no value found at all, raise exception
-            raise Exception('ERROR: no element or subelement with that key')
-
-        return value, description, index
-
-    def _parsePVMetadata(self):
-        '''
-        Parse all of the relevant acquisition metadata from the PrairieView xml file for this recording
-        '''
-
-        print('\n\----- Parsing PV Metadata for Bruker microscope...')
-
-
-        tiff_path = self.tiff_path_dir  # starting path
-        xml_path = []  # searching for xml path
-
-        try:  # look for xml file in path, or two paths up (achieved by decreasing count in while loop)
-            count = 2
-            while count != 0 and not xml_path:
-                count -= 1
-                for file in os.listdir(tiff_path):
-                    if file.endswith('.xml'):
-                        xml_path = os.path.join(tiff_path, file)
-                tiff_path = os.path.dirname(tiff_path)  # re-assign tiff_path as next folder up
-
-        except:
-            raise Exception('ERROR: Could not find xml for this acquisition, check it exists')
-
-        xml_tree = ET.parse(xml_path)  # parse xml from a path
-        root = xml_tree.getroot()  # make xml tree structure
-
-        sequence = root.find('Sequence')
-        acq_type = sequence.get('type')
-
-        if 'ZSeries' in acq_type:
-            n_planes = len(sequence.findall('Frame'))
-        else:
-            n_planes = 1
-
-        frame_branch = root.findall('Sequence/Frame')[-1]
-        #         frame_period = float(self._getPVStateShard(root,'framePeriod')[0])
-        frame_period = float(self._getPVStateShard(frame_branch, 'framePeriod')[0])
-        fps = 1 / frame_period
-
-        frame_x = int(self._getPVStateShard(root, 'pixelsPerLine')[0])
-        frame_y = int(self._getPVStateShard(root, 'linesPerFrame')[0])
-        zoom = float(self._getPVStateShard(root, 'opticalZoom')[0])
-
-        scan_volts, _, index = self._getPVStateShard(root, 'currentScanCenter')
-        for scan_volts, index in zip(scan_volts, index):
-            if index == 'XAxis':
-                scan_x = float(scan_volts)
-            if index == 'YAxis':
-                scan_y = float(scan_volts)
-
-        pixel_size, _, index = self._getPVStateShard(root, 'micronsPerPixel')
-        for pixel_size, index in zip(pixel_size, index):
-            if index == 'XAxis':
-                pix_sz_x = float(pixel_size)
-            if index == 'YAxis':
-                pix_sz_y = float(pixel_size)
-
-        if n_planes == 1:
-            n_frames = root.findall('Sequence/Frame')[-1].get('index')  # use suite2p output instead later
-        else:
-            n_frames = root.findall('Sequence')[-1].get('cycle')
-
-        extra_params = root.find('Sequence/Frame/ExtraParameters')
-        last_good_frame = extra_params.get('lastGoodFrame')
-
-        self.fps = fps / n_planes
-        self.frame_x = frame_x
-        self.frame_y = frame_y
-        self.n_planes = n_planes
-        self.pix_sz_x = pix_sz_x
-        self.pix_sz_y = pix_sz_y
-        self.scan_x = scan_x
-        self.scan_y = scan_y
-        self.zoom = zoom
-        self.n_frames = int(n_frames)
-        self.last_good_frame = last_good_frame
-
-        print('\tn planes:', self.n_planes,
-              '\n\tn frames:', self.n_frames,
-              '\n\tfps:', self.fps,
-              '\n\tframe size (px):', self.frame_x, 'x', self.frame_y,
-              '\n\tzoom:', self.zoom,
-              '\n\tpixel size (um):', self.pix_sz_x, self.pix_sz_y,
-              '\n\tscan centre (V):', self.scan_x, self.scan_y
-              )
 
     def paqProcessing(self, paq_path: str = None, plot: bool = False):
         """
@@ -445,8 +315,8 @@ class TwoPhotonImagingTrial:
 
             # SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata
             # build dataframe for var annot's from paq file
-            var_meta = pd.DataFrame(index=self.paq_channels, columns=range(self.n_frames))
-            for fr_idx in range(self.n_frames):
+            var_meta = pd.DataFrame(index=self.paq_channels, columns=range(self.ImagingParams.n_frames))
+            for fr_idx in range(self.ImagingParams.n_frames):
                 for index in [*self.sparse_paq_data]:
                     var_meta.loc[index, fr_idx] = self.sparse_paq_data[index][fr_idx]
 
@@ -478,7 +348,7 @@ class TwoPhotonImagingTrial:
         """
         print('\n-----collecting mean raw flu trace from tiff file...')
         print(f"|- loading raw TIFF file from: {self.tiff_path}")
-        im_stack = tf.imread(self.tiff_path, key=range(self.n_frames))
+        im_stack = tf.imread(self.tiff_path, key=range(self.ImagingParams.n_frames))
         print('|- Loaded experiment tiff of shape: ', im_stack.shape)
 
         self.meanFluImg = np.mean(im_stack, axis=0)
@@ -529,3 +399,135 @@ class TwoPhotonImagingTrial:
 
     def save(self):
         self.save_pkl()
+
+
+## archived or refactored away class methods or other functions
+## REFACTORED PV CODE TO PV MODULE.
+def _getPVStateShard(self, root, key):
+    '''
+    Find the value, description and indices of a particular parameter from an xml file
+
+    Inputs:
+        path        - path to xml file
+        key         - string corresponding to key in xml tree
+    Outputs:
+        value       - value of the key
+        description - unused
+        index       - index that the key was found at
+    '''
+    value = []
+    description = []
+    index = []
+
+    pv_state_shard = root.find('PVStateShard')  # find pv state shard element in root
+
+    for elem in pv_state_shard:  # for each element in pv state shard, find the value for the specified key
+        if elem.get('key') == key:
+            if len(elem) == 0:  # if the element has only one subelement
+                value = elem.get('value')
+                break
+
+            else:  # if the element has many subelements (i.e. lots of entries for that key)
+                for subelem in elem:
+                    value.append(subelem.get('value'))
+                    description.append(subelem.get('description'))
+                    index.append(subelem.get('index'))
+        else:
+            for subelem in elem:  # if key not in element, try subelements
+                if subelem.get('key') == key:
+                    value = elem.get('value')
+                    break
+
+        if value:  # if found key in subelement, break the loop
+            break
+
+    if not value:  # if no value found at all, raise exception
+        raise Exception('ERROR: no element or subelement with that key')
+
+    return value, description, index
+
+def _parsePVMetadata(self):
+    '''
+    Parse all of the relevant acquisition metadata from the PrairieView xml file for this recording
+    '''
+
+    print('\n\----- Parsing PV Metadata for Bruker microscope...')
+
+
+    tiff_path = self.tiff_path_dir  # starting path
+    xml_path = []  # searching for xml path
+
+    try:  # look for xml file in path, or two paths up (achieved by decreasing count in while loop)
+        count = 2
+        while count != 0 and not xml_path:
+            count -= 1
+            for file in os.listdir(tiff_path):
+                if file.endswith('.xml'):
+                    xml_path = os.path.join(tiff_path, file)
+            tiff_path = os.path.dirname(tiff_path)  # re-assign tiff_path as next folder up
+
+    except:
+        raise Exception('ERROR: Could not find xml for this acquisition, check it exists')
+
+    xml_tree = ET.parse(xml_path)  # parse xml from a path
+    root = xml_tree.getroot()  # make xml tree structure
+
+    sequence = root.find('Sequence')
+    acq_type = sequence.get('type')
+
+    if 'ZSeries' in acq_type:
+        n_planes = len(sequence.findall('Frame'))
+    else:
+        n_planes = 1
+
+    frame_branch = root.findall('Sequence/Frame')[-1]
+    #         frame_period = float(self._getPVStateShard(root,'framePeriod')[0])
+    frame_period = float(self._getPVStateShard(frame_branch, 'framePeriod')[0])
+    fps = 1 / frame_period
+
+    frame_x = int(self._getPVStateShard(root, 'pixelsPerLine')[0])
+    frame_y = int(self._getPVStateShard(root, 'linesPerFrame')[0])
+    zoom = float(self._getPVStateShard(root, 'opticalZoom')[0])
+
+    scan_volts, _, index = self._getPVStateShard(root, 'currentScanCenter')
+    for scan_volts, index in zip(scan_volts, index):
+        if index == 'XAxis':
+            scan_x = float(scan_volts)
+        if index == 'YAxis':
+            scan_y = float(scan_volts)
+
+    pixel_size, _, index = self._getPVStateShard(root, 'micronsPerPixel')
+    for pixel_size, index in zip(pixel_size, index):
+        if index == 'XAxis':
+            pix_sz_x = float(pixel_size)
+        if index == 'YAxis':
+            pix_sz_y = float(pixel_size)
+
+    if n_planes == 1:
+        n_frames = root.findall('Sequence/Frame')[-1].get('index')  # use suite2p output instead later
+    else:
+        n_frames = root.findall('Sequence')[-1].get('cycle')
+
+    extra_params = root.find('Sequence/Frame/ExtraParameters')
+    last_good_frame = extra_params.get('lastGoodFrame')
+
+    self.fps = fps / n_planes
+    self.frame_x = frame_x
+    self.frame_y = frame_y
+    self.n_planes = n_planes
+    self.pix_sz_x = pix_sz_x
+    self.pix_sz_y = pix_sz_y
+    self.scan_x = scan_x
+    self.scan_y = scan_y
+    self.zoom = zoom
+    self.n_frames = int(n_frames)
+    self.last_good_frame = last_good_frame
+
+    print('\tn planes:', self.n_planes,
+          '\n\tn frames:', self.n_frames,
+          '\n\tfps:', self.fps,
+          '\n\tframe size (px):', self.frame_x, 'x', self.frame_y,
+          '\n\tzoom:', self.zoom,
+          '\n\tpixel size (um):', self.pix_sz_x, self.pix_sz_y,
+          '\n\tscan centre (V):', self.scan_x, self.scan_y
+          )

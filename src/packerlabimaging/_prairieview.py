@@ -7,6 +7,18 @@ from dataclasses import dataclass
 class PrairieViewMetadata:
     tiff_path_dir: str  # path to the directory containing the .tiff imaging output from PrairieView. the .xml PrairieView files should also be in the same directory.
     def __post_init__(self):
+        self.n_frames: int = 0  # number of imaging frames in the current trial
+        self.fps = None  # rate of imaging acquisition (frames per second)
+        self.frame_x = None  # num of pixels in the x direction of a single frame
+        self.frame_y = None  # num of pixels in the y direction of a single frame
+        self.n_planes = None  # num of FOV planes in imaging acquisition
+        self.pix_sz_x = None  # size of a single imaging pixel in x direction (microns)
+        self.pix_sz_y = None  # size of a single imaging pixel in y direction (microns)
+        self.scan_x = None  # TODO ROB - not sure what the comment for this is
+        self.scan_y = None  # TODO ROB - not sure what the comment for this is
+        self.zoom: float = 0.0 # zoom level on Bruker microscope
+        self.last_good_frame = None  # indicates when the last good frame was during the t-series recording, if nothing was wrong the value is 0, otherwise it is >0 and that indicates that PV is not sure what happened after the frame listed, but it could be corrupt data
+
         self._parsePVMetadata()
 
     def __repr__(self):

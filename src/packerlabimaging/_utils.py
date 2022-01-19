@@ -178,8 +178,8 @@ class Utils:
 
             # SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata
             # build dataframe for var annot's from paq file
-            var_meta = pd.DataFrame(index=self.paq_channels, columns=range(self.n_frames))
-            for fr_idx in range(self.n_frames):
+            var_meta = pd.DataFrame(index=self.paq_channels, columns=range(self.Suite2p.n_frames))
+            for fr_idx in range(self.Suite2p.n_frames):
                 for index in [*self.sparse_paq_data]:
                     var_meta.loc[index, fr_idx] = self.sparse_paq_data[index][fr_idx]
 
