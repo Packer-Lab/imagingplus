@@ -1360,7 +1360,73 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         return trial_array
 
-    def photostimProcessingAllCells(self, plane: int = 0):  # NOTE: note setup for multi-plane imaging processing yet...
+    def collectPhotostimResponses(self):
+
+        # create parameters, slices, and subsets for making pre-stim and post-stim arrays to use in stats comparison
+        # test_period = self.pre_stim_response_window / 1000  # sec
+        # self.test_frames = int(self.ImagingParams.fps * test_period)  # test period for stats
+
+        # mean pre and post stimulus (within post-stim response window) flu trace values for all cells, all trials
+        self.__analysis_array = self.photostimFluArray
+        self.__pre_array = np.mean(self.__analysis_array[:, self.pre_stim_test_slice, :],
+                              axis=1)  # [cells x prestim frames] (avg'd taken over all stims)
+        self.__post_array = np.mean(self.__analysis_array[:, self.post_stim_test_slice, :],
+                               axis=1)  # [cells x poststim frames] (avg'd taken over all stims)
+
+        # Vape's version for collection photostim response amplitudes
+        # calculate amplitude of response for all cells, all trials
+        all_amplitudes = self.__post_array - self.__pre_array
+
+        df = pd.DataFrame(index=range(self.Suite2p.n_units), columns=self.stim_start_frames, data=all_amplitudes)
+
+        return df
+
+    def _allCellsPhotostimResponsesAnndata(self):
+        """
+        Creates annotated data (see anndata library) object based around the Ca2+ matrix of the imaging trial.
+
+        """
+
+        if self.Suite2p._s2pResultExists and self.paq_channels:
+            # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
+            # build dataframe for obs_meta from suite2p stat information
+            obs_meta = pd.DataFrame(
+                columns=['original_index', 'footprint', 'mrs', 'mrs0', 'compact', 'med', 'npix', 'radius',
+                         'aspect_ratio', 'npix_norm', 'skew', 'std'], index=range(len(self.Suite2p.stat)))
+            for idx, stat_ in enumerate(self.Suite2p.stat):
+                for __column in obs_meta:
+                    obs_meta.loc[idx, __column] = stat_[__column]
+
+            # build numpy array for multidimensional obs metadata
+            obs_m = {'ypix': [],
+                     'xpix': []}
+            for col in [*obs_m]:
+                for idx, __stat in enumerate(self.Suite2p.stat):
+                    obs_m[col].append(__stat[col])
+                obs_m[col] = np.asarray(obs_m[col])
+
+            # SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata
+            # build dataframe for var annot's from paq file
+            var_meta = pd.DataFrame(index=self.paq_channels, columns=range(self.ImagingParams.n_frames))
+            for fr_idx in range(self.ImagingParams.n_frames):
+                for index in [*self.sparse_paq_data]:
+                    var_meta.loc[index, fr_idx] = self.sparse_paq_data[index][fr_idx]
+
+            # BUILD LAYERS TO ADD TO anndata OBJECT
+            layers = {'dFF': self.dFF
+                      }
+
+            print(f"\n\----- CREATING annotated data object using AnnData:")
+            adata = anndata.AnnData(X=self.Suite2p.raw, obs=obs_meta, var=var_meta.T, obsm=obs_m,
+                                    layers=layers)
+
+            print(f"\t{adata}")
+            return adata
+        else:
+            Warning(
+                'could not create anndata. anndata creation only available if experiments were processed with suite2p and .paq file(s) provided for temporal synchronization')
+
+    def photostimProcessingAllCells(self, plane: int = 0):  # NOTE: not setup for multi-plane imaging processing yet...
         '''
         Take dfof trace for entire timeseries and break it up in to individual trials, calculate
         the mean amplitudes of response and statistical significance across all trials
@@ -1375,37 +1441,15 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         # make trial arrays from dff data shape: [cells x stims x frames]
 
         self.photostimFluArray = self._makePhotostimTrialFluSnippets(plane_flu=normalize_dff(self.Suite2p.raw))
+        self.photostimResponseAmplitudes = self.collectPhotostimResponses()
+
+        ## create new anndata object for storing measured photostim responses from data, with other relevant data
 
 
-        ## TODO add func for collecting photostim response amplitudes in a dataframe for each cell and each photostim
-        # create parameters, slices, and subsets for making pre-stim and post-stim arrays to use in stats comparison
-        # test_period = self.pre_stim_response_window / 1000  # sec
-        # self.test_frames = int(self.ImagingParams.fps * test_period)  # test period for stats
-
-        # mean pre and post stimulus (within post-stim response window) flu trace values for all cells, all trials
-        self.__analysis_array = self.photostimFluArray
-        __pre_array = np.mean(self.__analysis_array[:, self.pre_stim_test_slice, :],
-                              axis=1)  # [cells x prestim frames] (avg'd taken over all stims)
-        __post_array = np.mean(self.__analysis_array[:, self.post_stim_test_slice, :],
-                               axis=1)  # [cells x poststim frames] (avg'd taken over all stims)
-
-        # Vape's version for collection photostim response amplitudes
-        # calculate amplitude of response for all cells, all trials
-        all_amplitudes = __post_array - __pre_array
-
-        df = pd.DataFrame(index=range(self.Suite2p.n_units), columns=self.stim_start_frames, data=all_amplitudes)
-
-        self.photostimResponseAmplitudes = df
-
-        # measure avg response value for each trial, all cells --> return array with 3 axes [cells x response_magnitude_per_stim (avg'd taken over response window)]
-        __post_array_responses = []  ### this and the for loop below was implemented to try to root out stims with nan's but it's likley not necessary...
-        for i in np.arange(self.__analysis_array.shape[0]):
-            a = self.__analysis_array[i][~np.isnan(self.__analysis_array[i]).any(axis=1)]
-            responses = a.mean(axis=1)
-            __post_array_responses.append(responses)
-
-        __post_array_responses = np.mean(self.__analysis_array[:, :, self.post_stim_test_slice], axis=2)
-        self.wilcoxons = self._runWilcoxonsTest(array1=__pre_array, array2=__post_array)
+    def statisticalProcessingAllCells(self):
+        """Runs statistical processing on photostim response arrays"""
+        self.wilcoxons = self._runWilcoxonsTest(array1=self.__pre_array, array2=self.__post_array)
+        self.sig_units = self._sigTestAvgResponse(p_vals=self.wilcoxons, alpha=0.1)
 
     @property
     def pre_stim_test_slice(self):
@@ -1420,6 +1464,49 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
 
     #### STATISTICS FOR PHOTOSTIM RESPONSES
+    def _runWilcoxonsTest(expobj, array1, array2):  # NOTE: not setup for multiplane cells yet
+
+        # check if the two distributions of flu values (pre/post) are different
+        assert array1.shape == array2.shape, 'shapes for .__pre_array and .__post_array need to be the same for wilcoxon test'
+        wilcoxons = np.empty(len(array1))  # [cell (p-value)]
+
+        for cell in range(len(array1)):
+            wilcoxons[cell] = stats.wilcoxon(array2[cell], array1[cell])[1]
+
+        return wilcoxons
+
+    def _sigTestAvgResponse(expobj, p_vals: list, alpha=0.1):  # NOTE: not setup for multiplane cells yet
+        """
+        Uses the p values and a threshold for the Benjamini-Hochberg correction to return which
+        cells are still significant after correcting for multiple significance testing
+        """
+        print('\n----------------------------------------------------------------')
+        print('running statistical significance testing for nontargets response arrays ')
+        print('----------------------------------------------------------------')
+
+        sig_units = np.full_like(p_vals, False, dtype=bool)
+
+        try:
+            sig_units, _, _, _ = sm.stats.multitest.multipletests(p_vals, alpha=alpha, method='fdr_bh',
+                                                                  is_sorted=False, returnsorted=False)
+        except ZeroDivisionError:
+            print('no cells responding')
+
+        # p values without bonferroni correction
+        no_bonf_corr = [i for i, p in enumerate(p_vals) if p < 0.05]
+        expobj.nomulti_sig_units = np.zeros(len(expobj.s2p_nontargets), dtype='bool')
+        expobj.nomulti_sig_units[no_bonf_corr] = True
+
+        ## TODO - validate by Rob - commented out in his code, is this repeating the sigunits defined by multipletests call just above?
+        # p values after bonferroni correction
+        bonf_corr = [i for i,p in enumerate(p_vals) if p < 0.05 / expobj.Suite2p.n_units]
+        sig_units = np.zeros(expobj.Suite2p.n_units, dtype='bool')
+        sig_units[bonf_corr] = True
+
+        return sig_units
+
+
+    ## NOT REVIEWED FOR USAGE YET
     def _probResponse(self, plane,
                       trial_sig_calc):  ## FROM VAPE'S CODE, TODO NEED TO CHOOSE BETWEEN HERE AND BOTTOM RELIABILITY CODE
         '''
@@ -1615,50 +1702,13 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
             self.single_sig.append(single_sigs)
 
-    def _runWilcoxonsTest(expobj, array1, array2):
+    ## NOT REVIEWED FOR USAGE YET
 
-        # check if the two distributions of flu values (pre/post) are different
-        assert array1.shape == array2.shape, 'shapes for expobj.pre_array and expobj.post_array need to be the same for wilcoxon test'
-        wilcoxons = np.empty(len(array1))  # [cell (p-value)]
 
-        for cell in range(len(array1)):
-            wilcoxons[cell] = stats.wilcoxon(array2[cell], array1[cell])[1]
 
-        return wilcoxons
 
-        # expobj.save() if save else None
 
-    def _sigTestAvgResponse(expobj, p_vals=None, alpha=0.1, save=True):
-        """
-        Uses the p values and a threshold for the Benjamini-Hochberg correction to return which
-        cells are still significant after correcting for multiple significance testing
-        """
-        print('\n----------------------------------------------------------------')
-        print('running statistical significance testing for nontargets response arrays ')
-        print('----------------------------------------------------------------')
 
-        # p_vals = expobj.wilcoxons
-        sig_units = np.full_like(p_vals, False, dtype=bool)
-
-        try:
-            sig_units, _, _, _ = sm.stats.multitest.multipletests(p_vals, alpha=alpha, method='fdr_bh',
-                                                                  is_sorted=False, returnsorted=False)
-        except ZeroDivisionError:
-            print('no cells responding')
-
-        # # p values without bonferroni correction
-        # no_bonf_corr = [i for i, p in enumerate(p_vals) if p < 0.05]
-        # expobj.nomulti_sig_units = np.zeros(len(expobj.s2p_nontargets), dtype='bool')
-        # expobj.nomulti_sig_units[no_bonf_corr] = True
-
-        # expobj.save() if save else None
-
-        # p values after bonferroni correction
-        #         bonf_corr = [i for i,p in enumerate(p_vals) if p < 0.05 / expobj.n_units[plane]]
-        #         sig_units = np.zeros(expobj.n_units[plane], dtype='bool')
-        #         sig_units[bonf_corr] = True
-
-        return sig_units
 
     # other useful functions for all-optical analysis
     def whiten_photostim_frame(self, tiff_path, save_as=''):

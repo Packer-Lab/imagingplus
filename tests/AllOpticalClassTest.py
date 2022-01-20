@@ -5,5 +5,4 @@ self = pkg.import_obj('/home/pshah/Documents/code/packerlabimaging/tests/2020-12
 
 # self.photostimFluArray = self._makePhotostimTrialFluSnippets(plane_flu=normalize_dff(self.Suite2p.raw))
 
-# self._findTargetsAreas()
 self.photostimProcessingAllCells()
