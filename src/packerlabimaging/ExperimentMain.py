@@ -39,6 +39,7 @@ from ._utils import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, conver
     s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff, _check_path_exists
 
 from .TwoPhotonImagingMain import TwoPhotonImagingTrial
+from .onePstimMain import OnePhotonStim
 from .AllOpticalMain import AllOpticalTrial
 from . import _suite2p, _plotting, _io
 
@@ -109,32 +110,7 @@ class Experiment:
         # start processing for experiment imaging:
 
         # start suite2p action:
-        if self.useSuite2p or self.s2pResultsPath:
-            self._trialsSuite2p = []
-            for trial in self.trialIDs:
-                assert 's2p_use' in [*self.trialsInformation[trial]], 'when trying to utilize suite2p , must provide value for `s2p_use` ' \
-                             'in trialsInformation[trial] for each trial to specify if to use trial for this suite2p associated with this experiment'
-                self._trialsSuite2p.append(trial) if self.trialsInformation[trial]['s2p_use'] else None
-
-            if self.s2pResultsPath:  # if s2pResultsPath provided then try to find and pre-load results from provided path, raise error if cannot find results
-
-                # search for suite2p results items in self.suite2pPath, and auto-assign s2pRunComplete --> True if found successfully
-                __suite2p_path_files = os.listdir(self.s2pResultsPath)
-                self._s2pResultExists = False
-                for filepath in __suite2p_path_files:
-                    if 'ops.npy' in filepath:
-                        self._s2pResultExists = True
-                        break
-                if self._s2pResultExists:
-                    self.Suite2p = _suite2p.Suite2pResultsExperiment(s2pResultsPath=self.s2pResultsPath, trialsSuite2p = self._trialsSuite2p)
-                else:
-                    raise ValueError(f"suite2p results could not be found. `suite2pPath` provided was: {self.suite2pPath}")
-            elif self.useSuite2p:  # no s2pResultsPath provided, so initialize without pre-loading any results
-                self._s2pResultExists = False
-                self._suite2p_save_path = self.analysisSavePath + '/suite2p/'
-                self.Suite2p = _suite2p.Suite2pResultsExperiment(trialsSuite2p = self._trialsSuite2p)
-        else:
-            self._trialsSuite2p = []
+        if self.useSuite2p or self.s2pResultsPath: self.add_suite2p()
 
         # create individual trial objects
         self._runExpTrialsProcessing()
@@ -171,6 +147,78 @@ class Experiment:
             # print(f"\t{trial}: {self.trialsInformation[trial]['trialType']} {self.trialsInformation[trial]['expGroup']}")
             __return_information = __return_information + self._get_trial_infor(trialID=trial)
         return f"{__return_information}\n"
+
+
+
+    def add_suite2p(self):
+        _trialsSuite2p = []
+        for trial in self.trialIDs:
+            assert 's2p_use' in [*self.trialsInformation[trial]], 'when trying to utilize suite2p , must provide value for `s2p_use` ' \
+                         'in trialsInformation[trial] for each trial to specify if to use trial for this suite2p associated with this experiment'
+            _trialsSuite2p.append(trial) if self.trialsInformation[trial]['s2p_use'] else None
+
+        if self.s2pResultsPath:  # if s2pResultsPath provided then try to find and pre-load results from provided path, raise error if cannot find results
+            # search for suite2p results items in self.suite2pPath, and auto-assign s2pRunComplete --> True if found successfully
+            __suite2p_path_files = os.listdir(self.s2pResultsPath)
+            self._s2pResultExists = False
+            for filepath in __suite2p_path_files:
+                if 'ops.npy' in filepath:
+                    self._s2pResultExists = True
+                    break
+            if self._s2pResultExists:
+                self.Suite2p = _suite2p.Suite2pResultsExperiment(s2pResultsPath=self.s2pResultsPath, trialsSuite2p = _trialsSuite2p)
+            else:
+                raise ValueError(f"suite2p results could not be found. `suite2pPath` provided was: {self.suite2pPath}")
+        elif self.useSuite2p:  # no s2pResultsPath provided, so initialize without pre-loading any results
+            self._s2pResultExists = False
+            self._suite2p_save_path = self.analysisSavePath + '/suite2p/'
+            self.Suite2p = _suite2p.Suite2pResultsExperiment(trialsSuite2p = self._trialsSuite2p)
+
+
+
+    def add_trial(self, trialID: str = None, trialsInformation: trialsInformation = None):
+
+        print(f"\n\n\- ADDING trial: {trial}, expID: ({self.expID})")
+        __trialsInformation = trialsInformation if trialsInformation else self.trialsInformation[trialID]
+        _metainfo = {
+            'animal prep.': self.expID,
+            'trial': trialID,
+            'date': self.date,
+            't series id': f"{self.expID} {trialID}",
+            'trialsInformation': self.trialsInformation[trialID]
+        }
+
+        if _metainfo['trialsInformation']['trialType'] == 'TwoPhotonImagingTrial':
+            if trialID in self._trialsSuite2p:  # TODO could use switch statements in the 2p imaging trial class...
+                trial_obj = TwoPhotonImagingTrial(metainfo=_metainfo, analysis_save_path=self.analysisSavePath,
+                                                  microscope=self.microscope, total_frames_stitched=total_frames_stitched, suite2p_experiment_obj=self.Suite2p)
+            else:
+                trial_obj = TwoPhotonImagingTrial(metainfo=_metainfo, analysis_save_path=self.analysisSavePath, microscope=self.microscope)
+
+        elif _metainfo['trialsInformation']['trialType'] == 'AllOpticalTrial':
+            if trialID in self._trialsSuite2p:  # TODO could use switch statements in the 2p imaging trial class...
+                trial_obj = AllOpticalTrial(metainfo=_metainfo,
+                                            naparm_path=_metainfo['trialsInformation']['naparm_path'],
+                                            analysis_save_path=self.analysisSavePath, microscope=self.microscope,
+                                            prestim_sec=1.0,
+                                            poststim_sec=3.0, pre_stim_response_window=0.500,
+                                            post_stim_response_window=0.500,
+                                            total_frames_stitched=total_frames_stitched,
+                                            suite2p_experiment_obj=self.Suite2p)
+            else:
+                trial_obj = AllOpticalTrial(metainfo=_metainfo,
+                                            naparm_path=_metainfo['trialsInformation']['naparm_path'],
+                                            analysis_save_path=self.analysisSavePath, microscope=self.microscope,
+                                            prestim_sec=1.0,
+                                            poststim_sec=3.0, pre_stim_response_window=0.500,
+                                            post_stim_response_window=0.500)
+
+        elif _metainfo['trialsInformation']['trialType'] == 'AllOpticalTrial':
+            trial_obj = OnePhotonStim()
+        else:
+            raise NotImplementedError(f"the trial type ({_metainfo['trialsInformation']['trialType']}) for this trial is not implemented yet."
+                                      f"Compatible trialType options are: 'TwoPhotonImagingTrial', 'AllOpticalTrial', 'OnePhotonStim' ")
+
 
     def _runExpTrialsProcessing(self):
         """Runs processing of individual Trials that will contribute to the overall Experiment.
