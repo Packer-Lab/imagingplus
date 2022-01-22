@@ -25,9 +25,9 @@ class AnnotatedData(ad.AnnData):
         descr = f"Annotated Data of n_obs (# ROIs) × n_vars (# Frames) = {n_obs} × {n_vars} {backed_at}"
         descr += f"\navailable attributes: "
 
-        descr += f"\n\t.X (primary datamatrix, with data_label): {str(self.data_label)}" if self.data_label else f"\n\t.X (primary datamatrix)"
-        descr += f"\n\t.obs (ROIs metadata) keys: {str(list(self.obs.keys()))[1:-1]}"
-        descr += f"\n\t.var (frames metadata) keys: {str(list(self.var.keys()))[1:-1]}"
+        descr += f"\n\t.X (primary datamatrix, with data_label): \n\t\t|-- {str(self.data_label)}" if self.data_label else f"\n\t.X (primary datamatrix)"
+        descr += f"\n\t.obs (ROIs metadata) keys: \n\t\t|-- {str(list(self.obs.keys()))[1:-1]}"
+        descr += f"\n\t.var (frames metadata) keys: \n\t\t|-- {str(list(self.var.keys()))[1:-1]}"
         for attr in [
             # "obs",
             # "var",
@@ -40,7 +40,7 @@ class AnnotatedData(ad.AnnData):
         ]:
             keys = getattr(self, attr[1:]).keys()
             if len(keys) > 0:
-                descr += f"\n\t{attr} keys: {str(list(keys))[1:-1]}"
+                descr += f"\n\t{attr} keys: \n\t\t|-- {str(list(keys))[1:-1]}"
         return descr
 
 
@@ -49,10 +49,16 @@ class AnnotatedData(ad.AnnData):
         assert len(values) == self.obs.shape[0], f"# of values to add doesn't match # of observations in anndata"
         self.obs[obs_name] = values
 
+    def del_observation(self, obs_name: str): # TODO
+        "removes a key from observations from an anndata object, of the key obs_name"
+
     def add_variables(self, var_name: str, values: list):
         """adds values to the variables of an anndata object, under the key var_name"""
         assert len(values) == self.var.shape[0], f"# of values to add doesn't match # of observations in anndata"
         self.var[var_name] = values
+
+    def del_variables(self, obs_name: str): # TODO
+        "removes a key from variables from an anndata object, of the key var_name"
 
     def extend_anndata(self, additional_adata: ad.AnnData, axis: int = 0):
         """
@@ -61,24 +67,3 @@ class AnnotatedData(ad.AnnData):
         """
         adata = ad.concat([self, additional_adata], axis=axis)
         return adata
-
-
-def extend_anndata(adata_obj: ad.AnnData, additional_adata: ad.AnnData, axis: int = 0):
-    """
-    :param adata_obj: an anndata object of dimensions n obs x m var
-    :param additional_adata: an anndata object of dimensions n obs x # var or, # obs x m var (depending on which axis to extend)
-    """
-    adata = ad.concat([adata_obj, additional_adata], axis=axis)
-    return adata
-
-def add_observation(adata_obj: ad.AnnData, obs_name: str, values: list):
-    """adds values to the observations of an anndata object, under the key obs_name"""
-    assert len(values) == adata_obj.obs.shape[0], f"# of values to add doesn't match # of observations in anndata"
-    adata_obj.obs[obs_name] = values
-    return adata_obj
-
-def add_variables(adata_obj: ad.AnnData, var_name: str, values: list):
-    """adds values to the variables of an anndata object, under the key var_name"""
-    assert len(values) == adata_obj.var.shape[0], f"# of values to add doesn't match # of observations in anndata"
-    adata_obj.var[var_name] = values
-    return adata_obj

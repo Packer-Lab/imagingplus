@@ -38,9 +38,9 @@ from suite2p.run_s2p import run_s2p
 from ._utils import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, \
     s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff, _check_path_exists
 
-from .TwoPhotonImaging import TwoPhotonImagingTrial
-from .AllOptical import AllOpticalTrial
-from . import _suite2p, plotting, _io
+from .TwoPhotonImagingMain import TwoPhotonImagingTrial
+from .AllOpticalMain import AllOpticalTrial
+from . import _suite2p, _plotting, _io
 
 ## UTILITIES
 
@@ -92,7 +92,7 @@ class Experiment:
     def __post_init__(self):
 
         trialDescr = f""
-        for trial in self.trial_ids:
+        for trial in self.trialIDs:
             trialDescr += f"\n\t{trial}, {self.trialsInformation[trial]['trialType']}, {self.trialsInformation[trial]['expGroup']}"
         print(f'***********************')
         print(f'CREATING new Experiment: (date: {self.date}, expID: {self.expID}), with trials: {trialDescr}')
@@ -111,7 +111,7 @@ class Experiment:
         # start suite2p action:
         if self.useSuite2p or self.s2pResultsPath:
             self._trialsSuite2p = []
-            for trial in self.trial_ids:
+            for trial in self.trialIDs:
                 assert 's2p_use' in [*self.trialsInformation[trial]], 'when trying to utilize suite2p , must provide value for `s2p_use` ' \
                              'in trialsInformation[trial] for each trial to specify if to use trial for this suite2p associated with this experiment'
                 self._trialsSuite2p.append(trial) if self.trialsInformation[trial]['s2p_use'] else None
@@ -156,6 +156,9 @@ class Experiment:
         print(f"NEW created: \n")
         print(self.__str__())
 
+    def _get_trial_infor(self, trialID: str):
+        infor = f"\n\t{trialID}: {self.trialsInformation[trialID]['trialType']}, {self.trialsInformation[trialID]['expGroup']}"
+
     def __repr__(self):
         return f"packerlabimaging.Experiment object (date: {self.date}, expID: {self.expID})"
 
@@ -166,7 +169,7 @@ class Experiment:
         __return_information = __return_information + f"\n\ntrials in Experiment object:"
         for trial in self.trialsInformation:
             # print(f"\t{trial}: {self.trialsInformation[trial]['trialType']} {self.trialsInformation[trial]['expGroup']}")
-            __return_information = __return_information + f"\n\t{trial}: {self.trialsInformation[trial]['trialType']}, {self.trialsInformation[trial]['expGroup']}"
+            __return_information = __return_information + self._get_trial_infor(trialID=trial)
         return f"{__return_information}\n"
 
     def _runExpTrialsProcessing(self):
@@ -175,7 +178,7 @@ class Experiment:
         Processing of individual Trials is carried out based on the contents of self.trialsInformation.
         """
         total_frames_stitched = 0  # used in calculating # of frames from a single trial in the overall suite2p run
-        for trial in self.trial_ids:
+        for trial in self.trialIDs:
             print(f"\n\n\- PROCESSING trial: {trial}, expID: ({self.expID})")
             _metainfo = {
                 'animal prep.': self.expID,
@@ -234,7 +237,7 @@ class Experiment:
 
 
     @property
-    def trial_ids(self):
+    def trialIDs(self):
         return [*self.trialsInformation]
 
     @property
@@ -277,7 +280,6 @@ class Experiment:
             return trialobj
         except KeyError:
             raise KeyError("trialID not found in Experiment instance.")
-
 
     ## suite2p methods - refactored currently to _utils.Utils !!!!!
     def s2pRun(expobj, user_batch_size=2000, trialsSuite2P: list = None):  ## TODO gotta specify # of planes somewhere here

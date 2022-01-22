@@ -20,7 +20,7 @@ from ._utils import SaveDownsampledTiff, make_tiff_stack, threshold_detect, norm
 from ._paq import paq_read
 from . import _suite2p, _imagingMetadata
 from . import _anndata_funcs as ad
-from . import plotting
+from . import _plotting
 
 
 class TwoPhotonImagingTrial:
@@ -59,7 +59,7 @@ class TwoPhotonImagingTrial:
 
 
         if 'date' in metainfo.keys() and 'trial' in metainfo.keys() and 'animal prep.' in metainfo.keys() and 't series id' in metainfo.keys(): self.__metainfo = metainfo
-        else: raise ValueError("dev error: __metainfo argument must contain the minimum fields: 'date', 'trial', 'animal prep.' and 't series id'")
+        else: raise ValueError("dev error: metainfo argument must contain the minimum fields: 'date', 'trial', 'animal prep.' and 't series id'")
         if os.path.exists(metainfo['trialsInformation']['tiff_path']): self.tiff_path = metainfo['trialsInformation']['tiff_path']
         else: raise FileNotFoundError(f"tiff_path does not exist: {metainfo['trialsInformation']['tiff_path']}")
         if 'paq_path' in [*metainfo['trialsInformation']]:

@@ -19,13 +19,14 @@ import tifffile as tf
 from ._utils import convert_to_8bit, threshold_detect, path_finder, points_in_circle_np, normalize_dff, Utils
 from ._paq import paq_read
 
-from . TwoPhotonImaging import TwoPhotonImagingTrial
-from . import plotting, _anndata_funcs
+from . TwoPhotonImagingMain import TwoPhotonImagingTrial
+from . import _plotting, _anndata_funcs
 
 
 # %%
 
 PLANE = 0
+BADFRAMESLOC = '/home/pshah/Documents/code/packerlabimaging/tests/'
 
 class AllOpticalTrial(TwoPhotonImagingTrial):
     """This class provides methods for All Optical experiments"""
@@ -132,11 +133,13 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self._findTargetsAreas()
         self._find_photostim_add_bad_framesnpy()
 
-        # extend annotated data object with imaging frames in photostim as another variable
+        # extend annotated data object with imaging frames in photostim and stim_start_frames as additional keys in vars
         __frames_in_stim = [False] * self.ImagingParams.n_frames
-        for frame in self.photostim_frames:
-            __frames_in_stim[frame] = True
-        Utils.add_variables(self.data, var_name='photostim_frame',values=__frames_in_stim)
+        __stim_start_frame = [False] * self.ImagingParams.n_frames
+        for frame in self.photostim_frames: __frames_in_stim[frame] = True
+        for frame in self.stim_start_frames[PLANE]: __stim_start_frame[frame] = True
+        self.data.add_variables(var_name='photostim_frame', values=__frames_in_stim)
+        self.data.add_variables(var_name='stim_start_frame', values=__stim_start_frame)
 
         ##
         self.save()
@@ -595,7 +598,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         if len(self.photostim_frames) > 0:
             print(
-                f'***Saving a total of {len(self.photostim_frames)} photostim frames to bad_frames.npy at: {self.tiff_path_dir}/bad_frames.npy')
+                # f'***Saving a total of {len(self.photostim_frames)} photostim frames to bad_frames.npy at: {self.tiff_path_dir}/bad_frames.npy')
+                f'***Saving a total of {len(self.photostim_frames)} photostim frames to bad_frames.npy at: {BADFRAMESLOC}/bad_frames.npy')  # TODO replace BADFRAMESLOC with self.tiff_path_dir
             np.save(f'{self.tiff_path_dir}/bad_frames.npy',
                     self.photostim_frames)  # save to npy file and remember to move npy file to tiff folder before running with suite2p
 
