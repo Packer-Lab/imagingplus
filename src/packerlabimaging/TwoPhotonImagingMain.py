@@ -58,8 +58,9 @@ class TwoPhotonImagingTrial:
         # self.last_good_frame = None  # indicates when the last good frame was during the t-series recording, if nothing was wrong the value is 0, otherwise it is >0 and that indicates that PV is not sure what happened after the frame listed, but it could be corrupt data
 
 
-        if 'date' in metainfo.keys() and 'trial' in metainfo.keys() and 'animal prep.' in metainfo.keys() and 't series id' in metainfo.keys(): self.__metainfo = metainfo
-        else: raise ValueError("dev error: metainfo argument must contain the minimum fields: 'date', 'trial', 'animal prep.' and 't series id'")
+        if 'date' in [*metainfo] and 'trial' in [*metainfo] and 'animal prep.' in [*metainfo] and 't series id' in [*metainfo] \
+                and 'trialsInformation' in [*metainfo]: self.__metainfo = metainfo
+        else: raise ValueError("dev error: metainfo argument must contain the minimum fields: 'date', 'trial', 'animal prep.', 't series id', 'trialInformation dict")
         if os.path.exists(metainfo['trialsInformation']['tiff_path']): self.tiff_path = metainfo['trialsInformation']['tiff_path']
         else: raise FileNotFoundError(f"tiff_path does not exist: {metainfo['trialsInformation']['tiff_path']}")
         if 'paq_path' in [*metainfo['trialsInformation']]:
