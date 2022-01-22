@@ -87,8 +87,9 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.post_stim_response_window_msec = post_stim_response_window  # time window for collecting post-stim measurement (units: msec)
 
         # attr's for statistical analysis of photostim trials responses
+        self.photostim_responses = None  # anndata object for collecting photostim responses and associated metadata for experiment and cells
 
-        ######## TODO update comment descriptions - ROB?
+        ######## TODO update comment descriptions
         self.all_trials = []  # all trials for each cell, dff detrended
         self.all_amplitudes = []  # all amplitudes of response between dff test periods
 
@@ -1142,7 +1143,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         elif stims_to_use:
             stims_idx = [self.stim_start_frames.index(stim) for stim in stims_to_use]
         else:
-            AssertionError('no stims set to analyse [1]')
+            KeyError('no stims set to analyse [1]')
 
         # choose between .SLMTargets_stims_dff and .SLMTargets_stims_tracedFF for data to process
         if process == 'dF/prestimF':
@@ -1316,16 +1317,16 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
     #### TEMP // end
 
-    def _makePhotostimTrialFluSnippets(self, plane_flu: np.ndarray, plane: int = 0, stim_frames: list = None):  # base code copied from Vape's _makeFluTrials
+    def _makePhotostimTrialFluSnippets(self, plane_flu: np.ndarray, plane: int = 0, stim_frames: list = None) -> np.ndarray:  # base code copied from Vape's _makeFluTrials
         '''
-        Take dff trace and for each trial, correct for drift in the recording and baseline subtract
+        Make Flu snippets timed on photostimulation, for each cell, for each stim instance. [cells x Flu frames x stims]  # TODO triple check order of this array's dimensions
 
         Inputs:
             plane_flu   - array of dff traces for all cells for this plane only
             plane       - imaging plane corresponding to plane_flu, default = 0 (for one plane datasets)
             stim_frames - optional, if provided then only use these photostim frames to collect photostim_array
         Outputs:
-            photostim_array     - dFF peri-photostim Flu array [cell x frame x trial]
+            photostim_array     - dFF peri-photostim Flu array [cell x Flu frames x trial]
         '''
 
         print('\n\-Collecting peri-stim traces ...')
@@ -1381,50 +1382,46 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         return df
 
-    def _allCellsPhotostimResponsesAnndata(self):
+    def _allCellsPhotostimResponsesAnndata(self):   # NOT TESTED!
         """
         Creates annotated data (see anndata library) object based around the Ca2+ matrix of the imaging trial.
 
         """
 
-        if self.Suite2p._s2pResultExists and self.paq_channels:
+        if self.photostimResponseAmplitudes:
             # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
             # build dataframe for obs_meta from suite2p stat information
             obs_meta = pd.DataFrame(
-                columns=['original_index', 'footprint', 'mrs', 'mrs0', 'compact', 'med', 'npix', 'radius',
-                         'aspect_ratio', 'npix_norm', 'skew', 'std'], index=range(len(self.Suite2p.stat)))
-            for idx, stat_ in enumerate(self.Suite2p.stat):
-                for __column in obs_meta:
-                    obs_meta.loc[idx, __column] = stat_[__column]
+                columns=['original_index', 'photostim_target', 'photostim_exclusion_zone', 'prob_response', 'sig_responder'], index=range(len(self.Suite2p.n_units)))
+            for idx in obs_meta.index:
+                obs_meta.loc[idx, 'original_index'] = self.Suite2p.stat[idx]['original_index']
+            obs_meta.loc[:, 'photostim_target'] = self.targeted_cells
+            obs_meta.loc[:, 'photostim_exclusion_zone'] = self.exclude_cells
+            obs_meta.loc[:, 'prob_response'] = self.prob_response
+            obs_meta.loc[:, 'sig_responder'] = self.sig_units
 
-            # build numpy array for multidimensional obs metadata
-            obs_m = {'ypix': [],
-                     'xpix': []}
-            for col in [*obs_m]:
-                for idx, __stat in enumerate(self.Suite2p.stat):
-                    obs_m[col].append(__stat[col])
-                obs_m[col] = np.asarray(obs_m[col])
 
             # SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata
             # build dataframe for var annot's from paq file
-            var_meta = pd.DataFrame(index=self.paq_channels, columns=range(self.ImagingParams.n_frames))
-            for fr_idx in range(self.ImagingParams.n_frames):
+            var_meta = pd.DataFrame(index=self.paq_channels, columns=range(self.stim_start_frames[PLANE]))
+            for fr_idx in range(self.stim_start_frames[PLANE]):
                 for index in [*self.sparse_paq_data]:
                     var_meta.loc[index, fr_idx] = self.sparse_paq_data[index][fr_idx]
 
             # BUILD LAYERS TO ADD TO anndata OBJECT
-            layers = {'dFF': self.dFF
+            layers = {'singleTrialSignificance': np.empty_like(self.photostimResponseAmplitudes) # PLACEHOLDER NOT IMPLEMENTED YET
                       }
 
-            print(f"\n\----- CREATING annotated data object using AnnData:")
-            adata = anndata.AnnData(X=self.Suite2p.raw, obs=obs_meta, var=var_meta.T, obsm=obs_m,
-                                    layers=layers)
+            print(f"\n\----- CREATING annotated data object for photostim responses using AnnData:")
+            adata = Utils.create_anndata2(X=self.photostimResponseAmplitudes, obs_meta=obs_meta, var_meta=var_meta.T, layers=layers)
 
             print(f"\t{adata}")
             return adata
+
         else:
             Warning(
-                'could not create anndata. anndata creation only available if experiments were processed with suite2p and .paq file(s) provided for temporal synchronization')
+                'could not create anndata. anndata creation only available if .photostimResponseAmplitudes have been collected (run .photostimProcessingAllCells())')
+
 
     def photostimProcessingAllCells(self, plane: int = 0):  # NOTE: not setup for multi-plane imaging processing yet...
         '''
@@ -1444,7 +1441,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.photostimResponseAmplitudes = self.collectPhotostimResponses()
 
         ## create new anndata object for storing measured photostim responses from data, with other relevant data
-
+        self.photostim_responses = self._allCellsPhotostimResponsesAnndata()
 
     def statisticalProcessingAllCells(self):
         """Runs statistical processing on photostim response arrays"""

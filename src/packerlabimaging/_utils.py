@@ -13,7 +13,7 @@ import csv
 import math
 import copy
 from suite2p.run_s2p import run_s2p
-from . import main, _io
+from . import ExperimentMain, _io
 
 # # global plotting params
 # params = {'legend.fontsize': 'x-large',
@@ -153,72 +153,9 @@ class Utils:
 
 
     @staticmethod
-    def create_anndata(self: Union['main.TwoPhotonImagingTrial', 'main.AllOpticalTrial']):
-        """
-        Creates annotated data (see anndata library) object based around the Ca2+ matrix of the imaging trial.
-
-        :param self: a main.TwoPhotonImagingTrial object (or derivative)
-        """
-
-        if self.Suite2p._s2pResultExists and self.paq_channels:
-            # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
-            # build dataframe for obs_meta from suite2p stat information
-            obs_meta = pd.DataFrame(columns=['original_index', 'footprint', 'mrs', 'mrs0', 'compact', 'med', 'npix', 'radius',
-                                             'aspect_ratio', 'npix_norm', 'skew', 'std'], index=range(len(self.Suite2p.stat)))
-            for idx, stat_ in enumerate(self.Suite2p.stat):
-                for __column in obs_meta:
-                    obs_meta.loc[idx, __column] = stat_[__column]
-
-            # build numpy array for multidimensional obs metadata
-            obs_m = {'ypix': [],
-                     'xpix': []}
-            for col in [*obs_m]:
-                for idx, __stat in enumerate(self.Suite2p.stat):
-                    obs_m[col].append(__stat[col])
-                obs_m[col] = np.asarray(obs_m[col])
-
-            # SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata
-            # build dataframe for var annot's from paq file
-            var_meta = pd.DataFrame(index=self.paq_channels, columns=range(self.ImagingParams.n_frames))
-            for fr_idx in range(self.ImagingParams.n_frames):
-                for index in [*self.sparse_paq_data]:
-                    var_meta.loc[index, fr_idx] = self.sparse_paq_data[index][fr_idx]
-
-            # BUILD LAYERS TO ADD TO anndata OBJECT
-            layers = {'dFF': self.dFF
-                      }
-
-            print(f"\n\----- CREATING annotated data object using AnnData:")
-            adata = anndata.AnnData(X=self.Suite2p.raw, obs=obs_meta, var=var_meta.T, obsm=obs_m,
-                                    layers=layers)
-
-            print(f"\t{adata}")
-            return adata
-        else:
-            Warning('could not create anndata. anndata creation only available if experiments were processed with suite2p and .paq file(s) provided for temporal synchronization')
-
-    @staticmethod
-    def extend_anndata(adata_obj: anndata.AnnData, additional_adata: anndata.AnnData, axis: int = 0):
-        """
-        :param adata_obj: an anndata object of dimensions n obs x m var
-        :param additional_adata: an anndata object of dimensions n obs x # var or, # obs x m var (depending on which axis to extend)
-        """
-        adata = anndata.concat([adata_obj, additional_adata], axis=axis)
+    def create_anndata2(X, obs_meta, var_meta, obsm, layers):
+        adata = anndata.AnnData(X=X, obs=obs_meta, var=var_meta, obsm=obsm, layers=layers)
         return adata
-
-    @staticmethod
-    def add_observation(adata_obj: anndata.AnnData, obs_name: str, values: list):
-        """adds values to the observations of an anndata object, under the key obs_name"""
-        assert len(values) == adata_obj.obs.shape[0], f"# of values to add doesn't match # of observations in anndata"
-        adata_obj.obs[obs_name] = values
-        return adata_obj
-
-    @staticmethod
-    def add_variables(adata_obj: anndata.AnnData, var_name: str, values: list):
-        """adds values to the variables of an anndata object, under the key var_name"""
-        assert len(values) == adata_obj.var.shape[0], f"# of values to add doesn't match # of observations in anndata"
-        adata_obj.var[var_name] = values
-        return adata_obj
 
 
 def normalize_dff(arr, threshold_pct=20, threshold_val=None):

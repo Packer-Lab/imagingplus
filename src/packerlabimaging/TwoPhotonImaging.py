@@ -10,7 +10,6 @@ import pickle
 import numpy as np
 import pandas as pd
 import anndata
-import scipy.stats as stats
 import matplotlib.pyplot as plt
 
 import xml.etree.ElementTree as ET
@@ -20,6 +19,7 @@ import tifffile as tf
 from ._utils import SaveDownsampledTiff, make_tiff_stack, threshold_detect, normalize_dff, Utils
 from ._paq import paq_read
 from . import _suite2p, _imagingMetadata
+from . import _anndata_funcs as ad
 from . import plotting
 
 
@@ -39,6 +39,7 @@ class TwoPhotonImagingTrial:
         :param make_downsampled_tiff: flag to run generation and saving of downsampled tiff of t-series (saves to the analysis save location)
         """
 
+        self.data = None
         print(f'\----- CREATING TwoPhotonImagingTrial for trial: {metainfo["trial"]},  {metainfo["t series id"]}')
 
         # Initialize Attributes:
@@ -101,7 +102,7 @@ class TwoPhotonImagingTrial:
         self.dfof()
 
         # create annotated data object
-        self.data = Utils.create_anndata(self)
+        self.create_anndata()
 
 
         ##### SAVE Trial OBJECT
@@ -153,14 +154,13 @@ class TwoPhotonImagingTrial:
     @property
     def pkl_path(self):
         "path in Analysis folder to save pkl object"
-        # return f"{self.analysis_save_dir}{self.__metainfo['date']}_{self.__metainfo['trial']}.pkl"
         return self.__pkl_path
 
     @pkl_path.setter
     def pkl_path(self, path: str):
         self.__pkl_path = path
 
-    def _getImagingParameters(self, metadata: Optional[dict] = None, microscope: Optional[str] = 'Bruker'):
+    def _getImagingParameters(self, metadata: Optional[dict]=None, microscope: Optional[str] = 'Bruker'):
         """retrieves imaging metadata parameters. If using Bruker microscope and PrairieView, then _prairieview module is used to collect this data.
 
         :param microscope: name of the microscope, currently the only supported microscope for parsing metadata directly is Bruker/PrairieView imaging setup.
@@ -310,7 +310,7 @@ class TwoPhotonImagingTrial:
     # refactored to _utils.Utils
     def create_anndata(self):
         """
-        Creates annotated data (see anndata library) object based around the Ca2+ matrix of the imaging trial.
+        Creates annotated data (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial.
 
         """
 
@@ -343,11 +343,12 @@ class TwoPhotonImagingTrial:
                       }
 
             print(f"\n\----- CREATING annotated data object using AnnData:")
-            adata = anndata.AnnData(X=self.Suite2p.raw, obs=obs_meta, var=var_meta.T, obsm=obs_m,
-                                    layers=layers)
+            __data_type = 'Suite2p Raw (neuropil substracted)' if self.Suite2p.suite2p_overall.subtract_neuropil else 'Suite2p Raw'
+            adata = ad.AnnotatedData(X=self.Suite2p.raw, obs=obs_meta, var=var_meta.T, obsm=obs_m,
+                                    layers=layers, data_label=__data_type)
 
-            print(f"\t{adata}")
-            return adata
+            print(f"\n{adata}")
+            self.data = adata
         else:
             Warning('did not create anndata. anndata creation only available if experiments were processed with suite2p and .paq file(s) provided for temporal synchronization')
 

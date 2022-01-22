@@ -265,7 +265,7 @@ class Suite2pResultsTrial:
 
 
 
-            self._s2pResultExists = True
+            self.__s2pResultExists = True
 
         else:
             for plane in range(self.suite2p_overall.n_planes):
@@ -274,7 +274,11 @@ class Suite2pResultsTrial:
                 self.neuropil.append(self.suite2p_overall.neuropil[plane][:, self.trial_frames[0]:self.trial_frames[1]])
 
                 self.dfof.append(normalize_dff(self.raw[plane]))  # calculate df/f based on relevant frames
-                self._s2pResultExists = True
+                self.__s2pResultExists = True
+
+    @property
+    def _s2pResultExists(self):
+        return self.__s2pResultExists
 
     # @property
     # def stat(self):

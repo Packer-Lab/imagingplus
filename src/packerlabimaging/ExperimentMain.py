@@ -40,7 +40,7 @@ from ._utils import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, conver
 
 from .TwoPhotonImaging import TwoPhotonImagingTrial
 from .AllOptical import AllOpticalTrial
-from . import _suite2p, plotting
+from . import _suite2p, plotting, _io
 
 ## UTILITIES
 
@@ -90,7 +90,15 @@ class Experiment:
     useSuite2p: bool = False
     s2pResultsPath: Optional[str] = None  ## path to the parent directory containing the ops.npy file
     def __post_init__(self):
-        print(f'CREATING new Experiment: \n\t{self.__repr__()}')
+
+        trialDescr = f""
+        for trial in self.trial_ids:
+            trialDescr += f"\n\t{trial}, {self.trialsInformation[trial]['trialType']}, {self.trialsInformation[trial]['expGroup']}"
+        print(f'***********************')
+        print(f'CREATING new Experiment: (date: {self.date}, expID: {self.expID}), with trials: {trialDescr}')
+        print(f'***********************\n\n')
+
+
 
 
         ## need to check that the required keys are provided in trialsInformation
@@ -144,18 +152,18 @@ class Experiment:
         self.save_pkl(pkl_path=self.pkl_path)
 
         # Attributes:
-
-        print(f"\n\n\nNEW Experiment object created: ")
-        print(self)
+        print(f'\n\n\n******************************')
+        print(f"NEW created: \n")
+        print(self.__str__())
 
     def __repr__(self):
-        return f"packerlabimaging Experiment object (date: {self.date}, expID: {self.expID})"
+        return f"packerlabimaging.Experiment object (date: {self.date}, expID: {self.expID})"
 
     def __str__(self):
         lastsaved = time.ctime(os.path.getmtime(self.pkl_path))
         __return_information = f"packerlabimaging Experiment object (last saved: {lastsaved}), date: {self.date}, expID: {self.expID}, microscope: {self.microscope}"
-        __return_information = __return_information + f"\npkl path: {self.pkl_path}"
-        __return_information = __return_information + f"\ntrials in Experiment object:"
+        __return_information = __return_information + f"\nfile path: {self.pkl_path}"
+        __return_information = __return_information + f"\n\ntrials in Experiment object:"
         for trial in self.trialsInformation:
             # print(f"\t{trial}: {self.trialsInformation[trial]['trialType']} {self.trialsInformation[trial]['expGroup']}")
             __return_information = __return_information + f"\n\t{trial}: {self.trialsInformation[trial]['trialType']}, {self.trialsInformation[trial]['expGroup']}"
@@ -260,6 +268,16 @@ class Experiment:
 
     def save(self):
         self.save_pkl()
+
+    def load_trial(self, trialID: str):
+        "method for importing individual trial objects from Experiment instance using the trial id for a given trial"
+        try:
+            trial_pkl_path = self.trialsInformation[trialID]['analysis_object_information']['pkl path']
+            trialobj = _io.import_obj(trial_pkl_path)
+            return trialobj
+        except KeyError:
+            raise KeyError("trialID not found in Experiment instance.")
+
 
     ## suite2p methods - refactored currently to _utils.Utils !!!!!
     def s2pRun(expobj, user_batch_size=2000, trialsSuite2P: list = None):  ## TODO gotta specify # of planes somewhere here
