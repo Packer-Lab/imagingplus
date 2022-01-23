@@ -118,12 +118,7 @@ class Experiment:
 
         # save Experiment object:
         # set and/or create analysis save path directory
-        if self.analysisSavePath[-4:] == '.pkl':
-            self.__pkl_path = analysis_save_path
-            self.analysisSavePath = self.analysisSavePath[:[(s.start(), s.end()) for s in re.finditer('/', self.analysisSavePath)][-1][0]]
-        else:
-            self.analysisSavePath = self.analysisSavePath + '/' if self.analysisSavePath[-1] != '/' else self.analysisSavePath
-            self.__pkl_path = f"{self.analysisSavePath}{self.expID}_analysis.pkl"
+        self._get_save_location()
         os.makedirs(self.analysisSavePath, exist_ok=True)
         self.save_pkl(pkl_path=self.pkl_path)
 
@@ -131,6 +126,16 @@ class Experiment:
         print(f'\n\n\n******************************')
         print(f"NEW created: \n")
         print(self.__str__())
+
+    def _get_save_location(self):
+        if self.analysisSavePath[-4:] == '.pkl':
+            self.__pkl_path = analysis_save_path
+            self.analysisSavePath = self.analysisSavePath[:[(s.start(), s.end()) for s in re.finditer('/', self.analysisSavePath)][-1][0]]
+        else:
+            self.analysisSavePath = self.analysisSavePath + '/' if self.analysisSavePath[-1] != '/' else self.analysisSavePath
+            self.__pkl_path = f"{self.analysisSavePath}{self.expID}_analysis.pkl"
+        os.makedirs(self.analysisSavePath, exist_ok=True)
+
 
     def _get_trial_infor(self, trialID: str):
         infor = f"\n\t{trialID}: {self.trialsInformation[trialID]['trialType']}, {self.trialsInformation[trialID]['expGroup']}"
@@ -189,32 +194,29 @@ class Experiment:
         }
 
         if _metainfo['trialsInformation']['trialType'] == 'TwoPhotonImagingTrial':
-            if trialID in self._trialsSuite2p:  # TODO could use switch statements in the 2p imaging trial class...
+            if self.trialsInformation[trialID]['s2p_use']:  # TODO could use switch statements in the 2p imaging trial class...
                 trial_obj = TwoPhotonImagingTrial(metainfo=_metainfo, analysis_save_path=self.analysisSavePath,
                                                   microscope=self.microscope, total_frames_stitched=total_frames_stitched, suite2p_experiment_obj=self.Suite2p)
             else:
                 trial_obj = TwoPhotonImagingTrial(metainfo=_metainfo, analysis_save_path=self.analysisSavePath, microscope=self.microscope)
 
         elif _metainfo['trialsInformation']['trialType'] == 'AllOpticalTrial':
-            if trialID in self._trialsSuite2p:  # TODO could use switch statements in the 2p imaging trial class...
+            if self.trialsInformation[trialID]['s2p_use']:
                 trial_obj = AllOpticalTrial(metainfo=_metainfo,
                                             naparm_path=_metainfo['trialsInformation']['naparm_path'],
                                             analysis_save_path=self.analysisSavePath, microscope=self.microscope,
-                                            prestim_sec=1.0,
-                                            poststim_sec=3.0, pre_stim_response_window=0.500,
-                                            post_stim_response_window=0.500,
-                                            total_frames_stitched=total_frames_stitched,
+                                            prestim_sec=1.0, poststim_sec=3.0, pre_stim_response_window=0.500,
+                                            post_stim_response_window=0.500, total_frames_stitched=total_frames_stitched,
                                             suite2p_experiment_obj=self.Suite2p)
             else:
                 trial_obj = AllOpticalTrial(metainfo=_metainfo,
                                             naparm_path=_metainfo['trialsInformation']['naparm_path'],
                                             analysis_save_path=self.analysisSavePath, microscope=self.microscope,
-                                            prestim_sec=1.0,
-                                            poststim_sec=3.0, pre_stim_response_window=0.500,
+                                            prestim_sec=1.0, poststim_sec=3.0, pre_stim_response_window=0.500,
                                             post_stim_response_window=0.500)
 
         elif _metainfo['trialsInformation']['trialType'] == 'AllOpticalTrial':
-            trial_obj = OnePhotonStim()
+            trial_obj = OnePhotonStim(metainfo=_metainfo, analysis_save_path=self.analysisSavePath, microscope=self.microscope)
         else:
             raise NotImplementedError(f"the trial type ({_metainfo['trialsInformation']['trialType']}) for this trial is not implemented yet."
                                       f"Compatible trialType options are: 'TwoPhotonImagingTrial', 'AllOpticalTrial', 'OnePhotonStim' ")

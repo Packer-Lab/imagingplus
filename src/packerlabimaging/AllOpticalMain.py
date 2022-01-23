@@ -17,7 +17,7 @@ import tifffile as tf
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
 from ._utils import convert_to_8bit, threshold_detect, path_finder, points_in_circle_np, normalize_dff, Utils
-from ._paq import paq_read
+from ._paq import paq_read, paqData
 
 from . TwoPhotonImagingMain import TwoPhotonImagingTrial
 from . import _plotting
@@ -129,7 +129,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
                                        microscope=microscope, **kwargs)
 
         # continue with photostimulation experiment processing
-        self._stimProcessing(stim_channel=self.stim_channel)
+        self._stimProcessing()
         self._findTargetsAreas()
         self._find_photostim_add_bad_framesnpy()
 
@@ -189,7 +189,12 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         n_frames = self.all_trials[0].shape[1]  ## <--- TODO double check this line returns as expected
         self.time = np.linspace(-self.prestim_sec, self.poststim_sec, self.ImagingParams.n_frames)
 
-    def paqProcessing(self, paq_path: str = None, plot: bool = True, **kwargs):
+    def paqProcessing(self, stim_channel):
+        paqD = paqData.paq_read(paq_path=self.paq_path, plot=True)
+        self.stim_start_frames, self.stim_start_times = paqData._2p_stims(paq_data=paqD, stim_channel=stim_channel)
+
+
+    def paqProcessing2(self, paq_path: str = None, plot: bool = True, **kwargs):
 
         print('\n\----- processing paq file...')
 
@@ -217,7 +222,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         clock_voltage = paq['data'][clock_idx, :]
 
         frame_clock = threshold_detect(clock_voltage, 1)
-        self.__frame_clock = frame_clock
+        self._frame_clock = frame_clock
         if plot:
             plt.figure(figsize=(10, 5))
             plt.plot(clock_voltage)
@@ -227,15 +232,15 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             plt.show()
 
         # find start and stop frame_clock times -- there might be multiple 2p imaging starts/stops in the paq trial (hence multiple frame start and end times)
-        self.__frame_start_times = [self.__frame_clock[0]]  # initialize ls
+        self.__frame_start_times = [self._frame_clock[0]]  # initialize ls
         self.__frame_end_times = []
         i = len(self.__frame_start_times)
-        for idx in range(1, len(self.__frame_clock) - 1):
-            if (self.__frame_clock[idx + 1] - self.__frame_clock[idx]) > 2e3:
+        for idx in range(1, len(self._frame_clock) - 1):
+            if (self._frame_clock[idx + 1] - self._frame_clock[idx]) > 2e3:
                 i += 1
-                self.__frame_end_times.append(self.__frame_clock[idx])
-                self.__frame_start_times.append(self.__frame_clock[idx + 1])
-        self.__frame_end_times.append(self.__frame_clock[-1])
+                self.__frame_end_times.append(self._frame_clock[idx])
+                self.__frame_start_times.append(self._frame_clock[idx + 1])
+        self.__frame_end_times.append(self._frame_clock[-1])
 
         # handling cases where 2p imaging clock has been started/stopped >1 in the paq trial
         if len(self.__frame_start_times) > 1:
@@ -245,12 +250,12 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
                 max(diff))  # choose the longest imaging sequence in the paq file as the actual frame clocks for the present trial's acquisition
             self.frame_start_times = self.__frame_start_times[idx]
             self.frame_end_times = self.__frame_end_times[idx]
-            self.__frame_clock_actual = [frame for frame in self.__frame_clock if
+            self._frame_clock_actual = [frame for frame in self._frame_clock if
                                 self.frame_start_times <= frame <= self.frame_end_times]  #
         else:
             self.frame_start_times = self.__frame_start_times[0]
             self.frame_end_times = self.__frame_end_times[0]
-            self.__frame_clock_actual = self.__frame_clock
+            self._frame_clock_actual = self._frame_clock
 
 
         # find stim times
@@ -261,11 +266,6 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.stim_start_times = stim_times
         print('# of stims found on %s: %s' % (self.stim_channel, len(self.stim_start_times)))
 
-        # correct this based on txt file
-        duration_ms = self.stim_dur
-        frame_rate = self.ImagingParams.fps / self.ImagingParams.n_planes
-        duration_frames = np.ceil((duration_ms / 1000) * frame_rate)
-        self.stim_duration_frames = int(duration_frames)
 
         if plot:
             plt.figure(figsize=(10, 5))
@@ -290,7 +290,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         # read in and save sparse version of all paq channels (only save data from timepoints at frame clock times)
         self.sparse_paq_data = {}
         for idx, chan in enumerate(self.paq_channels):
-            self.sparse_paq_data[chan] = paq['data'][idx, self.__frame_clock_actual]
+            self.sparse_paq_data[chan] = paq['data'][idx, self._frame_clock_actual]
 
 
     ### ALLOPTICAL EXPERIMENT PHOTOSTIM PROTOCOL PROCESSING
@@ -386,14 +386,22 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         self.stim_dur = total_single_stim
         self.stim_freq = self.n_shots / self.stim_dur  # TODO Rob is this correct?
+
+        # correct this based on txt file
+        duration_ms = self.stim_dur
+        frame_rate = self.ImagingParams.fps / self.ImagingParams.n_planes
+        duration_frames = np.ceil((duration_ms / 1000) * frame_rate)
+        self.stim_duration_frames = int(duration_frames)
+
+
         print('Single stim. Duration (ms): ', self.single_stim_dur)
         print('Total stim. Duration per trial (ms): ', self.stim_dur)
 
-        self.paqProcessing(plot=False)
 
-    def _stimProcessing(self, stim_channel):
-        self.stim_channel = stim_channel
+    def _stimProcessing(self):
+        # self.stim_channel = stim_channel
         self._photostimProcessing()
+        self.paqProcessing(stim_channel=self.stim_channel)
 
     def _findTargetsAreas(
             self):  # TODO needs review by Rob - any bits of code missing under here? for e.g. maybe for target coords under multiple SLM groups?

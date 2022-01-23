@@ -17,7 +17,7 @@ import tifffile as tf
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
 from ._utils import SaveDownsampledTiff, make_tiff_stack, threshold_detect, normalize_dff, Utils
-from ._paq import paq_read
+from ._paq import paq_read, paqData
 from . import _suite2p, _imagingMetadata
 from . import _anndata_funcs as ad
 from . import _plotting
@@ -75,9 +75,9 @@ class TwoPhotonImagingTrial:
 
         # get imaging setup parameters
         if 'Bruker' in microscope:
-            self._getImagingParameters(microscope='Bruker')  # CURRENTLY USING REFACTORED PV METADATA CODE
+            self.ImagingParams = self._getImagingParameters(microscope='Bruker')  # CURRENTLY USING REFACTORED PV METADATA CODE
         elif 'imagingMicroscopeMetadata' in [*kwargs]:
-            self._getImagingParameters(metadata=kwargs['imagingMicroscopeMetadata'])
+            self.ImagingParams = self._getImagingParameters(metadata=kwargs['imagingMicroscopeMetadata'])
         else:
             Warning(f"NO imaging microscope parameters set. ")
 
@@ -90,7 +90,7 @@ class TwoPhotonImagingTrial:
         # self.paq = _paq.paqProcessing(self, paq_path=self.paq_path, plot=False) if hasattr(self, 'paq_path') else None  ## TODO not implemented as unique class yet
 
         # if provided, add Suite2p results for trial
-        for i in ['suite2p_experiment_obj', 'total_frames_stitched']:
+        for i in ['suite2p_experiment_obj', 'total_frames_stitched']:   ## TODO need to remove requirement for providing suite2p_experiment_obj, and total_frames_stitched (probably part of making trial objs children of Experiment)
             assert i in [*kwargs], f'{i} required in Suite2pResultsTrial call'
             assert kwargs[i] is not None, f'{i} Suite2pResultsTrial call is None'
         if 'suite2p_experiment_obj' in [*kwargs] and 'total_frames_stitched' in [*kwargs]:
@@ -167,14 +167,19 @@ class TwoPhotonImagingTrial:
         :param microscope: name of the microscope, currently the only supported microscope for parsing metadata directly is Bruker/PrairieView imaging setup.
         """
         if 'Bruker' in microscope:
-            self.ImagingParams = _imagingMetadata.PrairieViewMetadata(tiff_path_dir=self.tiff_path_dir)
+            return _imagingMetadata.PrairieViewMetadata(tiff_path_dir=self.tiff_path_dir)
         else:
             try:
-                self.ImagingParams = _imagingMetadata.ImagingMetadata(**metadata)
+                return _imagingMetadata.ImagingMetadata(**metadata)
             except TypeError:
                 Exception('required key not present in metadata')
 
-    def paqProcessing(self, paq_path: Optional[str] = None, plot: Optional[bool] = False):
+    def paqProcessing(self, frame_channel='frame_clock'):
+        paqD, self.paq_rate, self.paq_channels = paqData.paq_read(paq_path=self.paq_path, plot=True)
+        self._frame_clock_actual = paqData._frame_times(paq_data=paqD, frame_channel=frame_channel)
+
+
+    def paqProcessing2(self, paq_path: Optional[str] = None, plot: Optional[bool] = False):
         """
         Loads .paq file and saves data from individual channels.
 
@@ -209,18 +214,18 @@ class TwoPhotonImagingTrial:
         clock_voltage = paq['data'][clock_idx, :]
 
         __frame_clock = threshold_detect(clock_voltage, 1)
-        self.__frame_clock = __frame_clock
+        self._frame_clock = __frame_clock
 
         # find start and stop __frame_clock times -- there might be multiple 2p imaging starts/stops in the paq trial (hence multiple frame start and end times)
-        self.frame_start_times = [self.__frame_clock[0]]  # initialize list
+        self.frame_start_times = [self._frame_clock[0]]  # initialize list
         self.frame_end_times = []
         i = len(self.frame_start_times)
-        for idx in range(1, len(self.__frame_clock) - 1):
-            if (self.__frame_clock[idx + 1] - self.__frame_clock[idx]) > 2e3:
+        for idx in range(1, len(self._frame_clock) - 1):
+            if (self._frame_clock[idx + 1] - self._frame_clock[idx]) > 2e3:
                 i += 1
-                self.frame_end_times.append(self.__frame_clock[idx])
-                self.frame_start_times.append(self.__frame_clock[idx + 1])
-        self.frame_end_times.append(self.__frame_clock[-1])
+                self.frame_end_times.append(self._frame_clock[idx])
+                self.frame_start_times.append(self._frame_clock[idx + 1])
+        self.frame_end_times.append(self._frame_clock[-1])
 
         # handling cases where 2p imaging clock has been started/stopped >1 in the paq trial
         if len(self.frame_start_times) > 1:
@@ -229,21 +234,21 @@ class TwoPhotonImagingTrial:
             idx = diff.index(max(diff))
             self.frame_start_time_actual = self.frame_start_times[idx]
             self.frame_end_time_actual = self.frame_end_times[idx]
-            self.__frame_clock_actual = [frame for frame in self.__frame_clock if
+            self._frame_clock_actual = [frame for frame in self._frame_clock if
                                        self.frame_start_time_actual <= frame <= self.frame_end_time_actual]
         else:
             self.frame_start_time_actual = self.frame_start_times[0]
             self.frame_end_time_actual = self.frame_end_times[0]
-            self.__frame_clock_actual = self.__frame_clock
+            self._frame_clock_actual = self._frame_clock
 
         # read in and save sparse version of all paq channels (only save data from timepoints at frame clock times)
         self.sparse_paq_data = {}
         for idx, chan in enumerate(self.paq_channels):
-            self.sparse_paq_data[chan] = paq['data'][idx, self.__frame_clock_actual]
+            self.sparse_paq_data[chan] = paq['data'][idx, self._frame_clock_actual]
     
     @property
     def frame_clock(self):
-        return self.__frame_clock_actual
+        return self._frame_clock_actual
 
     @property
     def n_frames(self):

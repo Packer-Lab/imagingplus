@@ -58,5 +58,6 @@ for idx, trial in enumerate(trials_list_alloptical):
 
 expobj = pkg.Experiment(**initialization_dict)
 
+# trying to use pytest
 def test_ExperimentClass(experiment_fixture):
     expobj = pkg.Experiment(experiment_fixture)

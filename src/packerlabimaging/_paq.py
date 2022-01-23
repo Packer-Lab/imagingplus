@@ -1,12 +1,16 @@
 import os
+from typing import List
+
 import numpy as np
 import pandas as pd
+import seaborn as sns
 import matplotlib.ticker as mticker
+import matplotlib.pyplot as plt
 
 from ._utils import threshold_detect
 
 # paq2py by Llyod Russel
-def paq_read(file_path=None, plot=False):
+def paq2py(file_path=None, plot=False):
     """
     Read PAQ file (from PackIO) into python
     Lloyd Russell 2015
@@ -125,15 +129,43 @@ def paq_read(file_path=None, plot=False):
             "num_datapoints": num_datapoints}, df
 
 
-from dataclasses import dataclass
-
-@dataclass
 class paqData:
-    paq_path: str
-    def __post_init__(self):
-        self.paqProcessing(paq_path=self.paq_path, plot=False)
+    def __init__(self, paq_path: str):
+        """
+        reads in paq data from a .paq file for an experiment performed using PackIO.
 
-    def paqProcessing(self, paq_path: str = None, plot: bool = False):
+        paq_path: full path to .paq file to read
+        """
+        paq_path = self.paq_path if paq_path is not None else paq_path
+        self.paq_channels: List[str] = ['None']     # recorded channels in paq file
+        self.paq_rate: float = 0.0                  # sample rate of paq collection
+        self.sparse_paq_data = {}  # contains data from all paq channels decimated to frame clock times
+
+
+        paqData = self.paq_read(paq_path=paq_path)
+        self.paqProcessing(paq=paqData)
+
+    @staticmethod
+    def paq_read(paq_path: str = None, plot: bool = False):
+        """
+        Loads .paq file and saves data from individual channels.
+
+        :param paq_path: (optional) path to the .paq file for this data object
+        """
+
+        print(f'\tloading paq data from: {paq_path}')
+        paq, _ = paq2py(paq_path, plot=plot)
+        paq_rate = paq['rate']
+        paq_channels = paq['chan_names']
+        ## TODO print the paq channels that were loaded. and some useful metadata about the paq channels.
+        print(f"\t|- loaded {len(paq['chan_names'])} channels from .paq file: {paq['chan_names']}")
+
+
+
+        return paq, paq_rate, paq_channels
+
+
+    def paqProcessing(self, paq, options: List[str]):
         """
         Loads .paq file and saves data from individual channels.
 
@@ -141,60 +173,171 @@ class paqData:
         """
 
         print('\n\----- Processing paq file ...')
+        # retrieve frame times
+        self._frame_times(paq_data=paq) if 'TwoPhotonImaging' or 'AllOptical' in options else None
+        self._1p_stims(paq_data=paq) if 'OnePhotonStim' in options else None
 
-        if not hasattr(self, 'paq_path'):
-            if paq_path is not None:
-                self.paq_path = paq_path
-            else:
-                ValueError(
-                    'ERROR: no paq_path defined for data object, please provide paq_path to load .paq file from.')
-        elif paq_path is not None and paq_path != self.paq_path:
-            assert os.path.exists(paq_path), print('ERROR: paq_path provided was not found')
-            print(f"|- Updating paq_path to newly provided path: {paq_path}")
-            self.paq_path = paq_path  # update paq_path if provided different path
-
-        print(f'\tloading paq data from: {self.paq_path}')
-
-        paq, _ = paq_read(self.paq_path, plot=plot)
-        self.paq_rate = paq['rate']
-        self.paq_channels = paq['chan_names']
-        ## TODO print the paq channels that were loaded. and some useful metadata about the paq channels.
-        print(f"\t|- loaded {len(paq['chan_names'])} channels from .paq file: {paq['chan_names']}")
-
-        # find frame times
-        clock_idx = paq['chan_names'].index('frame_clock')
-        clock_voltage = paq['data'][clock_idx, :]
-
-        __frame_clock = threshold_detect(clock_voltage, 1)
-        self.__frame_clock = __frame_clock
-
-        # find start and stop __frame_clock times -- there might be multiple 2p imaging starts/stops in the paq trial (hence multiple frame start and end times)
-        self.frame_start_times = [self.__frame_clock[0]]  # initialize list
-        self.frame_end_times = []
-        i = len(self.frame_start_times)
-        for idx in range(1, len(self.__frame_clock) - 1):
-            if (self.__frame_clock[idx + 1] - self.__frame_clock[idx]) > 2e3:
-                i += 1
-                self.frame_end_times.append(self.__frame_clock[idx])
-                self.frame_start_times.append(self.__frame_clock[idx + 1])
-        self.frame_end_times.append(self.__frame_clock[-1])
-
-        # handling cases where 2p imaging clock has been started/stopped >1 in the paq trial
-        if len(self.frame_start_times) > 1:
-            diff = [self.frame_end_times[idx] - self.frame_start_times[idx] for idx in
-                    range(len(self.frame_start_times))]
-            idx = diff.index(max(diff))
-            self.frame_start_time_actual = self.frame_start_times[idx]
-            self.frame_end_time_actual = self.frame_end_times[idx]
-            self.__frame_clock_actual = [frame for frame in self.__frame_clock if
-                                         self.frame_start_time_actual <= frame <= self.frame_end_time_actual]
-        else:
-            self.frame_start_time_actual = self.frame_start_times[0]
-            self.frame_end_time_actual = self.frame_end_times[0]
-            self.__frame_clock_actual = self.__frame_clock
 
         # read in and save sparse version of all paq channels (only save data from timepoints at frame clock times)
-        self.sparse_paq_data = {}
         for idx, chan in enumerate(self.paq_channels):
-            self.sparse_paq_data[chan] = paq['data'][idx, self.__frame_clock_actual]
+            self.sparse_paq_data[chan] = paq['data'][idx, self._frame_clock_actual]
 
+    @staticmethod
+    def _frame_times(paq_data, frame_channel: str = 'frame_clock'):
+        if frame_channel not in paq_data['chan_names']:
+            raise KeyError(f'{frame_channel} not found in .paq channels. Specify channel containing frame signals.')
+        
+        # find frame times
+        clock_idx = paq_data['chan_names'].index(frame_channel)
+        clock_voltage = paq_data['data'][clock_idx, :]
+
+        __frame_clock = threshold_detect(clock_voltage, 1)
+        __frame_clock = __frame_clock
+
+        # find start and stop __frame_clock times -- there might be multiple 2p imaging starts/stops in the paq trial (hence multiple frame start and end times)
+        frame_start_times = [__frame_clock[0]]  # initialize list
+        frame_end_times = []
+        i = len(frame_start_times)
+        for idx in range(1, len(__frame_clock) - 1):
+            if (__frame_clock[idx + 1] - __frame_clock[idx]) > 2e3:
+                i += 1
+                frame_end_times.append(__frame_clock[idx])
+                frame_start_times.append(__frame_clock[idx + 1])
+        frame_end_times.append(__frame_clock[-1])
+
+        # handling cases where 2p imaging clock has been started/stopped >1 in the paq trial
+        if len(frame_start_times) > 1:
+            diff = [frame_end_times[idx] - frame_start_times[idx] for idx in
+                    range(len(frame_start_times))]
+            idx = diff.index(max(diff))
+            frame_start_time_actual = frame_start_times[idx]
+            frame_end_time_actual = frame_end_times[idx]
+            __frame_clock_actual = [frame for frame in __frame_clock if
+                                         frame_start_time_actual <= frame <= frame_end_time_actual]
+        else:
+            frame_start_time_actual = frame_start_times[0]
+            frame_end_time_actual = frame_end_times[0]
+            __frame_clock_actual = __frame_clock
+        
+        return __frame_clock_actual 
+
+    @staticmethod
+    def sparse_paq(paq_data, frame_clock):
+        # read in and save sparse version of all paq channels (only save data from timepoints at frame clock times)
+        sparse_paq_data = {}
+        for idx, chan in enumerate(paq_data['chan_names']):
+            sparse_paq_data[chan] = paq_data['data'][idx, frame_clock]
+
+
+    @staticmethod
+    def _2p_stims(paq_data, frame_clock: List[int], plot: bool = False, stim_channel: str = ''):
+        if stim_channel not in paq_data['chan_names']:
+            raise KeyError(f'{stim_channel} not found in .paq channels. Specify channel containing frame signals.')
+
+        # find stim times
+        stim_idx = paq_data['chan_names'].index(stim_channel)
+        stim_volts = paq_data['data'][stim_idx, :]
+        stim_times = threshold_detect(stim_volts, 1)
+        # self.stim_times = stim_times
+        stim_start_times = stim_times
+        print(f'# of stims found on {stim_channel}: {len(stim_start_times)}')
+
+        if plot:
+            plt.figure(figsize=(10, 5))
+            plt.plot(stim_volts)
+            plt.plot(stim_times, np.ones(len(stim_times)), '.')
+            plt.suptitle('stim times')
+            sns.despine()
+            plt.show()
+
+        # TODO need to figure out how to handle multi-plane imaging and retrieving stim frame times
+        # find stim frames
+        stim_start_frames = []
+        for stim in stim_times:
+            # the index of the frame immediately preceeding stim
+            stim_start_frame = next(
+                i - 1 for i, sample in enumerate(frame_clock) if sample - stim >= 0)
+            stim_start_frames.append(stim_start_frame)
+
+        return stim_start_frames, stim_start_times
+
+    @staticmethod
+    def _1p_stims(self, paq_data, plot: bool = False, optoloopback_channel: str = 'opto_loopback'):
+        "find 1p stim times"
+        if optoloopback_channel not in paq_data['chan_names']:
+            raise KeyError(f'{optoloopback_channel} not found in .paq channels. Specify channel containing 1p stim TTL loopback signals.')
+
+        opto_loopback_chan = paq_data['chan_names'].index('opto_loopback')
+        stim_volts = paq_data['data'][opto_loopback_chan, :]
+        stim_times = threshold_detect(stim_volts, 1)
+
+        self.stim_times = stim_times
+        self.stim_start_times = [self.stim_times[0]]  # initialize ls
+        self.stim_end_times = []
+        i = len(self.stim_start_times)
+        for stim in self.stim_times[1:]:
+            if (stim - self.stim_start_times[i - 1]) > 1e5:
+                i += 1
+                self.stim_start_times.append(stim)
+                self.stim_end_times.append(self.stim_times[np.where(self.stim_times == stim)[0] - 1][0])
+        self.stim_end_times.append(self.stim_times[-1])
+
+        print("\nNumber of 1photon stims found: ", len(self.stim_start_times))
+
+        if plot:
+            plt.figure(figsize=(50, 2))
+            plt.plot(stim_volts)
+            plt.plot(stim_times, np.ones(len(stim_times)), '.')
+            plt.suptitle('1p stims from paq, with detected 1p stim instances as scatter')
+            plt.xlim([stim_times[0] - 2e3, stim_times[-1] + 2e3])
+            plt.show()
+        
+
+        # find all stim frames
+        self.stim_frames = []
+        for stim in range(len(self.stim_start_times)):
+            stim_frames_ = [frame for frame, t in enumerate(self._frame_clock_actual) if
+                            self.stim_start_times[stim] - 100 / self.paq_rate <= t <= self.stim_end_times[
+                                stim] + 100 / self.paq_rate]
+
+            self.stim_frames.append(stim_frames_)
+
+        # if >1 1p stims per trial, find the start of all 1p trials
+        self.stim_start_frames = [stim_frames[0] for stim_frames in self.stim_frames if len(stim_frames) > 0]
+        self.stim_end_frames = [stim_frames[-1] for stim_frames in self.stim_frames if len(stim_frames) > 0]
+        self.stim_duration_frames = int(np.mean(
+            [self.stim_end_frames[idx] - self.stim_start_frames[idx] for idx in range(len(self.stim_start_frames))]))
+
+        print(f"\nStim duration of 1photon stim: {self.stim_duration_frames} frames")
+
+
+    def _shutter_times(self, paq_data, shutter_channel: str = 'shutter_loopback'):
+        "find shutter loopback frames from .paq data"
+
+        if shutter_channel not in paq_data['chan_names']:
+            raise KeyError(f'{shutter_channel} not found in .paq channels. Specify channel containing shutter signals.')
+
+        shutter_idx = paq_data['chan_names'].index('shutter_loopback')
+        shutter_voltage = paq_data['data'][shutter_idx, :]
+
+        shutter_times = np.where(shutter_voltage > 4)
+        self.shutter_times = shutter_times[0]
+        self.shutter_frames = []
+        self.shutter_start_frames = []
+        self.shutter_end_frames = []
+
+        shutter_frames_ = [frame for frame, t in enumerate(self._frame_clock_actual) if
+                           t in self.shutter_times]
+        self.shutter_frames.append(shutter_frames_)
+
+        shutter_start_frames = [shutter_frames_[0]]
+        shutter_end_frames = []
+        i = len(shutter_start_frames)
+        for frame in shutter_frames_[1:]:
+            if (frame - shutter_start_frames[i - 1]) > 5:
+                i += 1
+                shutter_start_frames.append(frame)
+                shutter_end_frames.append(shutter_frames_[shutter_frames_.index(frame) - 1])
+        shutter_end_frames.append(shutter_frames_[-1])
+        self.shutter_start_frames.append(shutter_start_frames)
+        self.shutter_end_frames.append(shutter_end_frames)

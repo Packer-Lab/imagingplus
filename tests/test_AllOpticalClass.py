@@ -55,6 +55,12 @@ for idx, trial in enumerate(trials_list_alloptical):
     aotrial = AllOpticalMain.AllOpticalTrial(**initialization_dict)
 
 # %%
+# trying to use pytest
+def test_AllOpticalClass(alloptical_trial_fixture):
+    AllOpticalMain.AllOpticalTrial(alloptical_trial_fixture)
+
+
+# %%
 import packerlabimaging as pkg
 
 expobj = pkg.import_obj('/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
