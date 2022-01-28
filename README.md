@@ -34,6 +34,7 @@ Most presciently, all imaging trials that are run together in Suite2p can be par
 `trialobj: TwoPhotonImagingTrial` - packerlabimaging —> `TwoPhotonImagingTrial` trial class
 
 Attributes:
+* this class is the parent for all other trial classes
 
     `trialobj.imparams` - stores metadata retrieved from microscope regarding imaging collection 
 
