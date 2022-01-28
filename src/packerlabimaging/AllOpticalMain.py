@@ -127,7 +127,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         TwoPhotonImagingTrial.__init__(self, metainfo=metainfo, analysis_save_path=analysis_save_path,
                                        microscope=microscope, **kwargs)
 
-        # continue with photostimulation experiment processing
+        # continue with photostimulation experiment processing - # TODO refactor to _2pstim module
         self._stimProcessing()
         self._findTargetsAreas()
         self._find_photostim_add_bad_framesnpy()
@@ -155,6 +155,11 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             return f"({information}) TwoPhotonImagingTrial.alloptical experimental trial object, last saved: {lastmod}"
         else:
             return f" -- unsaved TwoPhotonImagingTrial.alloptical experimental trial object -- "
+
+    @property
+    def paths(self):
+        """TODO returns a dictionary of all paths associated with trial"""
+        return None
 
     @property
     def naparm_path(self):
@@ -188,9 +193,10 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
     def timeVector(self):
         "vector of frame times in milliseconds rather than frames"
         n_frames = self.all_trials[0].shape[1]  ## <--- TODO double check this line returns as expected
-        self.time = np.linspace(-self.prestim_sec, self.poststim_sec, self.imparams.n_frames)
+        time = np.linspace(-self.prestim_sec, self.poststim_sec, self.imparams.n_frames)
+        return time
 
-    def paqProcessing(self, stim_channel):
+    def paqProcessing(self, stim_channel, frame_channel='frame_clock'):  ## TODO fix signature to match base method from TwoPhotonImaging
         paqD = paqData.paq2py(paq_path=self.paq_path, plot=True)
         self.stim_start_frames, self.stim_start_times = paqData._2p_stims(paq_data=paqD, stim_channel=stim_channel)
 

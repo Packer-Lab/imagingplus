@@ -117,6 +117,12 @@ class TwoPhotonImagingTrial:
         return repr(f"({self.t_series_name}) TwoPhotonImagingTrial experimental data object, last saved: {lastmod}")
 
     @property
+    def paths(self):
+        """TODO returns a dictionary of all paths associated with trial"""
+        return None
+
+
+    @property
     def fig_save_path(self):
         today_date = datetime.today().strftime('%Y-%m-%d')
         return self.analysis_save_dir + f'Results_fig/{today_date}/'

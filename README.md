@@ -28,10 +28,34 @@ Each imaging experiment is associated with a super-class Experiment object. Each
 Given this structure, each Experiment is meant to be built from all individual imaging trials that are closely related to each other based on their imaging characteristics. 
 Most presciently, all imaging trials that are run together in Suite2p can be part of a single Experiment. 
 
-### TwoPhotonImagingTrial class
 
+***TwoPhotonImagingTrial class***
 
-### AllOpticalTrial class
+`trialobj: TwoPhotonImagingTrial` - packerlabimaging —> `TwoPhotonImagingTrial` trial class
+
+Attributes:
+
+    `trialobj.imparams` - stores metadata retrieved from microscope regarding imaging collection 
+
+    `trialobj.paq` - stores data from PackIO .paq files
+
+    `trialobj.suite2p` - stores data and methods related to Suite2p (library for processing calcium imaging data)
+
+    `trialobj.lfp` - stores local field potential data (read in from .paq files)
+
+    `trialobj.data` - annotated data object (based on AnnData library) for centralized storage of raw and processed data related to the experiment. contains methods for further modifying the stored annotated data object.
+
+***AllOpticalTrial class***
+
+`trialobj: AllOpticalTrial` - packerlabimaging —> `TwoPhotonImagingTrial` —> `AllOpticalTrial` trial class
+
+Attributes:
+
+* this class is a child of the `TwoPhotonImaging` Trial (i.e. inherits all attributes and methods of `TwoPhotonImagingTrial`)
+
+    `trialobj._2pstim` - stores data and methods related to processing of 2p stim protocols
+
+    `trialobj.data` - additional 2p stim related variables (e.g. `photostim_frame` and `stim_start_frame` ) to `.data`
 
 
 ## Data Structure Inside Trial objects
@@ -48,10 +72,19 @@ The AnnData library is used to store data in an efficient, multi-functional form
 Further processing on the raw data is added to the AnnData object as `layers`. For instance, dFF normalization of the raw data is added as the `dFF` layer to the existing AnnData object. 
 
 The primary benefit of anndata is that it enforces an intuitive data structure and allows a workflow that maintains relationships between different data sources and types, including processed data. Lastly, AnnData objects are highly scalable, allowing individual users to further modify and add observations and variables of their own as their experiment dictates. Note: since AnnData is an independent library, they have an implementation for unstructured data annotations, however usage of this feature is not recommended within the packerlabimaging ecosystem as unstructured data elements should be built as attributes of the `trialobject`.
+
+
 ***Flow of the TwoPhotonImaging Experiment class***
 
-1. paqProcessing
-    - retrieves frame clock times, including adjustments for multiple starts/stops of imaging acquisition (chooses the longest imaging sequence in the paq file as the actual frame clocks for the present trial's acquisition, will not work if this assumption fails)
+- TwoPhotonImagingTrial
+    1. paqProcessing
+        - retrieves frame clock times, including adjustments for multiple starts/stops of imaging acquisition (chooses the longest imaging sequence in the paq file as the actual frame clocks for the present trial's acquisition, will not work if this assumption fails)
+    2. adding Suite2p results
+    3. dFF normalization
+    4. creating  annotated data object using AnnData
+
+![TwoPhoton Imaging Workflow #2.jpg](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/d5890451-ba19-4cb7-b6af-41fb7ab808e6/TwoPhoton_Imaging_Workflow_2.jpg)
+
 
 ***Flow of the AllOptical Experiment class***
 
@@ -71,13 +104,38 @@ The primary benefit of anndata is that it enforces an intuitive data structure a
     4. _find_photostim_add_bad_framesnpy
         - finds all imaging frame that are overlapping with photostimulation trials, and creates bad_frames.npy file using these photostim frames for suite2p to exclude
 
-- SLM targets processing+analysis: running processing and analysis specific to data collected from SLM targets
-  1. making trace snippets from all SLM targets areas
+![alloptical-workflow-1.drawio.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/41498213-060f-4786-8423-89af94c8e1c0/alloptical-workflow-1.drawio.png)
 
-- All cells processing+analysis: running processing and analysis specific to data collected from SLM targets: `photostimProcessingAllCells()`
-    1. making trace snippets from all cells from suite2p:  `_makePhotostimTrialFluSnippets()`
-    2. measure photostim dFF responses: create dataframe of cells x stims containing responses: `_collectPhotostimResponses()`
-    3. statistical analysis of responses
+- SLM targets processing+analysis: running processing and analysis specific to data collected from coordinates from registerred movie
+    - [ ]  get input coordinates - alloptical workflow: SLM targets areas
+    - [ ]  making trace snippets from all coords targets areas
+    - [ ]  measure dFF responses across stims
+    - [ ]  create new anndata object for storing measured photostim responses from data, with other relevant data for SLM targets
+        
+        anndata metadata:
+        
+        - [ ]  SLM groups
     
+- All cells processing+analysis: running processing and analysis specific to data collected from all Suite2p ROIs: `photostimProcessingAllCells()`
+    1. finding Suite2p ROIs that are also targets: `_findTargetedS2pROIs`
+        - [ ]  test out finding suite2p ROI targets - save in `.targeted_cells`
+        - [ ]  adding obs annotations of SLM group IDs to Suite2p ROIs targets
+    
+    `photostimProcessingAllCells()`:
+    
+    1. making trace snippets from all cells from suite2p:  `_makePhotostimTrialFluSnippets()`
+    - [x]  measure photostim dFF responses: create dataframe of suite2p cells x stims containing responses: no independent method
+    - [x]  statistical analysis of responses: `_runWilcoxonsTest()`
+        - [ ]  singleTrialSignificance stats measurements?
+    - [ ]  create new anndata object for storing measured photostim responses from data, with other relevant data
+        
+        anndata metadata: - function in place, not tested really yet though. 
+        
+        - [ ]  SLM targets or not
+        - [ ]  SLM photostim exclusion region
+        - [ ]  `prob_response`
+            - [ ]  - need to review code for calculating prob response
 
 ## **Plotting of data/analysis**
+
+[...to.do...]
