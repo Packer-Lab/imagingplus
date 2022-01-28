@@ -17,7 +17,7 @@ import tifffile as tf
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
 from ._utils import convert_to_8bit, threshold_detect, path_finder, points_in_circle_np, normalize_dff, Utils
-from ._paq import paq_read, paqData
+from ._paq import paq2py, paqData
 
 from . TwoPhotonImagingMain import TwoPhotonImagingTrial
 from . import _plotting
@@ -51,7 +51,6 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         :kwargs (optional):
         """
 
-        print(f'\----- CREATING AllOpticalTrial data object for {metainfo["t series id"]}')
 
         # Initialize Attributes:
 
@@ -134,8 +133,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self._find_photostim_add_bad_framesnpy()
 
         # extend annotated data object with imaging frames in photostim and stim_start_frames as additional keys in vars
-        __frames_in_stim = [False] * self.ImagingParams.n_frames
-        __stim_start_frame = [False] * self.ImagingParams.n_frames
+        __frames_in_stim = [False] * self.imparams.n_frames
+        __stim_start_frame = [False] * self.imparams.n_frames
         for frame in self.photostim_frames: __frames_in_stim[frame] = True
         for frame in self.stim_start_frames[PLANE]: __stim_start_frame[frame] = True
         self.data.add_variables(var_name='photostim_frame', values=__frames_in_stim)
@@ -143,6 +142,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         ##
         self.save()
+        print(f'\----- CREATED AllOpticalTrial data object for {metainfo["t series id"]}')
+
 
     def __str__(self):
         return self.__repr__()
@@ -166,31 +167,31 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
     @property
     def pre_stim_response_frames_window(self):
         """num frames for measuring Flu trace before each photostimulation trial during photostim response measurement (units: frames)"""
-        return int(self.ImagingParams.fps * self.pre_stim_response_window_msec)
+        return int(self.imparams.fps * self.pre_stim_response_window_msec)
 
     @property
     def pre_stim_frames(self):
         """num frames for collecting Flu trace after each photostimulation trial (units: frames)"""
-        return int(self.prestim_sec * self.ImagingParams.fps)
+        return int(self.prestim_sec * self.imparams.fps)
 
     @property
     def post_stim_frames(self):
         """num frames for collecting Flu trace after each photostimulation trial (units: frames)"""
-        return int(self.poststim_sec * self.ImagingParams.fps)
+        return int(self.poststim_sec * self.imparams.fps)
 
     @property
     def post_stim_response_frames_window(self):
         """num frames for collecting Flu trace after each photostimulation trial (units: frames)"""
-        return int(self.ImagingParams.fps * self.post_stim_response_window_msec)  # length of the post stim response test window (in frames)
+        return int(self.imparams.fps * self.post_stim_response_window_msec)  # length of the post stim response test window (in frames)
 
     @property
     def timeVector(self):
         "vector of frame times in milliseconds rather than frames"
         n_frames = self.all_trials[0].shape[1]  ## <--- TODO double check this line returns as expected
-        self.time = np.linspace(-self.prestim_sec, self.poststim_sec, self.ImagingParams.n_frames)
+        self.time = np.linspace(-self.prestim_sec, self.poststim_sec, self.imparams.n_frames)
 
     def paqProcessing(self, stim_channel):
-        paqD = paqData.paq_read(paq_path=self.paq_path, plot=True)
+        paqD = paqData.paq2py(paq_path=self.paq_path, plot=True)
         self.stim_start_frames, self.stim_start_times = paqData._2p_stims(paq_data=paqD, stim_channel=stim_channel)
 
 
@@ -211,7 +212,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         print(f'\tloading paq data from: {self.paq_path}')
 
-        paq, _ = paq_read(self.paq_path, plot=plot)
+        paq, _ = paq2py(self.paq_path, plot=plot)
         self.paq_rate = paq['rate']
 
         print(f"\t|- loaded {len(paq['chan_names'])} channels from .paq file: {paq['chan_names']}")
@@ -277,12 +278,12 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         # find stim frames
 
-        for plane in range(self.ImagingParams.n_planes):  # TODO need to figure out how to handle multi-plane imaging and retrieving stim frame times
+        for plane in range(self.imparams.n_planes):  # TODO need to figure out how to handle multi-plane imaging and retrieving stim frame times
             stim_start_frames = []
             for stim in stim_times:
                 # the index of the frame immediately preceeding stim
                 stim_start_frame = next(
-                    i - 1 for i, sample in enumerate(frame_clock[plane::self.ImagingParams.n_planes]) if sample - stim >= 0)
+                    i - 1 for i, sample in enumerate(frame_clock[plane::self.imparams.n_planes]) if sample - stim >= 0)
                 stim_start_frames.append(stim_start_frame)
 
             self.stim_start_frames.append(stim_start_frames)
@@ -389,7 +390,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         # correct this based on txt file
         duration_ms = self.stim_dur
-        frame_rate = self.ImagingParams.fps / self.ImagingParams.n_planes
+        frame_rate = self.imparams.fps / self.imparams.n_planes
         duration_frames = np.ceil((duration_ms / 1000) * frame_rate)
         self.stim_duration_frames = int(duration_frames)
 
@@ -412,14 +413,14 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         Note this is not done by target groups however. So all of the targets are just in one big ls.
         '''
 
-        print('\n\t\-----Loading up target coordinates...')
+        print('\n\t\----- Loading up target coordinates...')
 
         # load naparm targets file for this experiment
         naparm_path = os.path.join(self.naparm_path, 'Targets')
 
         listdir = os.listdir(naparm_path)
 
-        scale_factor = self.ImagingParams.frame_x / 512
+        scale_factor = self.imparams.frame_x / 512
 
         ## All SLM targets
         for path in listdir:
@@ -446,18 +447,18 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.n_targets_total = len(targetCoordinates)
 
         ## specifying target areas in pixels to use for measuring responses of SLM targets
-        radius_px = int(np.ceil(((self.spiral_size / 2) + 0) / self.ImagingParams.pix_sz_x))
+        radius_px = int(np.ceil(((self.spiral_size / 2) + 0) / self.imparams.pix_sz_x))
         print(f"\t\tspiral size: {self.spiral_size}um")
-        print(f"\t\tpix sz x: {self.ImagingParams.pix_sz_x}um")
-        print("\t\tradius (in pixels): {:.2f}px".format(radius_px * self.ImagingParams.pix_sz_x))
+        print(f"\t\tpix sz x: {self.imparams.pix_sz_x}um")
+        print("\t\tradius (in pixels): {:.2f}px".format(radius_px * self.imparams.pix_sz_x))
 
         for coord in targetCoordinates:
             target_area = ([item for item in points_in_circle_np(radius_px, x0=coord[0], y0=coord[1])])
             self.target_areas.append(target_area)
 
         ## target_areas that need to be excluded when filtering for nontarget cells
-        radius_px = int(np.ceil(((self.spiral_size / 2) + 2.5) / self.ImagingParams.pix_sz_x))
-        print("\t\tradius of target exclusion zone (in pixels): {:.2f}px".format(radius_px * self.ImagingParams.pix_sz_x))
+        radius_px = int(np.ceil(((self.spiral_size / 2) + 2.5) / self.imparams.pix_sz_x))
+        print("\t\tradius of target exclusion zone (in pixels): {:.2f}px".format(radius_px * self.imparams.pix_sz_x))
 
         for coord in targetCoordinates:
             target_area = ([item for item in points_in_circle_np(radius_px, x0=coord[0], y0=coord[1])])
@@ -507,7 +508,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         ##### IDENTIFYING S2P ROIs THAT ARE WITHIN THE SLM TARGET SPIRAL AREAS
         # make all target area coords in to a binary mask
-        targ_img = np.zeros([self.ImagingParams.frame_x, self.ImagingParams.frame_y], dtype='uint16')
+        targ_img = np.zeros([self.imparams.frame_x, self.imparams.frame_y], dtype='uint16')
         target_areas = np.array(self.target_areas)
         targ_img[target_areas[:, :, 1], target_areas[:, :, 0]] = 1
 
@@ -537,7 +538,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         ##### IDENTIFYING S2P ROIs THAT ARE WITHIN THE EXCLUSION ZONES OF THE SLM TARGETS
         # make all target area coords in to a binary mask
-        targ_img = np.zeros([self.ImagingParams.frame_x, self.ImagingParams.frame_y], dtype='uint16')
+        targ_img = np.zeros([self.imparams.frame_x, self.imparams.frame_y], dtype='uint16')
         target_areas_exclude = np.array(self.target_areas_exclude)
         targ_img[target_areas_exclude[:, :, 1], target_areas_exclude[:, :, 0]] = 1
 
@@ -574,7 +575,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         if plot:
             fig, ax = plt.subplots(figsize=[6, 6])
 
-            targ_img = np.zeros([self.ImagingParams.frame_x, self.ImagingParams.frame_y], dtype='uint16')
+            targ_img = np.zeros([self.imparams.frame_x, self.imparams.frame_y], dtype='uint16')
             target_areas = np.array(self.target_areas)
             targ_img[target_areas[:, :, 1], target_areas[:, :, 0]] = 1
             ax.imshow(targ_img, cmap='Greys_r', zorder=0)
@@ -591,7 +592,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
     def _find_photostim_add_bad_framesnpy(self):
         """finds all photostim frames and saves them into the bad_frames attribute for the exp object and saves bad_frames.npy"""
-        print('\n\-----Finding photostimulation frames in imaging frames ...')
+        print('\n\----- Finding photostimulation frames in imaging frames ...')
         print('# of photostim frames calculated per stim. trial: ', self.stim_duration_frames + 1)
 
         for j in self.stim_start_frames[PLANE]:
@@ -600,9 +601,9 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
                 self.photostim_frames.append(j + i)
 
         # print(photostim_frames)
-        print('\t|- Original # of frames:', self.ImagingParams.n_frames, 'frames')
+        print('\t|- Original # of frames:', self.imparams.n_frames, 'frames')
         print('\t|- # of Photostim frames:', len(self.photostim_frames), 'frames')
-        print('\t|- Minus photostim. frames total:', self.ImagingParams.n_frames - len(self.photostim_frames), 'frames')
+        print('\t|- Minus photostim. frames total:', self.imparams.n_frames - len(self.photostim_frames), 'frames')
 
         if len(self.photostim_frames) > 0:
             print(
@@ -834,26 +835,26 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             target_image_scaled - 8-bit image with single pixels of 255 indicating target locations
         '''
         # make a bounding box centred on (512,512)
-        x1 = 511 - self.ImagingParams.frame_x / 2
-        x2 = 511 + self.ImagingParams.frame_x / 2
-        y1 = 511 - self.ImagingParams.frame_y / 2
-        y2 = 511 + self.ImagingParams.frame_y / 2
+        x1 = 511 - self.imparams.frame_x / 2
+        x2 = 511 + self.imparams.frame_x / 2
+        y1 = 511 - self.imparams.frame_y / 2
+        y2 = 511 + self.imparams.frame_y / 2
 
         # scan amplitudes in voltage from PrairieView software for 1x FOV
         ScanAmp_X = 2.62 * 2
         ScanAmp_Y = 2.84 * 2
 
         # scale scan amplitudes according to the imaging zoom
-        ScanAmp_V_FOV_X = ScanAmp_X / self.ImagingParams.zoom
-        ScanAmp_V_FOV_Y = ScanAmp_Y / self.ImagingParams.zoom
+        ScanAmp_V_FOV_X = ScanAmp_X / self.imparams.zoom
+        ScanAmp_V_FOV_Y = ScanAmp_Y / self.imparams.zoom
 
         # find the voltage per pixel
         scan_pix_y = ScanAmp_V_FOV_Y / 1024
         scan_pix_x = ScanAmp_V_FOV_X / 1024
 
         # find the offset (if any) of the scan field centre, in pixels
-        offset_x = self.ImagingParams.scan_x / scan_pix_x
-        offset_y = self.ImagingParams.scan_y / scan_pix_y
+        offset_x = self.imparams.scan_x / scan_pix_x
+        offset_y = self.imparams.scan_y / scan_pix_y
 
         # offset the bounding box by the appropriate number of pixels
         x1, x2, y1, y2 = round(x1 + offset_x), round(x2 + offset_x), round(y1 - offset_y), round(y2 - offset_y)
@@ -971,7 +972,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         start = curr_trial_frames[0] // 2000  # 2000 because that is the batch size for suite2p run
         end = curr_trial_frames[1] // 2000 + 1
 
-        mean_img_stack = np.zeros([end - start, self.ImagingParams.frame_x, self.ImagingParams.frame_y])
+        mean_img_stack = np.zeros([end - start, self.imparams.frame_x, self.imparams.frame_y])
         # collect mean traces from target areas of each target coordinate by reading in individual registered tiffs that contain frames for current trial
         targets_trace_full = np.zeros([len(self.target_coords_all), (end - start) * 2000], dtype='float32')
         counter = 0
@@ -1377,7 +1378,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         # create parameters, slices, and subsets for making pre-stim and post-stim arrays to use in stats comparison
         # test_period = self.pre_stim_response_window / 1000  # sec
-        # self.test_frames = int(self.ImagingParams.fps * test_period)  # test period for stats
+        # self.test_frames = int(self.imparams.fps * test_period)  # test period for stats
 
         # mean pre and post stimulus (within post-stim response window) flu trace values for all cells, all trials
         self.__analysis_array = self.photostimFluArray
@@ -1541,8 +1542,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         if self.stim_start_frames:
 
             # this is the key parameter for the sta, how many frames before and after the stim onset do you want to use
-            self.pre_frames = int(np.ceil(self.ImagingParams.fps * 0.5))  # 500 ms pre-stim period
-            self.post_frames = int(np.ceil(self.ImagingParams.fps * 3))  # 3000 ms post-stim period
+            self.pre_frames = int(np.ceil(self.imparams.fps * 0.5))  # 500 ms pre-stim period
+            self.post_frames = int(np.ceil(self.imparams.fps * 3))  # 3000 ms post-stim period
 
             # ls of cell pixel intensity values during each stim on each trial
             self.all_trials = []  # ls 1 = cells, ls 2 = trials, ls 3 = dff vector
@@ -1556,7 +1557,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             self.t_tests = []
             self.wilcoxons = []
 
-            for plane in range(self.ImagingParams.n_planes):
+            for plane in range(self.imparams.n_planes):
 
                 all_trials = []  # ls 1 = cells, ls 2 = trials, ls 3 = dff vector
 
@@ -1595,7 +1596,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
                         pre_f = np.mean(pre_f)
 
                         avg_post_start = self.pre_frames + (self.stim_duration_frames + 1)
-                        avg_post_end = avg_post_start + int(np.ceil(self.ImagingParams.fps * 0.5))  # post-stim period of 500 ms
+                        avg_post_end = avg_post_start + int(np.ceil(self.imparams.fps * 0.5))  # post-stim period of 500 ms
 
                         post_f = trial[avg_post_start: avg_post_end]
                         post_f = np.mean(post_f)
@@ -1656,7 +1657,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         self.sta_sig = []
 
-        for plane in range(self.ImagingParams.n_planes):
+        for plane in range(self.imparams.n_planes):
 
             # set this to true if you want to multiple comparisons correct for the number of cells
             multi_comp_correction = True
@@ -1689,7 +1690,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         self.single_sig = []  # single trial significance value for each trial for each cell in each plane
 
-        for plane in range(self.ImagingParams.n_planes):
+        for plane in range(self.imparams.n_planes):
 
             single_sigs = []
 
@@ -1721,7 +1722,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
     # other useful functions for all-optical analysis
     def whiten_photostim_frame(self, tiff_path, save_as=''):
-        im_stack = tf.imread(tiff_path, key=range(self.ImagingParams.n_frames))
+        im_stack = tf.imread(tiff_path, key=range(self.imparams.n_frames))
 
         frames_to_whiten = []
         for j in self.stim_start_frames:
@@ -1781,7 +1782,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
                 tiffs_loc = '%s/*Ch3.tif' % self.tiff_path_dir
                 tiff_path = glob.glob(tiffs_loc)[0]
                 print('working on loading up %s tiff from: ' % self.metainfo['trial'], tiff_path)
-                im_stack = tf.imread(tiff_path, key=range(self.ImagingParams.n_frames))
+                im_stack = tf.imread(tiff_path, key=range(self.imparams.n_frames))
                 print('Processing seizures from experiment tiff (wait for all seizure comparisons to be processed), \n '
                       'total tiff shape: ', im_stack.shape)
 
@@ -1854,7 +1855,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
               '\nSTA movie save path:', stam_save_path)
 
         # define STAmm parameters
-        frameRate = int(self.ImagingParams.fps)
+        frameRate = int(self.imparams.fps)
 
         arg_dict = {'moviePath': movie_path,  # hard-code this
                     'savePath': stam_save_path,

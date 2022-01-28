@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from ._paq import paqData
+from ._paq import paqData, paq2py
 
 from . TwoPhotonImagingMain import TwoPhotonImagingTrial
 from . import _plotting
@@ -42,7 +42,7 @@ class OnePhotonStim(TwoPhotonImagingTrial):
 
         print('loading', self.paq_path)
 
-        paq, _ = paq_read(self.paq_path, plot=True)
+        paq, _ = paq2py(self.paq_path, plot=True)
         self.paq_rate = paq['rate']
 
         frame_rate = self.fps / self.n_planes
@@ -123,7 +123,7 @@ class OnePhotonStim(TwoPhotonImagingTrial):
         self.seizures_lfp_timing_matarray = seizures_lfp_timing_matarray  # path to the matlab array containing paired measurements of seizures onset and offsets
 
         # retrieve seizure onset and offset times from the seizures info array input
-        paq = paq_read(file_path=self.paq_path, plot=False)
+        paq = paq2py(file_path=self.paq_path, plot=False)
 
         # print(paq[0]['data'][0])  # print the frame clock signal from the .paq file to make sure its being read properly
         # NOTE: the output of all of the following function is in dimensions of the FRAME CLOCK (not official paq clock time)

@@ -124,7 +124,7 @@ class Experiment:
 
         # Attributes:
         print(f'\n\n\n******************************')
-        print(f"NEW created: \n")
+        print(f"NEW Experiment created: \n")
         print(self.__str__())
 
     def _get_save_location(self):
@@ -229,7 +229,7 @@ class Experiment:
         """
         total_frames_stitched = 0  # used in calculating # of frames from a single trial in the overall suite2p run
         for trial in self.trialIDs:
-            print(f"\n\n\- PROCESSING trial: {trial}, expID: ({self.expID})")
+            print(f"\n\n\- PROCESSING trial: {trial}, expID: ({self.expID}) {'*'*20}")
             _metainfo = {
                 'animal prep.': self.expID,
                 'trial': trial,
@@ -282,7 +282,7 @@ class Experiment:
             if trial in self._trialsSuite2p:
                 # trial_obj.Suite2p = _suite2p.Suite2pResultsTrial(suite2p_experiment_obj=self.Suite2p,
                 #                                         trial_frames=(total_frames_stitched, total_frames_stitched + trial_obj.n_frames))  # use trial obj's current trial frames
-                total_frames_stitched += trial_obj.ImagingParams.n_frames
+                total_frames_stitched += trial_obj.imparams.n_frames
                 trial_obj.save()
 
 

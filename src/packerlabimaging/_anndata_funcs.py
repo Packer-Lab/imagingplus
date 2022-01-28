@@ -15,8 +15,8 @@ class AnnotatedData(ad.AnnData):
         self.data_label = data_label if data_label else None
 
 
-    def _gen_repr(self, n_obs, n_vars) -> str:
-        "modification of the default anndata _repr_"
+    def _gen_repr(self, n_obs, n_vars) -> str:  # overriding base method from AnnData
+        """overrides the default anndata _gen_repr_() method for imaging data usage."""
         if self.filename:
             backed_at = f" backed at {str(self.filename)!r}"
         else:

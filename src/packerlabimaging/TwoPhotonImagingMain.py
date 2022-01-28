@@ -17,7 +17,7 @@ import tifffile as tf
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
 from ._utils import SaveDownsampledTiff, make_tiff_stack, threshold_detect, normalize_dff, Utils
-from ._paq import paq_read, paqData
+from ._paq import paq2py, paqData
 from . import _suite2p, _imagingMetadata
 from . import _anndata_funcs as ad
 from . import _plotting
@@ -40,7 +40,6 @@ class TwoPhotonImagingTrial:
         """
 
         self.data = None
-        print(f'\----- CREATING TwoPhotonImagingTrial for trial: {metainfo["trial"]},  {metainfo["t series id"]}')
 
         # Initialize Attributes:
 
@@ -75,9 +74,9 @@ class TwoPhotonImagingTrial:
 
         # get imaging setup parameters
         if 'Bruker' in microscope:
-            self.ImagingParams = self._getImagingParameters(microscope='Bruker')  # CURRENTLY USING REFACTORED PV METADATA CODE
+            self.imparams = self._getImagingParameters(microscope='Bruker')  # CURRENTLY USING REFACTORED PV METADATA CODE
         elif 'imagingMicroscopeMetadata' in [*kwargs]:
-            self.ImagingParams = self._getImagingParameters(metadata=kwargs['imagingMicroscopeMetadata'])
+            self.imparams = self._getImagingParameters(metadata=kwargs['imagingMicroscopeMetadata'])
         else:
             Warning(f"NO imaging microscope parameters set. ")
 
@@ -86,8 +85,8 @@ class TwoPhotonImagingTrial:
         #                                                                f'{microscope} microscope has not been implemented yet')
 
         # run paq processing if paq_path is provided for trial
-        TwoPhotonImagingTrial.paqProcessing(self, paq_path=self.paq_path, plot=False) if hasattr(self, 'paq_path') else None
-        # self.paq = _paq.paqProcessing(self, paq_path=self.paq_path, plot=False) if hasattr(self, 'paq_path') else None  ## TODO not implemented as unique class yet
+        TwoPhotonImagingTrial.paqProcessing(self) if hasattr(self, 'paq_path') else None  # TODO switch to using _paq module and paqData class instance
+        # self.paq = _paq.paqProcessing(self, paq_path=self.paq_path, plot=False) if hasattr(self, 'paq_path') else None
 
         # if provided, add Suite2p results for trial
         for i in ['suite2p_experiment_obj', 'total_frames_stitched']:   ## TODO need to remove requirement for providing suite2p_experiment_obj, and total_frames_stitched (probably part of making trial objs children of Experiment)
@@ -95,8 +94,8 @@ class TwoPhotonImagingTrial:
             assert kwargs[i] is not None, f'{i} Suite2pResultsTrial call is None'
         if 'suite2p_experiment_obj' in [*kwargs] and 'total_frames_stitched' in [*kwargs]:
             self.Suite2p = _suite2p.Suite2pResultsTrial(suite2p_experiment_obj=kwargs['suite2p_experiment_obj'],
-                                                             trial_frames=(kwargs['total_frames_stitched'],
-                                                                           kwargs['total_frames_stitched'] + self.ImagingParams.n_frames))  # use trial obj's current trial frames
+                                                        trial_frames=(kwargs['total_frames_stitched'],
+                                                                           kwargs['total_frames_stitched'] + self.imparams.n_frames))  # use trial obj's current trial frames
 
 
         # normalize dFF for raw Flu
@@ -108,6 +107,7 @@ class TwoPhotonImagingTrial:
 
         ##### SAVE Trial OBJECT
         self.save()
+        print(f'\----- CREATING TwoPhotonImagingTrial for trial: {metainfo["trial"]},  {metainfo["t series id"]}')
 
     def __repr__(self):
         if self.pkl_path:
@@ -175,7 +175,7 @@ class TwoPhotonImagingTrial:
                 Exception('required key not present in metadata')
 
     def paqProcessing(self, frame_channel='frame_clock'):
-        paqD, self.paq_rate, self.paq_channels = paqData.paq_read(paq_path=self.paq_path, plot=True)
+        paqD, self.paq_rate, self.paq_channels = paqData.paq2py(paq_path=self.paq_path, plot=True)
         self._frame_clock_actual = paqData._frame_times(paq_data=paqD, frame_channel=frame_channel)
 
 
@@ -202,7 +202,7 @@ class TwoPhotonImagingTrial:
 
         print(f'\tloading paq data from: {self.paq_path}')
 
-        paq, _ = paq_read(self.paq_path, plot=plot)
+        paq, _ = paq2py(self.paq_path, plot=plot)
         self.paq_rate = paq['rate']
         self.paq_channels = paq['chan_names']
         ## TODO print the paq channels that were loaded. and some useful metadata about the paq channels.
@@ -253,7 +253,7 @@ class TwoPhotonImagingTrial:
     @property
     def n_frames(self):
         try:
-            return self.ImagingParams.n_frames
+            return self.imparams.n_frames
         except AttributeError:
             return -1
 
@@ -339,8 +339,8 @@ class TwoPhotonImagingTrial:
 
             # SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata
             # build dataframe for var annot's from paq file
-            var_meta = pd.DataFrame(index=self.paq_channels, columns=range(self.ImagingParams.n_frames))
-            for fr_idx in range(self.ImagingParams.n_frames):
+            var_meta = pd.DataFrame(index=self.paq_channels, columns=range(self.imparams.n_frames))
+            for fr_idx in range(self.imparams.n_frames):
                 for index in [*self.sparse_paq_data]:
                     var_meta.loc[index, fr_idx] = self.sparse_paq_data[index][fr_idx]
 
@@ -373,7 +373,7 @@ class TwoPhotonImagingTrial:
         """
         print('\n-----collecting mean raw flu trace from tiff file...')
         print(f"|- loading raw TIFF file from: {self.tiff_path}")
-        im_stack = tf.imread(self.tiff_path, key=range(self.ImagingParams.n_frames))
+        im_stack = tf.imread(self.tiff_path, key=range(self.imparams.n_frames))
         print('|- Loaded experiment tiff of shape: ', im_stack.shape)
 
         self.meanFluImg = np.mean(im_stack, axis=0)

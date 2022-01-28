@@ -15,7 +15,7 @@ class LFP:
         if not os.path.exists(paq_path):
             raise FileNotFoundError(f"Not found: {paq_path}")
 
-        paq, _ = Paq.paq_read(paq_path, plot=True)
+        paq, _ = Paq.paq2py(paq_path, plot=True)
         self.paq_rate = paq['rate']
 
         # find voltage (LFP recording signal) channel and save as lfp_signal attribute
