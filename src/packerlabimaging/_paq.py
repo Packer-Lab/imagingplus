@@ -1,4 +1,3 @@
-import os
 from typing import List
 
 import numpy as np
@@ -6,6 +5,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.ticker as mticker
 import matplotlib.pyplot as plt
+from scipy import io
 
 from ._utils import threshold_detect
 
@@ -174,13 +174,13 @@ class paqData:
 
         print('\n\----- Processing paq file ...')
         # retrieve frame times
-        self._frame_times(paq_data=paq) if 'TwoPhotonImaging' or 'AllOptical' in options else None
+        __frame_times = self._frame_times(paq_data=paq) if 'TwoPhotonImaging' or 'AllOptical' in options else None
         self._1p_stims(paq_data=paq) if 'OnePhotonStim' in options else None
 
 
         # read in and save sparse version of all paq channels (only save data from timepoints at frame clock times)
         for idx, chan in enumerate(self.paq_channels):
-            self.sparse_paq_data[chan] = paq['data'][idx, self._frame_clock_actual]
+            self.sparse_paq_data[chan] = paq['data'][idx, __frame_times]
 
     @staticmethod
     def _frame_times(paq_data, frame_channel: str = 'frame_clock'):
@@ -326,7 +326,7 @@ class paqData:
         self.shutter_start_frames = []
         self.shutter_end_frames = []
 
-        shutter_frames_ = [frame for frame, t in enumerate(self._frame_clock_actual) if
+        shutter_frames_ = [frame for frame, t in enumerate(self._frame_times()) if
                            t in self.shutter_times]
         self.shutter_frames.append(shutter_frames_)
 
@@ -341,3 +341,48 @@ class paqData:
         shutter_end_frames.append(shutter_frames_[-1])
         self.shutter_start_frames.append(shutter_start_frames)
         self.shutter_end_frames.append(shutter_end_frames)
+
+    def frames_discard(self, input_array, total_frames, discard_all=False):
+        '''
+        calculate which 2P imaging frames to discard (or use as bad frames input into suite2p) based on the bad frames
+        identified by manually inspecting the paq files in EphysViewer.m
+        :param paq: paq file
+        :param input_array: .m file path to read that contains the timevalues for signal to remove
+        :param total_frames: the number of frames in the TIFF file of the actual 2p imaging recording
+        :param discard_all: bool; if True, then add all 2p imaging frames from this paq file as bad frames to discard
+        :return: array that contains the indices of bad frames (in format ready to input into suite2p processing)
+        '''
+
+        frame_times = self._frame_times()
+        frame_times = frame_times[
+                      0:total_frames]  # this is necessary as there are more TTL triggers in the paq file than actual frames (which are all at the end)
+
+        all_btwn_paired_frames = []
+        paired_frames_first = []
+        paired_frames_last = []
+        if input_array is not None:
+            print('\nadding seizure frames loaded up from: ', input_array)
+            measurements = io.loadmat(input_array)
+            for set_ in range(len(measurements['PairedMeasures'])):
+                # calculate the sample value for begin and end of the set
+                begin = int(measurements['PairedMeasures'][set_][3][0][0] * self.paq_rate)
+                end = int(measurements['PairedMeasures'][set_][5][0][0] * self.paq_rate)
+                frames_ = list(np.where(np.logical_and(frame_times >= begin, frame_times <= end))[0])
+                if len(frames_) > 0:
+                    all_btwn_paired_frames.append(frames_)
+                    paired_frames_first.append(frames_[0])
+                    paired_frames_last.append(frames_[-1])
+
+            all_btwn_paired_frames = [item for x in all_btwn_paired_frames for item in x]
+
+        if discard_all and input_array is None:
+            frames_to_discard = list(range(len(frame_times)))
+            return frames_to_discard
+        elif not discard_all and input_array is not None:
+            frames_to_discard = all_btwn_paired_frames
+            return frames_to_discard, all_btwn_paired_frames, paired_frames_first, paired_frames_last
+        elif discard_all and input_array is not None:
+            frames_to_discard = list(range(len(frame_times)))
+            return frames_to_discard, all_btwn_paired_frames, paired_frames_first, paired_frames_last
+        else:
+            raise ReferenceError('something wrong....No frames selected for discarding')
