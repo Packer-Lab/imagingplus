@@ -1,9 +1,9 @@
-"NOTE: THESE FUNCTIONS REFACTORED TO _utils.Utils !!! - jan 18 2022"
+from abc import ABC
 
 import anndata as ad
 from typing import Optional
 
-class AnnotatedData(ad.AnnData):
+class AnnotatedData(ad.AnnData, ABC):
     """Creates annotated data (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial."""
 
     def __init__(self, X, obs, var: Optional=None, data_label=None, **kwargs):

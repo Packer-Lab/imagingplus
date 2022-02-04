@@ -1,5 +1,8 @@
 ## main module for parsing, processing and interacting with data/files of 1p-stim protocols
 ## - 1pstim module - just copied straight from allopticalseizure version so far..
+import os
+from datetime import time
+
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -13,6 +16,7 @@ class onePstim(TwoPhotonImagingTrial):
     compatible_responses_process = ['pre-stim dFF', 'post - pre']
 
     def __init__(self, data_path_base, date, animal_prep, trial, metainfo, analysis_save_path_base: str = None):
+        # TODO need to review __init__ code to fit into package pipeline
         paqs_loc = '%s%s_%s_%s.paq' % (
             data_path_base, date, animal_prep, trial[2:])  # path to the .paq files for the selected trials
         tiffs_loc_dir = '%s/%s_%s' % (data_path_base, date, trial)
@@ -47,7 +51,7 @@ class onePstim(TwoPhotonImagingTrial):
         self.paqProcessing()
 
         # add all frames as bad frames incase want to include this trial in suite2p run
-        self.bad_frames = Utils.frames_discard(paq=paqData.paq_read(paq_path=self.paq_path), input_array=None, total_frames=self.n_frames, discard_all=True)
+        self.bad_frames = paqData.frames_discard(paq=paqData.paq_read(paq_path=self.paq_path), input_array=None, total_frames=self.n_frames, discard_all=True)
 
         self.save(pkl_path=self.pkl_path)
 

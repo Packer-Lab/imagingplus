@@ -19,7 +19,7 @@ import tifffile as tf
 from ._utils import SaveDownsampledTiff, make_tiff_stack, threshold_detect, normalize_dff, Utils
 from ._paq import paq2py, paqData
 from . import _suite2p, _imagingMetadata
-from . import _anndata_funcs as ad
+from . import _anndata as ad
 from . import _plotting
 
 

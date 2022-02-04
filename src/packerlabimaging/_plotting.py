@@ -1,13 +1,17 @@
-# library of functions that are used for making various plots for all optical photostimulation/imaging experiments
+# library of convenience plotting funcs that are used for making various plots for all optical photostimulation/imaging experiments
 
 # imports
 import os
+
+import matplotlib
 import numpy as np
 import functools
 import random
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import tifffile as tf
 
+from .TwoPhotonImagingMain import TwoPhotonImagingTrial
 from ._utils import normalize_dff
 
 # wrapper for piping plots in and out of figures
@@ -16,24 +20,20 @@ def plot_piping_decorator(figsize=(5,5)):
         """
         Wrapper to help simplify creating plots from matplotlib.pyplot
 
-        :param plotting_func: function to be wrapper
+        :param plotting_func: plotting convenience function to be wrapped
         :return: fig and ax objects if requested, and/or shows the figure as specified
 
         Examples:
         ---------
         1) in this example the fig and ax will be taken directly from the kwargs inside the inner wrapper
-        @plot_piping_decorator
-        def example_decorated_plot(title='', **kwargs):
-            fig, ax = kwargs['fig'], kwargs['ax']  # need to add atleast this line to each plotting function's definition
-            print(f'|-kwargs inside example_decorated_plot definition: {kwargs}')
-            ax.plot(np.random.rand(10))
-            ax.set_title(title)
-        def example_decorated_plot(fig=None, ax=None, title='', **kwargs):
-            print(f'|-kwargs inside example_decorated_plot definition: {kwargs}')
-            ax.plot(np.random.rand(10))
-            ax.set_title(title)
+        >>> @plot_piping_decorator
+        >>> def example_decorated_plot(title='', **kwargs):
+        >>>     fig, ax = kwargs['fig'], kwargs['ax']  # need to add atleast this line to each plotting function's definition
+        >>>     print(f'|-kwargs inside example_decorated_plot definition: {kwargs}')
+        >>>     ax.plot(np.random.rand(10))
+        >>>     ax.set_title(title)
 
-        example_decorated_plot()
+        >>> example_decorated_plot()
 
 
         """
@@ -163,6 +163,42 @@ def make_random_color_array(n_colors):
         colors.append(_generate_new_color(colors, pastel_factor=0.2))
     return colors
 
+
+def add_scalebar(trialobj: TwoPhotonImagingTrial, ax: plt.Axes, scale_bar_um: float = 100, **kwargs):
+    """add scalebar to the image being plotted on the a single matplotlib.axes.Axes object using the TwoPhotonImaging object information.
+    Option to specify scale bar um length to add to plot.
+
+    """
+    numpx = scale_bar_um/trialobj.imparams.pix_sz_x
+
+    lw = 5 if 'lw' not in [*kwargs] else kwargs['lw']
+    color = 'white' if 'color' not in [*kwargs] else kwargs['color']
+    right_offset = 50 if 'right_offset' not in [*kwargs] else kwargs['right_offset']
+    bottom_offset = 50 if 'bottom_offset' not in [*kwargs] else kwargs['bottom_offset']
+
+    ax.plot(np.linspace(trialobj.imparams.frame_x - right_offset - numpx, trialobj.imparams.frame_x - right_offset, 40),
+            [trialobj.imparams.frame_y - bottom_offset]*40,
+            color=color, lw=lw)
+    return ax
+
+# Figure Style settings for notebook.
+def image_frame_options():
+    mpl.rcParams.update({
+        'axes.spines.left': False,
+        'axes.spines.bottom': False,
+        'axes.spines.top': False,
+        'axes.spines.right': False,
+        'legend.frameon': False,
+        'figure.subplot.wspace': .01,
+        'figure.subplot.hspace': .01,
+        'ytick.major.left': False,
+        'xtick.major.bottom': False
+    })
+
+def heatmap_options():
+    jet = mpl.cm.get_cmap('jet')
+    jet.set_bad(color='k')
+
 # %% GENERAL PLOTTING FUNCS
 ### plot the location of provided coordinates
 @plot_piping_decorator(figsize=(5,5))
@@ -249,6 +285,9 @@ def plot_SLMtargets_Locs(expobj, targets_coords: list = None, background: np.nda
                             background=background, fig=fig, ax=ax)
 
     ax.margins(0)
+
+    ax = add_scalebar(trialobj=expobj, ax=ax)
+
     fig.tight_layout()
 
     if 'title' in kwargs.keys():
@@ -361,15 +400,8 @@ def plot_cells_loc(expobj, cells: list, title=None, background: np.array = None,
         if kwargs['invert_y']:
             ax.invert_yaxis()
 
-    # if 'show' in kwargs.keys():
-    #     if kwargs['show'] is True:
-    #         fig.show()
-    #     else:
-    #         pass
-    # else:
-    #     fig.show()
-    #
-    # return fig, ax if 'fig' in kwargs.keys() else None
+    ax = add_scalebar(trialobj=expobj, ax=ax) if 'scalebar' in [*kwargs] and kwargs['scalebar'] is True else None
+
 
 
 # plot to show s2p ROIs location, colored as specified
@@ -422,6 +454,9 @@ def s2pRoiImage(expobj, save_fig: str = None):
 
     ax.set_xlim([0, expobj.frame_x])
     ax.set_ylim([0, expobj.frame_y])
+
+    ax = add_scalebar(expobj=expobj, ax=ax)
+
     plt.margins(x=0, y=0)
     plt.gca().invert_yaxis()
     # plt.gca().invert_xaxis()
