@@ -20,7 +20,6 @@ from ._utils import SaveDownsampledTiff, make_tiff_stack, threshold_detect, norm
 from ._paq import paq2py, paqData
 from . import _suite2p, _imagingMetadata
 from . import _anndata as ad
-from . import _plotting
 
 
 class TwoPhotonImagingTrial:
@@ -39,6 +38,8 @@ class TwoPhotonImagingTrial:
         :param make_downsampled_tiff: flag to run generation and saving of downsampled tiff of t-series (saves to the analysis save location)
         """
 
+        self.meanRawFluTrace = None
+        self.meanFluImg = None
         self.data = None
 
         # Initialize Attributes:
@@ -387,7 +388,8 @@ class TwoPhotonImagingTrial:
 
         self.save() if save else None
 
-        plotting.plotMeanRawFluTrace(expobj=self, stim_span_color=None, x_axis='frames', figsize=[20, 3],
+        from packerlabimaging import _plotting
+        _plotting.plotMeanRawFluTrace(expobj=self, stim_span_color=None, x_axis='frames', figsize=[20, 3],
                                      title='Mean raw Flu trace -') if plot else None
 
         return im_stack
@@ -406,7 +408,7 @@ class TwoPhotonImagingTrial:
         """
         stack = tf.imread(self.tiff_path, key=frame_num)
         plt.imshow(stack, cmap='gray')
-        plt.suptitle(title) if title is not None else plt.suptitle('frame num: %s' % frame_num)
+        plt.suptitle(title) if title is not None else plt.suptitle(f'frame num: {frame_num}' )
         plt.show()
         return stack
 

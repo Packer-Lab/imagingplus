@@ -20,7 +20,6 @@ from ._utils import convert_to_8bit, threshold_detect, path_finder, points_in_ci
 from ._paq import paq2py, paqData
 
 from . TwoPhotonImagingMain import TwoPhotonImagingTrial
-from . import _plotting
 
 
 # %%
@@ -1899,5 +1898,6 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         # show the MaxResponseImage
         img = glob.glob(stam_save_path + '/*MaxResponseImage.tif')[0]
+        from . import _plotting
         _plotting.plot_single_tiff(img, frame_num=0)
 
