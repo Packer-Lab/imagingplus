@@ -84,7 +84,7 @@ The primary benefit of anndata is that it enforces an intuitive data structure a
     3. dFF normalization
     4. creating  annotated data object using AnnData
 
-![TwoPhoton Imaging Workflow #2.jpg](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/d5890451-ba19-4cb7-b6af-41fb7ab808e6/TwoPhoton_Imaging_Workflow_2.jpg)
+![TwoPhoton Imaging Workflow #2.jpg](https://github.com/Packer-Lab/packerlabimaging/blob/4dd9ee035df2fd2e9ac7b1f3b82a7e7606d38492/files/TwoPhoton%20Imaging%20Workflow%20%232.jpg)
 
 
 ***Flow of the AllOptical Experiment class***
@@ -105,7 +105,7 @@ The primary benefit of anndata is that it enforces an intuitive data structure a
     4. _find_photostim_add_bad_framesnpy
         - finds all imaging frame that are overlapping with photostimulation trials, and creates bad_frames.npy file using these photostim frames for suite2p to exclude
 
-![alloptical-workflow-1.drawio.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/41498213-060f-4786-8423-89af94c8e1c0/alloptical-workflow-1.drawio.png)
+![alloptical-workflow-1.drawio.png](https://github.com/Packer-Lab/packerlabimaging/blob/4dd9ee035df2fd2e9ac7b1f3b82a7e7606d38492/files/alloptical-workflow-1.drawio.png)
 
 - SLM targets processing+analysis: running processing and analysis specific to data collected from coordinates from registerred movie
     - [ ]  get input coordinates - alloptical workflow: SLM targets areas
