@@ -91,18 +91,18 @@ The primary benefit of anndata is that it enforces an intuitive data structure a
 
 - `AllOpticalTrial.__init__()`: setting up the alloptical trial object
     1. 2p imaging `__init__()`
-    2. stimProcessing
+    2. `stimProcessing()`
         1. unpacks Naparm outputs xml and gpl
             1. determines stim duration and stim properties
         2. unpacks paq File
             1. locates stim frames based on the specified `stim_channel`
             
-    3. _findTargetsAreas
+    3. `_findTargetsAreas()`
         - Loads target coordinates, and organizes target coordinates per SLM groups
         - creates target_areas - circle of pixels outward from the center of the target
         - creates target_areas_exclude - expanded circle of pixels outward from the center of the target that includes the region for excluding nontarget cells
         - creates images of targets // scaled somehow?? not totally sure - dont remember, has been commented out for a while now for myself - maybe check what Rob suggests adding here?
-    4. _find_photostim_add_bad_framesnpy
+    4. `_find_photostim_add_bad_framesnpy()`
         - finds all imaging frame that are overlapping with photostimulation trials, and creates bad_frames.npy file using these photostim frames for suite2p to exclude
 
 ![alloptical-workflow-1.drawio.png](https://github.com/Packer-Lab/packerlabimaging/blob/4dd9ee035df2fd2e9ac7b1f3b82a7e7606d38492/files/alloptical-workflow-1.drawio.png)
@@ -139,4 +139,28 @@ The primary benefit of anndata is that it enforces an intuitive data structure a
 
 ## **Plotting of data/analysis**
 
-[...to.do...]
+### functions
+
+1) `plot_SLMtargets_Locs()`
+
+2) `plot_cells_loc()`
+
+3) `s2pRoiImage()`
+
+4) `plot_flu_trace()`
+
+5) `plotMeanRawFluTrace()`
+
+6) `plot_s2p_raw()`
+
+7) `plotLfpSignal()`
+
+8) `plot_SLMtargets_Locs()`
+
+9) `plot_photostim_traces()`
+
+10) `plot_photostim_traces_overlap()`
+
+11) `plot_periphotostim_avg2()`
+
+12) `plot_periphotostim_avg()`
