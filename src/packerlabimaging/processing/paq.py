@@ -148,7 +148,11 @@ class paqData:
     def __repr__(self):
         information = ""
         for i in self.__dict__:
-            information += f"\n\t{i}: {self.__dict__[i]}"
+            if type(self.__dict__[i]) != dict:
+                information += f"\n\t{i}: {self.__dict__[i]}"
+            else:
+                information += f"\n\t{i}: {[*self.__dict__[i]]}"
+
 
         return f"packerlabimaging.processing.paq.paqData: {information}"
 
@@ -173,7 +177,6 @@ class paqData:
         paqData object."""
 
         paq_data, _, paq_channels = self.paq_read(paq_path=self.paq_path)
-        print(paq_channels)
         chan_name_idx = paq_channels.index(chan_name)
         setattr(self, chan_name, paq_data['data'][chan_name_idx])
 
