@@ -2,18 +2,17 @@
 
 import io
 import time
-from typing import Union
 import numpy as np
 import tifffile as tf
 import os
 import matplotlib.pyplot as plt
-import pandas as pd
 import anndata
 import csv
 import math
 import copy
 from suite2p.run_s2p import run_s2p
-from . import ExperimentMain, _io
+from packerlabimaging import _io
+
 
 # # global plotting params
 # params = {'legend.fontsize': 'x-large',

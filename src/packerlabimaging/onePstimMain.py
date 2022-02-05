@@ -5,10 +5,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from ._paq import paqData, paq2py
+from packerlabimaging.processing._paq import paqData, paq2py
 
 from . TwoPhotonImagingMain import TwoPhotonImagingTrial
-from . import _plotting
+
 
 class OnePhotonStim(TwoPhotonImagingTrial):
     def __init__(self, trial, metainfo, microscope: str, analysis_save_path: str = None):

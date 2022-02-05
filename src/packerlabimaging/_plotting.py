@@ -2,22 +2,25 @@
 
 # imports
 import os
+from typing import Union
 
-import matplotlib
 import numpy as np
 import functools
 import random
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import tifffile as tf
+import seaborn as sns
 from .AllOpticalMain import AllOpticalTrial
 
 from .TwoPhotonImagingMain import TwoPhotonImagingTrial
-from ._utils import normalize_dff
+from packerlabimaging.utils._utils import normalize_dff
+
+
+# %% UTILITY FUNCS
 
 # wrapper for piping plots in and out of figures
-def plot_piping_decorator(figsize=(5,5)):
-    def plot_piping_decorator_(plotting_func):
+def plotting_decorator(figsize=(3, 3)):
+    def plotting_decorator(plotting_func):
         """
         Wrapper to help simplify creating plots from matplotlib.pyplot
 
@@ -27,7 +30,7 @@ def plot_piping_decorator(figsize=(5,5)):
         Examples:
         ---------
         1) in this example the fig and ax will be taken directly from the kwargs inside the inner wrapper
-        >>> @plot_piping_decorator
+        >>> @plotting_decorator
         >>> def example_decorated_plot(title='', **kwargs):
         >>>     fig, ax = kwargs['fig'], kwargs['ax']  # need to add atleast this line to each plotting function's definition
         >>>     print(f'|-kwargs inside example_decorated_plot definition: {kwargs}')
@@ -102,9 +105,8 @@ def plot_piping_decorator(figsize=(5,5)):
             # return (kwargs['fig'], kwargs['ax']) if return_fig_obj else None
 
         return inner
-    return plot_piping_decorator_
+    return plotting_decorator
 
-# %% UTILITY FUNCS
 def save_figure(fig, save_path_full: str = None):
     print(f'\nsaving figure to: {save_path_full}')
     os.makedirs(save_path_full)
@@ -196,13 +198,30 @@ def image_frame_options():
         'xtick.major.bottom': False
     })
 
+def dataplot_frame_options():
+    mpl.rcParams.update({
+        'axes.spines.top': False,
+        'axes.spines.right': False,
+        'legend.fontsize': 'x-large',
+        'axes.labelsize': 'x-large',
+        'axes.titlesize': 'x-large',
+        'xtick.labelsize': 'x-large',
+        'ytick.labelsize': 'x-large',
+        'legend.frameon': False,
+        'figure.subplot.wspace': .01,
+        'figure.subplot.hspace': .01,
+    })
+    sns.set()
+    sns.set_style('white')
+
+
 def heatmap_options():
     jet = mpl.cm.get_cmap('jet')
     jet.set_bad(color='k')
 
 # %% GENERAL PLOTTING FUNCS
 ### plot the location of provided coordinates
-@plot_piping_decorator(figsize=(5,5))
+@plotting_decorator(figsize=(5, 5))
 def plot_coordinates(coords: list,  frame_x: int, frame_y: int, background: np.ndarray = None, fig=None, ax=None, **kwargs):
     """
     plot coordinate locations
@@ -240,9 +259,9 @@ def plot_coordinates(coords: list,  frame_x: int, frame_y: int, background: np.n
 
 # suite2p data
 # simple plot of the location of the given cell(s) against a black FOV
-@plot_piping_decorator(figsize=(5,5))
+@plotting_decorator(figsize=(5, 5))
 def plot_cells_loc(expobj: TwoPhotonImagingTrial, cells: list, title=None, background: np.array = None, scatter_only: bool = False,
-                   show_s2p_targets: bool = True, color_float_list: list = None, cmap: str = 'Reds', invert_y = True, fig=None, ax=None, **kwargs):
+                   show_s2p_targets: bool = True, color_float_list: list = None, cmap: str = 'Reds', ax=None, **kwargs):
     """
     plots an image of the FOV to show the locations of cells given in cells ls.
     :param background: either 2dim numpy array to use as the backsplash or None (where black backsplash will be created)
@@ -270,7 +289,7 @@ def plot_cells_loc(expobj: TwoPhotonImagingTrial, cells: list, title=None, backg
     x_list = []
     y_list = []
     for cell in cells:
-        y, x = expobj.stat[expobj.cell_id.index(cell)]['med']
+        y, x = expobj.Suite2p.stat[expobj.Suite2p.cell_id.index(cell)]['med']
         x_list.append(x)
         y_list.append(y)
 
@@ -302,10 +321,10 @@ def plot_cells_loc(expobj: TwoPhotonImagingTrial, cells: list, title=None, backg
 
     if not scatter_only:
         if background is None:
-            black = np.zeros((expobj.frame_x, expobj.frame_y), dtype='uint16')
+            black = np.zeros((expobj.imparams.frame_x, expobj.imparams.frame_y), dtype='uint16')
             ax.imshow(black, cmap='Greys_r', zorder=0)
-            ax.set_xlim(0, expobj.frame_x)
-            ax.set_ylim(0, expobj.frame_y)
+            ax.set_xlim(0, expobj.imparams.frame_x)
+            ax.set_ylim(0, expobj.imparams.frame_y)
         else:
             ax.imshow(background, cmap='Greys_r', zorder=0)
 
@@ -334,7 +353,7 @@ def plot_cells_loc(expobj: TwoPhotonImagingTrial, cells: list, title=None, backg
 
 
 # plot to show s2p ROIs location, colored as specified
-def s2pRoiImage(expobj: TwoPhotonImagingTrial, save_fig: str = None):
+def s2pRoiImage(expobj: Union[TwoPhotonImagingTrial, AllOpticalTrial]):
     """
     plot to show the classification of each cell as the actual's filling in the cell's ROI pixels.
 
@@ -346,55 +365,55 @@ def s2pRoiImage(expobj: TwoPhotonImagingTrial, save_fig: str = None):
     :return:
     """
     fig, ax = plt.subplots(figsize=(5, 5))
-    if expobj.frame_x == 512:
-        s = 0.003 * (1024/expobj.frame_x * 4)
+    if expobj.imparams.frame_x == 512:
+        s = 0.003 * (1024/expobj.imparams.frame_x * 4)
     else:
         s = 0.003
     ##### targets areas image
-    targ_img = np.zeros([expobj.frame_x, expobj.frame_y], dtype='float')
+    targ_img = np.zeros([expobj.imparams.frame_x, expobj.imparams.frame_y], dtype='float')
     target_areas_exclude = np.array(expobj.target_areas_exclude)
     targ_img[target_areas_exclude[:, :, 1], target_areas_exclude[:, :, 0]] = 1
-    x = np.asarray(list(range(expobj.frame_x)) * expobj.frame_y)
-    y = np.asarray([i_y for i_y in range(expobj.frame_y) for i_x in range(expobj.frame_x)])
+    x = np.asarray(list(range(expobj.imparams.frame_x)) * expobj.imparams.frame_y)
+    y = np.asarray([i_y for i_y in range(expobj.imparams.frame_y) for i_x in range(expobj.imparams.frame_x)])
     img = targ_img.flatten()
     im_array = np.array([x, y], dtype=np.float)
     ax.scatter(im_array[0], im_array[1], c=img, cmap='gray', s=s, zorder=0, alpha=1)
 
     ##### suite2p ROIs areas image - nontargets
-    for n in expobj.s2p_nontargets:
-        idx = expobj.cell_id.index(n)
-        ypix = expobj.stat[idx]['ypix']
-        xpix = expobj.stat[idx]['xpix']
+    for n in expobj.Suite2p.s2p_nontargets:
+        idx = expobj.Suite2p.cell_id.index(n)
+        ypix = expobj.Suite2p.stat[idx]['ypix']
+        xpix = expobj.Suite2p.stat[idx]['xpix']
         ax.scatter(xpix, ypix, c='lightsteelblue', s=s, zorder=1, alpha=1)
 
     ##### suite2p ROIs areas image - exclude cells
     for n in expobj.s2p_cells_exclude:
-        idx = expobj.cell_id.index(n)
-        ypix = expobj.stat[idx]['ypix']
-        xpix = expobj.stat[idx]['xpix']
+        idx = expobj.Suite2p.cell_id.index(n)
+        ypix = expobj.Suite2p.stat[idx]['ypix']
+        xpix = expobj.Suite2p.stat[idx]['xpix']
         ax.scatter(xpix, ypix, c='yellow', s=s, zorder=2, alpha=1)
 
     ##### suite2p ROIs areas image - targeted cells
     for n in expobj.s2p_cell_targets:
-        idx = expobj.cell_id.index(n)
-        ypix = expobj.stat[idx]['ypix']
-        xpix = expobj.stat[idx]['xpix']
+        idx = expobj.Suite2p.cell_id.index(n)
+        ypix = expobj.Suite2p.stat[idx]['ypix']
+        xpix = expobj.Suite2p.stat[idx]['xpix']
         ax.scatter(xpix, ypix, c='red', s=s, zorder=3, alpha=1)
 
-    ax.set_xlim([0, expobj.frame_x])
-    ax.set_ylim([0, expobj.frame_y])
+    ax.set_xlim([0, expobj.imparams.frame_x])
+    ax.set_ylim([0, expobj.imparams.frame_y])
 
     ax = add_scalebar(expobj=expobj, ax=ax)
 
-    plt.margins(x=0, y=0)
-    plt.gca().invert_yaxis()
-    # plt.gca().invert_xaxis()
-    # fig.show()
+    fig.margins(x=0, y=0)
+    fig.gca().invert_yaxis()
 
-    plt.suptitle(f"{expobj.metainfo['animal prep.']} {expobj.metainfo['trial']} - s2p nontargets (blue), exclude (yellow), targets (red); target_areas (white)",
+    fig.suptitle(f"{expobj.t_series_name} - s2p nontargets (blue), exclude (yellow), targets (red); target_areas (white)",
                  y=0.97, fontsize=7)
-    plt.show()
-    save_figure(fig, save_path_suffix=f"{save_fig}") if save_fig else None
+    fig.show()
+
+    return fig
+
 
 # (full) plot individual cell's flu or dFF trace, with photostim. timings for that cell
 def plot_flu_trace(expobj: TwoPhotonImagingTrial, cell, x_lims=None, slm_group=None, to_plot='raw', figsize=(20, 3), linewidth=0.10, show=True):
@@ -453,7 +472,7 @@ def plot_flu_trace(expobj: TwoPhotonImagingTrial, cell, x_lims=None, slm_group=N
     plt.show() if show else None
 
 # plots the raw trace for the Flu mean of the FOV (similar to the ZProject in Fiji)
-@plot_piping_decorator(figsize=(10,3))
+@plotting_decorator(figsize=(10, 3))
 def plotMeanRawFluTrace(expobj: TwoPhotonImagingTrial, stim_span_color='white', stim_lines: bool = True, title='raw Flu trace', x_axis='time', shrink_text=1,
                         fig=None, ax=None, **kwargs):
     """make plot of mean Ca trace averaged over the whole FOV"""
@@ -547,7 +566,7 @@ def plot_s2p_raw(expobj, cell_id):
 
 
 # LFP
-@plot_piping_decorator(figsize=(10,3))
+@plotting_decorator(figsize=(10, 3))
 def plotLfpSignal(expobj, stim_span_color='powderblue', downsample: bool = True, stim_lines: bool = True, sz_markings: bool = False,
                   title='LFP trace', x_axis='time', hide_xlabel=False, fig=None, ax=None, **kwargs):
     """make plot of LFP with also showing stim locations
@@ -671,7 +690,7 @@ def plotLfpSignal(expobj, stim_span_color='powderblue', downsample: bool = True,
 
 # alloptical trial
 ### plot the location of all SLM targets, along with option for plotting the mean img of the current trial
-@plot_piping_decorator(figsize=(5,5))
+@plotting_decorator(figsize=(5, 5))
 def plot_SLMtargets_Locs(expobj: AllOpticalTrial, targets_coords: list = None, background: np.ndarray = None, fig=None, ax=None, **kwargs):
     """
     plot SLM target coordinate locations
@@ -795,7 +814,7 @@ def plot_photostim_traces(array, expobj: AllOpticalTrial, title='', y_min=None, 
     fig.show()
 
 
-@plot_piping_decorator(figsize=(10,6))
+@plotting_decorator(figsize=(10, 6))
 def plot_photostim_traces_overlap(array, expobj: AllOpticalTrial, exclude_id=[], y_spacing_factor=1, title='',
                                   x_axis='Time (seconds)', save_fig=None, fig=None, ax=None, **kwargs):
     '''
@@ -888,7 +907,7 @@ def plot_photostim_traces_overlap(array, expobj: AllOpticalTrial, exclude_id=[],
 
 
 ### photostim analysis - PLOT avg over photostim. trials traces for the provided traces
-@plot_piping_decorator(figsize=(5,5.5))
+@plotting_decorator(figsize=(5, 5.5))
 def plot_periphotostim_avg2(dataset, fps=None, legend_labels=None, colors=None, avg_with_std=False,
                             title='high quality plot', pre_stim_sec=None, ylim=None, fig=None, ax=None, **kwargs):
 
@@ -996,7 +1015,7 @@ def plot_periphotostim_avg2(dataset, fps=None, legend_labels=None, colors=None, 
 
 
 ### photostim analysis - PLOT avg over all photstim. trials traces from PHOTOSTIM TARGETTED cells
-@plot_piping_decorator(figsize=(5,5.5))
+@plotting_decorator(figsize=(5, 5.5))
 def plot_periphotostim_avg(arr: np.ndarray, expobj: AllOpticalTrial, pre_stim_sec=1.0, post_stim_sec=3.0, title='',
                            avg_only: bool = False, x_label=None, y_label=None, ax=None, pad=20, **kwargs):
     """

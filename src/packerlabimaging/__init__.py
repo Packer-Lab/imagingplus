@@ -12,6 +12,6 @@ warnings.filterwarnings("ignore")
 from ._version import __version__
 from packerlabimaging._io import import_obj
 from .ExperimentMain import Experiment, define_term
-from packerlabimaging._utils import Utils
+from packerlabimaging.utils._utils import Utils
 
 print(f"import packerlabimaging\n\tversion: {__version__}\n")

@@ -1,4 +1,4 @@
-## main module for parsing, processing and interacting with data/files of 1p-stim protocols
+## main module for parsing, processing and interacting with data/files of 1p-stim protocols (i.e. matlab .dat files that are used in PackIO)
 ## - 1pstim module - just copied straight from allopticalseizure version so far..
 import os
 from datetime import time
@@ -6,14 +6,14 @@ from datetime import time
 import numpy as np
 from matplotlib import pyplot as plt
 
-from .TwoPhotonImagingMain import TwoPhotonImagingTrial
+from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
 from ._paq import paqData
-from ._utils import threshold_detect
+from packerlabimaging.utils._utils import threshold_detect
 
 
-class onePstim(TwoPhotonImagingTrial):
+class OnePstim(TwoPhotonImagingTrial):
 
-    compatible_responses_process = ['pre-stim dFF', 'post - pre']
+    compatible_responses_options = ['pre-stim dFF', 'post - pre']
 
     def __init__(self, data_path_base, date, animal_prep, trial, metainfo, analysis_save_path_base: str = None):
         # TODO need to review __init__ code to fit into package pipeline
@@ -23,7 +23,6 @@ class onePstim(TwoPhotonImagingTrial):
         tiffs_loc = '%s/%s_%s_Cycle00001_Ch3.tif' % (tiffs_loc_dir, date, trial)
         self.pkl_path = "/home/pshah/mnt/qnap/Analysis/%s/%s_%s/%s_%s.pkl" % (
             date, date, trial, date, trial)  # specify path in Analysis folder to save pkl object
-        # paqs_loc = '%s/%s_RL109_010.paq' % (data_path_base, date)  # path to the .paq files for the selected trials
         new_tiffs = tiffs_loc[:-19]  # where new tiffs from rm_artifacts_tiffs will be saved
 
         # make the necessary Analysis saving subfolder as well
@@ -53,7 +52,7 @@ class onePstim(TwoPhotonImagingTrial):
         # add all frames as bad frames incase want to include this trial in suite2p run
         self.bad_frames = paqData.frames_discard(paq=paqData.paq_read(paq_path=self.paq_path), input_array=None, total_frames=self.n_frames, discard_all=True)
 
-        self.save(pkl_path=self.pkl_path)
+        self.save_pkl(pkl_path=self.pkl_path)
 
         print('\n-----DONE OnePhotonStim init of trial # %s-----' % trial)
 

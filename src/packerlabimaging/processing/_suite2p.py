@@ -2,7 +2,7 @@ import os
 import numpy as np
 import tifffile as tf
 import matplotlib.pyplot as plt
-from ._utils import make_tiff_stack, s2p_loader, normalize_dff, Utils
+from packerlabimaging.utils._utils import make_tiff_stack, s2p_loader, normalize_dff, Utils
 
 
 # TEMP VARIABLES FOR DEVELOPMENT USAGES

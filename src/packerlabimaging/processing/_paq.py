@@ -7,7 +7,7 @@ import matplotlib.ticker as mticker
 import matplotlib.pyplot as plt
 from scipy import io
 
-from ._utils import threshold_detect
+from packerlabimaging.utils._utils import threshold_detect
 
 # paq2py by Llyod Russel
 def paq2py(file_path=None, plot=False):

@@ -16,32 +16,20 @@ from the microscope during data collection, and any user generated files associa
 from __future__ import absolute_import
 
 import os
-import sys
 import time
-import datetime
 import re
-import glob
 
 import pickle
 
-import numpy as np
-import pandas as pd
-import scipy.stats as stats
-
-import statsmodels.api
-import statsmodels as sm
-import xml.etree.ElementTree as ET
-import tifffile as tf
 from suite2p.run_s2p import run_s2p
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from ._utils import SaveDownsampledTiff, subselect_tiff, make_tiff_stack, convert_to_8bit, threshold_detect, \
-    s2p_loader, path_finder, points_in_circle_np, moving_average, normalize_dff, _check_path_exists
 
 from .TwoPhotonImagingMain import TwoPhotonImagingTrial
 from .onePstimMain import OnePhotonStim
 from .AllOpticalMain import AllOpticalTrial
-from . import _suite2p, _plotting, _io
+from . import _io
+from .processing import _suite2p
 
 ## UTILITIES
 

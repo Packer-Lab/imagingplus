@@ -10,15 +10,13 @@ import signal
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-import statsmodels.api
-import statsmodels as sm
 import xml.etree.ElementTree as ET
 import tifffile as tf
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from ._utils import convert_to_8bit, threshold_detect, path_finder, points_in_circle_np, normalize_dff, Utils
-from ._paq import paq2py, paqData
-
+from packerlabimaging.utils._utils import convert_to_8bit, threshold_detect, path_finder, points_in_circle_np, normalize_dff, Utils
+from packerlabimaging.processing._paq import paq2py, paqData
+from packerlabimaging.processing._stats import AllOpticalStats
 from . TwoPhotonImagingMain import TwoPhotonImagingTrial
 
 
@@ -98,6 +96,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.prob_response = None  # probability of response of cell to photostim trial; obtained from single trial significance (ROB suggestion)
         self.t_tests = []  # result from related samples t-test between dff test periods
         self.wilcoxons = []  # ROB to update
+        self.sig_units = None  # ROB to update
         self.trial_sig_dff = []  # based on dff increase above std of baseline
         self.trial_sig_dfsf = []  # based on df/std(f) increase in test period post-stim
         self.sta_sig = []  # based on t-test between dff test periods
@@ -1463,8 +1462,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
     def statisticalProcessingAllCells(self):
         """Runs statistical processing on photostim response arrays"""
-        self.wilcoxons = self._runWilcoxonsTest(array1=self.__pre_array, array2=self.__post_array)
-        self.sig_units = self._sigTestAvgResponse(p_vals=self.wilcoxons, alpha=0.1)
+        self.wilcoxons = AllOpticalStats.runWilcoxonsTest(array1=self.__pre_array, array2=self.__post_array)
+        self.sig_units = AllOpticalStats.sigTestAvgResponse(expobj=self, p_vals=self.wilcoxons, alpha=0.1)
 
     @property
     def pre_stim_test_slice(self):
@@ -1476,49 +1475,6 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         "num of poststim frames used for quantification of photostim responses"
         stim_end = self.pre_stim_frames + self.stim_duration_frames
         return np.s_[stim_end: stim_end + self.post_stim_response_frames_window]
-
-
-    #### STATISTICS FOR PHOTOSTIM RESPONSES
-    def _runWilcoxonsTest(expobj, array1, array2):  # NOTE: not setup for multiplane cells yet
-
-        # check if the two distributions of flu values (pre/post) are different
-        assert array1.shape == array2.shape, 'shapes for .__pre_array and .__post_array need to be the same for wilcoxon test'
-        wilcoxons = np.empty(len(array1))  # [cell (p-value)]
-
-        for cell in range(len(array1)):
-            wilcoxons[cell] = stats.wilcoxon(array2[cell], array1[cell])[1]
-
-        return wilcoxons
-
-    def _sigTestAvgResponse(expobj, p_vals: list, alpha=0.1):  # NOTE: not setup for multiplane cells yet
-        """
-        Uses the p values and a threshold for the Benjamini-Hochberg correction to return which
-        cells are still significant after correcting for multiple significance testing
-        """
-        print('\n----------------------------------------------------------------')
-        print('running statistical significance testing for nontargets response arrays ')
-        print('----------------------------------------------------------------')
-
-        sig_units = np.full_like(p_vals, False, dtype=bool)
-
-        try:
-            sig_units, _, _, _ = sm.stats.multitest.multipletests(p_vals, alpha=alpha, method='fdr_bh',
-                                                                  is_sorted=False, returnsorted=False)
-        except ZeroDivisionError:
-            print('no cells responding')
-
-        # p values without bonferroni correction
-        no_bonf_corr = [i for i, p in enumerate(p_vals) if p < 0.05]
-        expobj.nomulti_sig_units = np.zeros(len(expobj.s2p_nontargets), dtype='bool')
-        expobj.nomulti_sig_units[no_bonf_corr] = True
-
-        ## TODO - validate by Rob - commented out in his code, is this repeating the sigunits defined by multipletests call just above?
-        # p values after bonferroni correction
-        bonf_corr = [i for i,p in enumerate(p_vals) if p < 0.05 / expobj.Suite2p.n_units]
-        sig_units = np.zeros(expobj.Suite2p.n_units, dtype='bool')
-        sig_units[bonf_corr] = True
-
-        return sig_units
 
 
     ## NOT REVIEWED FOR USAGE YET
