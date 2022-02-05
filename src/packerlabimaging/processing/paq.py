@@ -139,8 +139,6 @@ class paqData:
         self.paq_path = paq_path     # full path to the .paq file to process
         self.paq_channels: List[str] = ['None']     # recorded channels in paq file
         self.paq_rate: float = 0.0                  # sample rate of paq collection
-        self.sparse_paq_data = {}  # contains data from all paq channels decimated to frame clock times
-
 
         paq_data, self.paq_rate, self.paq_channels = self.paq_read(paq_path=self.paq_path)
         self.paqProcessing(paq=paq_data, options=option)
@@ -178,6 +176,7 @@ class paqData:
 
         paq_data, _, paq_channels = self.paq_read(paq_path=self.paq_path)
         chan_name_idx = paq_channels.index(chan_name)
+        print(f"\t|- adding '{chan_name}' channel data as attribute")
         setattr(self, chan_name, paq_data['data'][chan_name_idx])
 
     def paqProcessing(self, paq, options: List[str]):  # TODO is this best implementation of this??
@@ -191,9 +190,6 @@ class paqData:
         # retrieve frame times
         if 'TwoPhotonImaging' or 'AllOptical' in options:
             self.frame_times = self._frame_times(paq_data=paq)
-            # read in and save sparse version of all paq channels (only save data from timepoints at frame clock times)
-            for idx, chan in enumerate(self.paq_channels):
-                self.sparse_paq_data[chan] = paq['data'][idx, self.frame_times]
 
         elif 'OnePhotonStim' in options:
             self._1p_stims(paq_data=paq)
