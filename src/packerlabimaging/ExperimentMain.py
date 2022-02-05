@@ -29,7 +29,7 @@ from .TwoPhotonImagingMain import TwoPhotonImagingTrial
 from .onePstimMain import OnePhotonStim
 from .AllOpticalMain import AllOpticalTrial
 from . import _io
-from .processing import _suite2p
+from .processing import suite2p
 
 ## UTILITIES
 

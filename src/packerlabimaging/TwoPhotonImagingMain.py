@@ -14,10 +14,10 @@ import xml.etree.ElementTree as ET
 import tifffile as tf
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from packerlabimaging.utils._utils import SaveDownsampledTiff, make_tiff_stack, threshold_detect, normalize_dff
-from packerlabimaging.processing._paq import paq2py, paqData
-from .processing import _suite2p
-from .utils import _imagingMetadata, _anndata as ad
+from packerlabimaging.utils.utils import SaveDownsampledTiff, make_tiff_stack, threshold_detect, normalize_dff
+from packerlabimaging.processing.paq import paq2py, paqData
+from .processing import suite2p
+from .utils import imagingMetadata, anndata as ad
 
 
 class TwoPhotonImagingTrial:

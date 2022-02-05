@@ -14,9 +14,8 @@ import xml.etree.ElementTree as ET
 import tifffile as tf
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from packerlabimaging.utils._utils import convert_to_8bit, threshold_detect, path_finder, points_in_circle_np, normalize_dff, Utils
-from packerlabimaging.processing._paq import paq2py, paqData
-from packerlabimaging.processing._stats import AllOpticalStats
+from packerlabimaging.utils.utils import convert_to_8bit, threshold_detect, path_finder, points_in_circle_np, normalize_dff, Utils
+from packerlabimaging.processing.paq import paq2py, paqData
 from . TwoPhotonImagingMain import TwoPhotonImagingTrial
 
 
@@ -52,6 +51,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         # Initialize Attributes:
 
         # PHOTOSTIM PROTOCOL
+        self.nomulti_sig_units = None
         self.stim_channel = kwargs['stim_channel'] if 'stim_channel' in [
             *analysisOptions] else 'markpoints2packio'  # channel on paq file to read for determining stims
 
@@ -1462,6 +1462,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
     def statisticalProcessingAllCells(self):
         """Runs statistical processing on photostim response arrays"""
+        from packerlabimaging.processing.stats import AllOpticalStats
+
         self.wilcoxons = AllOpticalStats.runWilcoxonsTest(array1=self.__pre_array, array2=self.__post_array)
         self.sig_units = AllOpticalStats.sigTestAvgResponse(expobj=self, p_vals=self.wilcoxons, alpha=0.1)
 

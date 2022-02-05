@@ -7,8 +7,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
-from ._paq import paqData
-from packerlabimaging.utils._utils import threshold_detect
+from .paq import paqData
+from packerlabimaging.utils.utils import threshold_detect
 
 
 class OnePstim(TwoPhotonImagingTrial):

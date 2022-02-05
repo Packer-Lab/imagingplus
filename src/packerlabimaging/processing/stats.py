@@ -5,7 +5,7 @@ import statsmodels.api
 import statsmodels as sm
 
 
-import AllOpticalMain
+from packerlabimaging import AllOpticalMain
 
 class AllOpticalStats:
     """STATISTICS FOR TESTING FOR SIGNIFICANCE OF PHOTOSTIM RESPONSES"""

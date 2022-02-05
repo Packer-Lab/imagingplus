@@ -7,13 +7,12 @@ import matplotlib.ticker as mticker
 import matplotlib.pyplot as plt
 from scipy import io
 
-from packerlabimaging.utils._utils import threshold_detect
+from packerlabimaging.utils.utils import threshold_detect
 
-# paq2py by Llyod Russel
 def paq2py(file_path=None, plot=False):
     """
     Read PAQ file (from PackIO) into python
-    Lloyd Russell 2015
+    Lloyd Russell 2015. Minor update for numpy >1.18 by Prajay Shah 2021.
     Parameters
     ==========
     file_path : str, optional

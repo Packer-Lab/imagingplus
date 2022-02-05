@@ -13,13 +13,13 @@ import seaborn as sns
 from .AllOpticalMain import AllOpticalTrial
 
 from .TwoPhotonImagingMain import TwoPhotonImagingTrial
-from packerlabimaging.utils._utils import normalize_dff
+from packerlabimaging.utils.utils import normalize_dff
 
 
 # %% UTILITY FUNCS
 
 # wrapper for piping plots in and out of figures
-def plotting_decorator(figsize=(3, 3)):
+def _plotting_decorator(figsize=(3, 3)):
     def plotting_decorator(plotting_func):
         """
         Wrapper to help simplify creating plots from matplotlib.pyplot
@@ -114,7 +114,7 @@ def save_figure(fig, save_path_full: str = None):
 
 # custom colorbar for heatmaps
 from matplotlib.colors import LinearSegmentedColormap
-def make_colormap(seq):
+def _make_colormap(seq):
     """Return a LinearSegmentedColormap
     seq: a sequence of floats and RGB-tuples. The floats should be increasing
     and in the interval (0,1).
@@ -167,7 +167,7 @@ def make_random_color_array(n_colors):
     return colors
 
 
-def add_scalebar(trialobj: TwoPhotonImagingTrial, ax: plt.Axes, scale_bar_um: float = 100, **kwargs):
+def _add_scalebar(trialobj: TwoPhotonImagingTrial, ax: plt.Axes, scale_bar_um: float = 100, **kwargs):
     """add scalebar to the image being plotted on the a single matplotlib.axes.Axes object using the TwoPhotonImaging object information.
     Option to specify scale bar um length to add to plot.
 
@@ -221,7 +221,7 @@ def heatmap_options():
 
 # %% GENERAL PLOTTING FUNCS
 ### plot the location of provided coordinates
-@plotting_decorator(figsize=(5, 5))
+@_plotting_decorator(figsize=(5, 5))
 def plot_coordinates(coords: list,  frame_x: int, frame_y: int, background: np.ndarray = None, fig=None, ax=None, **kwargs):
     """
     plot coordinate locations
@@ -254,12 +254,12 @@ def plot_coordinates(coords: list,  frame_x: int, frame_y: int, background: np.n
             pass
 
 
-# %% PROJECT SPECIFIC PLOTTING FUNCS
+# %% DATA ANALYSIS PLOTTING FUNCS
 
 
 # suite2p data
 # simple plot of the location of the given cell(s) against a black FOV
-@plotting_decorator(figsize=(5, 5))
+@_plotting_decorator(figsize=(5, 5))
 def plot_cells_loc(expobj: TwoPhotonImagingTrial, cells: list, title=None, background: np.array = None, scatter_only: bool = False,
                    show_s2p_targets: bool = True, color_float_list: list = None, cmap: str = 'Reds', ax=None, **kwargs):
     """
@@ -349,7 +349,7 @@ def plot_cells_loc(expobj: TwoPhotonImagingTrial, cells: list, title=None, backg
         if kwargs['invert_y']:
             ax.invert_yaxis()
 
-    ax = add_scalebar(trialobj=expobj, ax=ax) if 'scalebar' in [*kwargs] and kwargs['scalebar'] is True else None
+    ax = _add_scalebar(trialobj=expobj, ax=ax) if 'scalebar' in [*kwargs] and kwargs['scalebar'] is True else None
 
 
 # plot to show s2p ROIs location, colored as specified
@@ -403,7 +403,7 @@ def s2pRoiImage(expobj: Union[TwoPhotonImagingTrial, AllOpticalTrial]):
     ax.set_xlim([0, expobj.imparams.frame_x])
     ax.set_ylim([0, expobj.imparams.frame_y])
 
-    ax = add_scalebar(expobj=expobj, ax=ax)
+    ax = _add_scalebar(expobj=expobj, ax=ax)
 
     fig.margins(x=0, y=0)
     fig.gca().invert_yaxis()
@@ -472,7 +472,7 @@ def plot_flu_trace(expobj: TwoPhotonImagingTrial, cell, x_lims=None, slm_group=N
     plt.show() if show else None
 
 # plots the raw trace for the Flu mean of the FOV (similar to the ZProject in Fiji)
-@plotting_decorator(figsize=(10, 3))
+@_plotting_decorator(figsize=(10, 3))
 def plotMeanRawFluTrace(expobj: TwoPhotonImagingTrial, stim_span_color='white', stim_lines: bool = True, title='raw Flu trace', x_axis='time', shrink_text=1,
                         fig=None, ax=None, **kwargs):
     """make plot of mean Ca trace averaged over the whole FOV"""
@@ -566,7 +566,7 @@ def plot_s2p_raw(expobj, cell_id):
 
 
 # LFP
-@plotting_decorator(figsize=(10, 3))
+@_plotting_decorator(figsize=(10, 3))
 def plotLfpSignal(expobj, stim_span_color='powderblue', downsample: bool = True, stim_lines: bool = True, sz_markings: bool = False,
                   title='LFP trace', x_axis='time', hide_xlabel=False, fig=None, ax=None, **kwargs):
     """make plot of LFP with also showing stim locations
@@ -690,7 +690,7 @@ def plotLfpSignal(expobj, stim_span_color='powderblue', downsample: bool = True,
 
 # alloptical trial
 ### plot the location of all SLM targets, along with option for plotting the mean img of the current trial
-@plotting_decorator(figsize=(5, 5))
+@_plotting_decorator(figsize=(5, 5))
 def plot_SLMtargets_Locs(expobj: AllOpticalTrial, targets_coords: list = None, background: np.ndarray = None, fig=None, ax=None, **kwargs):
     """
     plot SLM target coordinate locations
@@ -740,7 +740,7 @@ def plot_SLMtargets_Locs(expobj: AllOpticalTrial, targets_coords: list = None, b
 
     ax.margins(0)
 
-    ax = add_scalebar(trialobj=expobj, ax=ax)
+    ax = _add_scalebar(trialobj=expobj, ax=ax)
 
     fig.tight_layout()
 
@@ -814,7 +814,7 @@ def plot_photostim_traces(array, expobj: AllOpticalTrial, title='', y_min=None, 
     fig.show()
 
 
-@plotting_decorator(figsize=(10, 6))
+@_plotting_decorator(figsize=(10, 6))
 def plot_photostim_traces_overlap(array, expobj: AllOpticalTrial, exclude_id=[], y_spacing_factor=1, title='',
                                   x_axis='Time (seconds)', save_fig=None, fig=None, ax=None, **kwargs):
     '''
@@ -907,7 +907,7 @@ def plot_photostim_traces_overlap(array, expobj: AllOpticalTrial, exclude_id=[],
 
 
 ### photostim analysis - PLOT avg over photostim. trials traces for the provided traces
-@plotting_decorator(figsize=(5, 5.5))
+@_plotting_decorator(figsize=(5, 5.5))
 def plot_periphotostim_avg2(dataset, fps=None, legend_labels=None, colors=None, avg_with_std=False,
                             title='high quality plot', pre_stim_sec=None, ylim=None, fig=None, ax=None, **kwargs):
 
@@ -1015,7 +1015,7 @@ def plot_periphotostim_avg2(dataset, fps=None, legend_labels=None, colors=None, 
 
 
 ### photostim analysis - PLOT avg over all photstim. trials traces from PHOTOSTIM TARGETTED cells
-@plotting_decorator(figsize=(5, 5.5))
+@_plotting_decorator(figsize=(5, 5.5))
 def plot_periphotostim_avg(arr: np.ndarray, expobj: AllOpticalTrial, pre_stim_sec=1.0, post_stim_sec=3.0, title='',
                            avg_only: bool = False, x_label=None, y_label=None, ax=None, pad=20, **kwargs):
     """

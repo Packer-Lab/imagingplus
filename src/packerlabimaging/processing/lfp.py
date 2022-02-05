@@ -2,7 +2,7 @@
 
 # retrieving and processing on LFP recordings from the .paq file
 import os.path
-import _paq as Paq
+import paq as Paq
 
 class LFP:
     def __init__(self, **kwargs):
