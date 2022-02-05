@@ -1,6 +1,7 @@
 import pytest
 from packerlabimaging._io import import_obj
 
+
 @pytest.fixture(scope="session")
 def twophoton_imaging_trial_fixture():
     expobj = import_obj('/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
@@ -131,4 +132,8 @@ def experiment_fixture(alloptical_trial_fixture, twophoton_imaging_trial_fixture
     
     return initialization_dict
 
-
+@pytest.fixture(scope="session")
+def existing_trialobj_twophotonimaging_fixture():
+    expobj = import_obj(pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
+    trialobj = expobj.load_trial(trialID='t-005')
+    return trialobj

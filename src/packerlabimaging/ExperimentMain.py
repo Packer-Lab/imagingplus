@@ -7,11 +7,9 @@ from the microscope during data collection, and any user generated files associa
 
 """
 
-
 # option for pre-loading s2p results, and loading Experiment with some trials included in s2p results and some not. -- use s2p_use arg in trialsInformation dict
 ## TODO need to figure out where to set option for providing input for s2p_batch_size if pre-loading s2p results
 ## TODO consider providing arg values for all optical experiment analysis hyperparameters
-
 
 from __future__ import absolute_import
 
@@ -126,7 +124,7 @@ class Experiment:
 
 
     def _get_trial_infor(self, trialID: str):
-        infor = f"\n\t{trialID}: {self.trialsInformation[trialID]['trialType']}, {self.trialsInformation[trialID]['expGroup']}"
+        return f"\n\t{trialID}: {self.trialsInformation[trialID]['trialType']}, {self.trialsInformation[trialID]['expGroup']}"
 
     def __repr__(self):
         return f"packerlabimaging.Experiment object (date: {self.date}, expID: {self.expID})"
@@ -144,11 +142,11 @@ class Experiment:
 
 
     def add_suite2p(self):
-        _trialsSuite2p = []
+        self._trialsSuite2p = []
         for trial in self.trialIDs:
             assert 's2p_use' in [*self.trialsInformation[trial]], 'when trying to utilize suite2p , must provide value for `s2p_use` ' \
                          'in trialsInformation[trial] for each trial to specify if to use trial for this suite2p associated with this experiment'
-            _trialsSuite2p.append(trial) if self.trialsInformation[trial]['s2p_use'] else None
+            self._trialsSuite2p.append(trial) if self.trialsInformation[trial]['s2p_use'] else None
 
         if self.s2pResultsPath:  # if s2pResultsPath provided then try to find and pre-load results from provided path, raise error if cannot find results
             # search for suite2p results items in self.suite2pPath, and auto-assign s2pRunComplete --> True if found successfully
@@ -159,7 +157,7 @@ class Experiment:
                     self._s2pResultExists = True
                     break
             if self._s2pResultExists:
-                self.Suite2p = _suite2p.Suite2pResultsExperiment(s2pResultsPath=self.s2pResultsPath, trialsSuite2p = _trialsSuite2p)
+                self.Suite2p = suite2p.Suite2pResultsExperiment(s2pResultsPath=self.s2pResultsPath, trialsSuite2p = self._trialsSuite2p)
             else:
                 raise ValueError(f"suite2p results could not be found. `suite2pPath` provided was: {self.suite2pPath}")
         elif self.useSuite2p:  # no s2pResultsPath provided, so initialize without pre-loading any results

@@ -129,20 +129,28 @@ def paq2py(file_path=None, plot=False):
 
 
 class paqData:
-    def __init__(self, paq_path: str):
+    def __init__(self, paq_path: str, option: List[str]):
         """
         reads in paq data from a .paq file for an experiment performed using PackIO.
 
         paq_path: full path to .paq file to read
         """
+        self.frame_times = None
         self.paq_path = paq_path     # full path to the .paq file to process
         self.paq_channels: List[str] = ['None']     # recorded channels in paq file
         self.paq_rate: float = 0.0                  # sample rate of paq collection
         self.sparse_paq_data = {}  # contains data from all paq channels decimated to frame clock times
 
 
-        paq_data = self.paq_read(paq_path=self.paq_path)
-        self.paqProcessing(paq=paq_data)
+        paq_data, self.paq_rate, self.paq_channels = self.paq_read(paq_path=self.paq_path)
+        self.paqProcessing(paq=paq_data, options=option)
+
+    def __repr__(self):
+        information = ""
+        for i in self.__dict__:
+            information += f"\n\t{i}: {self.__dict__[i]}"
+
+        return f"packerlabimaging.processing.paq.paqData: {information}"
 
     @staticmethod
     def paq_read(paq_path: str = None, plot: bool = False):
@@ -156,7 +164,6 @@ class paqData:
         paq, _ = paq2py(paq_path, plot=plot)
         paq_rate = paq['rate']
         paq_channels = paq['chan_names']
-        ## TODO print the paq channels that were loaded. and some useful metadata about the paq channels.
         print(f"\t|- loaded {len(paq['chan_names'])} channels from .paq file: {paq['chan_names']}")
 
         return paq, paq_rate, paq_channels
@@ -165,8 +172,9 @@ class paqData:
         """add a specific channel's (`chan_name`) data from the .paq file as attribute of the same name for
         paqData object."""
 
-        paq_data = self.paq_read(paq_path=self.paq_path)
-        chan_name_idx = paq_data['chan_names'].index(chan_name)
+        paq_data, _, paq_channels = self.paq_read(paq_path=self.paq_path)
+        print(paq_channels)
+        chan_name_idx = paq_channels.index(chan_name)
         setattr(self, chan_name, paq_data['data'][chan_name_idx])
 
     def paqProcessing(self, paq, options: List[str]):  # TODO is this best implementation of this??
@@ -178,13 +186,16 @@ class paqData:
 
         print('\n\----- Processing paq file ...')
         # retrieve frame times
-        __frame_times = self._frame_times(paq_data=paq) if 'TwoPhotonImaging' or 'AllOptical' in options else None
-        self._1p_stims(paq_data=paq) if 'OnePhotonStim' in options else None
+        if 'TwoPhotonImaging' or 'AllOptical' in options:
+            self.frame_times = self._frame_times(paq_data=paq)
+            # read in and save sparse version of all paq channels (only save data from timepoints at frame clock times)
+            for idx, chan in enumerate(self.paq_channels):
+                self.sparse_paq_data[chan] = paq['data'][idx, self.frame_times]
+
+        elif 'OnePhotonStim' in options:
+            self._1p_stims(paq_data=paq)
 
 
-        # read in and save sparse version of all paq channels (only save data from timepoints at frame clock times)
-        for idx, chan in enumerate(self.paq_channels):
-            self.sparse_paq_data[chan] = paq['data'][idx, __frame_times]
 
     @staticmethod
     def _frame_times(paq_data, frame_channel: str = 'frame_clock'):
@@ -265,7 +276,7 @@ class paqData:
 
         return stim_start_frames, stim_start_times
 
-    @staticmethod
+    # TODO review code
     def _1p_stims(self, paq_data, plot: bool = False, optoloopback_channel: str = 'opto_loopback'):
         "find 1p stim times"
         if optoloopback_channel not in paq_data['chan_names']:

@@ -18,6 +18,7 @@ from packerlabimaging.utils.utils import SaveDownsampledTiff, make_tiff_stack, t
 from packerlabimaging.processing.paq import paq2py, paqData
 from .processing import suite2p
 from .utils import imagingMetadata, anndata as ad
+from .utils.imagingMetadata import PrairieViewMetadata, ImagingMetadata
 
 
 class TwoPhotonImagingTrial:
@@ -84,7 +85,7 @@ class TwoPhotonImagingTrial:
         #                                                                f'{microscope} microscope has not been implemented yet')
 
         # run paq processing if paq_path is provided for trial
-        TwoPhotonImagingTrial.paqProcessing(self) if hasattr(self, 'paq_path') else None  # TODO switch to using _paq module and paqData class instance
+        self.paq = paqData(paq_path=self.paq_path, option=['TwoPhotonImaging']) if hasattr(self, 'paq_path') else None
         # self.paq = _paq.paqProcessing(self, paq_path=self.paq_path, plot=False) if hasattr(self, 'paq_path') else None
 
         # if provided, add Suite2p results for trial
@@ -92,7 +93,7 @@ class TwoPhotonImagingTrial:
             assert i in [*kwargs], f'{i} required in Suite2pResultsTrial call'
             assert kwargs[i] is not None, f'{i} Suite2pResultsTrial call is None'
         if 'suite2p_experiment_obj' in [*kwargs] and 'total_frames_stitched' in [*kwargs]:
-            self.Suite2p = _suite2p.Suite2pResultsTrial(suite2p_experiment_obj=kwargs['suite2p_experiment_obj'],
+            self.Suite2p = suite2p.Suite2pResultsTrial(suite2p_experiment_obj=kwargs['suite2p_experiment_obj'],
                                                         trial_frames=(kwargs['total_frames_stitched'],
                                                                            kwargs['total_frames_stitched'] + self.imparams.n_frames))  # use trial obj's current trial frames
 
@@ -172,15 +173,16 @@ class TwoPhotonImagingTrial:
         :param microscope: name of the microscope, currently the only supported microscope for parsing metadata directly is Bruker/PrairieView imaging setup.
         """
         if 'Bruker' in microscope:
-            return _imagingMetadata.PrairieViewMetadata(tiff_path_dir=self.tiff_path_dir)
+            return PrairieViewMetadata(tiff_path_dir=self.tiff_path_dir)
         else:
             try:
-                return _imagingMetadata.ImagingMetadata(**metadata)
+                return ImagingMetadata(**metadata)
             except TypeError:
                 Exception('required key not present in metadata')
 
+    # TODO change all attrs to using the .paq module
     def paqProcessing(self, frame_channel='frame_clock'):
-        paqD, self.paq_rate, self.paq_channels = paqData.paq2py(paq_path=self.paq_path, plot=True)
+        paqD, self.paq_rate, self.paq.paq_channels = paqData.paq_read(paq_path=self.paq_path, plot=True)
         self._frame_clock_actual = paqData._frame_times(paq_data=paqD, frame_channel=frame_channel)
 
 
@@ -209,7 +211,7 @@ class TwoPhotonImagingTrial:
 
         paq, _ = paq2py(self.paq_path, plot=plot)
         self.paq_rate = paq['rate']
-        self.paq_channels = paq['chan_names']
+        self.paq.paq_channels = paq['chan_names']
         ## TODO print the paq channels that were loaded. and some useful metadata about the paq channels.
         print(f"\t|- loaded {len(paq['chan_names'])} channels from .paq file: {paq['chan_names']}")
 
@@ -247,10 +249,12 @@ class TwoPhotonImagingTrial:
             self._frame_clock_actual = self._frame_clock
 
         # read in and save sparse version of all paq channels (only save data from timepoints at frame clock times)
-        self.sparse_paq_data = {}
-        for idx, chan in enumerate(self.paq_channels):
-            self.sparse_paq_data[chan] = paq['data'][idx, self._frame_clock_actual]
-    
+        self.paq.sparse_paq_data = {}
+        for idx, chan in enumerate(self.paq.paq_channels):
+            self.paq.sparse_paq_data[chan] = paq['data'][idx, self._frame_clock_actual]
+
+    # change all attrs to using the .paq module
+
     @property
     def frame_clock(self):
         return self._frame_clock_actual
@@ -325,7 +329,7 @@ class TwoPhotonImagingTrial:
 
         """
 
-        if self.Suite2p._s2pResultExists and self.paq_channels:
+        if self.Suite2p._s2pResultExists and self.paq.paq_channels:
             # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
             # build dataframe for obs_meta from suite2p stat information
             obs_meta = pd.DataFrame(columns=['original_index', 'footprint', 'mrs', 'mrs0', 'compact', 'med', 'npix', 'radius',
@@ -344,10 +348,10 @@ class TwoPhotonImagingTrial:
 
             # SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata
             # build dataframe for var annot's from paq file
-            var_meta = pd.DataFrame(index=self.paq_channels, columns=range(self.imparams.n_frames))
+            var_meta = pd.DataFrame(index=self.paq.paq_channels, columns=range(self.imparams.n_frames))
             for fr_idx in range(self.imparams.n_frames):
-                for index in [*self.sparse_paq_data]:
-                    var_meta.loc[index, fr_idx] = self.sparse_paq_data[index][fr_idx]
+                for index in [*self.paq.sparse_paq_data]:
+                    var_meta.loc[index, fr_idx] = self.paq.sparse_paq_data[index][fr_idx]
 
             # BUILD LAYERS TO ADD TO anndata OBJECT
             layers = {'dFF': self.dFF

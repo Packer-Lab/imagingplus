@@ -51,6 +51,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         # Initialize Attributes:
 
         # PHOTOSTIM PROTOCOL
+        self.stim_start_times = None
         self.nomulti_sig_units = None
         self.stim_channel = kwargs['stim_channel'] if 'stim_channel' in [
             *analysisOptions] else 'markpoints2packio'  # channel on paq file to read for determining stims
@@ -134,7 +135,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         __frames_in_stim = [False] * self.imparams.n_frames
         __stim_start_frame = [False] * self.imparams.n_frames
         for frame in self.photostim_frames: __frames_in_stim[frame] = True
-        for frame in self.stim_start_frames[PLANE]: __stim_start_frame[frame] = True
+        for frame in self.stim_start_frames: __stim_start_frame[frame] = True
         self.data.add_variables(var_name='photostim_frame', values=__frames_in_stim)
         self.data.add_variables(var_name='stim_start_frame', values=__stim_start_frame)
 
@@ -195,8 +196,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         return time
 
     def paqProcessing(self, stim_channel, frame_channel='frame_clock'):  ## TODO fix signature to match base method from TwoPhotonImaging
-        paqD = paqData.paq2py(paq_path=self.paq_path, plot=True)
-        self.stim_start_frames, self.stim_start_times = paqData._2p_stims(paq_data=paqD, stim_channel=stim_channel)
+        paqD, _ = paq2py(file_path=self.paq_path, plot=True)
+        self.stim_start_frames, self.stim_start_times = paqData._2p_stims(paq_data=paqD, frame_clock=self.paq.frame_times, stim_channel=stim_channel)
 
 
     def paqProcessing2(self, paq_path: str = None, plot: bool = True, **kwargs):
@@ -406,7 +407,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
     def _stimProcessing(self):
         # self.stim_channel = stim_channel
         self._photostimProcessing()
-        self.paqProcessing(stim_channel=self.stim_channel)
+
+        self.paqProcessing(stim_channel=self.stim_channel)  # TODO switch to using .paq module
 
     def _findTargetsAreas(
             self):  # TODO needs review by Rob - any bits of code missing under here? for e.g. maybe for target coords under multiple SLM groups?
@@ -571,10 +573,9 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         print(f"\t|-Number of exclude Suite2p ROIs: {self.n_exclude_cells}")
 
         # define non targets from suite2p ROIs (exclude cells in the SLM targets exclusion - .s2p_cells_exclude)
-        self.s2p_nontargets = [cell for cell in self.Suite2p.suite2p_overall.cell_id if
-                               cell not in self.s2p_cells_exclude]  ## exclusion of cells that are classified as s2p_cell_targets
+        self.Suite2p.s2p_nontargets = [cell for cell in self.Suite2p.suite2p_overall.cell_id if cell not in self.s2p_cells_exclude]  ## exclusion of cells that are classified as s2p_cell_targets
 
-        print(f"\t|-Number of good, s2p non-target ROIs: {len(self.s2p_nontargets)}")
+        print(f"\t|-Number of good, s2p non-target ROIs: {len(self.Suite2p.s2p_nontargets)}")
 
         if plot:
             fig, ax = plt.subplots(figsize=[6, 6])
@@ -590,7 +591,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
 
         # add targets classification as observations annotation to .data anndata
-        self.data = Utils.add_observation(self.data, 'photostim_target', values=list(self.targeted_cells))
+        self.data.add_observation(self.data, 'photostim_target', values=list(self.targeted_cells))
 
 
 
@@ -599,7 +600,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         print('\n\----- Finding photostimulation frames in imaging frames ...')
         print('# of photostim frames calculated per stim. trial: ', self.stim_duration_frames + 1)
 
-        for j in self.stim_start_frames[PLANE]:
+        for j in self.stim_start_frames:
             for i in range(
                     self.stim_duration_frames + 1):  # usually need to remove 1 more frame than the stim duration, as the stim isn't perfectly aligned with the start of the imaging frame
                 self.photostim_frames.append(j + i)
@@ -1349,10 +1350,10 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         print('\n\-Collecting peri-stim traces ...')
 
         trial_array = []
-        _stims = self.stim_start_frames[plane] if stim_frames is None else stim_frames
+        _stims = self.stim_start_frames if stim_frames is None else stim_frames
 
         assert plane_flu.ndim == 2, 'plane_flu needs to be of ndim: 2'
-        assert _stims == self.stim_start_frames[plane], "stims not found in the stim frames list of this plane"
+        assert _stims == self.stim_start_frames, "stims not found in the stim frames list of this plane"
 
         for i, stim in enumerate(_stims):
             # get frame indices of entire trial from pre-stim start to post-stim end
@@ -1420,8 +1421,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
             # SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata
             # build dataframe for var annot's from paq file
-            var_meta = pd.DataFrame(index=self.paq_channels, columns=range(self.stim_start_frames[PLANE]))
-            for fr_idx in range(self.stim_start_frames[PLANE]):
+            var_meta = pd.DataFrame(index=self.paq_channels, columns=range(self.stim_start_frames))
+            for fr_idx in range(self.stim_start_frames):
                 for index in [*self.sparse_paq_data]:
                     var_meta.loc[index, fr_idx] = self.sparse_paq_data[index][fr_idx]
 
@@ -1544,7 +1545,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
                     # a flat ls of all observations after stim occured
                     post_obs = []
 
-                    for stim in self.stim_start_frames[plane]:
+                    for stim in self.stim_start_frames:
                         # get baseline values from pre_stim_sec
                         pre_stim_f = unit[stim - self.pre_frames: stim]
                         baseline = np.mean(pre_stim_f)

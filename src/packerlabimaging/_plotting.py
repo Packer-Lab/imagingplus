@@ -353,7 +353,7 @@ def plot_cells_loc(expobj: TwoPhotonImagingTrial, cells: list, title=None, backg
 
 
 # plot to show s2p ROIs location, colored as specified
-def s2pRoiImage(expobj: Union[TwoPhotonImagingTrial, AllOpticalTrial]):
+def s2pRoiImage(trialobj: Union[TwoPhotonImagingTrial, AllOpticalTrial]):
     """
     plot to show the classification of each cell as the actual's filling in the cell's ROI pixels.
 
@@ -365,50 +365,52 @@ def s2pRoiImage(expobj: Union[TwoPhotonImagingTrial, AllOpticalTrial]):
     :return:
     """
     fig, ax = plt.subplots(figsize=(5, 5))
-    if expobj.imparams.frame_x == 512:
-        s = 0.003 * (1024/expobj.imparams.frame_x * 4)
+    if trialobj.imparams.frame_x == 512:
+        s = 0.003 * (1024/trialobj.imparams.frame_x * 4)
     else:
         s = 0.003
+
     ##### targets areas image
-    targ_img = np.zeros([expobj.imparams.frame_x, expobj.imparams.frame_y], dtype='float')
-    target_areas_exclude = np.array(expobj.target_areas_exclude)
-    targ_img[target_areas_exclude[:, :, 1], target_areas_exclude[:, :, 0]] = 1
-    x = np.asarray(list(range(expobj.imparams.frame_x)) * expobj.imparams.frame_y)
-    y = np.asarray([i_y for i_y in range(expobj.imparams.frame_y) for i_x in range(expobj.imparams.frame_x)])
-    img = targ_img.flatten()
-    im_array = np.array([x, y], dtype=np.float)
-    ax.scatter(im_array[0], im_array[1], c=img, cmap='gray', s=s, zorder=0, alpha=1)
+    if hasattr(trialobj, 'target_areas_exclude'):
+        targ_img = np.zeros([trialobj.imparams.frame_x, trialobj.imparams.frame_y], dtype='float')
+        target_areas_exclude = np.array(trialobj.target_areas_exclude)
+        targ_img[target_areas_exclude[:, :, 1], target_areas_exclude[:, :, 0]] = 1
+        x = np.asarray(list(range(trialobj.imparams.frame_x)) * trialobj.imparams.frame_y)
+        y = np.asarray([i_y for i_y in range(trialobj.imparams.frame_y) for i_x in range(trialobj.imparams.frame_x)])
+        img = targ_img.flatten()
+        im_array = np.array([x, y], dtype=np.float)
+        ax.scatter(im_array[0], im_array[1], c=img, cmap='gray', s=s, zorder=0, alpha=1)
 
     ##### suite2p ROIs areas image - nontargets
-    for n in expobj.Suite2p.s2p_nontargets:
-        idx = expobj.Suite2p.cell_id.index(n)
-        ypix = expobj.Suite2p.stat[idx]['ypix']
-        xpix = expobj.Suite2p.stat[idx]['xpix']
+    for n in trialobj.Suite2p.s2p_nontargets:
+        idx = trialobj.Suite2p.cell_id.index(n)
+        ypix = trialobj.Suite2p.stat[idx]['ypix']
+        xpix = trialobj.Suite2p.stat[idx]['xpix']
         ax.scatter(xpix, ypix, c='lightsteelblue', s=s, zorder=1, alpha=1)
 
     ##### suite2p ROIs areas image - exclude cells
-    for n in expobj.s2p_cells_exclude:
-        idx = expobj.Suite2p.cell_id.index(n)
-        ypix = expobj.Suite2p.stat[idx]['ypix']
-        xpix = expobj.Suite2p.stat[idx]['xpix']
+    for n in trialobj.s2p_cells_exclude:
+        idx = trialobj.Suite2p.cell_id.index(n)
+        ypix = trialobj.Suite2p.stat[idx]['ypix']
+        xpix = trialobj.Suite2p.stat[idx]['xpix']
         ax.scatter(xpix, ypix, c='yellow', s=s, zorder=2, alpha=1)
 
     ##### suite2p ROIs areas image - targeted cells
-    for n in expobj.s2p_cell_targets:
-        idx = expobj.Suite2p.cell_id.index(n)
-        ypix = expobj.Suite2p.stat[idx]['ypix']
-        xpix = expobj.Suite2p.stat[idx]['xpix']
+    for n in trialobj.s2p_cell_targets:
+        idx = trialobj.Suite2p.cell_id.index(n)
+        ypix = trialobj.Suite2p.stat[idx]['ypix']
+        xpix = trialobj.Suite2p.stat[idx]['xpix']
         ax.scatter(xpix, ypix, c='red', s=s, zorder=3, alpha=1)
 
-    ax.set_xlim([0, expobj.imparams.frame_x])
-    ax.set_ylim([0, expobj.imparams.frame_y])
+    ax.set_xlim([0, trialobj.imparams.frame_x])
+    ax.set_ylim([0, trialobj.imparams.frame_y])
 
-    ax = _add_scalebar(expobj=expobj, ax=ax)
+    ax = _add_scalebar(trialobj=trialobj, ax=ax)
 
     fig.margins(x=0, y=0)
     fig.gca().invert_yaxis()
 
-    fig.suptitle(f"{expobj.t_series_name} - s2p nontargets (blue), exclude (yellow), targets (red); target_areas (white)",
+    fig.suptitle(f"{trialobj.t_series_name} - s2p nontargets (blue), exclude (yellow), targets (red); target_areas (white)",
                  y=0.97, fontsize=7)
     fig.show()
 
