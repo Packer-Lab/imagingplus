@@ -1,8 +1,10 @@
-import pathlib
+from pathlib import Path
+import os
 from setuptools import setup, find_packages
 
-HERE = pathlib.Path(__file__).parent
-TESTS_REQUIRE = (HERE/"requirements_dev.txt").read_text().splitlines()
+TESTS_REQUIRE = Path(f"{os.getcwd()}/requirements_dev.txt").read_text().splitlines()
+
+
 
 setup(
     name='packerlabimaging',
@@ -17,11 +19,11 @@ setup(
     install_requires=[
         'anndata',
         'tifffile',
-        'numpy',
+        'numpy>=1.18.5',
         'seaborn',
         'suite2p',
         'matplotlib',
-        'pandas',
+        'pandas>=1.4.0',
         'scipy',
         'statsmodels',
         'scikit-image'

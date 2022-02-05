@@ -46,7 +46,6 @@ def twophoton_imaging_trial_fixture():
             'trialsInformation': initialization_dict["trialsInformation"][trial]
         }
         initialization_dict['metainfo'] = _metainfo
-        initialization_dict['naparm_path'] = initialization_dict["trialsInformation"][trial]['naparm_path']
         initialization_dict['analysis_save_path'] = initialization_dict['analysisSavePath']
         initialization_dict['suite2p_experiment_obj'] = expobj.Suite2p
         initialization_dict['total_frames_stitched'] = SUITE2P_FRAMES
@@ -124,11 +123,11 @@ def experiment_fixture(alloptical_trial_fixture, twophoton_imaging_trial_fixture
         's2pResultsPath': "/home/pshah/mnt/qnap/Analysis/2020-12-19/suite2p/alloptical-2p-1x-alltrials/plane0"
     }
     
-    for trial in twophoton_imaging_trial_fixture:
-        initialization_dict['trialsInformation'][trial] = twophoton_imaging_trial_fixture[trial]
+    for trial in [*twophoton_imaging_trial_fixture['trialsInformation']]:
+        initialization_dict['trialsInformation'][trial] = twophoton_imaging_trial_fixture['trialsInformation'][trial]
     
-    for trial in alloptical_trial_fixture:
-        initialization_dict['trialsInformation'][trial] = alloptical_trial_fixture[trial]
+    for trial in [*alloptical_trial_fixture['trialsInformation']]:
+        initialization_dict['trialsInformation'][trial] = alloptical_trial_fixture['trialsInformation'][trial]
     
     return initialization_dict
 
