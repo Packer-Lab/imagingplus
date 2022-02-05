@@ -135,14 +135,14 @@ class paqData:
 
         paq_path: full path to .paq file to read
         """
-        paq_path = self.paq_path if paq_path is not None else paq_path
+        self.paq_path = paq_path     # full path to the .paq file to process
         self.paq_channels: List[str] = ['None']     # recorded channels in paq file
         self.paq_rate: float = 0.0                  # sample rate of paq collection
         self.sparse_paq_data = {}  # contains data from all paq channels decimated to frame clock times
 
 
-        paqData = self.paq_read(paq_path=paq_path)
-        self.paqProcessing(paq=paqData)
+        paq_data = self.paq_read(paq_path=self.paq_path)
+        self.paqProcessing(paq=paq_data)
 
     @staticmethod
     def paq_read(paq_path: str = None, plot: bool = False):
@@ -159,12 +159,17 @@ class paqData:
         ## TODO print the paq channels that were loaded. and some useful metadata about the paq channels.
         print(f"\t|- loaded {len(paq['chan_names'])} channels from .paq file: {paq['chan_names']}")
 
-
-
         return paq, paq_rate, paq_channels
 
+    def storePaqChannel(self, chan_name):
+        """add a specific channel's (`chan_name`) data from the .paq file as attribute of the same name for
+        paqData object."""
 
-    def paqProcessing(self, paq, options: List[str]):
+        paq_data = self.paq_read(paq_path=self.paq_path)
+        chan_name_idx = paq_data['chan_names'].index(chan_name)
+        setattr(self, chan_name, paq_data['data'][chan_name_idx])
+
+    def paqProcessing(self, paq, options: List[str]):  # TODO is this best implementation of this??
         """
         Loads .paq file and saves data from individual channels.
 
