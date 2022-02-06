@@ -129,13 +129,14 @@ def paq2py(file_path=None, plot=False):
 
 
 class paqData:
-    def __init__(self, paq_path: str, option: List[str]):
+    def __init__(self, paq_path: str, frame_times_channame: str, option: List[str]):
         """
         reads in paq data from a .paq file for an experiment performed using PackIO.
 
         paq_path: full path to .paq file to read
         """
         self.frame_times = None
+        self.frame_times_channame = frame_times_channame
         self.paq_path = paq_path     # full path to the .paq file to process
         self.paq_channels: List[str] = ['None']     # recorded channels in paq file
         self.paq_rate: float = 0.0                  # sample rate of paq collection
@@ -189,7 +190,7 @@ class paqData:
         print('\n\----- Processing paq file ...')
         # retrieve frame times
         if 'TwoPhotonImaging' or 'AllOptical' in options:
-            self.frame_times = self._frame_times(paq_data=paq)
+            self.frame_times = self._frame_times(paq_data=paq, frame_channel=self.frame_times_channame)
 
         elif 'OnePhotonStim' in options:
             self._1p_stims(paq_data=paq)
@@ -197,7 +198,7 @@ class paqData:
 
 
     @staticmethod
-    def _frame_times(paq_data, frame_channel: str = 'frame_clock'):
+    def _frame_times(paq_data, frame_channel: str):
         if frame_channel not in paq_data['chan_names']:
             raise KeyError(f'{frame_channel} not found in .paq channels. Specify channel containing frame signals.')
         

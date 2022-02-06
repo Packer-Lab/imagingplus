@@ -85,7 +85,7 @@ class TwoPhotonImagingTrial:
         #                                                                f'{microscope} microscope has not been implemented yet')
 
         # run paq processing if paq_path is provided for trial
-        self.paq = paqData(paq_path=self.paq_path, option=['TwoPhotonImaging']) if hasattr(self, 'paq_path') else None
+        self.paq = paqData(paq_path=self.paq_path, option=['TwoPhotonImaging'], frame_times_channame='frame_clock') if hasattr(self, 'paq_path') else None
         # self.paq = _paq.paqProcessing(self, paq_path=self.paq_path, plot=False) if hasattr(self, 'paq_path') else None
 
         # if provided, add Suite2p results for trial
@@ -348,10 +348,9 @@ class TwoPhotonImagingTrial:
 
             # SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata
             # build dataframe for var annot's from paq file
-            var_meta = pd.DataFrame(index=self.paq.paq_channels, columns=range(self.imparams.n_frames))
+            var_meta = pd.DataFrame(index=[self.paq.frame_times_channame], columns=range(self.imparams.n_frames))
             for fr_idx in range(self.imparams.n_frames):
-                for index in [*self.paq.sparse_paq_data]:
-                    var_meta.loc[index, fr_idx] = self.paq.sparse_paq_data[index][fr_idx]
+                var_meta.loc[self.paq.frame_times_channame, fr_idx] = self.paq.frame_times[fr_idx]
 
             # BUILD LAYERS TO ADD TO anndata OBJECT
             layers = {'dFF': self.dFF

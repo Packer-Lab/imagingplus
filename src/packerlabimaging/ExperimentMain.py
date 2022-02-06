@@ -12,6 +12,8 @@ from the microscope during data collection, and any user generated files associa
 ## TODO consider providing arg values for all optical experiment analysis hyperparameters
 
 from __future__ import absolute_import
+from dataclasses import dataclass
+from typing import TypedDict, Optional, MutableMapping
 
 import os
 import time
@@ -50,8 +52,6 @@ N_PLANES = 1
 NEUROPIL_COEFF = 0.7
 
 ## CLASS DEFINITIONS
-from dataclasses import dataclass
-from typing import TypedDict, Optional, MutableMapping
 
 
 class trialsInformation(TypedDict, total=False):

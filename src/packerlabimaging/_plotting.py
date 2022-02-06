@@ -569,12 +569,15 @@ def plot_s2p_raw(expobj, cell_id):
 
 # LFP
 @_plotting_decorator(figsize=(10, 3))
-def plotLfpSignal(expobj, stim_span_color='powderblue', downsample: bool = True, stim_lines: bool = True, sz_markings: bool = False,
+def plotLfpSignal(expobj: TwoPhotonImagingTrial, stim_span_color='powderblue', downsample: bool = True, stim_lines: bool = True, sz_markings: bool = False,
                   title='LFP trace', x_axis='time', hide_xlabel=False, fig=None, ax=None, **kwargs):
     """make plot of LFP with also showing stim locations
     NOTE: ONLY PLOTTING LFP SIGNAL CROPPED TO 2P IMAGING FRAME START AND END TIMES - SO CUTTING OUT THE LFP SIGNAL BEFORE AND AFTER"""
 
     print(f"\t \- PLOTTING LFP Signal trace ... ")
+
+    if not hasattr(expobj.paq, 'voltage'):
+        raise AttributeError(f"no voltage data found in .paq submodule. Please add to .paq file")
 
     # # if there is a fig and ax provided in the function call then use those, otherwise start anew
     # if 'fig' in kwargs.keys():
@@ -598,10 +601,10 @@ def plotLfpSignal(expobj, stim_span_color='powderblue', downsample: bool = True,
         color = 'steelblue'
 
     # option for downsampling of data plot trace
-    x = range(len(expobj.lfp_signal[expobj.frame_start_time_actual: expobj.frame_end_time_actual]))
-    signal = expobj.lfp_signal[expobj.frame_start_time_actual: expobj.frame_end_time_actual]
+    x = range(len(expobj.paq.voltage[expobj.paq.frame_times[0]: expobj.paq.frame_times[-1]]))
+    signal = expobj.paq.voltage[expobj.paq.frame_times[0]: expobj.paq.frame_times[-1]]
     if downsample:
-        labels = list(range(0, int(len(signal) / expobj.paq_rate * 1), 15))[::2]  # set x ticks at every 30 secs
+        labels = list(range(0, int(len(signal) / expobj.paq.paq_rate * 1), 15))[::2]  # set x ticks at every 30 secs
         down = 1000
         signal = signal[::down]
         x = x[::down]
@@ -620,30 +623,11 @@ def plotLfpSignal(expobj, stim_span_color='powderblue', downsample: bool = True,
     # ax.spines['left'].set_visible(False)
 
 
-    # plot stims
-    if stim_span_color != '':
-        for stim in expobj.stim_start_times:
-            stim = (stim - expobj.frame_start_time_actual)
-            ax.axvspan(stim - 8, 1 + stim + expobj.stim_duration_frames / expobj.fps * expobj.paq_rate, color=stim_span_color, zorder=0, alpha=alpha)
-    else:
-        if stim_lines:
-            for line in expobj.stim_start_times:
-                line = (line - expobj.frame_start_time_actual)
-                ax.axvline(x=line+2, color='black', linestyle='--', linewidth=0.6, zorder=0)
-
-    # plot seizure onset and offset markings
-    if sz_markings:
-        if hasattr(expobj, 'seizure_lfp_onsets'):
-            for sz_onset in expobj.seizure_lfp_onsets:
-                ax.axvline(x=expobj.frame_clock_actual[sz_onset] - expobj.frame_start_time_actual, color='black', linestyle='--', linewidth=1.0, zorder=0)
-            for sz_offset in expobj.seizure_lfp_offsets:
-                ax.axvline(x=expobj.frame_clock_actual[sz_offset] - expobj.frame_start_time_actual, color='gray', linestyle='--', linewidth=1.0, zorder=0)
-
     # change x axis ticks to seconds
-    labels_ = kwargs['labels'] if 'labels' in [*kwargs] else labels
+    labels_ = kwargs['labels'] if 'labels' in [*kwargs] else ax.get_xticklabels()
     labels_ = [int(i) for i in labels_]
     if 'time' in x_axis or 'Time' in x_axis:
-        ax.set_xticks(ticks=[(label * expobj.paq_rate) for label in labels_])
+        ax.set_xticks(ticks=[(label * expobj.paq.paq_rate) for label in labels_])
         ax.set_xticklabels(labels_)
         ax.tick_params(axis='both', which='both', length=3)
         if not hide_xlabel:
@@ -664,7 +648,7 @@ def plotLfpSignal(expobj, stim_span_color='powderblue', downsample: bool = True,
     if 'ylims' in kwargs:
         ax.set_ylim(kwargs['ylims'])
     else:
-        ax.set_ylim([np.mean(expobj.lfp_signal) - 10, np.mean(expobj.lfp_signal) + 10])
+        ax.set_ylim([np.mean(expobj.paq.voltage) - 10, np.mean(expobj.paq.voltage) + 10])
 
     # set xlimits:
     if 'xlims' in kwargs and kwargs['xlims'] is not None:
@@ -672,8 +656,7 @@ def plotLfpSignal(expobj, stim_span_color='powderblue', downsample: bool = True,
 
 
     # add title
-    ax.set_title(
-        '%s - %s %s %s' % (title, expobj.metainfo['exptype'], expobj.metainfo['animal prep.'], expobj.metainfo['trial']))
+    ax.set_title(f"{expobj.t_series_name}")
 
     # return None
     # if not 'fig' in kwargs.keys():
