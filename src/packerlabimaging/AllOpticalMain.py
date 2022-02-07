@@ -19,8 +19,7 @@ import tifffile as tf
 from packerlabimaging.utils.utils import convert_to_8bit, threshold_detect, path_finder, points_in_circle_np, normalize_dff, Utils
 from packerlabimaging.processing.paq import paq2py, paqData
 from . TwoPhotonImagingMain import TwoPhotonImagingTrial
-from .processing.TwoPstim import naparm
-
+from .processing.TwoPstim import naparm, Targets
 
 # %%
 
@@ -61,12 +60,6 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         self.photostim_frames = []  # imaging frames that are classified as overlapping with photostimulation
         self.stim_start_frames = []  # frame numbers from the start of each photostim trial
-        self.stim_freq = None  # frequency of photostim protocol (of a single photostim trial? or time between individual photostim trials?)
-        self.stim_dur: float = None  # total duration of a single photostim trial (units: msecs)
-        self.single_stim_dur: float = None  # duration of a single photostim shot
-        self.inter_point_delay: float = None  # duration of the delay between each photostim shot
-        self.n_shots: int = None  # num of photostim shots in a single photostim trial
-        self.stim_duration_frames: int = None  # num of imaging frames in a single photostim trial
 
         # paq file attr's
         self.paq_rate: int = None  # PackIO acquisition rate for .paq file
@@ -120,6 +113,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.photostimFluArray: np.ndarray = None  # array of dFF pre + post stim Flu snippets for each stim and cell [num cells x num peri-stim frames collected x num stims]  TODO need to write a quick func to collect over all planes to allow for multiplane imaging
         self.photostimResponseAmplitudes: pd.DataFrame = None  # photostim response amplitudes in a dataframe for each cell and each photostim
 
+
+        #### functions to run after init's all attr's
         if os.path.exists(naparm_path):
             self.__naparm_path = naparm_path
         else:
@@ -129,9 +124,9 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         TwoPhotonImagingTrial.__init__(self, metainfo=metainfo, analysis_save_path=analysis_save_path,
                                        microscope=microscope, **kwargs)
 
-        # continue with photostimulation experiment processing - # TODO refactor to _2pstim module
+        # continue with photostimulation experiment processing
+        self._paqProcessing()
         self._stimProcessing()
-        self._findTargetsAreas()
         self._find_photostim_add_bad_framesnpy()
 
         # extend annotated data object with imaging frames in photostim and stim_start_frames as additional keys in vars
@@ -145,7 +140,6 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         ##
         self.save()
         print(f'\----- CREATED AllOpticalTrial data object for {metainfo["t series id"]}')
-
 
     def __str__(self):
         return self.__repr__()
@@ -201,7 +195,6 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
     def paqProcessing(self, stim_channel, frame_channel='frame_clock'):  ## TODO fix signature to match base method from TwoPhotonImaging
         paqD, _ = paq2py(file_path=self.paq_path, plot=True)
         self.stim_start_frames, self.stim_start_times = paqData._2p_stims(paq_data=paqD, frame_clock=self.paq.frame_times, stim_channel=stim_channel)
-
 
     def paqProcessing2(self, paq_path: str = None, plot: bool = True, **kwargs):
 
@@ -301,19 +294,22 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         for idx, chan in enumerate(self.paq_channels):
             self.sparse_paq_data[chan] = paq['data'][idx, self._frame_clock_actual]
 
-
     ### ALLOPTICAL EXPERIMENT PHOTOSTIM PROTOCOL PROCESSING
 
+    def _paqProcessing(self):
+        self.Paq = paqData(paq_path=self.paq_path, frame_times_channame='frame_clock', option='AllOptical')  # TODO add field for paq settings in the module __init__ to specify options for paq initialization
+
     def _stimProcessing(self):
-        self.TwoPstim = naparm(naparm_path = self.naparm_path)
+        self.Targets = Targets(naparm_path=self.naparm_path, frame_x=self.imparams.frame_x, frame_y=self.imparams.frame_y,
+                               pix_sz_x=self.imparams.pix_sz_x, pix_sz_y=self.imparams.pix_sz_y)
 
         # correct the following based on txt file
-        duration_ms = self.stim_dur
+        duration_ms = self.Targets.stim_dur
         frame_rate = self.imparams.fps / self.imparams.n_planes
         duration_frames = np.ceil((duration_ms / 1000) * frame_rate)
         self.stim_duration_frames = int(duration_frames)
 
-        self.paqProcessing(stim_channel=self.stim_channel)  # TODO switch to using .paq module
+        # self.paqProcessing(stim_channel=self.stim_channel)  # TODO switch to using .paq module
 
     def _findTargetedS2pROIs(self, plot: bool = True):
         """finding s2p cell ROIs that were also SLM targets (or more specifically within the target areas as specified by _findTargetAreas - include 15um radius from center coordinate of spiral)
@@ -1168,6 +1164,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         return np.s_[stim_end: stim_end + self.post_stim_response_frames_window]
 
 
+
     ## NOT REVIEWED FOR USAGE YET
     def _probResponse(self, plane,
                       trial_sig_calc):  ## FROM VAPE'S CODE, TODO NEED TO CHOOSE BETWEEN HERE AND BOTTOM RELIABILITY CODE
@@ -1548,3 +1545,42 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         from . import _plotting
         _plotting.plot_single_tiff(img, frame_num=0)
 
+    def _targetSpread(self):
+        '''
+        Find the mean Euclidean distance of responding targeted cells (trial-wise and trial average)
+        '''
+        # for each trial find targeted cells that responded
+        trial_responders = self.trial_sig_dff[0]
+        targeted_cells = np.repeat(self.targeted_cells[..., None],
+                                   trial_responders.shape[1], 1)  # [..., None] is a quick way to expand_dims
+        targeted_responders = targeted_cells & trial_responders
+
+        cell_positions = np.array(self.Suite2p.cell_med[0])
+
+        dists = np.empty(self.n_trials)
+
+        # for each trial, find the spread of responding targeted cells
+        for i, trial in enumerate(range(self.n_trials)):
+            resp_cell = np.where(targeted_responders[:, trial])
+            resp_positions = cell_positions[resp_cell]
+
+            if resp_positions.shape[0] > 1:  # need more than 1 cell to measure spread...
+                dists[i] = self._euclidDist(resp_positions)
+            else:
+                dists[i] = np.nan
+
+        self.trial_euclid_dist = dists
+
+        # find spread of targets that statistically significantly responded over all trials
+        responder = self.sta_sig[0]
+        targeted_responders = responder & self.targeted_cells
+
+        resp_cell = np.where(targeted_responders)
+        resp_positions = cell_positions[resp_cell]
+
+        if resp_positions.shape[0] > 1:  # need more than 1 cell to measure spread...
+            dist = self._euclidDist(resp_positions)
+        else:
+            dist = np.nan
+
+        self.sta_euclid_dist = dist

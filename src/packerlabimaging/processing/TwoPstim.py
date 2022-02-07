@@ -11,13 +11,16 @@ import xml.etree.ElementTree as ET
 from packerlabimaging.utils.utils import path_finder, points_in_circle_np
 
 
-@dataclass
 class naparm:
-    naparm_path: str
-
-    def __post_init__(self):
-        self.target_areas = None
+    def __init__(self, naparm_path: str):
+        self.naparm_path = naparm_path
         self._photostimProcessing()
+
+        self.stim_freq: float  # frequency of photostim protocol (of a single photostim trial? or time between individual photostim trials?)
+        self.single_stim_dur: float  # duration of a single photostim shot
+        self.inter_point_delay: float  # duration of the delay between each photostim shot
+        self.n_shots: int  # num of photostim shots in a single photostim trial
+        self.stim_duration_frames: int  # num of imaging frames in a single photostim trial
 
     def _parseNAPARMxml(self):
 
@@ -86,8 +89,7 @@ class naparm:
             raise ValueError(f"could not set spiral_size, unable to get from NAPARM gpl")
         # self.single_stim_dur = single_stim_dur  # not sure why this was previously getting this value from here, but I'm now getting it from the xml file above
 
-    def _photostimProcessing(
-            self):  # TODO need to figure out how to handle different types of photostimulation experiment setups - think through in detail with Rob at a later date?
+    def _photostimProcessing(self):  # TODO need to figure out how to handle different types of photostimulation experiment setups - think through in detail with Rob at a later date?
 
         """
         remember that this is currently configured for only the interleaved photostim, not the really fast photostim of multi-groups
@@ -119,7 +121,23 @@ class naparm:
         print('Single stim. Duration (ms): ', self.single_stim_dur)
         print('Total stim. Duration per trial (ms): ', self.stim_dur)
 
-    def _readTargetsImage(self):
+
+class Targets(naparm):
+    def __init__(self, naparm_path, frame_x, frame_y, pix_sz_x, pix_sz_y):
+        naparm.__init__(self, naparm_path=naparm_path)
+        self.__frame_x = frame_x
+        self.__frame_y = frame_y
+        self.__pix_sz_x = pix_sz_x
+        self.__pix_sz_y = pix_sz_y
+
+        self.targets, self.target_coords, self.n_targets = self._readTargetsImage(self.__frame_x, self.__frame_y)
+        self.target_areas, self.target_areas_exclude = self._findTargetsAreas(self.__frame_x, self.__pix_sz_x)
+        self.euclid_dist = self._euclidDist(resp_positions=self.target_coords)
+
+    def _readTargetsImage(self, frame_x, frame_y):
+        scale_factor_x = frame_x / 512  ## TODO need to get this from the NAPARM OUTPUT somehow...
+        scale_factor_y = frame_y / 512  ## TODO how does the OBFOV scaling work?
+
         print('\n\t\----- Loading up target coordinates...')
 
         # load naparm targets file for this experiment
@@ -127,58 +145,54 @@ class naparm:
 
         listdir = os.listdir(naparm_path)
 
-
         ## All SLM targets
-        target_image = np.empty(shape=[1, 1])
+        target_file = ''
         for path in listdir:
             if 'AllFOVTargets' in path:
                 target_file = path
-                target_image = tf.imread(os.path.join(naparm_path, target_file))
-        if target_image == np.empty(shape=[1, 1]):
+        if target_file == '':
             raise FileNotFoundError('AllFOVTargets image not found')
 
+        target_image = tf.imread(os.path.join(naparm_path, target_file))
         targets = np.where(target_image > 0)
-        
+
         # find targets by stim groups
         target_files = []
         for path in listdir:
             if 'FOVTargets_00' in path:
                 target_files.append(path)
 
+        target_coords = []
+        n_targets = []
         counter = 0
         for slmgroup in target_files:
             target_image = tf.imread(os.path.join(naparm_path, slmgroup))
             targets = np.where(target_image > 0)
-            targetCoordinates = list(zip(targets[1] * scale_factor, targets[0] * scale_factor))
-            self.target_coords.append(targetCoordinates)
-            self.n_targets += [len(targetCoordinates)]
+            targetCoordinates = list(zip(targets[1] * scale_factor_x, targets[0] * scale_factor_x))
+            target_coords.append(targetCoordinates)
+            n_targets.append(len(targetCoordinates))
             print('\t\tNumber of targets (in SLM group %s): ' % (counter + 1), len(targetCoordinates))
             counter += 1
-        
-        return targets
 
+        target_coords = np.asarray(target_coords)
 
-class Targets(naparm):
-    def __init__(self, frame_x, frame_y, pix_sz_x, pix_sz_y):
-        naparm.__init__()
+        return targets, target_coords, n_targets
 
+    def _findTargetsAreas(self, frame_x, pix_sz_x, frame_y=None, pix_sz_y=None):  # TODO needs review by Rob - any bits of code missing under here? for e.g. maybe for target coords under multiple SLM groups?
 
-    def _findTargetsAreas(self, frame_x, frame_y, pix_sz_x, pix_sz_y):  # TODO needs review by Rob - any bits of code missing under here? for e.g. maybe for target coords under multiple SLM groups?
-
-        '''
+        """
         Finds cells that have been targeted for optogenetic photostimulation using Naparm in all-optical type experiments.
         output: coordinates of targets, and circular areas of targets
         Note this is not done by target groups however. So all of the targets are just in one big ls.
-        '''
+        """
 
-        targets = self._readTargetsImage()
 
-        scale_factor = frame_x / 512  ## TODO need to get this from the NAPARM OUTPUT
+        scale_factor = frame_x / 512  ## TODO need to get this from the NAPARM OUTPUT somehow...
 
         # targets_1 = np.where(target_image_scaled_1 > 0)
         # targets_2 = np.where(target_image_scaled_2 > 0)
 
-        targetCoordinates = list(zip(targets[1] * scale_factor, targets[0] * scale_factor))
+        targetCoordinates = list(zip(self.targets[1] * scale_factor, self.targets[0] * scale_factor))
         print('\t\tNumber of targets:', len(targetCoordinates))
 
         # targetCoordinates_1 = ls(zip(targets_1[1], targets_1[0]))
@@ -198,17 +212,19 @@ class Targets(naparm):
         print(f"\t\tpix sz x: {pix_sz_x}um")
         print("\t\tradius (in pixels): {:.2f}px".format(radius_px * pix_sz_x))
 
+        target_areas = []
         for coord in targetCoordinates:
             target_area = ([item for item in points_in_circle_np(radius_px, x0=coord[0], y0=coord[1])])
-            self.target_areas.append(target_area)
+            target_areas.append(target_area)
 
         ## target_areas that need to be excluded when filtering for nontarget cells
         radius_px = int(np.ceil(((self.spiral_size / 2) + 2.5) / pix_sz_x))
         print("\t\tradius of target exclusion zone (in pixels): {:.2f}px".format(radius_px * pix_sz_x))
 
+        target_areas_exclude = []
         for coord in targetCoordinates:
             target_area = ([item for item in points_in_circle_np(radius_px, x0=coord[0], y0=coord[1])])
-            self.target_areas_exclude.append(target_area)
+            target_areas_exclude.append(target_area)
 
         # # get areas for SLM group #1
         # target_areas_1 = []
@@ -224,66 +240,7 @@ class Targets(naparm):
         #     target_areas_2.append(target_area)
         # self.target_areas_2 = target_areas_2
 
-
-
-    def getTargetImage(obj):
-        targ_img = np.zeros((obj.frame_x, obj.frame_y), dtype='uint8')
-        # all FOV targets
-        targ_areas = obj.target_areas
-        for targ_area in targ_areas:
-            for coord in targ_area:
-                targ_img[coord[1], coord[0]] = 3000
-
-        # targ_img_1 = np.zeros((obj.frame_x, obj.frame_y), dtype='uint8')
-        # # FOV targets group #1
-        # targ_areas = obj.target_areas_1
-        # for targ_area in targ_areas:
-        #     for coord in targ_area:
-        #         targ_img_1[coord[1], coord[0]] = 3000
-        #
-        # targ_img_2 = np.zeros((obj.frame_x, obj.frame_y), dtype='uint8')
-        # # FOV targets group #2
-        # targ_areas = obj.target_areas_2
-        # for targ_area in targ_areas:
-        #     for coord in targ_area:
-        #         targ_img_2[coord[1], coord[0]] = 3000
-
-        return targ_img  # , targ_img_1, targ_img_2
-
-    def _cropTargets(self, target_image_scaled):
-        '''
-        Crop the target image based on scan field centre and FOV size in pixels
-
-        Inputs:
-            target_image_scaled - 8-bit image with single pixels of 255 indicating target locations
-        '''
-        # make a bounding box centred on (512,512)
-        x1 = 511 - self.imparams.frame_x / 2
-        x2 = 511 + self.imparams.frame_x / 2
-        y1 = 511 - self.imparams.frame_y / 2
-        y2 = 511 + self.imparams.frame_y / 2
-
-        # scan amplitudes in voltage from PrairieView software for 1x FOV
-        ScanAmp_X = 2.62 * 2
-        ScanAmp_Y = 2.84 * 2
-
-        # scale scan amplitudes according to the imaging zoom
-        ScanAmp_V_FOV_X = ScanAmp_X / self.imparams.zoom
-        ScanAmp_V_FOV_Y = ScanAmp_Y / self.imparams.zoom
-
-        # find the voltage per pixel
-        scan_pix_y = ScanAmp_V_FOV_Y / 1024
-        scan_pix_x = ScanAmp_V_FOV_X / 1024
-
-        # find the offset (if any) of the scan field centre, in pixels
-        offset_x = self.imparams.scan_x / scan_pix_x
-        offset_y = self.imparams.scan_y / scan_pix_y
-
-        # offset the bounding box by the appropriate number of pixels
-        x1, x2, y1, y2 = round(x1 + offset_x), round(x2 + offset_x), round(y1 - offset_y), round(y2 - offset_y)
-
-        # crop the target image using the offset bounding box to put the targets in imaging space
-        return target_image_scaled[y1:y2, x1:x2]
+        return target_areas, target_areas_exclude
 
     def _euclidDist(self, resp_positions):
         '''
@@ -311,42 +268,68 @@ class Targets(naparm):
 
         return euclid_dist
 
-    def _targetSpread(self):
-        '''
-        Find the mean Euclidean distance of responding targeted cells (trial-wise and trial average)
-        '''
-        # for each trial find targeted cells that responded
-        trial_responders = self.trial_sig_dff[0]
-        targeted_cells = np.repeat(self.targeted_cells[..., None],
-                                   trial_responders.shape[1], 1)  # [..., None] is a quick way to expand_dims
-        targeted_responders = targeted_cells & trial_responders
 
-        cell_positions = np.array(self.cell_med[0])
 
-        dists = np.empty(self.n_trials)
+    ## extra code from Rob - not entirely sure that we need to include?
+    # def getTargetImage(obj, frame_x, frame_y):
+    #     targ_img = np.zeros((frame_x, frame_y), dtype='uint8')
+    #     # all FOV targets
+    #     targ_areas = obj.target_areas
+    #     for targ_area in targ_areas:
+    #         for coord in targ_area:
+    #             targ_img[coord[1], coord[0]] = 3000
+    #
+    #     # targ_img_1 = np.zeros((obj.frame_x, obj.frame_y), dtype='uint8')
+    #     # # FOV targets group #1
+    #     # targ_areas = obj.target_areas_1
+    #     # for targ_area in targ_areas:
+    #     #     for coord in targ_area:
+    #     #         targ_img_1[coord[1], coord[0]] = 3000
+    #     #
+    #     # targ_img_2 = np.zeros((obj.frame_x, obj.frame_y), dtype='uint8')
+    #     # # FOV targets group #2
+    #     # targ_areas = obj.target_areas_2
+    #     # for targ_area in targ_areas:
+    #     #     for coord in targ_area:
+    #     #         targ_img_2[coord[1], coord[0]] = 3000
+    #
+    #     return targ_img  # , targ_img_1, targ_img_2
 
-        # for each trial, find the spread of responding targeted cells
-        for i, trial in enumerate(range(self.n_trials)):
-            resp_cell = np.where(targeted_responders[:, trial])
-            resp_positions = cell_positions[resp_cell]
+    # def _cropTargets(self, target_image_scaled):
+    #     '''
+    #     Crop the target image based on scan field centre and FOV size in pixels
+    #
+    #     Inputs:
+    #         target_image_scaled - 8-bit image with single pixels of 255 indicating target locations
+    #     '''
+    #     # make a bounding box centred on (512,512)
+    #     x1 = 511 - self.imparams.frame_x / 2
+    #     x2 = 511 + self.imparams.frame_x / 2
+    #     y1 = 511 - self.imparams.frame_y / 2
+    #     y2 = 511 + self.imparams.frame_y / 2
+    #
+    #     # scan amplitudes in voltage from PrairieView software for 1x FOV
+    #     ScanAmp_X = 2.62 * 2
+    #     ScanAmp_Y = 2.84 * 2
+    #
+    #     # scale scan amplitudes according to the imaging zoom
+    #     ScanAmp_V_FOV_X = ScanAmp_X / self.imparams.zoom
+    #     ScanAmp_V_FOV_Y = ScanAmp_Y / self.imparams.zoom
+    #
+    #     # find the voltage per pixel
+    #     scan_pix_y = ScanAmp_V_FOV_Y / 1024
+    #     scan_pix_x = ScanAmp_V_FOV_X / 1024
+    #
+    #     # find the offset (if any) of the scan field centre, in pixels
+    #     offset_x = self.imparams.scan_x / scan_pix_x
+    #     offset_y = self.imparams.scan_y / scan_pix_y
+    #
+    #     # offset the bounding box by the appropriate number of pixels
+    #     x1, x2, y1, y2 = round(x1 + offset_x), round(x2 + offset_x), round(y1 - offset_y), round(y2 - offset_y)
+    #
+    #     # crop the target image using the offset bounding box to put the targets in imaging space
+    #     return target_image_scaled[y1:y2, x1:x2]
 
-            if resp_positions.shape[0] > 1:  # need more than 1 cell to measure spread...
-                dists[i] = self._euclidDist(resp_positions)
-            else:
-                dists[i] = np.nan
 
-        self.trial_euclid_dist = dists
 
-        # find spread of targets that statistically significantly responded over all trials
-        responder = self.sta_sig[0]
-        targeted_responders = responder & self.targeted_cells
 
-        resp_cell = np.where(targeted_responders)
-        resp_positions = cell_positions[resp_cell]
-
-        if resp_positions.shape[0] > 1:  # need more than 1 cell to measure spread...
-            dist = self._euclidDist(resp_positions)
-        else:
-            dist = np.nan
-
-        self.sta_euclid_dist = dist

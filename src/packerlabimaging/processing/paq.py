@@ -129,7 +129,7 @@ def paq2py(file_path=None, plot=False):
 
 
 class paqData:
-    def __init__(self, paq_path: str, frame_times_channame: str, option: List[str]):
+    def __init__(self, paq_path: str, frame_times_channame: str, option: str):
         """
         reads in paq data from a .paq file for an experiment performed using PackIO.
 
@@ -180,7 +180,7 @@ class paqData:
         print(f"\t|- adding '{chan_name}' channel data as attribute")
         setattr(self, chan_name, paq_data['data'][chan_name_idx])
 
-    def paqProcessing(self, paq, options: List[str]):  # TODO is this best implementation of this??
+    def paqProcessing(self, paq, options: str):  # TODO is this best implementation of this (i mean the options thing to specify which funcs to run)
         """
         Loads .paq file and saves data from individual channels.
 

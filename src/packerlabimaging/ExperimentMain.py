@@ -141,7 +141,7 @@ class Experiment:
 
 
 
-    def add_suite2p(self):
+    def add_suite2p(self):  # TODO use add_suite2p method in __post_init__ (or refactor that bit out and create new method for run Suite2p)
         self._trialsSuite2p = []
         for trial in self.trialIDs:
             assert 's2p_use' in [*self.trialsInformation[trial]], 'when trying to utilize suite2p , must provide value for `s2p_use` ' \
@@ -167,7 +167,7 @@ class Experiment:
 
 
 
-    def add_trial(self, trialID: str = None, trialsInformation: trialsInformation = None):
+    def add_trial(self, trialID: str = None, trialsInformation: trialsInformation = None):  # TODO use the add_trial method in _runExpTrialsProcessing! also add example of .add_trial() to tutorial!
 
         print(f"\n\n\- ADDING trial: {trial}, expID: ({self.expID})")
         __trialsInformation = trialsInformation if trialsInformation else self.trialsInformation[trialID]

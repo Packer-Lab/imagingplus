@@ -62,10 +62,10 @@ def test_AllOpticalClass(alloptical_trial_fixture):
 
 
 # %%
-import packerlabimaging as pkg
-
-expobj = pkg.import_obj('/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
-self = expobj.load_trial('t-013')
-
-self.data
-
+# import packerlabimaging as pkg
+#
+# expobj = pkg.import_obj('/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
+# self = expobj.load_trial('t-013')
+#
+# self.data
+#
