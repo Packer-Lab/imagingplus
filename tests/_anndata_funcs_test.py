@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from packerlabimaging.utils.anndata import AnnotatedData
+from packerlabimaging.processing.anndata import AnnotatedData
 
 
 # %%

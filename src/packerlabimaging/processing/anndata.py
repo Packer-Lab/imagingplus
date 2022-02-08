@@ -1,5 +1,6 @@
 import anndata as ad
-from typing import Optional
+from typing import Optional, Literal
+
 
 class AnnotatedData(ad.AnnData):
     """Creates annotated data (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial."""
@@ -90,10 +91,10 @@ class AnnotatedData(ad.AnnData):
     def del_variables(self, obs_name: str): # TODO
         "removes a key from variables from an anndata object, of the key var_name"
 
-    def extend_anndata(self, additional_adata: ad.AnnData, axis: int = 0):
+    def extend_anndata(self, additional_adata: ad.AnnData, axis: Literal[0,1] = 0):
         """
-        :param adata_obj: an anndata object of dimensions n obs x m var
         :param additional_adata: an anndata object of dimensions n obs x # var or, # obs x m var (depending on which axis to extend)
+        :param axis:
         """
         adata = ad.concat([self, additional_adata], axis=axis)
         return adata

@@ -16,8 +16,7 @@ import tifffile as tf
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
 from packerlabimaging.utils.utils import SaveDownsampledTiff, make_tiff_stack, threshold_detect, normalize_dff
 from packerlabimaging.processing.paq import paq2py, paqData
-from .processing import suite2p
-from .utils import imagingMetadata, anndata as ad
+from .processing import suite2p, anndata as ad
 from .utils.imagingMetadata import PrairieViewMetadata, ImagingMetadata
 
 
