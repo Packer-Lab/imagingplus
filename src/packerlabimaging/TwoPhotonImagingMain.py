@@ -80,23 +80,21 @@ class TwoPhotonImagingTrial:
         else:
             Warning(f"NO imaging microscope parameters set. ")
 
-
         # self._parsePVMetadata() if 'Bruker' in microscope else Warning(f'retrieving data-collection metainformation from '
         #                                                                f'{microscope} microscope has not been implemented yet')
 
         # run paq processing if paq_path is provided for trial
-        self.paq = paqData(paq_path=self.paq_path, option=['TwoPhotonImaging'], frame_times_channame='frame_clock') if hasattr(self, 'paq_path') else None
+        self.paq = paqData(paq_path=self.paq_path, option='TwoPhotonImaging', frame_times_channame='frame_clock') if hasattr(self, 'paq_path') else None
         # self.paq = _paq.paqProcessing(self, paq_path=self.paq_path, plot=False) if hasattr(self, 'paq_path') else None
 
         # if provided, add Suite2p results for trial
-        for i in ['suite2p_experiment_obj', 'total_frames_stitched']:   ## TODO need to remove requirement for providing suite2p_experiment_obj, and total_frames_stitched (probably part of making trial objs children of Experiment)
+        for i in ['suite2p_experiment_obj', 'total_frames_stitched']:
             assert i in [*kwargs], f'{i} required in Suite2pResultsTrial call'
             assert kwargs[i] is not None, f'{i} Suite2pResultsTrial call is None'
         if 'suite2p_experiment_obj' in [*kwargs] and 'total_frames_stitched' in [*kwargs]:
             self.Suite2p = suite2p.Suite2pResultsTrial(suite2p_experiment_obj=kwargs['suite2p_experiment_obj'],
                                                         trial_frames=(kwargs['total_frames_stitched'],
                                                                            kwargs['total_frames_stitched'] + self.imparams.n_frames))  # use trial obj's current trial frames
-
 
         # normalize dFF for raw Flu
         self.dfof()
