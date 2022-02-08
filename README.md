@@ -10,6 +10,21 @@ data processing for ROI detection. Ultimately, the goal of this package is to ju
 It should be completely usable and understandable for anyone with the correct data in hand and basic knowledge of Python. There are tutorials to help along the way.  
 We hope that it provides a useful structure to organize your experimental data, and some functionality to interact and process your data in an efficient manner. 
 
+### Installation instructions
+
+1. Download the git repo of the package. Remember the `path_to_directory` that the repo was downloaded to.
+   1. to download to a Linux server from command line use: `{TODO}`
+2. Activate any conda environment (if using)
+3. `cd` to `path_to_directory` where the repo was downloaded to.
+4. From `path_to_directory` run `pip install -e packerlabimaging`.
+
+#### Test that `packerlabimaging` is successfully installed:
+1. activate conda environment from which `packerlabimaging` was installed.
+2. start python from command line using: `python`, or start python in your preferred method (e.g. jupyter notebook or IDE).
+3. Import the package: `import packerlabimaging` or `import packerlabimaging as pkg`.
+
+
+
 ### Data Analysis Structure and Organization
 
 The data organization of the package follows object-oriented programming in Python.
