@@ -13,6 +13,6 @@ from ._version import __version__
 from packerlabimaging._io import import_obj
 from .ExperimentMain import Experiment, define_term
 from packerlabimaging.utils.utils import Utils
-import packerlabimaging.plotting.plotting as plot
+import packerlabimaging.plotting.plotting as plotting
 
 print(f"\nimported packerlabimaging\n\tversion: {__version__}\n")

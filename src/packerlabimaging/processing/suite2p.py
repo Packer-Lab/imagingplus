@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from typing import Dict, Any
 
 import numpy as np
 import suite2p
@@ -57,7 +58,7 @@ class Suite2pResultsExperiment:
                 self._retrieveSuite2pData(self.path, neuropil_coeff=neuropil_coeff)
             except:
                 raise ValueError(
-                    f'suite2p processed data could not be loaded from the provided `s2pResultsPath`: {s2pResultsPath}')
+                    f'Something went wrong while trying to load suite2p processed data from: {s2pResultsPath}')
 
         # Attributes
         self.n_frames: int = 0  # total number of imaging frames in the Suite2p run
@@ -65,12 +66,14 @@ class Suite2pResultsExperiment:
     def __repr__(self):
         return 'Suite2p Results (Experiment level) Object'
 
-    def _retrieveSuite2pData(self, s2p_path: str, neuropil_coeff: float = 0.7, save: bool = True):
+    def _retrieveSuite2pData(self, s2p_path: str = None, neuropil_coeff: float = 0.7):
         """processing of suite2p data from the current t-series
         :param s2p_path: path to the directory containing suite2p outputs
         :param neuropil_coeff: choose to subtract neuropil or not when loading s2p traces
         :param save: choose to save data object or not
         """
+
+        s2p_path = self.path if s2p_path is None else s2p_path
 
         for plane in range(self.n_planes):  ## TODO really don't know how planes are collected and fed into suite2p
 
@@ -139,8 +142,28 @@ class Suite2pResultsExperiment:
         self.iscell = np.load(Path(self.path).joinpath('iscell.npy'), allow_pickle=True)[:, 0].astype(bool)
         self.stats = np.load(stats_file, allow_pickle=True)
 
-        self._im = suite2p.ROI.stats_dicts_to_3d_array(self.stats, Ly=self.output_op['Ly'], Lx=self.output_op['Lx'], label_id=True)
-        self._im[self._im == 0] = np.nan
+        # quick workaround (patch of suite2p code) because of suite2p internal error for these methods in ROI class
+        def from_stat_dict(stat: Dict[str, Any]) -> suite2p.ROI:
+            return suite2p.ROI(ypix=stat['ypix'], xpix=stat['xpix'], lam=stat['lam'], med=stat['med'], do_crop=False)
+
+        def to_array_(self, Ly: int, Lx: int) -> np.ndarray:
+            """Returns a 2D boolean array of shape (Ly x Lx) indicating where the roi is located."""
+            arr = np.zeros((Ly, Lx), dtype=float)
+            arr[self.ypix, self.xpix] = 1
+            return arr
+
+        def stats_dicts_to_3d_array_():
+            arrays = []
+            for i, stat in enumerate(self.stats):
+                array = to_array_(from_stat_dict(stat=stat), Ly=self.output_op['Ly'], Lx=self.output_op['Lx'])
+                array *= i + 1
+                arrays.append(array)
+            return np.stack(arrays)
+
+        self.im = stats_dicts_to_3d_array_()
+        self.im[self.im == 0] = np.nan
+
+        # self.im = suite2p.ROI.stats_dicts_to_3d_array(self.stats, Ly=self.output_op['Ly'], Lx=self.output_op['Lx'], label_id=True)
 
     # consider use of properties
     # @property
@@ -269,7 +292,7 @@ class Suite2pResultsTrial:
                 pass
 
         if self.suite2p_overall.n_planes == 1:
-            self.cell_id = self.cell_id[0]
+            self.cell_id = self.cell_id
             self.stat = self.stat[0]
 
             self.raw = self.suite2p_overall.raw[:, self.trial_frames[0]:self.trial_frames[1]]

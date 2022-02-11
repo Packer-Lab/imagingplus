@@ -10,11 +10,13 @@ import random
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
+from packerlabimaging import Experiment
+
 from packerlabimaging.AllOpticalMain import AllOpticalTrial
 
 from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
 from packerlabimaging.plotting._utils import plotting_decorator, make_random_color_array, _add_scalebar, \
-    image_frame_options, dataplot_frame_options, dataplot_ax_options
+    image_frame_options, dataplot_frame_options, dataplot_ax_options, plot_coordinates, heatmap_options
 from packerlabimaging.utils.utils import normalize_dff
 
 
@@ -68,24 +70,30 @@ def plotRoiLocations(trialobj: TwoPhotonImagingTrial, suite2p_rois: list, backgr
     _add_scalebar(trialobj=trialobj, ax=ax) if 'scalebar' in [*kwargs] and kwargs['scalebar'] is True else None
 
 
-def makeSuite2pPlots(trialobj):
+def makeSuite2pPlots(obj: Union[Experiment, TwoPhotonImagingTrial]):
     "credit: run_s2p tutorial on Mouseland/Suite2p on github"
+
+    image_frame_options()
+    heatmap_options()
+
+    plt.figure(figsize=[15, 5])
     plt.subplot(1, 4, 1)
-    plt.imshow(trialobj.Suite2p.output_op['max_proj'], cmap='gray')
-    plt.title("Registered Image, Max Projection")
+    plt.imshow(obj.Suite2p.output_op['max_proj'], cmap='gray')
+    plt.title("Registered Image, Max Projection", wrap=True)
 
     plt.subplot(1, 4, 2)
-    plt.imshow(np.nanmax(trialobj.Suite2p._im, axis=0), cmap='jet')
+    plt.imshow(np.nanmax(obj.Suite2p.im, axis=0), cmap='jet')
     plt.title("All ROIs Found")
 
     plt.subplot(1, 4, 3)
-    plt.imshow(np.nanmax(trialobj.Suite2p._im[~trialobj.iscell], axis=0, ), cmap='jet')
+    plt.imshow(np.nanmax(obj.Suite2p.im[~obj.Suite2p.iscell], axis=0, ), cmap='jet')
     plt.title("All Non-Cell ROIs")
 
     plt.subplot(1, 4, 4)
-    plt.imshow(np.nanmax(trialobj.Suite2p._im[trialobj.iscell], axis=0), cmap='jet')
-    plt.title("All Cell ROIs");
+    plt.imshow(np.nanmax(obj.Suite2p.im[obj.Suite2p.iscell], axis=0), cmap='jet')
+    plt.title("All Cell ROIs")
 
+    plt.show()
 
 
 # (full) plot individual cell's flu or dFF trace, with photostim. timings for that cell
@@ -109,14 +117,16 @@ def plot_flu_trace(trialobj: TwoPhotonImagingTrial, cell, to_plot='raw', linewid
     # make the plot either as just the raw trace or as a dFF trace with the std threshold line drawn as well.
     ax.plot(data_plot, linewidth=linewidth)
 
-    if x_lims: ax.set_xlim(x_lims)
-    if y_lims: ax.set_ylim(y_lims)
+
+    dataplot_ax_options(ax=ax, **kwargs)
+
+    # if x_lims: ax.set_xlim(x_lims)
+    # if y_lims: ax.set_ylim(y_lims)
 
 
 # plots the raw trace for the Flu mean of the FOV (similar to the ZProject in Fiji)
 @plotting_decorator(figsize=(10, 3))
-def plotMeanRawFluTrace(trialobj: TwoPhotonImagingTrial, stim_span_color='white', stim_lines: bool = True, x_axis='time',
-                        **kwargs):
+def plotMeanFovFluTrace(trialobj: TwoPhotonImagingTrial, x_axis='time', **kwargs):
     """make plot of mean Ca trace averaged over the whole FOV"""
 
     dataplot_frame_options()
@@ -136,14 +146,14 @@ def plotMeanRawFluTrace(trialobj: TwoPhotonImagingTrial, stim_span_color='white'
     ax.set_xlabel('frame #s')
     ax.set_ylabel('Flu (a.u.)')
 
-    dataplot_ax_options()
+    dataplot_ax_options(ax=ax, **kwargs)
 
 
 
-def plot_s2p_raw(expobj, cell_id):
+def plot_s2p_raw(trialobj, cell_id):
     plt.figure(figsize=(50, 3))
-    plt.plot(expobj.baseline_raw[expobj.cell_id.index(cell_id)], linewidth=0.5, c='black')
-    plt.xlim(0, len(expobj.baseline_raw[0]))
+    plt.plot(trialobj.baseline_raw[trialobj.cell_id.index(cell_id)], linewidth=0.5, c='black')
+    plt.xlim(0, len(trialobj.baseline_raw[0]))
     plt.show()
 
 # suite2p data
@@ -151,14 +161,14 @@ def plot_s2p_raw(expobj, cell_id):
 
 # LFP
 @plotting_decorator(figsize=(10, 3))
-def plotLfpSignal(expobj: TwoPhotonImagingTrial, stim_span_color='powderblue', downsample: bool = True, stim_lines: bool = True, sz_markings: bool = False,
+def plotLfpSignal(trialobj: TwoPhotonImagingTrial, stim_span_color='powderblue', downsample: bool = True, stim_lines: bool = True, sz_markings: bool = False,
                   title='LFP trace', x_axis='time', hide_xlabel=False, fig=None, ax=None, **kwargs):
     """make plot of LFP with also showing stim locations
     NOTE: ONLY PLOTTING LFP SIGNAL CROPPED TO 2P IMAGING FRAME START AND END TIMES - SO CUTTING OUT THE LFP SIGNAL BEFORE AND AFTER"""
 
     print(f"\t \- PLOTTING LFP Signal trace ... ")
 
-    if not hasattr(expobj.paq, 'voltage'):
+    if not hasattr(trialobj.paq, 'voltage'):
         raise AttributeError(f"no voltage data found in .paq submodule. Please add to .paq file")
 
     # # if there is a fig and ax provided in the function call then use those, otherwise start anew
@@ -169,7 +179,7 @@ def plotLfpSignal(expobj: TwoPhotonImagingTrial, stim_span_color='powderblue', d
     #     if 'figsize' in kwargs.keys():
     #         fig, ax = plt.subplots(figsize=kwargs['figsize'])
     #     else:
-    #         fig, ax = plt.subplots(figsize=[60 * (expobj.stim_start_times[-1] + 1e5 - (expobj.stim_start_times[0] - 1e5)) / 1e7, 3])
+    #         fig, ax = plt.subplots(figsize=[60 * (trialobj.stim_start_times[-1] + 1e5 - (trialobj.stim_start_times[0] - 1e5)) / 1e7, 3])
 
     if 'alpha' in kwargs:
         alpha = kwargs['alpha']
@@ -183,10 +193,10 @@ def plotLfpSignal(expobj: TwoPhotonImagingTrial, stim_span_color='powderblue', d
         color = 'steelblue'
 
     # option for downsampling of data plot trace
-    x = range(len(expobj.paq.voltage[expobj.paq.frame_times[0]: expobj.paq.frame_times[-1]]))
-    signal = expobj.paq.voltage[expobj.paq.frame_times[0]: expobj.paq.frame_times[-1]]
+    x = range(len(trialobj.paq.voltage[trialobj.paq.frame_times[0]: trialobj.paq.frame_times[-1]]))
+    signal = trialobj.paq.voltage[trialobj.paq.frame_times[0]: trialobj.paq.frame_times[-1]]
     if downsample:
-        labels = list(range(0, int(len(signal) / expobj.paq.paq_rate * 1), 15))[::2]  # set x ticks at every 30 secs
+        labels = list(range(0, int(len(signal) / trialobj.paq.paq_rate * 1), 15))[::2]  # set x ticks at every 30 secs
         down = 1000
         signal = signal[::down]
         x = x[::down]
@@ -209,14 +219,14 @@ def plotLfpSignal(expobj: TwoPhotonImagingTrial, stim_span_color='powderblue', d
     labels_ = kwargs['labels'] if 'labels' in [*kwargs] else ax.get_xticklabels()
     labels_ = [int(i) for i in labels_]
     if 'time' in x_axis or 'Time' in x_axis:
-        ax.set_xticks(ticks=[(label * expobj.paq.paq_rate) for label in labels_])
+        ax.set_xticks(ticks=[(label * trialobj.paq.paq_rate) for label in labels_])
         ax.set_xticklabels(labels_)
         ax.tick_params(axis='both', which='both', length=3)
         if not hide_xlabel:
             ax.set_xlabel('Time (secs)')
     # elif 'frame' or "frames" or "Frames" or "Frame" in x_axis:
-    #     x_ticks = range(0, expobj.n_frames, 2000)
-    #     x_clocks = [x_fr*expobj.paq_rate for x_fr in x_ticks]  ## convert to paq clock dimension
+    #     x_ticks = range(0, trialobj.n_frames, 2000)
+    #     x_clocks = [x_fr*trialobj.paq_rate for x_fr in x_ticks]  ## convert to paq clock dimension
     #     ax.set_xticks(x_clocks)
     #     ax.set_xticklabels(x_ticks)
     #     if not hide_xlabel:
@@ -224,13 +234,13 @@ def plotLfpSignal(expobj: TwoPhotonImagingTrial, stim_span_color='powderblue', d
     else:
         ax.set_xlabel('paq clock')
     ax.set_ylabel('Voltage')
-    # ax.set_xlim([expobj.frame_start_time_actual, expobj.frame_end_time_actual])  ## this should be limited to the 2p acquisition duration only
+    # ax.set_xlim([trialobj.frame_start_time_actual, trialobj.frame_end_time_actual])  ## this should be limited to the 2p acquisition duration only
 
     # set ylimits:
     if 'ylims' in kwargs:
         ax.set_ylim(kwargs['ylims'])
     else:
-        ax.set_ylim([np.mean(expobj.paq.voltage) - 10, np.mean(expobj.paq.voltage) + 10])
+        ax.set_ylim([np.mean(trialobj.paq.voltage) - 10, np.mean(trialobj.paq.voltage) + 10])
 
     # set xlimits:
     if 'xlims' in kwargs and kwargs['xlims'] is not None:
@@ -238,12 +248,12 @@ def plotLfpSignal(expobj: TwoPhotonImagingTrial, stim_span_color='powderblue', d
 
 
     # add title
-    ax.set_title(f"{expobj.t_series_name}")
+    ax.set_title(f"{trialobj.t_series_name}")
 
     # return None
     # if not 'fig' in kwargs.keys():
     #     ax.set_title(
-    #         '%s - %s %s %s' % (title, expobj.metainfo['exptype'], expobj.metainfo['animal prep.'], expobj.metainfo['trial']))
+    #         '%s - %s %s %s' % (title, trialobj.metainfo['exptype'], trialobj.metainfo['animal prep.'], trialobj.metainfo['trial']))
     #
     # # options for showing plot or returning plot
     # if 'show' in kwargs.keys():
@@ -258,11 +268,11 @@ def plotLfpSignal(expobj: TwoPhotonImagingTrial, stim_span_color='powderblue', d
 # alloptical trial
 ### plot the location of all SLM targets, along with option for plotting the mean img of the current trial
 @plotting_decorator(figsize=(5, 5))
-def plot_SLMtargets_Locs(expobj: AllOpticalTrial, targets_coords: list = None, background: np.ndarray = None, fig=None, ax=None, **kwargs):
+def plot_SLMtargets_Locs(trialobj: AllOpticalTrial, targets_coords: list = None, background: np.ndarray = None, fig=None, ax=None, **kwargs):
     """
     plot SLM target coordinate locations
 
-    :param expobj:
+    :param trialobj:
     :param targets_coords: ls containing (x,y) coordinates of targets to plot
     :param background:
     :param kwargs:
@@ -279,35 +289,35 @@ def plot_SLMtargets_Locs(expobj: AllOpticalTrial, targets_coords: list = None, b
     #         fig, ax = plt.subplots()
 
     if background is None:
-        background = np.zeros((expobj.frame_x, expobj.frame_y), dtype='uint16')
+        background = np.zeros((trialobj.frame_x, trialobj.frame_y), dtype='uint16')
         ax.imshow(background, cmap='gray')
     else:
         ax.imshow(background, cmap='gray')
 
-    colors = make_random_color_array(len(expobj.target_coords))
+    colors = make_random_color_array(len(trialobj.target_coords))
     if targets_coords is None:
-        if len(expobj.target_coords) > 1:
-            for i in range(len(expobj.target_coords)):
-                for (x, y) in expobj.target_coords[i]:
+        if len(trialobj.target_coords) > 1:
+            for i in range(len(trialobj.target_coords)):
+                for (x, y) in trialobj.target_coords[i]:
                     ax.scatter(x=x, y=y, edgecolors=colors[i], facecolors='none', linewidths=2.0)
         else:
             if 'edgecolors' in kwargs.keys():
                 edgecolors = kwargs['edgecolors']
             else:
                 edgecolors = 'yellowgreen'
-            for (x, y) in expobj.target_coords_all:
+            for (x, y) in trialobj.target_coords_all:
                 ax.scatter(x=x, y=y, edgecolors=edgecolors, facecolors='none', linewidths=2.0)
     elif targets_coords:
         if 'edgecolors' in kwargs.keys():
             edgecolors = kwargs['edgecolors']
         else:
             edgecolors = 'yellowgreen'
-        plot_coordinates(coords=targets_coords, frame_x=expobj.frame_x, frame_y=expobj.frame_y, edgecolors=edgecolors,
+        plot_coordinates(coords=targets_coords, frame_x=trialobj.frame_x, frame_y=trialobj.frame_y, edgecolors=edgecolors,
                             background=background, fig=fig, ax=ax)
 
     ax.margins(0)
 
-    ax = _add_scalebar(trialobj=expobj, ax=ax)
+    ax = _add_scalebar(trialobj=trialobj, ax=ax)
 
     fig.tight_layout()
 
@@ -317,7 +327,7 @@ def plot_SLMtargets_Locs(expobj: AllOpticalTrial, targets_coords: list = None, b
         else:
             pass
     else:
-        ax.set_title(f'SLM targets location - {expobj.t_series_name}')
+        ax.set_title(f'SLM targets location - {trialobj.t_series_name}')
 
     # if 'show' in kwargs.keys():
     #     if kwargs['show'] is True:
@@ -331,12 +341,12 @@ def plot_SLMtargets_Locs(expobj: AllOpticalTrial, targets_coords: list = None, b
 
 
 ### plot entire trace of individual targeted cells as super clean subplots, with the same y-axis lims
-def plot_photostim_traces(array, expobj: AllOpticalTrial, title='', y_min=None, y_max=None, x_label=None,
+def plot_photostim_traces(array, trialobj: AllOpticalTrial, title='', y_min=None, y_max=None, x_label=None,
                           y_label=None, save_fig=None, **kwargs):
     """
 
     :param array:
-    :param expobj:
+    :param trialobj:
     :param title:
     :param y_min:
     :param y_max:
@@ -358,14 +368,14 @@ def plot_photostim_traces(array, expobj: AllOpticalTrial, title='', y_min=None, 
         axs[i].plot(array[i], linewidth=1, color='black', zorder=2)
         if y_min != None:
             axs[i].set_ylim([y_min, y_max])
-        for j in expobj.stim_start_frames:
+        for j in trialobj.stim_start_frames:
             axs[i].axvline(x=j, c='gray', alpha=0.7, zorder=1)
         if 'scatter' in kwargs.keys():
-            x = expobj.stim_start_frames[kwargs['scatter'][i]]
+            x = trialobj.stim_start_frames[kwargs['scatter'][i]]
             y = [0] * len(x)
             axs[i].scatter(x, y, c='chocolate', zorder=3)
-        if len_ == len(expobj.s2p_cell_targets):
-            axs[i].set_title('Cell # %s' % expobj.s2p_cell_targets[i])
+        if len_ == len(trialobj.s2p_cell_targets):
+            axs[i].set_title('Cell # %s' % trialobj.s2p_cell_targets[i])
         if 'line_ids' in kwargs:
             axs[i].legend(['Target %s' % kwargs['line_ids'][i]], loc='upper left')
 
@@ -382,11 +392,11 @@ def plot_photostim_traces(array, expobj: AllOpticalTrial, title='', y_min=None, 
 
 
 @plotting_decorator(figsize=(10, 6))
-def plot_photostim_traces_overlap(array, expobj: AllOpticalTrial, exclude_id=[], y_spacing_factor=1, title='',
+def plot_photostim_traces_overlap(array, trialobj: AllOpticalTrial, exclude_id=[], y_spacing_factor=1, title='',
                                   x_axis='Time (seconds)', save_fig=None, fig=None, ax=None, **kwargs):
     '''
     :param array:
-    :param expobj:
+    :param trialobj:
     :param spacing: a multiplication factor that will be used when setting the spacing between each trace in the final plot
     :param title:
     :param y_min:
@@ -417,24 +427,24 @@ def plot_photostim_traces_overlap(array, expobj: AllOpticalTrial, exclude_id=[],
             else:
                 linewidth=1
             ax.plot(array[i] + i * 40 * y_spacing_factor, linewidth=linewidth)
-    for j in expobj.stim_start_frames:
+    for j in trialobj.stim_start_frames:
         if j <= array.shape[1]:
             ax.axvline(x=j, c='gray', alpha=0.3)
 
-    ax.set_xlim([0, expobj.n_frames-3000])
+    ax.set_xlim([0, trialobj.n_frames-3000])
 
     ax.margins(0)
     # change x axis ticks to seconds
     if 'Time' in x_axis or 'time' in x_axis:
         # change x axis ticks to every 30 seconds
-        labels = list(range(0, int(expobj.n_frames // expobj.fps), 30))
-        ax.set_xticks(ticks=[(label * expobj.fps) for label in labels])
+        labels = list(range(0, int(trialobj.n_frames // trialobj.fps), 30))
+        ax.set_xticks(ticks=[(label * trialobj.fps) for label in labels])
         ax.set_xticklabels(labels)
         ax.set_xlabel('Time (secs)')
 
         # labels = [item for item in ax.get_xticks()]
         # for item in labels:
-        #     labels[labels.index(item)] = int(round(item / expobj.fps))
+        #     labels[labels.index(item)] = int(round(item / trialobj.fps))
         # ax.set_xticklabels(labels)
         # ax.set_xlabel('Time (secs.)')
 
@@ -583,12 +593,12 @@ def plot_periphotostim_avg2(dataset, fps=None, legend_labels=None, colors=None, 
 
 ### photostim analysis - PLOT avg over all photstim. trials traces from PHOTOSTIM TARGETTED cells
 @plotting_decorator(figsize=(5, 5.5))
-def plot_periphotostim_avg(arr: np.ndarray, expobj: AllOpticalTrial, pre_stim_sec=1.0, post_stim_sec=3.0, title='',
+def plot_periphotostim_avg(arr: np.ndarray, trialobj: AllOpticalTrial, pre_stim_sec=1.0, post_stim_sec=3.0, title='',
                            avg_only: bool = False, x_label=None, y_label=None, ax=None, pad=20, **kwargs):
     """
     plot trace across all stims
     :param arr: Flu traces to plot (will be plotted as individual traces unless avg_only is True) dimensions should be cells x stims x frames
-    :param expobj: instance object of AllOpticalTrial
+    :param trialobj: instance object of AllOpticalTrial
     :param pre_stim_sec: seconds of array to plot for pre-stim period
     :param post_stim_sec: seconds of array to plot for post-stim period
     :param title: title to use for plot
@@ -606,12 +616,12 @@ def plot_periphotostim_avg(arr: np.ndarray, expobj: AllOpticalTrial, pre_stim_se
     :return: ls containing some items about the traces
     """
 
-    fps = expobj.fps  # frames per second rate of the imaging data collection for the data to be plotted
-    exp_prestim = expobj.pre_stim  # frames of pre-stim data collected for each trace for this expobj (should be same as what's under expobj.pre_stim_sec)
+    fps = trialobj.fps  # frames per second rate of the imaging data collection for the data to be plotted
+    exp_prestim = trialobj.pre_stim  # frames of pre-stim data collected for each trace for this trialobj (should be same as what's under trialobj.pre_stim_sec)
     if 'stim_duration' in kwargs.keys():
         stim_duration = kwargs['stim_duration']
     else:
-        stim_duration = expobj.stim_dur / 1000  # seconds of stimulation duration
+        stim_duration = trialobj.stim_dur / 1000  # seconds of stimulation duration
 
     x = list(range(arr.shape[1]))
     # x range in time (secs)

@@ -5,7 +5,7 @@ from typing import Optional, Literal
 class AnnotatedData(ad.AnnData):
     """Creates annotated data (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial."""
 
-    def __init__(self, X, obs, var: Optional=None, data_label=None, **kwargs):
+    def __init__(self, X, obs, var=None, data_label=None, **kwargs):
         __adata_dict = {'X': X, 'obs': obs, 'var': var}
         for key in [*kwargs]:
             __adata_dict[key] = kwargs[key]
@@ -75,21 +75,25 @@ class AnnotatedData(ad.AnnData):
         # return descr
 
 
-    def add_observation(self, obs_name: str, values: list):
+    def add_obs(self, obs_name: str, values: list):
         """adds values to the observations of an anndata object, under the key obs_name"""
         assert len(values) == self.obs.shape[0], f"# of values to add doesn't match # of observations in anndata array"
         self.obs[obs_name] = values
 
-    def del_observation(self, obs_name: str): # TODO
+    def del_obs(self, obs_name: str): # TODO
         "removes a key from observations from an anndata object, of the key obs_name"
+        _ = self.obs.pop(obs_name)
 
-    def add_variables(self, var_name: str, values: list):
+
+    def add_var(self, var_name: str, values: list):
         """adds values to the variables of an anndata object, under the key var_name"""
         assert len(values) == self.var.shape[0], f"# of values to add doesn't match # of observations in anndata array"
         self.var[var_name] = values
 
-    def del_variables(self, obs_name: str): # TODO
+    def del_var(self, obs_name: str): # TODO
         "removes a key from variables from an anndata object, of the key var_name"
+        _ = self.var.pop(obs_name)
+
 
     def extend_anndata(self, additional_adata: ad.AnnData, axis: Literal[0,1] = 0):
         """
