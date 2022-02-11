@@ -2,7 +2,6 @@
 
 import os
 import time
-import re
 import glob
 
 import numpy as np
@@ -12,14 +11,13 @@ import signal
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-import xml.etree.ElementTree as ET
 import tifffile as tf
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from packerlabimaging.utils.utils import convert_to_8bit, threshold_detect, path_finder, points_in_circle_np, normalize_dff, Utils
+from packerlabimaging.utils.utils import convert_to_8bit, threshold_detect, normalize_dff, Utils
 from packerlabimaging.processing.paq import paq2py, paqData
 from . TwoPhotonImagingMain import TwoPhotonImagingTrial
-from .processing.TwoPstim import naparm, Targets
+from .processing.TwoPstim import Targets
 
 # %%
 
@@ -1542,7 +1540,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         # show the MaxResponseImage
         img = glob.glob(stam_save_path + '/*MaxResponseImage.tif')[0]
-        from . import _plotting
+        from .plotting import plotting
         _plotting.plot_single_tiff(img, frame_num=0)
 
     def _targetSpread(self):

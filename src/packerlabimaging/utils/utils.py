@@ -3,6 +3,7 @@
 import io
 import time
 import numpy as np
+import pandas as pd
 import tifffile as tf
 import os
 import matplotlib.pyplot as plt
@@ -26,7 +27,8 @@ from packerlabimaging import _io
 
 ##### PRAJAY'S FUNCTIONS THAT MIGHT BE APPROP FOR THIS SCRIPT ####### / start
 
-
+pd.options.display.max_rows = 100
+pd.options.display.max_columns = 10
 
 class Utils:
 

@@ -196,7 +196,7 @@ class paqData:
             self._1p_stims(paq_data=paq)
 
 
-
+    ## refactor these methods to their respective Trial code locations
     @staticmethod
     def _frame_times(paq_data, frame_channel: str):
         if frame_channel not in paq_data['chan_names']:
@@ -401,3 +401,5 @@ class paqData:
             return frames_to_discard, all_btwn_paired_frames, paired_frames_first, paired_frames_last
         else:
             raise ReferenceError('something wrong....No frames selected for discarding')
+
+    ## refactor these methods to their respective Trial code locations // END

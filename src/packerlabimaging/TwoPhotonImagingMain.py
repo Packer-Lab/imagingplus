@@ -101,7 +101,6 @@ class TwoPhotonImagingTrial:
         # create annotated data object
         self.create_anndata()
 
-
         ##### SAVE Trial OBJECT
         self.save()
         print(f'\----- CREATING TwoPhotonImagingTrial for trial: {metainfo["trial"]},  {metainfo["t series id"]}')
@@ -355,8 +354,7 @@ class TwoPhotonImagingTrial:
 
             print(f"\n\----- CREATING annotated data object using AnnData:")
             __data_type = 'Suite2p Raw (neuropil substracted)' if self.Suite2p.suite2p_overall.subtract_neuropil else 'Suite2p Raw'
-            adata = ad.AnnotatedData(X=self.Suite2p.raw, obs=obs_meta, var=var_meta.T, obsm=obs_m,
-                                    layers=layers, data_label=__data_type)
+            adata = ad.AnnotatedData(X=self.Suite2p.raw, obs=obs_meta, var=var_meta.T, obsm=obs_m, layers=layers, data_label=__data_type)
 
             print(f"\n{adata}")
             self.data = adata
@@ -386,9 +384,9 @@ class TwoPhotonImagingTrial:
 
         self.save() if save else None
 
-        from packerlabimaging import _plotting
+        from .plotting import plotting
         _plotting.plotMeanRawFluTrace(expobj=self, stim_span_color=None, x_axis='frames', figsize=[20, 3],
-                                     title='Mean raw Flu trace -') if plot else None
+                                      title='Mean raw Flu trace -') if plot else None
 
         return im_stack
 

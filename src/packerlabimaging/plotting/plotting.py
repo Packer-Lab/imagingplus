@@ -10,262 +10,25 @@ import random
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
-from .AllOpticalMain import AllOpticalTrial
+from packerlabimaging.AllOpticalMain import AllOpticalTrial
 
-from .TwoPhotonImagingMain import TwoPhotonImagingTrial
+from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
+from packerlabimaging.plotting._utils import _plotting_decorator, make_random_color_array, _add_scalebar, \
+    image_frame_options
 from packerlabimaging.utils.utils import normalize_dff
-
-
-# %% UTILITY FUNCS
-
-# wrapper for piping plots in and out of figures
-def _plotting_decorator(figsize=(3, 3)):
-    def plotting_decorator(plotting_func):
-        """
-        Wrapper to help simplify creating plots from matplotlib.pyplot
-
-        :param plotting_func: plotting convenience function to be wrapped
-        :return: fig and ax objects if requested, and/or shows the figure as specified
-
-        Examples:
-        ---------
-        1) in this example the fig and ax will be taken directly from the kwargs inside the inner wrapper
-        >>> @plotting_decorator
-        >>> def example_decorated_plot(title='', **kwargs):
-        >>>     fig, ax = kwargs['fig'], kwargs['ax']  # need to add atleast this line to each plotting function's definition
-        >>>     print(f'|-kwargs inside example_decorated_plot definition: {kwargs}')
-        >>>     ax.plot(np.random.rand(10))
-        >>>     ax.set_title(title)
-
-        >>> example_decorated_plot()
-
-
-        """
-
-        @functools.wraps(plotting_func)
-        def inner(**kwargs):
-            # print(f'perform fig, ax creation')
-            # print(f'|-original kwargs {kwargs}')
-            return_fig_obj = False
-
-            # set number of rows, cols and figsize
-            if 'nrows' in kwargs.keys():
-                nrows = kwargs['nrows']
-            else:
-                nrows = 1
-
-            if 'ncols' in kwargs.keys():
-                ncols = kwargs['ncols']
-            else:
-                ncols = 1
-
-            if 'figsize' in kwargs.keys():
-                figsize_ = kwargs['figsize']
-            else:
-                figsize_ = figsize
-
-            # create or retrieve the fig, ax objects --> end up in kwargs to use into the plotting func call below
-            if 'fig' in kwargs.keys() and 'ax' in kwargs.keys():
-                if kwargs['fig'] is None or kwargs['ax'] is None:
-                    # print('\-creating fig, ax [1]')
-                    kwargs['fig'], kwargs['ax'] = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize_)
-            else:
-                # print('\-creating fig, ax [2]')
-                kwargs['fig'], kwargs['ax'] = plt.subplots(figsize=figsize_)
-
-            # print(f"\nnew kwargs {kwargs}")
-
-            print(f'\- executing plotting_func')
-            res = plotting_func(**kwargs)  # these kwargs are the original kwargs defined at the respective plotting_func call + any additional kwargs defined in inner()
-
-            # print(f'\nreturn fig, ax or show figure as called for')
-            kwargs['fig'].suptitle(kwargs['suptitle'], wrap=True) if 'suptitle' in kwargs.keys() else None
-
-            kwargs['fig'].tight_layout(pad=1.8)
-
-            if 'show' in kwargs.keys():
-                if kwargs['show'] is True:
-                    # print(f'\- showing fig of size {figsize_}...[3]')
-                    kwargs['fig'].show()
-                    # print(f"*res right now: {res}")
-                    return res
-                else:
-                    # print(f"\- not showing, but returning fig_obj of size {figsize_}[4]")
-                    if res is not None:
-                        return (kwargs['fig'], kwargs['ax'], res)
-                    else:
-                        return (kwargs['fig'], kwargs['ax'])
-            else:
-                # print(f'\- showing fig of size {figsize_}...[5]')
-                kwargs['fig'].show()
-                return res
-
-            # # print(f"|-value of return_fig_obj is {return_fig_obj} [5]")
-            # print(f"\- returning fig_obj [4]") if return_fig_obj else None
-            # return (kwargs['fig'], kwargs['ax']) if return_fig_obj else None
-
-        return inner
-    return plotting_decorator
-
-def save_figure(fig, save_path_full: str = None):
-    print(f'\nsaving figure to: {save_path_full}')
-    os.makedirs(save_path_full)
-    fig.savefig(save_path_full)
-
-# custom colorbar for heatmaps
-from matplotlib.colors import LinearSegmentedColormap
-def _make_colormap(seq):
-    """Return a LinearSegmentedColormap
-    seq: a sequence of floats and RGB-tuples. The floats should be increasing
-    and in the interval (0,1).
-    """
-    seq = [(None,) * 3, 0.0] + list(seq) + [1.0, (None,) * 3]
-    cdict = {'red': [], 'green': [], 'blue': []}
-    for i, item in enumerate(seq):
-        if isinstance(item, float):
-            r1, g1, b1 = seq[i - 1]
-            r2, g2, b2 = seq[i + 1]
-            cdict['red'].append([item, r1, r2])
-            cdict['green'].append([item, g1, g2])
-            cdict['blue'].append([item, b1, b2])
-    return LinearSegmentedColormap('CustomMap', cdict)
-
-
-# generate an array of random colors
-def _get_random_color(pastel_factor=0.5):
-    return [(x + pastel_factor) / (1.0 + pastel_factor) for x in [random.uniform(0, 1.0) for i in [1, 2, 3]]]
-
-
-def _color_distance(c1, c2):
-    return sum([abs(x[0] - x[1]) for x in zip(c1, c2)])
-
-
-def _generate_new_color(existing_colors, pastel_factor=0.5):
-    max_distance = None
-    best_color = None
-    for i in range(0, 100):
-        color = _get_random_color(pastel_factor=pastel_factor)
-        if not existing_colors:
-            return color
-        best_distance = min([_color_distance(color, c) for c in existing_colors])
-        if not max_distance or best_distance > max_distance:
-            max_distance = best_distance
-            best_color = color
-    return best_color
-
-
-def make_random_color_array(n_colors):
-    """
-    Generates a list of random colors for an input number of colors required.
-
-    :param n_colors: # of colors required
-    :return: list of colors in RGB
-    """
-    colors = []
-    for i in range(0, n_colors):
-        colors.append(_generate_new_color(colors, pastel_factor=0.2))
-    return colors
-
-
-def _add_scalebar(trialobj: TwoPhotonImagingTrial, ax: plt.Axes, scale_bar_um: float = 100, **kwargs):
-    """add scalebar to the image being plotted on the a single matplotlib.axes.Axes object using the TwoPhotonImaging object information.
-    Option to specify scale bar um length to add to plot.
-
-    """
-    numpx = scale_bar_um/trialobj.imparams.pix_sz_x
-
-    lw = 5 if 'lw' not in [*kwargs] else kwargs['lw']
-    color = 'white' if 'color' not in [*kwargs] else kwargs['color']
-    right_offset = 50 if 'right_offset' not in [*kwargs] else kwargs['right_offset']
-    bottom_offset = 50 if 'bottom_offset' not in [*kwargs] else kwargs['bottom_offset']
-
-    ax.plot(np.linspace(trialobj.imparams.frame_x - right_offset - numpx, trialobj.imparams.frame_x - right_offset, 40),
-            [trialobj.imparams.frame_y - bottom_offset]*40,
-            color=color, lw=lw)
-    return ax
-
-# Figure Style settings for notebook.
-def image_frame_options():
-    mpl.rcParams.update({
-        'axes.spines.left': False,
-        'axes.spines.bottom': False,
-        'axes.spines.top': False,
-        'axes.spines.right': False,
-        'legend.frameon': False,
-        'figure.subplot.wspace': .01,
-        'figure.subplot.hspace': .01,
-        'ytick.major.left': False,
-        'xtick.major.bottom': False
-    })
-
-def dataplot_frame_options():
-    mpl.rcParams.update({
-        'axes.spines.top': False,
-        'axes.spines.right': False,
-        'legend.fontsize': 'x-large',
-        'axes.labelsize': 'x-large',
-        'axes.titlesize': 'x-large',
-        'xtick.labelsize': 'x-large',
-        'ytick.labelsize': 'x-large',
-        'legend.frameon': False,
-        'figure.subplot.wspace': .01,
-        'figure.subplot.hspace': .01,
-    })
-    sns.set()
-    sns.set_style('white')
-
-
-def heatmap_options():
-    jet = mpl.cm.get_cmap('jet')
-    jet.set_bad(color='k')
-
-# %% GENERAL PLOTTING FUNCS
-### plot the location of provided coordinates
-@_plotting_decorator(figsize=(5, 5))
-def plot_coordinates(coords: list,  frame_x: int, frame_y: int, background: np.ndarray = None, fig=None, ax=None, **kwargs):
-    """
-    plot coordinate locations
-
-    :param targets_coords: ls containing (x,y) coordinates of targets to plot
-    :param background: np.array on which to plot coordinates, default is black background (optional)
-    :param kwargs:
-    """
-
-    if background is None:
-        background = np.zeros((frame_x, frame_y), dtype='uint16')
-        ax.imshow(background, cmap='gray')
-    else:
-        ax.imshow(background, cmap='gray')
-
-    if 'edgecolors' in kwargs.keys():
-        edgecolors = kwargs['edgecolors']
-    else:
-        edgecolors = 'yellowgreen'
-    for (x, y) in coords:
-        ax.scatter(x=x, y=y, edgecolors=edgecolors, facecolors='none', linewidths=2.0)
-
-    ax.margins(0)
-    fig.tight_layout()
-
-    if 'title' in kwargs.keys():
-        if kwargs['title'] is not None:
-            ax.set_title(kwargs['title'])
-        else:
-            pass
 
 
 # %% DATA ANALYSIS PLOTTING FUNCS
 
-
 # suite2p data
 # simple plot of the location of the given cell(s) against a black FOV
 @_plotting_decorator(figsize=(5, 5))
-def plot_cells_loc(expobj: TwoPhotonImagingTrial, cells: list, title=None, background: np.array = None, scatter_only: bool = False,
-                   show_s2p_targets: bool = True, color_float_list: list = None, cmap: str = 'Reds', ax=None, **kwargs):
+def plotRoiLocations(trialobj: TwoPhotonImagingTrial, suite2p_rois: list, background: np.array = None,
+                     **kwargs):
     """
     plots an image of the FOV to show the locations of cells given in cells ls.
     :param background: either 2dim numpy array to use as the backsplash or None (where black backsplash will be created)
-    :param expobj: alloptical or 2p imaging object
+    :param trialobj: alloptical or 2p imaging object
     :param edgecolor: str to specify edgecolor of the scatter plot for cells
     :param cells: ls of cells to plot
     :param title: str title for plot
@@ -278,143 +41,56 @@ def plot_cells_loc(expobj: TwoPhotonImagingTrial, cells: list, title=None, backg
             fig: a fig plt.subplots() instance, if provided use this fig for making figure
             ax: a ax plt.subplots() instance, if provided use this ax for plotting
     """
+    image_frame_options()
 
-    # # if there is a fig and ax provided in the function call then use those, otherwise start anew
-    # if 'fig' in kwargs.keys():
-    #     fig = kwargs['fig']
-    #     ax = kwargs['ax']
-    # else:
-    #     fig, ax = plt.subplots()
-
-    x_list = []
-    y_list = []
-    for cell in cells:
-        y, x = expobj.Suite2p.stat[expobj.Suite2p.cell_id.index(cell)]['med']
-        x_list.append(x)
-        y_list.append(y)
-
-        if show_s2p_targets:
-            if hasattr(expobj, 's2p_cell_targets'):
-                if cell in expobj.s2p_cell_targets:
-                    color_ = '#F02A71'
-                else:
-                    color_ = 'none'
-            else:
-                color_ = 'none'
-            ax.scatter(x=x, y=y, edgecolors=None, facecolors=color_, linewidths=0.8)
-        elif color_float_list:
-            # ax.scatter(x=x, y=y, edgecolors='none', c=color_float_list[cells.index(cell)], linewidths=0.8,
-            #            cmap=cmap)
-            pass
-        else:
-            if 'edgecolors' in kwargs.keys():
-                edgecolors = kwargs['edgecolors']
-            else:
-                edgecolors = 'yellowgreen'
-            ax.scatter(x=x, y=y, edgecolors=edgecolors, facecolors='none', linewidths=0.8)
-
-    if color_float_list:
-        ac = ax.scatter(x=x_list, y=y_list, edgecolors='none', c=color_float_list, linewidths=0.8,
-                   cmap=cmap, zorder=1)
-
-        plt.colorbar(ac, ax=ax)
-
-    if not scatter_only:
-        if background is None:
-            black = np.zeros((expobj.imparams.frame_x, expobj.imparams.frame_y), dtype='uint16')
-            ax.imshow(black, cmap='Greys_r', zorder=0)
-            ax.set_xlim(0, expobj.imparams.frame_x)
-            ax.set_ylim(0, expobj.imparams.frame_y)
-        else:
-            ax.imshow(background, cmap='Greys_r', zorder=0)
-
-    if title is not None:
-        plt.suptitle(title, wrap=True)
-
-    if 'text' in kwargs.keys():
-        if kwargs['text'] is not None:
-            ax.text(0.99, 0.95, kwargs['text'],
-                    verticalalignment='top', horizontalalignment='right',
-                    transform=ax.transAxes, fontweight='bold',
-                    color='white', fontsize=10)
-
-    if 'hide_axis_labels' in kwargs.keys():
-        ax.set_xticks(ticks=[])
-        ax.set_xticklabels([])
-        ax.set_yticks(ticks=[])
-        ax.set_yticklabels([])
+    # fig = kwargs['fig']
+    # suptitle = kwargs['suptitle'] if 'suptitle' in [*kwargs] else None
+    ax = kwargs['ax']
+    facecolors = kwargs['facecolors'] if 'facecolors' in [*kwargs] else 'none'
+    edgecolors = kwargs['edgecolors'] if 'edgecolors' in [*kwargs] else 'orange'
 
 
-    if 'invert_y' in kwargs.keys():
-        if kwargs['invert_y']:
-            ax.invert_yaxis()
+    for cell in suite2p_rois:
+        y, x = trialobj.Suite2p.stat[trialobj.Suite2p.cell_id.index(cell)]['med']
+        ax.scatter(x=x, y=y, edgecolors=edgecolors, facecolors=facecolors, linewidths=0.8)
 
-    ax = _add_scalebar(trialobj=expobj, ax=ax) if 'scalebar' in [*kwargs] and kwargs['scalebar'] is True else None
-
-
-# plot to show s2p ROIs location, colored as specified
-def s2pRoiImage(trialobj: Union[TwoPhotonImagingTrial, AllOpticalTrial]):
-    """
-    plot to show the classification of each cell as the actual's filling in the cell's ROI pixels.
-
-    :param expobj: expobj associated with data
-    :param df: pandas dataframe (cell_id x stim frames)
-    :param clim: color limits
-    :param plot_target_coords: bool, if True plot the actual X and Y coords of all photostim cell targets
-    :param save_fig: where to save the save figure (optional)
-    :return:
-    """
-    fig, ax = plt.subplots(figsize=(5, 5))
-    if trialobj.imparams.frame_x == 512:
-        s = 0.003 * (1024/trialobj.imparams.frame_x * 4)
+    if background is None:
+        black = np.zeros((trialobj.imparams.frame_x, trialobj.imparams.frame_y), dtype='uint16')
+        ax.imshow(black, cmap='Greys_r', zorder=0)
+        ax.set_xlim(0, trialobj.imparams.frame_x)
+        ax.set_ylim(0, trialobj.imparams.frame_y)
     else:
-        s = 0.003
+        ax.imshow(background, cmap='Greys_r', zorder=0)
 
-    ##### targets areas image
-    if hasattr(trialobj, 'target_areas_exclude'):
-        targ_img = np.zeros([trialobj.imparams.frame_x, trialobj.imparams.frame_y], dtype='float')
-        target_areas_exclude = np.array(trialobj.target_areas_exclude)
-        targ_img[target_areas_exclude[:, :, 1], target_areas_exclude[:, :, 0]] = 1
-        x = np.asarray(list(range(trialobj.imparams.frame_x)) * trialobj.imparams.frame_y)
-        y = np.asarray([i_y for i_y in range(trialobj.imparams.frame_y) for i_x in range(trialobj.imparams.frame_x)])
-        img = targ_img.flatten()
-        im_array = np.array([x, y], dtype=np.float)
-        ax.scatter(im_array[0], im_array[1], c=img, cmap='gray', s=s, zorder=0, alpha=1)
 
-    ##### suite2p ROIs areas image - nontargets
-    for n in trialobj.Suite2p.s2p_nontargets:
-        idx = trialobj.Suite2p.cell_id.index(n)
-        ypix = trialobj.Suite2p.stat[idx]['ypix']
-        xpix = trialobj.Suite2p.stat[idx]['xpix']
-        ax.scatter(xpix, ypix, c='lightsteelblue', s=s, zorder=1, alpha=1)
+    ax.invert_yaxis()
 
-    ##### suite2p ROIs areas image - exclude cells
-    for n in trialobj.s2p_cells_exclude:
-        idx = trialobj.Suite2p.cell_id.index(n)
-        ypix = trialobj.Suite2p.stat[idx]['ypix']
-        xpix = trialobj.Suite2p.stat[idx]['xpix']
-        ax.scatter(xpix, ypix, c='yellow', s=s, zorder=2, alpha=1)
+    _add_scalebar(trialobj=trialobj, ax=ax) if 'scalebar' in [*kwargs] and kwargs['scalebar'] is True else None
 
-    ##### suite2p ROIs areas image - targeted cells
-    for n in trialobj.s2p_cell_targets:
-        idx = trialobj.Suite2p.cell_id.index(n)
-        ypix = trialobj.Suite2p.stat[idx]['ypix']
-        xpix = trialobj.Suite2p.stat[idx]['xpix']
-        ax.scatter(xpix, ypix, c='red', s=s, zorder=3, alpha=1)
 
-    ax.set_xlim([0, trialobj.imparams.frame_x])
-    ax.set_ylim([0, trialobj.imparams.frame_y])
+def makeSuite2pPlots(trialobj):
 
-    ax = _add_scalebar(trialobj=trialobj, ax=ax)
+    plt.subplot(1, 4, 1)
+    plt.imshow(trialobj.Suite2p.output_op['max_proj'], cmap='gray')
+    plt.title("Registered Image, Max Projection")
 
-    fig.margins(x=0, y=0)
-    fig.gca().invert_yaxis()
+    plt.subplot(1, 4, 2)
+    plt.imshow(np.nanmax(trialobj.Suite2p._im, axis=0), cmap='jet')
+    plt.title("All ROIs Found")
 
-    fig.suptitle(f"{trialobj.t_series_name} - s2p nontargets (blue), exclude (yellow), targets (red); target_areas (white)",
-                 y=0.97, fontsize=7)
-    fig.show()
+    plt.subplot(1, 4, 3)
+    plt.imshow(np.nanmax(trialobj.Suite2p._im[~trialobj.iscell], axis=0, ), cmap='jet')
+    plt.title("All Non-Cell ROIs")
 
-    return fig
+    plt.subplot(1, 4, 4)
+    plt.imshow(np.nanmax(trialobj.Suite2p._im[trialobj.iscell], axis=0), cmap='jet')
+    plt.title("All Cell ROIs");
+
+
+
+def plotRoiMask(trialobj: TwoPhotonImagingTrial, cells):
+    for cell in trialobj.Suite2p.stat:
+
 
 
 # (full) plot individual cell's flu or dFF trace, with photostim. timings for that cell
@@ -735,7 +411,7 @@ def plot_SLMtargets_Locs(expobj: AllOpticalTrial, targets_coords: list = None, b
         else:
             pass
     else:
-        ax.set_title('SLM targets location - %s %s' % (expobj.metainfo['animal prep.'], expobj.metainfo['trial']))
+        ax.set_title(f'SLM targets location - {expobj.t_series_name}')
 
     # if 'show' in kwargs.keys():
     #     if kwargs['show'] is True:

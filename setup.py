@@ -23,7 +23,7 @@ setup(
         'seaborn',
         'suite2p',
         'matplotlib',
-        'pandas>=1.4.0',
+        'pandas',
         'scipy',
         'statsmodels',
         'scikit-image'

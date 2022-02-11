@@ -77,7 +77,7 @@ class AnnotatedData(ad.AnnData):
 
     def add_observation(self, obs_name: str, values: list):
         """adds values to the observations of an anndata object, under the key obs_name"""
-        assert len(values) == self.obs.shape[0], f"# of values to add doesn't match # of observations in anndata"
+        assert len(values) == self.obs.shape[0], f"# of values to add doesn't match # of observations in anndata array"
         self.obs[obs_name] = values
 
     def del_observation(self, obs_name: str): # TODO
@@ -85,7 +85,7 @@ class AnnotatedData(ad.AnnData):
 
     def add_variables(self, var_name: str, values: list):
         """adds values to the variables of an anndata object, under the key var_name"""
-        assert len(values) == self.var.shape[0], f"# of values to add doesn't match # of observations in anndata"
+        assert len(values) == self.var.shape[0], f"# of values to add doesn't match # of observations in anndata array"
         self.var[var_name] = values
 
     def del_variables(self, obs_name: str): # TODO

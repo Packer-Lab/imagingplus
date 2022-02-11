@@ -1,5 +1,8 @@
 import os
+from pathlib import Path
+
 import numpy as np
+import suite2p
 import tifffile as tf
 import matplotlib.pyplot as plt
 from packerlabimaging.utils.utils import make_tiff_stack, s2p_loader, normalize_dff, Utils
@@ -129,6 +132,16 @@ class Suite2pResultsExperiment:
             self.cell_x = self.cell_x[0]
             self.cell_y = self.cell_y[0]
 
+
+        # read in other files
+        self.output_op = np.load(Path(self.path).joinpath('ops.npy'), allow_pickle=True).item()
+        stats_file = Path(self.path).joinpath('stat.npy')
+        self.iscell = np.load(Path(self.path).joinpath('iscell.npy'), allow_pickle=True)[:, 0].astype(bool)
+        self.stats = np.load(stats_file, allow_pickle=True)
+
+        self._im = suite2p.ROI.stats_dicts_to_3d_array(self.stats, Ly=self.output_op['Ly'], Lx=self.output_op['Lx'], label_id=True)
+        self._im[self._im == 0] = np.nan
+
     # consider use of properties
     # @property
     # def raw(self):
@@ -145,8 +158,9 @@ class Suite2pResultsExperiment:
     #     if self.n_planes == 1:
     #         return self.neuropil[0]
 
+
     def stitch_reg_tiffs(self, first_frame: int, last_frame: int, reg_tif_folder: str = None, force_crop: bool = False,
-                         s2p_run_batch: int = 2000):  # TODO refactor as method for trial object
+                         s2p_run_batch: int = 2000):  # TODO review and refactor as method for trial object
         """
         Stitches together registered tiffs outputs from suite2p from the provided imaging frame start and end values.
 
@@ -158,8 +172,8 @@ class Suite2pResultsExperiment:
         """
 
         if reg_tif_folder is None:
-            if self.suite2p_path:
-                reg_tif_folder = self.suite2p_path + '/reg_tif/'
+            if self.path:
+                reg_tif_folder = self.path + '/reg_tif/'
                 print(f"\- trying to load registerred tiffs from: {reg_tif_folder}")
         else:
             raise Exception(f"Must provide reg_tif_folder path for loading registered tiffs")
@@ -220,7 +234,6 @@ class Suite2pResultsExperiment:
 
         return mean_img
 
-    ### TODO add methods for processing suite2p ROIs
 
 class Suite2pResultsTrial:
     """used to collect suite2p processed data for one trial - out of overall experiment."""
