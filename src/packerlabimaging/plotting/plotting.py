@@ -13,8 +13,8 @@ import seaborn as sns
 from packerlabimaging.AllOpticalMain import AllOpticalTrial
 
 from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
-from packerlabimaging.plotting._utils import _plotting_decorator, make_random_color_array, _add_scalebar, \
-    image_frame_options
+from packerlabimaging.plotting._utils import plotting_decorator, make_random_color_array, _add_scalebar, \
+    image_frame_options, dataplot_frame_options, dataplot_ax_options
 from packerlabimaging.utils.utils import normalize_dff
 
 
@@ -22,7 +22,7 @@ from packerlabimaging.utils.utils import normalize_dff
 
 # suite2p data
 # simple plot of the location of the given cell(s) against a black FOV
-@_plotting_decorator(figsize=(5, 5))
+@plotting_decorator(figsize=(5, 5))
 def plotRoiLocations(trialobj: TwoPhotonImagingTrial, suite2p_rois: list, background: np.array = None,
                      **kwargs):
     """
@@ -69,7 +69,7 @@ def plotRoiLocations(trialobj: TwoPhotonImagingTrial, suite2p_rois: list, backgr
 
 
 def makeSuite2pPlots(trialobj):
-
+    "credit: run_s2p tutorial on Mouseland/Suite2p on github"
     plt.subplot(1, 4, 1)
     plt.imshow(trialobj.Suite2p.output_op['max_proj'], cmap='gray')
     plt.title("Registered Image, Max Projection")
@@ -88,89 +88,42 @@ def makeSuite2pPlots(trialobj):
 
 
 
-def plotRoiMask(trialobj: TwoPhotonImagingTrial, cells):
-    for cell in trialobj.Suite2p.stat:
-
-
-
 # (full) plot individual cell's flu or dFF trace, with photostim. timings for that cell
-def plot_flu_trace(expobj: TwoPhotonImagingTrial, cell, x_lims=None, slm_group=None, to_plot='raw', figsize=(20, 3), linewidth=0.10, show=True):
-    idx = expobj.cell_id.index(cell)
-    raw = expobj.raw[idx]
-    raw_ = np.delete(raw, expobj.photostim_frames)  # this is very problematic for the dFF plotting with stim frames if you're deleting ALL of the photostim frames!?!!!
-    raw_dff = normalize_dff(raw_)
-    std_dff = np.std(raw_dff, axis=0)
-    std = np.std(raw_, axis=0)
+@plotting_decorator
+def plot_flu_trace(trialobj: TwoPhotonImagingTrial, cell, to_plot='raw', linewidth=0.10, x_lims: tuple = None, y_lims: tuple = None,
+                   **kwargs):
 
-    # find locations along time when the trace rises above 2.5std of the mean
-    x = []
-    # y = []
-    for j in np.arange(len(raw_dff), step=4):
-        avg = np.mean(raw_dff[j:j + 4])
-        if avg > np.mean(raw_dff) + 2 * std_dff:
-            x.append(j)
-            # y.append(0)
+    dataplot_frame_options()
+    ax = kwargs['ax']
+
+    idx = trialobj.Suite2p.cell_id.index(cell)
 
     if to_plot == 'raw':
-        to_plot_ = raw
-        to_thresh = std
-    elif to_plot == 'dff':
-        to_plot_ = raw_dff
-        to_thresh = std_dff
+        data_plot = trialobj.data.X[idx, :]
     else:
-        AttributeError('specify to_plot as either "raw" or "dff"')
+        if to_plot in [*trialobj.data.layers]:
+            data_plot = trialobj.data.layers[to_plot][idx, :]
+        else:
+            raise KeyError(f"to_plot processed data is not found in trialobj.data.layers. ")
 
     # make the plot either as just the raw trace or as a dFF trace with the std threshold line drawn as well.
-    plt.figure(figsize=figsize)
-    plt.plot(to_plot_, linewidth=linewidth)
-    if to_plot == 'raw':
-        plt.suptitle(('raw flu for cell #%s' % expobj.cell_id[idx]), horizontalalignment='center',
-                     verticalalignment='top',
-                     fontsize=15, y=1.00)
-    elif to_plot == 'dff':
-        plt.scatter(x, y=[0] * len(x), c='r', linewidth=0.1)
-        plt.axhline(y=np.mean(to_plot_) + 2.5 * to_thresh, c='green')  # plot threshold line
-        plt.suptitle(('dff flu for cell #%s' % expobj.cell_id[idx]), horizontalalignment='center',
-                     verticalalignment='top', fontsize=15, y=0.95)
+    ax.plot(data_plot, linewidth=linewidth)
 
-    if slm_group is not None:
-        for i in expobj.stim_start_frames[slm_group::expobj.n_groups]:  # select SLM group specific stim trigger frames (may not exist by each individual SLM group though...)
-            plt.axvline(x=i - 1, c='gray', alpha=0.1)
-    else:
-        for i in expobj.stim_start_frames:  # select all stim trigger frames from the trial
-            plt.axvline(x=i - 1, c='gray', alpha=0.1)
+    if x_lims: ax.set_xlim(x_lims)
+    if y_lims: ax.set_ylim(y_lims)
 
-    if expobj.seizure_frames:
-        plt.scatter(expobj.seizure_frames, y=[-20] * len(expobj.seizure_frames), c='g', linewidth=0.10)
-
-    if x_lims:
-        plt.xlim(x_lims)
-
-    # plt.ylim(0, 300)
-    plt.show() if show else None
 
 # plots the raw trace for the Flu mean of the FOV (similar to the ZProject in Fiji)
-@_plotting_decorator(figsize=(10, 3))
-def plotMeanRawFluTrace(expobj: TwoPhotonImagingTrial, stim_span_color='white', stim_lines: bool = True, title='raw Flu trace', x_axis='time', shrink_text=1,
-                        fig=None, ax=None, **kwargs):
+@plotting_decorator(figsize=(10, 3))
+def plotMeanRawFluTrace(trialobj: TwoPhotonImagingTrial, stim_span_color='white', stim_lines: bool = True, x_axis='time',
+                        **kwargs):
     """make plot of mean Ca trace averaged over the whole FOV"""
+
+    dataplot_frame_options()
 
     print(f"\t \- PLOTTING mean raw flu trace ... ")
 
-    # # if there is a fig and ax provided in the function call then use those, otherwise start anew
-    # if 'fig' in kwargs.keys():
-    #     fig = kwargs['fig']
-    #     ax = kwargs['ax']
-    # else:
-    #     if 'figsize' in kwargs.keys():
-    #         fig, ax = plt.subplots(figsize=kwargs['figsize'])
-    #     else:
-    #         if 'xlims' in kwargs.keys():
-    #             fig, ax = plt.subplots(figsize=[10 * (kwargs['xlims'][1] - kwargs['xlims'][0]) / 2000, 3])
-    #             fig.tight_layout(pad=0)
-    #         else:
-    #             fig, ax = plt.subplots(figsize=[10 * len(expobj.meanRawFluTrace) / 2000, 3])
-    #             fig.tight_layout(pad=0)
+    ax = kwargs['ax']
 
     # change linewidth
     if 'linewidth' in kwargs:
@@ -178,61 +131,14 @@ def plotMeanRawFluTrace(expobj: TwoPhotonImagingTrial, stim_span_color='white', 
     else:
         lw = 2
 
-    ax.plot(expobj.meanRawFluTrace, c='forestgreen', zorder=1, linewidth=lw)
-    ax.margins(0)
-    if stim_span_color is not None:
-        if hasattr(expobj, 'shutter_frames'):
-            for start, end in zip(expobj.shutter_start_frames[0], expobj.shutter_end_frames[0]):
-                ax.axvspan(start-4.5, end, color=stim_span_color, zorder=2)
-        else:
-            for stim in expobj.stim_start_frames:
-                ax.axvspan(stim-2, 1 + stim + expobj.stim_duration_frames, color=stim_span_color, zorder=2)
-    if stim_lines:
-        if stim_span_color is not None:
-            for line in expobj.stim_start_frames:
-                ax.axvline(x=line, color='black', linestyle='--', linewidth=0.6, zorder=2)
-        else:
-            for line in expobj.stim_start_frames:
-                ax.axvline(x=line, color='black', linestyle='--', linewidth=0.6, zorder=0)
-    if 'time' in x_axis or 'Time' in x_axis:
-        # change x axis ticks to every 30 seconds
-        labels = list(range(0, int(len(expobj.meanRawFluTrace) // expobj.fps), 30))
-        ax.set_xticks(ticks=[(label * expobj.fps) for label in labels])
-        # for item in labels:
-        #     labels[labels.index(item)] = int(round(item / expobj.fps))
-        # ticks_loc = ax.get_xticks().tolist()
-        # ax.xaxis.set_major_locator(mticker.FixedLocator(ticks_loc))
-        ax.set_xticklabels(labels)
-        ax.set_xlabel('Time (secs)')
-    elif x_axis == 'frames':
-        ax.set_xlabel('frame #s')
+    ax.plot(trialobj.meanRawFluTrace, c='forestgreen', zorder=1, linewidth=lw)
+
+    ax.set_xlabel('frame #s')
     ax.set_ylabel('Flu (a.u.)')
-    if 'xlims' in kwargs.keys() and kwargs['xlims'] is not None:
-        ax.set_xlim(kwargs['xlims'])
 
-    if 'ylims' in kwargs.keys() and kwargs['ylims'] is not None:
-        ax.set_ylim(kwargs['ylims'])
+    dataplot_ax_options()
 
-    ax.set_title('%s %s %s %s' % (title, expobj.metainfo['exptype'], expobj.metainfo['animal prep.'], expobj.metainfo['trial']))
 
-    return None
-    # # add title
-    # if not 'fig' in kwargs.keys():
-    #     ax.set_title(
-    #         '%s %s %s %s' % (title, expobj.metainfo['exptype'], expobj.metainfo['animal prep.'], expobj.metainfo['trial']))
-    #
-    # if 'show' in kwargs.keys():
-    #     plt.show() if kwargs['show'] else None
-    # else:
-    #     plt.show()
-    #
-    # if 'fig' in kwargs.keys():
-    #     # adding text because adding title doesn't seem to want to work when piping subplots
-    #     ax.text(0.98, 0.97, f"Avg. FOV Flu Trace - {expobj.metainfo['exptype']} {expobj.metainfo['animal prep.']} {expobj.metainfo['trial']}",
-    #             verticalalignment='top', horizontalalignment='right',
-    #             transform=ax.transAxes, fontweight='bold',
-    #             color='black', fontsize=10 * shrink_text)
-    #     return fig, ax
 
 def plot_s2p_raw(expobj, cell_id):
     plt.figure(figsize=(50, 3))
@@ -244,7 +150,7 @@ def plot_s2p_raw(expobj, cell_id):
 
 
 # LFP
-@_plotting_decorator(figsize=(10, 3))
+@plotting_decorator(figsize=(10, 3))
 def plotLfpSignal(expobj: TwoPhotonImagingTrial, stim_span_color='powderblue', downsample: bool = True, stim_lines: bool = True, sz_markings: bool = False,
                   title='LFP trace', x_axis='time', hide_xlabel=False, fig=None, ax=None, **kwargs):
     """make plot of LFP with also showing stim locations
@@ -351,7 +257,7 @@ def plotLfpSignal(expobj: TwoPhotonImagingTrial, stim_span_color='powderblue', d
 
 # alloptical trial
 ### plot the location of all SLM targets, along with option for plotting the mean img of the current trial
-@_plotting_decorator(figsize=(5, 5))
+@plotting_decorator(figsize=(5, 5))
 def plot_SLMtargets_Locs(expobj: AllOpticalTrial, targets_coords: list = None, background: np.ndarray = None, fig=None, ax=None, **kwargs):
     """
     plot SLM target coordinate locations
@@ -475,7 +381,7 @@ def plot_photostim_traces(array, expobj: AllOpticalTrial, title='', y_min=None, 
     fig.show()
 
 
-@_plotting_decorator(figsize=(10, 6))
+@plotting_decorator(figsize=(10, 6))
 def plot_photostim_traces_overlap(array, expobj: AllOpticalTrial, exclude_id=[], y_spacing_factor=1, title='',
                                   x_axis='Time (seconds)', save_fig=None, fig=None, ax=None, **kwargs):
     '''
@@ -568,7 +474,7 @@ def plot_photostim_traces_overlap(array, expobj: AllOpticalTrial, exclude_id=[],
 
 
 ### photostim analysis - PLOT avg over photostim. trials traces for the provided traces
-@_plotting_decorator(figsize=(5, 5.5))
+@plotting_decorator(figsize=(5, 5.5))
 def plot_periphotostim_avg2(dataset, fps=None, legend_labels=None, colors=None, avg_with_std=False,
                             title='high quality plot', pre_stim_sec=None, ylim=None, fig=None, ax=None, **kwargs):
 
@@ -676,7 +582,7 @@ def plot_periphotostim_avg2(dataset, fps=None, legend_labels=None, colors=None, 
 
 
 ### photostim analysis - PLOT avg over all photstim. trials traces from PHOTOSTIM TARGETTED cells
-@_plotting_decorator(figsize=(5, 5.5))
+@plotting_decorator(figsize=(5, 5.5))
 def plot_periphotostim_avg(arr: np.ndarray, expobj: AllOpticalTrial, pre_stim_sec=1.0, post_stim_sec=3.0, title='',
                            avg_only: bool = False, x_label=None, y_label=None, ax=None, pad=20, **kwargs):
     """

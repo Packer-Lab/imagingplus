@@ -385,8 +385,8 @@ class TwoPhotonImagingTrial:
         self.save() if save else None
 
         from .plotting import plotting
-        _plotting.plotMeanRawFluTrace(expobj=self, stim_span_color=None, x_axis='frames', figsize=[20, 3],
-                                      title='Mean raw Flu trace -') if plot else None
+        _plotting.plotMeanRawFluTrace(trialobj=self, stim_span_color=None, title='Mean raw Flu trace -',
+                                      x_axis='frames', figsize=[20, 3]) if plot else None
 
         return im_stack
 

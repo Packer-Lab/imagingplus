@@ -16,7 +16,7 @@ from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
 # %% UTILITY FUNCS
 
 # wrapper for piping plots in and out of figures
-def _plotting_decorator(figsize=(3, 3)):
+def plotting_decorator(figsize=(3, 3)):
     def plotting_decorator(plotting_func):
         """
         Wrapper to help simplify creating plots from matplotlib.pyplot
@@ -213,13 +213,40 @@ def dataplot_frame_options():
     sns.set_style('white')
 
 
+def dataplot_ax_options(**kwargs):
+    if 'ax' in [*kwargs]:
+        ax = kwargs['ax']
+        ax.margins(0.1)
+
+        # change x-axis to time (secs) if time is requested
+        x_axis = kwargs['x_axis'] if 'x_axis' in [*kwargs] else None
+        if ('time' in x_axis or 'Time' in x_axis) and 'trialobj' in [*kwargs]:
+            trialobj = kwargs['trialobj']
+
+            # change x axis ticks to every 30 seconds
+            labels = list(range(0, int(len(trialobj.meanRawFluTrace) // trialobj.imparams.fps), 30))
+            ax.set_xticks(ticks=[(label * trialobj.imparams.fps) for label in labels])
+
+            ax.set_xticklabels(labels)
+            ax.set_xlabel('Time (secs)')
+
+
+        # set x and y axis limits
+        if 'xlims' in kwargs.keys() and kwargs['xlims'] is not None:
+            ax.set_xlim(kwargs['xlims'])
+
+        if 'ylims' in kwargs.keys() and kwargs['ylims'] is not None:
+            ax.set_ylim(kwargs['ylims'])
+
+
+
 def heatmap_options():
     jet = mpl.cm.get_cmap('jet')
     jet.set_bad(color='k')
 
 # %% GENERAL PLOTTING FUNCS
 ### plot the location of provided coordinates
-@_plotting_decorator(figsize=(5, 5))
+@plotting_decorator(figsize=(5, 5))
 def plot_coordinates(coords: list,  frame_x: int, frame_y: int, background: np.ndarray = None, fig=None, ax=None, **kwargs):
     """
     plot coordinate locations
