@@ -124,8 +124,7 @@ def plot_flu_trace(trialobj: TwoPhotonImagingTrial, cell, to_plot='raw',
     # make the plot either as just the raw trace or as a dFF trace with the std threshold line drawn as well.
     ax.plot(data_to_plot, linewidth=lw)
 
-
-    dataplot_ax_options(ax=ax, data_to_plot=data_to_plot, **kwargs)
+    dataplot_ax_options(ax=ax, data_length=len(data_to_plot), **kwargs)
 
 # plots the raw trace for the Flu mean of the FOV (similar to the ZProject in Fiji)
 @plotting_decorator(figsize=(10, 3))
@@ -153,12 +152,12 @@ def plotMeanFovFluTrace(trialobj: TwoPhotonImagingTrial, **kwargs):
         ax.set_xlabel('frame #s')
         ax.set_ylabel('Flu (a.u.)')
 
-        dataplot_ax_options(ax=ax, data_to_plot=data_to_plot, **kwargs)
+        dataplot_ax_options(ax=ax, data_length=len(data_to_plot), **kwargs)
 
 
 @plotting_decorator(figsize=(10, 6))
 def plot_photostim_traces_overlap(array, trialobj: AllOpticalTrial, exclude_id=[], y_spacing_factor=1, title='',
-                                  x_axis='Time (seconds)', save_fig=None, fig=None, ax=None, **kwargs):
+                                  x_axis='Time (seconds)', **kwargs):
     '''
     :param array:
     :param trialobj:
@@ -175,7 +174,9 @@ def plot_photostim_traces_overlap(array, trialobj: AllOpticalTrial, exclude_id=[
     # array = np.asarray([(np.convolve(trace, np.ones(w), 'valid') / w) for trace in array])
 
     len_ = len(array)
-
+    dataplot_frame_options()
+    ax = kwargs['ax']
+    kwargs.pop('ax')
 
     for i in range(len_):
         if i not in exclude_id:
@@ -194,16 +195,10 @@ def plot_photostim_traces_overlap(array, trialobj: AllOpticalTrial, exclude_id=[
     # change x axis ticks to seconds
     if 'Time' in x_axis or 'time' in x_axis:
         # change x axis ticks to every 30 seconds
-        labels = list(range(0, int(trialobj.n_frames // trialobj.fps), 30))
-        ax.set_xticks(ticks=[(label * trialobj.fps) for label in labels])
+        labels = list(range(0, int(trialobj.n_frames // trialobj.imparams.fps), 30))
+        ax.set_xticks(ticks=[(label * trialobj.imparams.fps) for label in labels])
         ax.set_xticklabels(labels)
         ax.set_xlabel('Time (secs)')
-
-        # labels = [item for item in ax.get_xticks()]
-        # for item in labels:
-        #     labels[labels.index(item)] = int(round(item / trialobj.fps))
-        # ax.set_xticklabels(labels)
-        # ax.set_xlabel('Time (secs.)')
 
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
@@ -216,16 +211,10 @@ def plot_photostim_traces_overlap(array, trialobj: AllOpticalTrial, exclude_id=[
         y_max = np.mean(array[-1] + len_ * 40 * y_spacing_factor) + 3 * np.mean(array[-1])
         ax.set_ylim(0, y_max)
 
-    if save_fig is not None:
-        plt.savefig(save_fig)
-
     ax.set_title((title + ' - %s' % len_ + ' cells'), horizontalalignment='center', verticalalignment='top', pad=20,
                  fontsize=10, wrap=True)
 
-
-
-
-
+    dataplot_ax_options(ax=ax, data_length=array.shape[1], **kwargs)
 
 
 

@@ -108,10 +108,10 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.responses_SLMtargets = []  # dF/prestimF responses for all SLM targets for each photostim trial
         self.responses_SLMtargets_tracedFF = []  # poststim dFF - prestim dFF responses for all SLM targets for each photostim trial
 
+        # self.targets_dff, self.targets_dff_avg, targets_dfstdF, targets_dfstdF_avg, targets_raw, targets_raw_avg = self.get_alltargets_stim_traces_norm()
+
         ## ALL CELLS (from suite2p ROIs)
         # TODO add attr's related to numpy array's and pandas dataframes for photostim trials - suite2p ROIs
-        # self.photostimFluArray: np.ndarray = None  # array of dFF pre + post stim Flu snippets for each stim and cell [num cells x num peri-stim frames collected x num stims]  TODO need to write a quick func to collect over all planes to allow for multiplane imaging
-        # self.photostimResponseAmplitudes: pd.DataFrame = None  # photostim response amplitudes in a dataframe for each cell and each photostim
 
 
         #### functions to run after init's all attr's
@@ -129,6 +129,9 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self._stimProcessing()
         self._find_photostim_add_bad_framesnpy()
         self.photostimFluArray, self.photostimResponseAmplitudes, self.photostim_responses = self.photostimProcessingAllCells()
+        # array of dFF pre + post stim Flu snippets for each stim and cell [num cells x num peri-stim frames collected x num stims]  TODO need to write a quick func to collect over all planes to allow for multiplane imaging
+        # photostim response amplitudes in a dataframe for each cell and each photostim
+
 
         # extend annotated data object with imaging frames in photostim and stim_start_frames as additional keys in vars
         __frames_in_stim = [False] * self.imparams.n_frames
@@ -545,13 +548,13 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
     ### ALLOPTICAL PROCESSING OF TRACES
     ## ... no methods determined here yet...
 
-    ### ALLOPTICAL ANALYSIS - FOCUS ON SLM TARGETS RELATED METHODS TODO need to review this whole section
+    ### ALLOPTICAL ANALYSIS - FOCUS ON SLM TARGETS RELATED METHODS
     def collect_traces_from_targets(self, curr_trial_frames: list, reg_tif_folder: str, save: bool = True):
         """uses registered tiffs to collect raw traces from SLM target areas"""
 
         if reg_tif_folder is None:
-            if self.suite2p_path:
-                reg_tif_folder = self.suite2p_path + '/reg_tif/'
+            if self.Suite2p.suite2p_overall.path:
+                reg_tif_folder = self.Suite2p.suite2p_overall.path + '/reg_tif/'
                 print(f"\- trying to load registerred tiffs from: {reg_tif_folder}")
         else:
             raise Exception(f"Must provide reg_tif_folder path for loading registered tiffs")
@@ -571,7 +574,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         targets_trace_full = np.zeros([len(self.target_coords_all), (end - start) * 2000], dtype='float32')
         counter = 0
         for i in range(start, end):
-            tif_path_save2 = self.suite2p_path + '/reg_tif/' + reg_tif_list[i]
+            tif_path_save2 = self.Suite2p.suite2p_overall.path + '/reg_tif/' + reg_tif_list[i]
             with tf.TiffFile(tif_path_save2, multifile=False) as input_tif:
                 print('|- reading tiff: %s' % tif_path_save2)
                 data = input_tif.asarray()
@@ -590,14 +593,16 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             counter += 1
 
         # final part, crop to the *exact* frames for current trial
-        self.raw_SLMTargets = targets_trace_full[:,
+        raw_SLMTargets = targets_trace_full[:,
                               curr_trial_frames[0] - start * 2000: curr_trial_frames[1] - (start * 2000)]
 
-        self.dFF_SLMTargets = normalize_dff(self.raw_SLMTargets, threshold_pct=10)
+        dFF_SLMTargets = normalize_dff(raw_SLMTargets, threshold_pct=10)
 
-        self.meanFluImg_registered = np.mean(mean_img_stack, axis=0)
+        meanFluImg_registered = np.mean(mean_img_stack, axis=0)
 
         self.save() if save else None
+
+        return raw_SLMTargets, dFF_SLMTargets, meanFluImg_registered
 
     def get_alltargets_stim_traces_norm(self, process: str, targets_idx: int = None, subselect_cells: list = None,
                                         pre_stim=15, post_stim=200, filter_sz: bool = False, stims: list = None):
@@ -734,7 +739,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             print(f"shape of targets_dff_avg: {targets_dff_avg.shape}")
             return targets_dff, targets_dff_avg, targets_dfstdF, targets_dfstdF_avg, targets_raw, targets_raw_avg
 
-    # calculate reliability of photostim responsiveness of all of the targeted cells (found in s2p output)
+    # calculate reliability of photostim responsiveness of all of the targeted cells (found in s2p output) TODO need to review this whole section
     def get_SLMTarget_responses_dff(self, process: str, threshold=10, stims_to_use: list = None):
         """
         calculations of dFF responses to photostimulation of SLM Targets. Includes calculating reliability of slm targets,

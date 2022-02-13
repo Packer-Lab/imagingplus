@@ -216,7 +216,7 @@ def dataplot_frame_options():
     sns.set_style('white')
 
 
-def dataplot_ax_options(ax, data_to_plot, **kwargs):
+def dataplot_ax_options(ax, data_length: int, **kwargs):
     """
     :param
         **kwargs:
@@ -233,7 +233,7 @@ def dataplot_ax_options(ax, data_to_plot, **kwargs):
                 trialobj = kwargs['trialobj']
 
                 # change x axis ticks to every 30 seconds
-                labels = list(range(0, int(len(data_to_plot) // trialobj.imparams.fps), 30))
+                labels = list(range(0, int(data_length // trialobj.imparams.fps), 30))
                 ax.set_xticks(ticks=[(label * trialobj.imparams.fps) for label in labels])
 
                 ax.set_xticklabels(labels)
