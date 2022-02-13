@@ -8,7 +8,7 @@ from conftest import existing_trialobj_twophotonimaging_fixture
 # trying to use pytest -- seems to work (!)
 def test_paq_func(existing_trialobj_twophotonimaging_fixture):
     trialobj: TwoPhotonImagingTrial = existing_trialobj_twophotonimaging_fixture
-    trialobj.paq.storePaqChannel(chan_name='voltage')
+    trialobj.Paq.storePaqChannel(chan_name='voltage')
 
 # test_paq_func(existing_trialobj_twophotonimaging_fixture)
 
@@ -19,4 +19,4 @@ def test_paq_func(existing_trialobj_twophotonimaging_fixture):
 #     print(expobj.trialsInformation['t-005']['analysis_object_information']['pkl path'])
 #     trialobj = expobj.load_trial(trialID='t-005')
 #
-#     trialobj.paq.storePaqChannel(chan_name='voltage')
+#     trialobj.Paq.storePaqChannel(chan_name='voltage')

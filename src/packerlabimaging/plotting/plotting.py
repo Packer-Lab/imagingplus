@@ -10,6 +10,8 @@ import random
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
+from packerlabimaging._io import import_obj
+
 from packerlabimaging import Experiment
 
 from packerlabimaging.AllOpticalMain import AllOpticalTrial
@@ -20,7 +22,7 @@ from packerlabimaging.plotting._utils import plotting_decorator, make_random_col
 from packerlabimaging.utils.utils import normalize_dff
 
 
-# %% DATA ANALYSIS PLOTTING FUNCS
+# DATA ANALYSIS PLOTTING FUNCS
 
 # suite2p data
 # simple plot of the location of the given cell(s) against a black FOV
@@ -69,7 +71,6 @@ def plotRoiLocations(trialobj: TwoPhotonImagingTrial, suite2p_rois: list, backgr
 
     _add_scalebar(trialobj=trialobj, ax=ax) if 'scalebar' in [*kwargs] and kwargs['scalebar'] is True else None
 
-
 def makeSuite2pPlots(obj: Union[Experiment, TwoPhotonImagingTrial]):
     "credit: run_s2p tutorial on Mouseland/Suite2p on github"
 
@@ -97,56 +98,134 @@ def makeSuite2pPlots(obj: Union[Experiment, TwoPhotonImagingTrial]):
 
 
 # (full) plot individual cell's flu or dFF trace, with photostim. timings for that cell
-@plotting_decorator
-def plot_flu_trace(trialobj: TwoPhotonImagingTrial, cell, to_plot='raw', linewidth=0.10, x_lims: tuple = None, y_lims: tuple = None,
+@plotting_decorator(figsize=(20,3))
+def plot_flu_trace(trialobj: TwoPhotonImagingTrial, cell, to_plot='raw',
                    **kwargs):
 
     dataplot_frame_options()
     ax = kwargs['ax']
+    kwargs.pop('ax')
+    for i in ['lw', 'linewidth']:
+        try:
+            lw = kwargs[i]
+        except KeyError:
+            lw = 1
 
     idx = trialobj.Suite2p.cell_id.index(cell)
 
     if to_plot == 'raw':
-        data_plot = trialobj.data.X[idx, :]
+        data_to_plot = trialobj.data.X[idx, :]
     else:
         if to_plot in [*trialobj.data.layers]:
-            data_plot = trialobj.data.layers[to_plot][idx, :]
+            data_to_plot = trialobj.data.layers[to_plot][idx, :]
         else:
             raise KeyError(f"to_plot processed data is not found in trialobj.data.layers. ")
 
     # make the plot either as just the raw trace or as a dFF trace with the std threshold line drawn as well.
-    ax.plot(data_plot, linewidth=linewidth)
+    ax.plot(data_to_plot, linewidth=lw)
 
 
-    dataplot_ax_options(ax=ax, **kwargs)
-
-    # if x_lims: ax.set_xlim(x_lims)
-    # if y_lims: ax.set_ylim(y_lims)
-
+    dataplot_ax_options(ax=ax, data_to_plot=data_to_plot, **kwargs)
 
 # plots the raw trace for the Flu mean of the FOV (similar to the ZProject in Fiji)
 @plotting_decorator(figsize=(10, 3))
-def plotMeanFovFluTrace(trialobj: TwoPhotonImagingTrial, x_axis='time', **kwargs):
+def plotMeanFovFluTrace(trialobj: TwoPhotonImagingTrial, **kwargs):
     """make plot of mean Ca trace averaged over the whole FOV"""
 
-    dataplot_frame_options()
+    if not hasattr(trialobj, 'meanFovFluTrace'):
+        raise AttributeError('Cannot make plot. Missing meanFovFluTrace attribute.')
 
-    print(f"\t \- PLOTTING mean raw flu trace ... ")
-
-    ax = kwargs['ax']
-
-    # change linewidth
-    if 'linewidth' in kwargs:
-        lw = kwargs['linewidth']
     else:
-        lw = 2
+        dataplot_frame_options()
+        ax = kwargs['ax']
+        kwargs.pop('ax')
+        for i in ['lw', 'linewidth']:
+            try:
+                lw = kwargs[i]
+            except KeyError:
+                lw = 1
 
-    ax.plot(trialobj.meanRawFluTrace, c='forestgreen', zorder=1, linewidth=lw)
+        data_to_plot = trialobj.meanFovFluTrace
 
-    ax.set_xlabel('frame #s')
-    ax.set_ylabel('Flu (a.u.)')
+        print(f"\t \- PLOTTING mean raw flu trace ... ")
+        ax.plot(data_to_plot, c='forestgreen', linewidth=lw)
 
-    dataplot_ax_options(ax=ax, **kwargs)
+        ax.set_xlabel('frame #s')
+        ax.set_ylabel('Flu (a.u.)')
+
+        dataplot_ax_options(ax=ax, data_to_plot=data_to_plot, **kwargs)
+
+
+@plotting_decorator(figsize=(10, 6))
+def plot_photostim_traces_overlap(array, trialobj: AllOpticalTrial, exclude_id=[], y_spacing_factor=1, title='',
+                                  x_axis='Time (seconds)', save_fig=None, fig=None, ax=None, **kwargs):
+    '''
+    :param array:
+    :param trialobj:
+    :param spacing: a multiplication factor that will be used when setting the spacing between each trace in the final plot
+    :param title:
+    :param y_min:
+    :param y_max:
+    :param x_label:
+    :param save_fig:
+    :output: matplotlib plot
+    '''
+    # make rolling average for these plots
+    # w = 30
+    # array = np.asarray([(np.convolve(trace, np.ones(w), 'valid') / w) for trace in array])
+
+    len_ = len(array)
+
+
+    for i in range(len_):
+        if i not in exclude_id:
+            if 'linewidth' in kwargs.keys():
+                linewidth=kwargs['linewidth']
+            else:
+                linewidth=1
+            ax.plot(array[i] + i * 40 * y_spacing_factor, linewidth=linewidth)
+    for j in trialobj.stim_start_frames:
+        if j <= array.shape[1]:
+            ax.axvline(x=j, c='gray', alpha=0.3)
+
+    ax.set_xlim([0, trialobj.n_frames-3000])
+
+    ax.margins(0)
+    # change x axis ticks to seconds
+    if 'Time' in x_axis or 'time' in x_axis:
+        # change x axis ticks to every 30 seconds
+        labels = list(range(0, int(trialobj.n_frames // trialobj.fps), 30))
+        ax.set_xticks(ticks=[(label * trialobj.fps) for label in labels])
+        ax.set_xticklabels(labels)
+        ax.set_xlabel('Time (secs)')
+
+        # labels = [item for item in ax.get_xticks()]
+        # for item in labels:
+        #     labels[labels.index(item)] = int(round(item / trialobj.fps))
+        # ax.set_xticklabels(labels)
+        # ax.set_xlabel('Time (secs.)')
+
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.set_xlabel(x_axis)
+
+    if 'y_lim' in kwargs.keys():
+        ax.set_ylim(kwargs['y_lim'])
+    else:
+        y_max = np.mean(array[-1] + len_ * 40 * y_spacing_factor) + 3 * np.mean(array[-1])
+        ax.set_ylim(0, y_max)
+
+    if save_fig is not None:
+        plt.savefig(save_fig)
+
+    ax.set_title((title + ' - %s' % len_ + ' cells'), horizontalalignment='center', verticalalignment='top', pad=20,
+                 fontsize=10, wrap=True)
+
+
+
+
+
 
 
 
@@ -168,8 +247,8 @@ def plotLfpSignal(trialobj: TwoPhotonImagingTrial, stim_span_color='powderblue',
 
     print(f"\t \- PLOTTING LFP Signal trace ... ")
 
-    if not hasattr(trialobj.paq, 'voltage'):
-        raise AttributeError(f"no voltage data found in .paq submodule. Please add to .paq file")
+    if not hasattr(trialobj.Paq, 'voltage'):
+        raise AttributeError(f"no voltage data found in .Paq submodule. Please add to .Paq file")
 
     # # if there is a fig and ax provided in the function call then use those, otherwise start anew
     # if 'fig' in kwargs.keys():
@@ -193,10 +272,10 @@ def plotLfpSignal(trialobj: TwoPhotonImagingTrial, stim_span_color='powderblue',
         color = 'steelblue'
 
     # option for downsampling of data plot trace
-    x = range(len(trialobj.paq.voltage[trialobj.paq.frame_times[0]: trialobj.paq.frame_times[-1]]))
-    signal = trialobj.paq.voltage[trialobj.paq.frame_times[0]: trialobj.paq.frame_times[-1]]
+    x = range(len(trialobj.Paq.voltage[trialobj.Paq.frame_times[0]: trialobj.Paq.frame_times[-1]]))
+    signal = trialobj.Paq.voltage[trialobj.Paq.frame_times[0]: trialobj.Paq.frame_times[-1]]
     if downsample:
-        labels = list(range(0, int(len(signal) / trialobj.paq.paq_rate * 1), 15))[::2]  # set x ticks at every 30 secs
+        labels = list(range(0, int(len(signal) / trialobj.Paq.paq_rate * 1), 15))[::2]  # set x ticks at every 30 secs
         down = 1000
         signal = signal[::down]
         x = x[::down]
@@ -219,20 +298,20 @@ def plotLfpSignal(trialobj: TwoPhotonImagingTrial, stim_span_color='powderblue',
     labels_ = kwargs['labels'] if 'labels' in [*kwargs] else ax.get_xticklabels()
     labels_ = [int(i) for i in labels_]
     if 'time' in x_axis or 'Time' in x_axis:
-        ax.set_xticks(ticks=[(label * trialobj.paq.paq_rate) for label in labels_])
+        ax.set_xticks(ticks=[(label * trialobj.Paq.paq_rate) for label in labels_])
         ax.set_xticklabels(labels_)
         ax.tick_params(axis='both', which='both', length=3)
         if not hide_xlabel:
             ax.set_xlabel('Time (secs)')
     # elif 'frame' or "frames" or "Frames" or "Frame" in x_axis:
     #     x_ticks = range(0, trialobj.n_frames, 2000)
-    #     x_clocks = [x_fr*trialobj.paq_rate for x_fr in x_ticks]  ## convert to paq clock dimension
+    #     x_clocks = [x_fr*trialobj.paq_rate for x_fr in x_ticks]  ## convert to Paq clock dimension
     #     ax.set_xticks(x_clocks)
     #     ax.set_xticklabels(x_ticks)
     #     if not hide_xlabel:
     #         ax.set_xlabel('Frames')
     else:
-        ax.set_xlabel('paq clock')
+        ax.set_xlabel('Paq clock')
     ax.set_ylabel('Voltage')
     # ax.set_xlim([trialobj.frame_start_time_actual, trialobj.frame_end_time_actual])  ## this should be limited to the 2p acquisition duration only
 
@@ -240,7 +319,7 @@ def plotLfpSignal(trialobj: TwoPhotonImagingTrial, stim_span_color='powderblue',
     if 'ylims' in kwargs:
         ax.set_ylim(kwargs['ylims'])
     else:
-        ax.set_ylim([np.mean(trialobj.paq.voltage) - 10, np.mean(trialobj.paq.voltage) + 10])
+        ax.set_ylim([np.mean(trialobj.Paq.voltage) - 10, np.mean(trialobj.Paq.voltage) + 10])
 
     # set xlimits:
     if 'xlims' in kwargs and kwargs['xlims'] is not None:
@@ -391,96 +470,7 @@ def plot_photostim_traces(array, trialobj: AllOpticalTrial, title='', y_min=None
     fig.show()
 
 
-@plotting_decorator(figsize=(10, 6))
-def plot_photostim_traces_overlap(array, trialobj: AllOpticalTrial, exclude_id=[], y_spacing_factor=1, title='',
-                                  x_axis='Time (seconds)', save_fig=None, fig=None, ax=None, **kwargs):
-    '''
-    :param array:
-    :param trialobj:
-    :param spacing: a multiplication factor that will be used when setting the spacing between each trace in the final plot
-    :param title:
-    :param y_min:
-    :param y_max:
-    :param x_label:
-    :param save_fig:
-    :output: matplotlib plot
-    '''
-    # make rolling average for these plots
-    # w = 30
-    # array = np.asarray([(np.convolve(trace, np.ones(w), 'valid') / w) for trace in array])
 
-    len_ = len(array)
-
-    if 'fig' in kwargs.keys():
-        fig = kwargs['fig']
-        ax = kwargs['ax']
-    else:
-        if 'figsize' in kwargs.keys():
-            fig, ax = plt.subplots(figsize=kwargs['figsize'])
-        else:
-            fig, ax = plt.subplots(figsize=[20, 10])
-
-    for i in range(len_):
-        if i not in exclude_id:
-            if 'linewidth' in kwargs.keys():
-                linewidth=kwargs['linewidth']
-            else:
-                linewidth=1
-            ax.plot(array[i] + i * 40 * y_spacing_factor, linewidth=linewidth)
-    for j in trialobj.stim_start_frames:
-        if j <= array.shape[1]:
-            ax.axvline(x=j, c='gray', alpha=0.3)
-
-    ax.set_xlim([0, trialobj.n_frames-3000])
-
-    ax.margins(0)
-    # change x axis ticks to seconds
-    if 'Time' in x_axis or 'time' in x_axis:
-        # change x axis ticks to every 30 seconds
-        labels = list(range(0, int(trialobj.n_frames // trialobj.fps), 30))
-        ax.set_xticks(ticks=[(label * trialobj.fps) for label in labels])
-        ax.set_xticklabels(labels)
-        ax.set_xlabel('Time (secs)')
-
-        # labels = [item for item in ax.get_xticks()]
-        # for item in labels:
-        #     labels[labels.index(item)] = int(round(item / trialobj.fps))
-        # ax.set_xticklabels(labels)
-        # ax.set_xlabel('Time (secs.)')
-
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.spines['left'].set_visible(False)
-    ax.set_xlabel(x_axis)
-
-    if 'y_lim' in kwargs.keys():
-        ax.set_ylim(kwargs['y_lim'])
-    else:
-        y_max = np.mean(array[-1] + len_ * 40 * y_spacing_factor) + 3 * np.mean(array[-1])
-        ax.set_ylim(0, y_max)
-
-    if save_fig is not None:
-        plt.savefig(save_fig)
-
-    ax.set_title((title + ' - %s' % len_ + ' cells'), horizontalalignment='center', verticalalignment='top', pad=20,
-                 fontsize=10, wrap=True)
-
-    # # finalize plot, set title, and show or return axes
-    # if 'fig' in kwargs.keys():
-    #     ax.set_title((title + ' - %s' % len_ + ' cells'), horizontalalignment='center', verticalalignment='top', pad=20,
-    #                  fontsize=10, wrap=True)
-    #     # ax.title.set_text((title + ' - %s' % len_ + ' cells'), wrap=True)
-    #     return fig, ax
-    # else:
-    #     ax.set_title((title + ' - %s' % len_ + ' cells'), horizontalalignment='center', verticalalignment='top', pad=20,
-    #                  fontsize=10, wrap=True)
-    # if 'show' in kwargs.keys():
-    #     if kwargs['show'] is True:
-    #         fig.show()
-    #     else:
-    #         pass
-    # else:
-    #     fig.show()
 
 
 ### photostim analysis - PLOT avg over photostim. trials traces for the provided traces

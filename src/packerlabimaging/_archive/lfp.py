@@ -1,6 +1,6 @@
 # add electrophysiology data to the trial
 
-# retrieving and processing on LFP recordings from the .paq file
+# retrieving and processing on LFP recordings from the .Paq file
 import os.path
 import paq as Paq
 
@@ -10,7 +10,7 @@ class LFP:
 
     def lfp_from_paq(self, paq_path, chan_name: str = 'voltage'):
 
-        print('\n----- retrieving LFP from paq file...')
+        print('\n----- retrieving LFP from Paq file...')
 
         if not os.path.exists(paq_path):
             raise FileNotFoundError(f"Not found: {paq_path}")

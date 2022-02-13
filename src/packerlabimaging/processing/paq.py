@@ -131,18 +131,22 @@ def paq2py(file_path=None, plot=False):
 class paqData:
     def __init__(self, paq_path: str, frame_times_channame: str, option: str):
         """
-        reads in paq data from a .paq file for an experiment performed using PackIO.
+        reads in Paq data from a .Paq file for an experiment performed using PackIO.
 
-        paq_path: full path to .paq file to read
+        paq_path: full path to .Paq file to read
         """
-        self.frame_times = None
-        self.frame_times_channame = frame_times_channame
-        self.paq_path = paq_path     # full path to the .paq file to process
-        self.paq_channels: List[str] = ['None']     # recorded channels in paq file
-        self.paq_rate: float = 0.0                  # sample rate of paq collection
+        # self.frame_times = None
+        # self.frame_times_channame = frame_times_channame
+
+        self.paq_path = paq_path     # full path to the .Paq file to process
+        self.paq_channels: List[str] = ['None']     # recorded channels in Paq file
+        self.paq_rate: float = 0.0                  # sample rate of Paq collection
 
         paq_data, self.paq_rate, self.paq_channels = self.paq_read(paq_path=self.paq_path)
-        self.paqProcessing(paq=paq_data, options=option)
+
+
+        # self.paqProcessing(paq=paq_data, options=option)
+
 
     def __repr__(self):
         information = ""
@@ -153,26 +157,26 @@ class paqData:
                 information += f"\n\t{i}: {[*self.__dict__[i]]}"
 
 
-        return f"packerlabimaging.processing.paq.paqData: {information}"
+        return f"packerlabimaging.processing.Paq.paqData: {information}"
 
     @staticmethod
     def paq_read(paq_path: str = None, plot: bool = False):
         """
-        Loads .paq file and saves data from individual channels.
+        Loads .Paq file and saves data from individual channels.
 
-        :param paq_path: (optional) path to the .paq file for this data object
+        :param paq_path: (optional) path to the .Paq file for this data object
         """
 
-        print(f'\tloading paq data from: {paq_path}')
+        print(f'\tloading Paq data from: {paq_path}')
         paq, _ = paq2py(paq_path, plot=plot)
         paq_rate = paq['rate']
         paq_channels = paq['chan_names']
-        print(f"\t|- loaded {len(paq['chan_names'])} channels from .paq file: {paq['chan_names']}")
+        print(f"\t|- loaded {len(paq['chan_names'])} channels from .Paq file: {paq['chan_names']}")
 
         return paq, paq_rate, paq_channels
 
     def storePaqChannel(self, chan_name):
-        """add a specific channel's (`chan_name`) data from the .paq file as attribute of the same name for
+        """add a specific channel's (`chan_name`) data from the .Paq file as attribute of the same name for
         paqData object."""
 
         paq_data, _, paq_channels = self.paq_read(paq_path=self.paq_path)
@@ -180,27 +184,11 @@ class paqData:
         print(f"\t|- adding '{chan_name}' channel data as attribute")
         setattr(self, chan_name, paq_data['data'][chan_name_idx])
 
-    def paqProcessing(self, paq, options: str):  # TODO is this best implementation of this (i mean the options thing to specify which funcs to run)
-        """
-        Loads .paq file and saves data from individual channels.
-
-        :param paq_path: (optional) path to the .paq file for this data object
-        """
-
-        print('\n\----- Processing paq file ...')
-        # retrieve frame times
-        if 'TwoPhotonImaging' or 'AllOptical' in options:
-            self.frame_times = self._frame_times(paq_data=paq, frame_channel=self.frame_times_channame)
-
-        elif 'OnePhotonStim' in options:
-            self._1p_stims(paq_data=paq)
-
-
     ## refactor these methods to their respective Trial code locations
     @staticmethod
-    def _frame_times(paq_data, frame_channel: str):
+    def paq_frame_times(paq_data, frame_channel: str):
         if frame_channel not in paq_data['chan_names']:
-            raise KeyError(f'{frame_channel} not found in .paq channels. Specify channel containing frame signals.')
+            raise KeyError(f'{frame_channel} not found in .Paq channels. Specify channel containing frame signals.')
         
         # find frame times
         clock_idx = paq_data['chan_names'].index(frame_channel)
@@ -209,7 +197,7 @@ class paqData:
         __frame_clock = threshold_detect(clock_voltage, 1)
         __frame_clock = __frame_clock
 
-        # find start and stop __frame_clock times -- there might be multiple 2p imaging starts/stops in the paq trial (hence multiple frame start and end times)
+        # find start and stop __frame_clock times -- there might be multiple 2p imaging starts/stops in the Paq trial (hence multiple frame start and end times)
         frame_start_times = [__frame_clock[0]]  # initialize list
         frame_end_times = []
         i = len(frame_start_times)
@@ -220,7 +208,7 @@ class paqData:
                 frame_start_times.append(__frame_clock[idx + 1])
         frame_end_times.append(__frame_clock[-1])
 
-        # handling cases where 2p imaging clock has been started/stopped >1 in the paq trial
+        # handling cases where 2p imaging clock has been started/stopped >1 in the Paq trial
         if len(frame_start_times) > 1:
             diff = [frame_end_times[idx] - frame_start_times[idx] for idx in
                     range(len(frame_start_times))]
@@ -238,16 +226,16 @@ class paqData:
 
     @staticmethod
     def sparse_paq(paq_data, frame_clock):
-        # read in and save sparse version of all paq channels (only save data from timepoints at frame clock times)
+        # read in and save sparse version of all Paq channels (only save data from timepoints at frame clock times)
         sparse_paq_data = {}
         for idx, chan in enumerate(paq_data['chan_names']):
             sparse_paq_data[chan] = paq_data['data'][idx, frame_clock]
 
 
     @staticmethod
-    def _2p_stims(paq_data, frame_clock: List[int], plot: bool = False, stim_channel: str = ''):
+    def paq_alloptical_stims(paq_data, frame_clock: List[int], plot: bool = False, stim_channel: str = ''):
         if stim_channel not in paq_data['chan_names']:
-            raise KeyError(f'{stim_channel} not found in .paq channels. Specify channel containing frame signals.')
+            raise KeyError(f'{stim_channel} not found in .Paq channels. Specify channel containing frame signals.')
 
         # find stim times
         stim_idx = paq_data['chan_names'].index(stim_channel)
@@ -280,7 +268,7 @@ class paqData:
     def _1p_stims(self, paq_data, plot: bool = False, optoloopback_channel: str = 'opto_loopback'):
         "find 1p stim times"
         if optoloopback_channel not in paq_data['chan_names']:
-            raise KeyError(f'{optoloopback_channel} not found in .paq channels. Specify channel containing 1p stim TTL loopback signals.')
+            raise KeyError(f'{optoloopback_channel} not found in .Paq channels. Specify channel containing 1p stim TTL loopback signals.')
 
         opto_loopback_chan = paq_data['chan_names'].index('opto_loopback')
         stim_volts = paq_data['data'][opto_loopback_chan, :]
@@ -303,7 +291,7 @@ class paqData:
             plt.figure(figsize=(50, 2))
             plt.plot(stim_volts)
             plt.plot(stim_times, np.ones(len(stim_times)), '.')
-            plt.suptitle('1p stims from paq, with detected 1p stim instances as scatter')
+            plt.suptitle('1p stims from Paq, with detected 1p stim instances as scatter')
             plt.xlim([stim_times[0] - 2e3, stim_times[-1] + 2e3])
             plt.show()
         
@@ -327,10 +315,10 @@ class paqData:
 
 
     def _shutter_times(self, paq_data, shutter_channel: str = 'shutter_loopback'):
-        "find shutter loopback frames from .paq data"
+        "find shutter loopback frames from .Paq data"
 
         if shutter_channel not in paq_data['chan_names']:
-            raise KeyError(f'{shutter_channel} not found in .paq channels. Specify channel containing shutter signals.')
+            raise KeyError(f'{shutter_channel} not found in .Paq channels. Specify channel containing shutter signals.')
 
         shutter_idx = paq_data['chan_names'].index('shutter_loopback')
         shutter_voltage = paq_data['data'][shutter_idx, :]
@@ -341,7 +329,7 @@ class paqData:
         self.shutter_start_frames = []
         self.shutter_end_frames = []
 
-        shutter_frames_ = [frame for frame, t in enumerate(self._frame_times()) if
+        shutter_frames_ = [frame for frame, t in enumerate(self.paq_frame_times()) if
                            t in self.shutter_times]
         self.shutter_frames.append(shutter_frames_)
 
@@ -360,17 +348,17 @@ class paqData:
     def frames_discard(self, input_array, total_frames, discard_all=False):
         '''
         calculate which 2P imaging frames to discard (or use as bad frames input into suite2p) based on the bad frames
-        identified by manually inspecting the paq files in EphysViewer.m
-        :param paq: paq file
+        identified by manually inspecting the Paq files in EphysViewer.m
+        :param Paq: Paq file
         :param input_array: .m file path to read that contains the timevalues for signal to remove
         :param total_frames: the number of frames in the TIFF file of the actual 2p imaging recording
-        :param discard_all: bool; if True, then add all 2p imaging frames from this paq file as bad frames to discard
+        :param discard_all: bool; if True, then add all 2p imaging frames from this Paq file as bad frames to discard
         :return: array that contains the indices of bad frames (in format ready to input into suite2p processing)
         '''
 
-        frame_times = self._frame_times()
+        frame_times = self.paq_frame_times()
         frame_times = frame_times[
-                      0:total_frames]  # this is necessary as there are more TTL triggers in the paq file than actual frames (which are all at the end)
+                      0:total_frames]  # this is necessary as there are more TTL triggers in the Paq file than actual frames (which are all at the end)
 
         all_btwn_paired_frames = []
         paired_frames_first = []

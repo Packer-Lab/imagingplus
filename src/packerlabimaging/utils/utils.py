@@ -473,7 +473,7 @@ def _check_path_exists(path_arg: str, path: str):
 
 def clean_lfp_signal(paq, input_array: str, chan_name: str = 'voltage', plot=False):
     '''
-    the idea is to use EphysViewer.m in matlab to view .paq files and then from there export an excel file that
+    the idea is to use EphysViewer.m in matlab to view .Paq files and then from there export an excel file that
     will contain paired sets of timevalues that are the start and end of the signal to clean up.
 
     note: "clean up" does not mean to remove the signal values but instead to set them to a constant value that
@@ -481,8 +481,8 @@ def clean_lfp_signal(paq, input_array: str, chan_name: str = 'voltage', plot=Fal
     same length as the original signal.
 
     :param plot: to make plot of the fixed up LFP signal or not
-    :param chan_name: channel name in paq file that contains the LFP series
-    :param paq: paq file containing the LFP series
+    :param chan_name: channel name in Paq file that contains the LFP series
+    :param paq: Paq file containing the LFP series
     :param input_array: path to .mat file to read that contains the timevalues for signal to remove
     :return: cleaned up LFP signal
     '''
@@ -667,7 +667,7 @@ def d_prime(hit_rate, false_alarm_rate):
 
 def paq_data(paq, chan_name, threshold_ttl=False, plot=False):
     '''
-    returns the data in paq (from paq_read) from channel: chan_names
+    returns the data in Paq (from paq_read) from channel: chan_names
     if threshold_tll: returns sample that trigger occured on
     '''
 
@@ -764,8 +764,8 @@ def stim_start_frame_mat(stim_times, frames_ms, fs=5, debug_print=False):
 def stim_start_frame(paq=None, stim_chan_name=None, frame_clock=None,
                      stim_times=None):
     '''Returns the frames from a frame_clock that a stim occured on.
-       Either give paq and stim_chan_name as arugments if using
-       unprocessed paq.
+       Either give Paq and stim_chan_name as arugments if using
+       unprocessed Paq.
        Or predigitised frame_clock and stim_times in reference frame
        of that clock
 

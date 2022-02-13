@@ -17,8 +17,8 @@ class OnePstim(TwoPhotonImagingTrial):
 
     def __init__(self, data_path_base, date, animal_prep, trial, metainfo, analysis_save_path_base: str = None):
         # TODO need to review __init__ code to fit into package pipeline
-        paqs_loc = '%s%s_%s_%s.paq' % (
-            data_path_base, date, animal_prep, trial[2:])  # path to the .paq files for the selected trials
+        paqs_loc = '%s%s_%s_%s.Paq' % (
+            data_path_base, date, animal_prep, trial[2:])  # path to the .Paq files for the selected trials
         tiffs_loc_dir = '%s/%s_%s' % (data_path_base, date, trial)
         tiffs_loc = '%s/%s_%s_Cycle00001_Ch3.tif' % (tiffs_loc_dir, date, trial)
         self.pkl_path = "/home/pshah/mnt/qnap/Analysis/%s/%s_%s/%s_%s.pkl" % (
@@ -43,7 +43,7 @@ class OnePstim(TwoPhotonImagingTrial):
         TwoPhotonImagingTrial.__init__(self, self.tiff_path, self.paq_path, metainfo=metainfo,
                                   analysis_save_path=analysis_save_path, save_downsampled_tiff=True, quick=False)
 
-        # using the paq module for loading paq data
+        # using the Paq module for loading Paq data
         self.paq_data = paqData(paq_path=self.paq_path)
         self._1p_stims(plot=False, optoloopback_channel='opto_loopback')
 
@@ -82,16 +82,16 @@ class OnePstim(TwoPhotonImagingTrial):
         """find 1p stim times
 
         :param optoloopback_channel: Specify channel containing 1p stim TTL loopback signals.
-        :param plot: whether to plot the paq read signal after loading paq file
+        :param plot: whether to plot the Paq read signal after loading Paq file
         """
 
         if optoloopback_channel not in self.paq_data.paq_channels:
             raise KeyError(
-                f'{optoloopback_channel} not found in .paq channels. ')
+                f'{optoloopback_channel} not found in .Paq channels. ')
 
         opto_loopback_chan = self.paq_data['chan_names'].index(optoloopback_channel)
         
-        # load up paq data
+        # load up Paq data
         _paq_data, _, _ = paqData.paq_read(paq_path=self.paq_path)
         
         stim_volts = _paq_data['data'][opto_loopback_chan, :]
@@ -114,7 +114,7 @@ class OnePstim(TwoPhotonImagingTrial):
             plt.figure(figsize=(50, 2))
             plt.plot(stim_volts)
             plt.plot(stim_times, np.ones(len(stim_times)), '.')
-            plt.suptitle('1p stims from paq, with detected 1p stim instances as scatter')
+            plt.suptitle('1p stims from Paq, with detected 1p stim instances as scatter')
             plt.show()
 
         # find all stim frames
@@ -135,18 +135,18 @@ class OnePstim(TwoPhotonImagingTrial):
         print(f"\nStim duration of 1photon stim: {self.stim_duration_frames} frames")
 
     def _shutter_times(self, shutter_channel: str = 'shutter_loopback'):
-        """find shutter loopback frames from .paq data
+        """find shutter loopback frames from .Paq data
 
         :param shutter_channel:  Specify channel containing shutter signals.
         """
 
         if shutter_channel not in self.paq_data.paq_channels:
             raise KeyError(
-                f'{shutter_channel} not found in .paq channels. ')
+                f'{shutter_channel} not found in .Paq channels. ')
 
         shutter_idx = self.paq_data['chan_names'].index(shutter_channel)
 
-        # load up paq data
+        # load up Paq data
         _paq_data, _, _ = paqData.paq_read(paq_path=self.paq_path)
 
         shutter_voltage = _paq_data['data'][shutter_idx, :]

@@ -2,7 +2,7 @@
 """
 This is the main collection of functions for processing and analysis of calcium imaging data in the Packer lab.
 
-The fundamental object of data is one t-series of imaging, along with its associated .paq file, accessory files generated
+The fundamental object of data is one t-series of imaging, along with its associated .Paq file, accessory files generated
 from the microscope during data collection, and any user generated files associated with the experiment of this t-series.
 
 """

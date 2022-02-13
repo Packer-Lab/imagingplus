@@ -28,8 +28,8 @@ def twophoton_imaging_trial_fixture():
         date = data_path_base[-10:]
 
         ## everything below should autopopulate and run automatically
-        paqs_loc = '%s/%s_%s_%s.paq' % (
-        data_path_base, date, animal_prep, trial[2:])  # path to the .paq files for the selected trials
+        paqs_loc = '%s/%s_%s_%s.Paq' % (
+        data_path_base, date, animal_prep, trial[2:])  # path to the .Paq files for the selected trials
         tiffs_loc = f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif'
 
         initialization_dict["trialsInformation"][trial] = {'trialType': 'TwoPhotonImagingTrial',
@@ -80,8 +80,8 @@ def alloptical_trial_fixture():
         date = data_path_base[-10:]
 
         ## everything below should autopopulate and run automatically
-        paqs_loc = '%s/%s_%s_%s.paq' % (
-        data_path_base, date, animal_prep, trial[2:])  # path to the .paq files for the selected trials
+        paqs_loc = '%s/%s_%s_%s.Paq' % (
+        data_path_base, date, animal_prep, trial[2:])  # path to the .Paq files for the selected trials
         tiffs_loc = f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif'
 
         initialization_dict["trialsInformation"][trial] = {'trialType': 'AllOpticalTrial',
@@ -134,12 +134,19 @@ def experiment_fixture(alloptical_trial_fixture, twophoton_imaging_trial_fixture
 @pytest.fixture(scope="session")
 def existing_trialobj_twophotonimaging_fixture():
     expobj = import_obj(pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
-    trialobj = expobj.load_trial(trialID='t-005')
-    return trialobj
+    trialobj1 = expobj.load_trial(trialID='t-005')
+    trialobj2 = expobj.load_trial(trialID='t-006')
+    return trialobj1, trialobj2
 
 @pytest.fixture(scope="session")
-def existing_expobj_twophotonimaging_fixture():
+def existing_expobj_fixture():
     expobj = import_obj(pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
     trialsSuite2p = ['t-005', 't-006', 't-013']
     s2pResultsPath = '/home/pshah/mnt/qnap/Analysis/2020-12-19/suite2p/alloptical-2p-1x-alltrials/plane0'
     return expobj, trialsSuite2p, s2pResultsPath
+
+@pytest.fixture(scope="session")
+def existing_trialobj_alloptical_fixture():
+    expobj = import_obj(pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
+    trialobj = expobj.load_trial(trialID='t-013')
+    return trialobj

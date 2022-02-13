@@ -38,7 +38,7 @@ class OnePhotonStim(TwoPhotonImagingTrial):
 
     def paqProcessing(self, **kwargs):
 
-        print('\n-----processing paq file for 1p photostim...')
+        print('\n-----processing Paq file for 1p photostim...')
 
         print('loading', self.paq_path)
 
@@ -47,8 +47,8 @@ class OnePhotonStim(TwoPhotonImagingTrial):
 
         frame_rate = self.fps / self.n_planes
 
-        # if 'shutter_loopback' in paq['chan_names']:
-        #     ans = input('shutter_loopback in this paq found, should we continue')
+        # if 'shutter_loopback' in Paq['chan_names']:
+        #     ans = input('shutter_loopback in this Paq found, should we continue')
         #     if ans is True or 'Yes':
         #         pass
         #     else:
@@ -61,7 +61,7 @@ class OnePhotonStim(TwoPhotonImagingTrial):
         frame_clock = pj.threshold_detect(clock_voltage, 1)
         self.frame_clock = frame_clock
 
-        # find start and stop frame_clock times -- there might be multiple 2p imaging starts/stops in the paq trial (hence multiple frame start and end times)
+        # find start and stop frame_clock times -- there might be multiple 2p imaging starts/stops in the Paq trial (hence multiple frame start and end times)
         self.frame_start_times = [self.frame_clock[0]]  # initialize ls
         self.frame_end_times = []
         i = len(self.frame_start_times)
@@ -79,7 +79,7 @@ class OnePhotonStim(TwoPhotonImagingTrial):
         #         self.frame_end_times.append(self.frame_clock[np.where(self.frame_clock == frame)[0] - 1][0])
         # self.frame_end_times.append(self.frame_clock[-1])
 
-        # handling cases where 2p imaging clock has been started/stopped >1 in the paq trial
+        # handling cases where 2p imaging clock has been started/stopped >1 in the Paq trial
         if len(self.frame_start_times) > 1:
             diff = [self.frame_end_times[idx] - self.frame_start_times[idx] for idx in
                     range(len(self.frame_start_times))]
@@ -98,7 +98,7 @@ class OnePhotonStim(TwoPhotonImagingTrial):
         ax.plot(clock_voltage)
         ax.plot(frame_clock, np.ones(len(frame_clock)), '.', color='orange')
         ax.plot(self.frame_clock_actual, np.ones(len(self.frame_clock_actual)), '.', color='red')
-        ax.set_title('frame clock from paq, with detected frame clock instances as scatter')
+        ax.set_title('frame clock from Paq, with detected frame clock instances as scatter')
         ax.set_xlim([1e6, 1.2e6])
         f.tight_layout(pad=2)
         f.show()
@@ -125,8 +125,8 @@ class OnePhotonStim(TwoPhotonImagingTrial):
         # retrieve seizure onset and offset times from the seizures info array input
         paq = paq2py(file_path=self.paq_path, plot=False)
 
-        # print(paq[0]['data'][0])  # print the frame clock signal from the .paq file to make sure its being read properly
-        # NOTE: the output of all of the following function is in dimensions of the FRAME CLOCK (not official paq clock time)
+        # print(Paq[0]['data'][0])  # print the frame clock signal from the .Paq file to make sure its being read properly
+        # NOTE: the output of all of the following function is in dimensions of the FRAME CLOCK (not official Paq clock time)
         if seizures_lfp_timing_matarray is not None:
             print('-- using matlab array to collect seizures %s: ' % seizures_lfp_timing_matarray)
             bad_frames, self.seizure_frames, self.seizure_lfp_onsets, self.seizure_lfp_offsets = frames_discard(

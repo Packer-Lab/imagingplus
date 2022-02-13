@@ -33,7 +33,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         """
         :param tiff_path: path to t-series .tiff
-        :param paq_path: path to .paq file associated with current t-series
+        :param paq_path: path to .Paq file associated with current t-series
         :param naparm_path: path to folder containing photostimulation setup built by NAPARM
         :param analysis_save_path: path of where to save the experiment analysis object
         :param metainfo: dictionary containing any metainfo information field needed for this experiment. At minimum it needs to include prep #, t-series # and date of data collection.
@@ -54,15 +54,15 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.stim_start_times = None
         self.nomulti_sig_units = None
         self.stim_channel = kwargs['stim_channel'] if 'stim_channel' in [
-            *analysisOptions] else 'markpoints2packio'  # channel on paq file to read for determining stims
+            *analysisOptions] else 'markpoints2packio'  # channel on Paq file to read for determining stims
 
         self.photostim_frames = []  # imaging frames that are classified as overlapping with photostimulation
         self.stim_start_frames = []  # frame numbers from the start of each photostim trial
 
-        # paq file attr's
-        self.paq_rate: int = None  # PackIO acquisition rate for .paq file
-        self.frame_start_times: list = None  # paq clock timestamps of the first imaging acquisition frame of t-series
-        self.frame_end_times: list = None  # paq clock timestamps of the last imaging acquisition frame of t-series
+        # Paq file attr's
+        self.paq_rate: int = None  # PackIO acquisition rate for .Paq file
+        self.frame_start_times: list = None  # Paq clock timestamps of the first imaging acquisition frame of t-series
+        self.frame_end_times: list = None  # Paq clock timestamps of the last imaging acquisition frame of t-series
 
         # SLM target coords attr's
         self.n_targets = []  # total number of target coordinates per SLM group
@@ -123,7 +123,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
                                        microscope=microscope, **kwargs)
 
         # continue with photostimulation experiment processing
-        self._paqProcessing()
+        self.stim_start_frames, self.stim_start_times = self._paqProcessing()
         self._stimProcessing()
         self._find_photostim_add_bad_framesnpy()
 
@@ -192,29 +192,28 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
     def paqProcessing(self, stim_channel, frame_channel='frame_clock'):  ## TODO fix signature to match base method from TwoPhotonImaging
         paqD, _ = paq2py(file_path=self.paq_path, plot=True)
-        self.stim_start_frames, self.stim_start_times = paqData._2p_stims(paq_data=paqD, frame_clock=self.paq.frame_times, stim_channel=stim_channel)
 
     def paqProcessing2(self, paq_path: str = None, plot: bool = True, **kwargs):
 
-        print('\n\----- processing paq file...')
+        print('\n\----- processing Paq file...')
 
         if not hasattr(self, 'paq_path'):
             if paq_path is not None:
                 self.paq_path = paq_path
             else:
                 ValueError(
-                    'ERROR: no paq_path defined for data object, please provide paq_path to load .paq file from.')
+                    'ERROR: no paq_path defined for data object, please provide paq_path to load .Paq file from.')
         elif paq_path is not None and paq_path != self.paq_path:
             assert os.path.exists(paq_path), print('ERROR: paq_path provided was not found')
             print(f"|- Updating paq_path to newly provided path: {paq_path}")
             self.paq_path = paq_path  # update paq_path if provided different path
 
-        print(f'\tloading paq data from: {self.paq_path}')
+        print(f'\tloading Paq data from: {self.paq_path}')
 
         paq, _ = paq2py(self.paq_path, plot=plot)
         self.paq_rate = paq['rate']
 
-        print(f"\t|- loaded {len(paq['chan_names'])} channels from .paq file: {paq['chan_names']}")
+        print(f"\t|- loaded {len(paq['chan_names'])} channels from .Paq file: {paq['chan_names']}")
 
         # find frame times
 
@@ -227,11 +226,11 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             plt.figure(figsize=(10, 5))
             plt.plot(clock_voltage)
             plt.plot(frame_clock, np.ones(len(frame_clock)), '.')
-            plt.suptitle('frame clock from paq, with detected frame clock instances as scatter')
+            plt.suptitle('frame clock from Paq, with detected frame clock instances as scatter')
             sns.despine()
             plt.show()
 
-        # find start and stop frame_clock times -- there might be multiple 2p imaging starts/stops in the paq trial (hence multiple frame start and end times)
+        # find start and stop frame_clock times -- there might be multiple 2p imaging starts/stops in the Paq trial (hence multiple frame start and end times)
         self.__frame_start_times = [self._frame_clock[0]]  # initialize ls
         self.__frame_end_times = []
         i = len(self.__frame_start_times)
@@ -242,12 +241,12 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
                 self.__frame_start_times.append(self._frame_clock[idx + 1])
         self.__frame_end_times.append(self._frame_clock[-1])
 
-        # handling cases where 2p imaging clock has been started/stopped >1 in the paq trial
+        # handling cases where 2p imaging clock has been started/stopped >1 in the Paq trial
         if len(self.__frame_start_times) > 1:
             diff = [self.__frame_end_times[idx] - self.__frame_start_times[idx] for idx in
                     range(len(self.__frame_start_times))]
             idx = diff.index(
-                max(diff))  # choose the longest imaging sequence in the paq file as the actual frame clocks for the present trial's acquisition
+                max(diff))  # choose the longest imaging sequence in the Paq file as the actual frame clocks for the present trial's acquisition
             self.frame_start_times = self.__frame_start_times[idx]
             self.frame_end_times = self.__frame_end_times[idx]
             self._frame_clock_actual = [frame for frame in self._frame_clock if
@@ -287,16 +286,20 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
             self.stim_start_frames.append(stim_start_frames)
 
-        # read in and save sparse version of all paq channels (only save data from timepoints at frame clock times)
+        # read in and save sparse version of all Paq channels (only save data from timepoints at frame clock times)
         self.sparse_paq_data = {}
         for idx, chan in enumerate(self.paq_channels):
             self.sparse_paq_data[chan] = paq['data'][idx, self._frame_clock_actual]
 
     ### ALLOPTICAL EXPERIMENT PHOTOSTIM PROTOCOL PROCESSING
 
-    def _paqProcessing(self):
-        self.Paq = paqData(paq_path=self.paq_path, frame_times_channame='frame_clock', option='AllOptical')  # TODO add field for paq settings in the module __init__ to specify options for paq initialization
+    def _paqProcessing(self, stim_channel=''):
+        paq_data, _, _ = self.Paq.paq_read(paq_path=self.paq_path)
+        stim_start_frames, stim_start_times = self.Paq.paq_alloptical_stims(paq_data=paq_data, frame_clock=self.Paq.frame_times, stim_channel=stim_channel)
+        
+        return stim_start_frames, stim_start_times
 
+        
     def _stimProcessing(self):
         self.Targets = Targets(naparm_path=self.naparm_path, frame_x=self.imparams.frame_x, frame_y=self.imparams.frame_y,
                                pix_sz_x=self.imparams.pix_sz_x, pix_sz_y=self.imparams.pix_sz_y)
@@ -1102,7 +1105,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
 
             # SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata
-            # build dataframe for var annot's from paq file
+            # build dataframe for var annot's from Paq file
             var_meta = pd.DataFrame(index=self.paq_channels, columns=range(self.stim_start_frames))
             for fr_idx in range(self.stim_start_frames):
                 for index in [*self.sparse_paq_data]:

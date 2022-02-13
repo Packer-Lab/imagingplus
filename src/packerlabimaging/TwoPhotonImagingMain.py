@@ -31,13 +31,11 @@ class TwoPhotonImagingTrial:
         :param analysis_save_path: path of where to save the experiment analysis object
         :param microscope: name of microscope used to record imaging (options: "Bruker" (default), "Scientifica", "other")
         :param metainfo: dictionary containing any metainfo information field needed for this experiment. At minimum it needs to include prep #, t-series # and date of data collection.
-        :param paq_path: (optional) path to .paq file associated with current t-series
+        :param paq_path: (optional) path to .Paq file associated with current t-series
         :param suite2p_path: (optional) path to suite2p outputs folder associated with this t-series (plane0 file? or ops file? not sure yet)
         :param make_downsampled_tiff: flag to run generation and saving of downsampled tiff of t-series (saves to the analysis save location)
         """
 
-        self.meanRawFluTrace = None
-        self.meanFluImg = None
         self.data = None
 
         # Initialize Attributes:
@@ -82,9 +80,11 @@ class TwoPhotonImagingTrial:
         # self._parsePVMetadata() if 'Bruker' in microscope else Warning(f'retrieving data-collection metainformation from '
         #                                                                f'{microscope} microscope has not been implemented yet')
 
-        # run paq processing if paq_path is provided for trial
-        self.paq = paqData(paq_path=self.paq_path, option='TwoPhotonImaging', frame_times_channame='frame_clock') if hasattr(self, 'paq_path') else None
-        # self.paq = _paq.paqProcessing(self, paq_path=self.paq_path, plot=False) if hasattr(self, 'paq_path') else None
+        # run Paq processing if paq_path is provided for trial
+        self.Paq = self.paqProcessing(paq_path=self.paq_path, frame_channel='frame_clock') if hasattr(self, 'paq_path') else None # TODO set option for specifying frame channel under different name
+
+        # collect mean FOV Trace
+        self.meanFluImg, self.meanFovFluTrace  = self.meanRawFluTrace()
 
         # if provided, add Suite2p results for trial
         for i in ['suite2p_experiment_obj', 'total_frames_stitched']:
@@ -176,84 +176,12 @@ class TwoPhotonImagingTrial:
             except TypeError:
                 Exception('required key not present in metadata')
 
-    # TODO change all attrs to using the .paq module
-    def paqProcessing(self, frame_channel='frame_clock'):
-        paqD, self.paq_rate, self.paq.paq_channels = paqData.paq_read(paq_path=self.paq_path, plot=True)
-        self._frame_clock_actual = paqData._frame_times(paq_data=paqD, frame_channel=frame_channel)
-
-
-    def paqProcessing2(self, paq_path: Optional[str] = None, plot: Optional[bool] = False):
-        """
-        Loads .paq file and saves data from individual channels.
-
-        :param paq_path: (optional) path to the .paq file for this data object
-        :param plot:
-        """
-
-        print('\n\----- Processing paq file ...')
-
-        if not hasattr(self, 'paq_path'):
-            if paq_path is not None:
-                self.paq_path = paq_path
-            else:
-                ValueError(
-                    'ERROR: no paq_path defined for data object, please provide paq_path to load .paq file from.')
-        elif paq_path is not None and paq_path != self.paq_path:
-            assert os.path.exists(paq_path), print('ERROR: paq_path provided was not found')
-            print(f"|- Updating paq_path to newly provided path: {paq_path}")
-            self.paq_path = paq_path  # update paq_path if provided different path
-
-        print(f'\tloading paq data from: {self.paq_path}')
-
-        paq, _ = paq2py(self.paq_path, plot=plot)
-        self.paq_rate = paq['rate']
-        self.paq.paq_channels = paq['chan_names']
-        ## TODO print the paq channels that were loaded. and some useful metadata about the paq channels.
-        print(f"\t|- loaded {len(paq['chan_names'])} channels from .paq file: {paq['chan_names']}")
-
-
-        # find frame times
-        clock_idx = paq['chan_names'].index('frame_clock')
-        clock_voltage = paq['data'][clock_idx, :]
-
-        __frame_clock = threshold_detect(clock_voltage, 1)
-        self._frame_clock = __frame_clock
-
-        # find start and stop __frame_clock times -- there might be multiple 2p imaging starts/stops in the paq trial (hence multiple frame start and end times)
-        self.frame_start_times = [self._frame_clock[0]]  # initialize list
-        self.frame_end_times = []
-        i = len(self.frame_start_times)
-        for idx in range(1, len(self._frame_clock) - 1):
-            if (self._frame_clock[idx + 1] - self._frame_clock[idx]) > 2e3:
-                i += 1
-                self.frame_end_times.append(self._frame_clock[idx])
-                self.frame_start_times.append(self._frame_clock[idx + 1])
-        self.frame_end_times.append(self._frame_clock[-1])
-
-        # handling cases where 2p imaging clock has been started/stopped >1 in the paq trial
-        if len(self.frame_start_times) > 1:
-            diff = [self.frame_end_times[idx] - self.frame_start_times[idx] for idx in
-                    range(len(self.frame_start_times))]
-            idx = diff.index(max(diff))
-            self.frame_start_time_actual = self.frame_start_times[idx]
-            self.frame_end_time_actual = self.frame_end_times[idx]
-            self._frame_clock_actual = [frame for frame in self._frame_clock if
-                                       self.frame_start_time_actual <= frame <= self.frame_end_time_actual]
-        else:
-            self.frame_start_time_actual = self.frame_start_times[0]
-            self.frame_end_time_actual = self.frame_end_times[0]
-            self._frame_clock_actual = self._frame_clock
-
-        # read in and save sparse version of all paq channels (only save data from timepoints at frame clock times)
-        self.paq.sparse_paq_data = {}
-        for idx, chan in enumerate(self.paq.paq_channels):
-            self.paq.sparse_paq_data[chan] = paq['data'][idx, self._frame_clock_actual]
-
-    # change all attrs to using the .paq module
-
     @property
     def frame_clock(self):
-        return self._frame_clock_actual
+        if hasattr(self.Paq, 'frame_clock'):
+            return self.Paq.frame_clock
+        else:
+            raise ValueError('Frame clock timings couldnt be retrieved from .Paq submodule.')
 
     @property
     def n_frames(self):
@@ -318,6 +246,14 @@ class TwoPhotonImagingTrial:
                 print('saving cropped tiff ', reg_tif_crop.shape)
                 tif.save(reg_tif_crop)
 
+    def paqProcessing(self, paq_path, frame_channel):
+        paq_data_obj = paqData(paq_path=paq_path, option='TwoPhotonImaging', frame_times_channame='frame_clock')
+        paqdata, _, _ = paqData.paq_read(paq_path=paq_path, plot=True)
+        paq_data_obj.frame_clock = paq_data_obj.paq_frame_times(paq_data=paqdata, frame_channel=frame_channel)
+        paq_data_obj.sparse_paq(paq_data=paqdata, frame_clock=paq_data_obj.frame_clock)
+
+        return paq_data_obj
+
     # refactored to _utils.Utils
     def create_anndata(self):
         """
@@ -325,7 +261,7 @@ class TwoPhotonImagingTrial:
 
         """
 
-        if self.Suite2p._s2pResultExists and self.paq.paq_channels:
+        if self.Suite2p._s2pResultExists and self.Paq.paq_channels:
             # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
             # build dataframe for obs_meta from suite2p stat information
             obs_meta = pd.DataFrame(columns=['original_index', 'footprint', 'mrs', 'mrs0', 'compact', 'med', 'npix', 'radius',
@@ -343,10 +279,10 @@ class TwoPhotonImagingTrial:
                 obs_m[col] = np.asarray(obs_m[col])
 
             # SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata
-            # build dataframe for var annot's from paq file
-            var_meta = pd.DataFrame(index=[self.paq.frame_times_channame], columns=range(self.imparams.n_frames))
+            # build dataframe for var annot's from Paq file
+            var_meta = pd.DataFrame(index=[self.Paq.frame_times_channame], columns=range(self.imparams.n_frames))
             for fr_idx in range(self.imparams.n_frames):
-                var_meta.loc[self.paq.frame_times_channame, fr_idx] = self.paq.frame_times[fr_idx]
+                var_meta.loc[self.Paq.frame_times_channame, fr_idx] = self.Paq.frame_times[fr_idx]
 
             # BUILD LAYERS TO ADD TO anndata OBJECT
             layers = {'dFF': self.dFF
@@ -359,14 +295,21 @@ class TwoPhotonImagingTrial:
             print(f"\n{adata}")
             self.data = adata
         else:
-            Warning('did not create anndata. anndata creation only available if experiments were processed with suite2p and .paq file(s) provided for temporal synchronization')
+            Warning('did not create anndata. anndata creation only available if experiments were processed with suite2p and .Paq file(s) provided for temporal synchronization')
 
 
     def dfof(self):
         if self.Suite2p._s2pResultExists:
             self.dFF = normalize_dff(self.Suite2p.raw)
 
-    def meanRawFluTrace(self, plot: bool = False, save: bool = True):
+    def importTrialTiff(self):
+        print(f"\n\- loading raw TIFF file from: {self.tiff_path}", end='\r')
+        im_stack = tf.imread(self.tiff_path, key=range(self.imparams.n_frames))
+        print('|- Loaded experiment tiff of shape: ', im_stack.shape)
+
+        return im_stack
+
+    def meanRawFluTrace(self):
         """
         Collects the raw mean of FOV fluorescence trace across the t-series.
 
@@ -374,24 +317,17 @@ class TwoPhotonImagingTrial:
         :param save: (optional) save data object after collecting mean fluorescence trace
         :return: mean fluorescence trace
         """
+        im_stack = self.importTrialTiff()
+
+
         print('\n-----collecting mean raw flu trace from tiff file...')
-        print(f"|- loading raw TIFF file from: {self.tiff_path}")
-        im_stack = tf.imread(self.tiff_path, key=range(self.imparams.n_frames))
-        print('|- Loaded experiment tiff of shape: ', im_stack.shape)
+        mean_flu_img = np.mean(im_stack, axis=0)
+        mean_fov_flutrace = np.mean(np.mean(im_stack, axis=1), axis=1)
 
-        self.meanFluImg = np.mean(im_stack, axis=0)
-        self.meanRawFluTrace = np.mean(np.mean(im_stack, axis=1), axis=1)
-
-        self.save() if save else None
-
-        from .plotting import plotting
-        _plotting.plotMeanRawFluTrace(trialobj=self, stim_span_color=None, title='Mean raw Flu trace -',
-                                      x_axis='frames', figsize=[20, 3]) if plot else None
-
-        return im_stack
+        return mean_flu_img, mean_fov_flutrace
 
     def makeDownsampledTiff(self):
-        stack = self.meanRawFluTrace(save_pkl=True)
+        stack = self.importTrialTiff()
         SaveDownsampledTiff(stack=stack,
                             save_as=f"{self.analysis_save_dir}/{self.date}_{self.trial}_downsampled.tif")
 

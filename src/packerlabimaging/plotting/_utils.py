@@ -40,9 +40,7 @@ def plotting_decorator(figsize=(3, 3)):
         """
 
         @functools.wraps(plotting_func)
-        def inner(**kwargs):
-            # print(f'perform fig, ax creation')
-            # print(f'|-original kwargs {kwargs}')
+        def inner(*args, **kwargs):
             return_fig_obj = False
 
             # set number of rows, cols and figsize
@@ -67,40 +65,28 @@ def plotting_decorator(figsize=(3, 3)):
                     # print('\-creating fig, ax [1]')
                     kwargs['fig'], kwargs['ax'] = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize_)
             else:
-                # print('\-creating fig, ax [2]')
                 kwargs['fig'], kwargs['ax'] = plt.subplots(figsize=figsize_)
 
-            # print(f"\nnew kwargs {kwargs}")
 
             print(f'\- executing plotting_func')
             res = plotting_func(**kwargs)  # these kwargs are the original kwargs defined at the respective plotting_func call + any additional kwargs defined in inner()
 
-            # print(f'\nreturn fig, ax or show figure as called for')
-            # kwargs['fig'].suptitle(kwargs['suptitle'], wrap=True) if 'suptitle' in [*kwargs] else None
             kwargs['ax'].set_title(kwargs['title'], wrap=True) if 'title' in [*kwargs] else None
 
             kwargs['fig'].tight_layout(pad=1.8)
 
             if 'show' in [*kwargs]:
                 if kwargs['show'] is True:
-                    # print(f'\- showing fig of size {figsize_}...[3]')
                     kwargs['fig'].show()
-                    # print(f"*res right now: {res}")
                     return res
                 else:
-                    # print(f"\- not showing, but returning fig_obj of size {figsize_}[4]")
                     if res is not None:
                         return (kwargs['fig'], kwargs['ax'], res)
                     else:
                         return (kwargs['fig'], kwargs['ax'])
             else:
-                # print(f'\- showing fig of size {figsize_}...[5]')
                 kwargs['fig'].show()
                 return res
-
-            # # print(f"|-value of return_fig_obj is {return_fig_obj} [5]")
-            # print(f"\- returning fig_obj [4]") if return_fig_obj else None
-            # return (kwargs['fig'], kwargs['ax']) if return_fig_obj else None
 
         return inner
     return plotting_decorator
@@ -183,7 +169,9 @@ def _add_scalebar(trialobj: TwoPhotonImagingTrial, ax: plt.Axes, scale_bar_um: f
     return ax
 
 # Figure Style settings for notebook.
-def image_frame_options():
+def image_frame_options(ax = plt.Axes, fig = plt.Figure):
+    mpl.pyplot.rcdefaults()
+
     mpl.rcParams.update({
         'axes.spines.left': False,
         'axes.spines.bottom': False,
@@ -196,7 +184,22 @@ def image_frame_options():
         'xtick.major.bottom': False
     })
 
+    # ax.spines.left = False
+    # ax.spines.bottom = False
+    # ax.spines.top = False
+    # ax.spines.right = False
+    # fig.legend.frameon = False
+    # fig.subplots_adjust(hspace=0.01)
+    # fig.subplots_adjust(wspace=0.01)
+    # ax.xaxis.set_major_locator([])
+    # ax.yaxis.set_major_locator([])
+    # ax.xaxis.set_minor_locator([])
+    # ax.yaxis.set_minor_locator([])
+
+
 def dataplot_frame_options():
+    mpl.pyplot.rcdefaults()
+
     mpl.rcParams.update({
         'axes.spines.top': False,
         'axes.spines.right': False,
@@ -213,34 +216,45 @@ def dataplot_frame_options():
     sns.set_style('white')
 
 
-def dataplot_ax_options(**kwargs):
-    if 'ax' in [*kwargs]:
-        ax = kwargs['ax']
+def dataplot_ax_options(ax, data_to_plot, **kwargs):
+    """
+    :param
+        **kwargs:
+
+    """
+    if ax:
         ax.margins(0.1)
 
+        # set x_axis label
         # change x-axis to time (secs) if time is requested
-        x_axis = kwargs['x_axis'] if 'x_axis' in [*kwargs] else None
-        if ('time' in x_axis or 'Time' in x_axis) and 'trialobj' in [*kwargs]:
-            trialobj = kwargs['trialobj']
+        if 'x_axis' in [*kwargs]:
+            x_axis = kwargs['x_axis']
+            if ('time' in x_axis or 'Time' in x_axis) and 'trialobj' in [*kwargs]:
+                trialobj = kwargs['trialobj']
 
-            # change x axis ticks to every 30 seconds
-            labels = list(range(0, int(len(trialobj.meanRawFluTrace) // trialobj.imparams.fps), 30))
-            ax.set_xticks(ticks=[(label * trialobj.imparams.fps) for label in labels])
+                # change x axis ticks to every 30 seconds
+                labels = list(range(0, int(len(data_to_plot) // trialobj.imparams.fps), 30))
+                ax.set_xticks(ticks=[(label * trialobj.imparams.fps) for label in labels])
 
-            ax.set_xticklabels(labels)
-            ax.set_xlabel('Time (secs)')
+                ax.set_xticklabels(labels)
+                ax.set_xlabel('Time (secs)')
+            else:
+                ax.set_xlabel(x_axis)
 
+        # set y_axis label
+        ax.set_ylabel(kwargs['y_axis']) if 'y_axis' in [*kwargs] else None
 
         # set x and y axis limits
-        if 'xlims' in kwargs.keys() and kwargs['xlims'] is not None:
-            ax.set_xlim(kwargs['xlims'])
+        if 'xlims' in [*kwargs]: ax.set_xlim(kwargs['xlims'])
+        if 'ylims' in [*kwargs]: ax.set_ylim(kwargs['ylims'])
 
-        if 'ylims' in kwargs.keys() and kwargs['ylims'] is not None:
-            ax.set_ylim(kwargs['ylims'])
-
+    else:
+        pass
 
 
 def heatmap_options():
+    mpl.pyplot.rcdefaults()
+
     jet = mpl.cm.get_cmap('jet')
     jet.set_bad(color='k')
 

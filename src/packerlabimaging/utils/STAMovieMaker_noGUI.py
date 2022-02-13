@@ -70,7 +70,7 @@ class STAMovieMaker():
         # load sync file
         print('Loading sync file')
         sync_ext = os.path.splitext(self.p['syncPath'])[1]
-        if sync_ext == '.paq':
+        if sync_ext == '.Paq':
             try:
                 paq, _ = paq_utils.paq_read(self.p['syncPath'], plot=False)
                 frame_trace = paq['data'][paq['chan_names'].index(sync_frame_channel)]
