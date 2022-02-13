@@ -61,11 +61,7 @@ SUITE2P_FRAMES = 0
 # trying to use pytest
 def test_AllOpticalClass(alloptical_trial_fixture):
     trialobj = AllOpticalMain.AllOpticalTrial(**alloptical_trial_fixture)
-    trialobj.raw_SLMTargets, trialobj.dFF_SLMTargets, trialobj.meanFluImg_registered = trialobj.collect_traces_from_targets(curr_trial_frames=trialobj.Suite2p.trial_frames, save=True)
-    trialobj.targets_dff, trialobj.targets_dff_avg, trialobj.targets_dfstdF, trialobj.targets_dfstdF_avg, trialobj.targets_raw, trialobj.targets_raw_avg = trialobj.get_alltargets_stim_traces_norm(process='trace dFF')
 
-# def test_get_alltargets_stim_traces_norm(existing_trialobj_alloptical_fixture):
-#     trialobj: AllOpticalTrial = existing_trialobj_alloptical_fixture
 
 # %%
 # import packerlabimaging as pkg

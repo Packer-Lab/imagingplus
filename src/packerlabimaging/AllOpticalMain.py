@@ -108,7 +108,10 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.responses_SLMtargets = []  # dF/prestimF responses for all SLM targets for each photostim trial
         self.responses_SLMtargets_tracedFF = []  # poststim dFF - prestim dFF responses for all SLM targets for each photostim trial
 
-        # self.targets_dff, self.targets_dff_avg, targets_dfstdF, targets_dfstdF_avg, targets_raw, targets_raw_avg = self.get_alltargets_stim_traces_norm()
+        self.raw_SLMTargets, self.dFF_SLMTargets, self.meanFluImg_registered = self.collect_traces_from_targets(
+            curr_trial_frames=self.Suite2p.trial_frames, save=True)
+        self.targets_dff, self.targets_dff_avg, self.targets_dfstdF, self.targets_dfstdF_avg, self.targets_raw, self.targets_raw_avg = self.get_alltargets_stim_traces_norm(
+            process='trace dFF')
 
         ## ALL CELLS (from suite2p ROIs)
         # TODO add attr's related to numpy array's and pandas dataframes for photostim trials - suite2p ROIs
@@ -549,7 +552,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
     ## ... no methods determined here yet...
 
     ### ALLOPTICAL ANALYSIS - FOCUS ON SLM TARGETS RELATED METHODS
-    def collect_traces_from_targets(self, curr_trial_frames: list, reg_tif_folder: str, save: bool = True):
+    def collect_traces_from_targets(self, curr_trial_frames: list, reg_tif_folder: str = None, save: bool = True):
         """uses registered tiffs to collect raw traces from SLM target areas"""
 
         if reg_tif_folder is None:
