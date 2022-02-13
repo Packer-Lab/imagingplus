@@ -220,6 +220,7 @@ class PaqData:
         sparse_paq_data = {}
         for idx, chan in enumerate(paq_data['chan_names']):
             sparse_paq_data[chan] = paq_data['data'][idx, frame_clock]
+        return sparse_paq_data
 
 
     @staticmethod

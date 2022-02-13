@@ -33,4 +33,4 @@ def test_plotMeanFovFluTrace(existing_trialobj_twophotonimaging_fixture):
 
 def test_plot_photostim_traces_overlap(existing_trialobj_alloptical_fixture):
     trialobj: AllOpticalTrial = existing_trialobj_alloptical_fixture
-    plot_photostim_traces_overlap()
+    plot_photostim_traces_overlap(array=trialobj.photostimFluArray, trialobj=trialobj)

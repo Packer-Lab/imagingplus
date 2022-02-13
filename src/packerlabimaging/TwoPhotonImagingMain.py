@@ -253,7 +253,7 @@ class TwoPhotonImagingTrial:
         paq_data_obj, paqdata = import_paqdata(paq_path=paq_path)
         paq_data_obj.frame_times_channame = frame_channel
         paq_data_obj.frame_clock = paq_data_obj.paq_frame_times(paq_data=paqdata, frame_channel=frame_channel)
-        paq_data_obj.sparse_paq(paq_data=paqdata, frame_clock=paq_data_obj.frame_clock)
+        paq_data_obj.sparse_paq_data = paq_data_obj.sparse_paq(paq_data=paqdata, frame_clock=paq_data_obj.frame_clock)
 
         return paq_data_obj
 
@@ -292,8 +292,8 @@ class TwoPhotonImagingTrial:
                       }
 
             print(f"\n\----- CREATING annotated data object using AnnData:")
-            __data_type = 'Suite2p Raw (neuropil substracted)' if self.Suite2p.suite2p_overall.subtract_neuropil else 'Suite2p Raw'
-            adata = ad.AnnotatedData(X=self.Suite2p.raw, obs=obs_meta, var=var_meta.T, obsm=obs_m, layers=layers, data_label=__data_type)
+            _data_type = 'Suite2p Raw (neuropil substracted)' if self.Suite2p.suite2p_overall.subtract_neuropil else 'Suite2p Raw'
+            adata = ad.AnnotatedData(X=self.Suite2p.raw, obs=obs_meta, var=var_meta.T, obsm=obs_m, layers=layers, data_label=_data_type)
 
             print(f"\n{adata}")
             return adata
