@@ -14,8 +14,8 @@ import xml.etree.ElementTree as ET
 import tifffile as tf
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from packerlabimaging.utils.utils import SaveDownsampledTiff, make_tiff_stack, threshold_detect, normalize_dff
-from packerlabimaging.processing.paq import paq2py, paqData
+from packerlabimaging.utils.utils import SaveDownsampledTiff, make_tiff_stack, normalize_dff
+from packerlabimaging.processing.paq import import_paqdata
 from .processing import suite2p, anndata as ad
 from .utils.imagingMetadata import PrairieViewMetadata, ImagingMetadata
 
@@ -35,8 +35,6 @@ class TwoPhotonImagingTrial:
         :param suite2p_path: (optional) path to suite2p outputs folder associated with this t-series (plane0 file? or ops file? not sure yet)
         :param make_downsampled_tiff: flag to run generation and saving of downsampled tiff of t-series (saves to the analysis save location)
         """
-
-        self.data = None
 
         # Initialize Attributes:
 
@@ -81,7 +79,7 @@ class TwoPhotonImagingTrial:
         #                                                                f'{microscope} microscope has not been implemented yet')
 
         # run Paq processing if paq_path is provided for trial
-        self.Paq = self.paqProcessing(paq_path=self.paq_path, frame_channel='frame_clock') if hasattr(self, 'paq_path') else None # TODO set option for specifying frame channel under different name
+        self.Paq = self._paqProcessingTwoPhotonImaging(paq_path=self.paq_path, frame_channel='frame_clock') if hasattr(self, 'paq_path') else None # TODO set option for specifying frame channel under different name
 
         # collect mean FOV Trace
         self.meanFluImg, self.meanFovFluTrace  = self.meanRawFluTrace()
@@ -99,18 +97,22 @@ class TwoPhotonImagingTrial:
         self.dfof()
 
         # create annotated data object
-        self.create_anndata()
+        self.data = self.create_anndata()
 
         ##### SAVE Trial OBJECT
         self.save()
         print(f'\----- CREATING TwoPhotonImagingTrial for trial: {metainfo["trial"]},  {metainfo["t series id"]}')
 
-    def __repr__(self):
+    def __str__(self):
         if self.pkl_path:
             lastmod = time.ctime(os.path.getmtime(self.pkl_path))
         else:
             lastmod = "(unsaved pkl object)"
         return repr(f"({self.t_series_name}) TwoPhotonImagingTrial experimental data object, last saved: {lastmod}")
+
+
+    def __repr__(self):
+        return repr(f"TwoPhotonImagingTrial experimental data object")
 
     @property
     def paths(self):
@@ -246,9 +248,10 @@ class TwoPhotonImagingTrial:
                 print('saving cropped tiff ', reg_tif_crop.shape)
                 tif.save(reg_tif_crop)
 
-    def paqProcessing(self, paq_path, frame_channel):
-        paq_data_obj = paqData(paq_path=paq_path, option='TwoPhotonImaging', frame_times_channame='frame_clock')
-        paqdata, _, _ = paqData.paq_read(paq_path=paq_path, plot=True)
+    def _paqProcessingTwoPhotonImaging(self, paq_path, frame_channel):
+        print(f"\n\- PROCESSING PAQDATA ... ")
+        paq_data_obj, paqdata = import_paqdata(paq_path=paq_path)
+        paq_data_obj.frame_times_channame = frame_channel
         paq_data_obj.frame_clock = paq_data_obj.paq_frame_times(paq_data=paqdata, frame_channel=frame_channel)
         paq_data_obj.sparse_paq(paq_data=paqdata, frame_clock=paq_data_obj.frame_clock)
 
@@ -282,7 +285,7 @@ class TwoPhotonImagingTrial:
             # build dataframe for var annot's from Paq file
             var_meta = pd.DataFrame(index=[self.Paq.frame_times_channame], columns=range(self.imparams.n_frames))
             for fr_idx in range(self.imparams.n_frames):
-                var_meta.loc[self.Paq.frame_times_channame, fr_idx] = self.Paq.frame_times[fr_idx]
+                var_meta.loc[self.Paq.frame_times_channame, fr_idx] = self.Paq.frame_clock[fr_idx]
 
             # BUILD LAYERS TO ADD TO anndata OBJECT
             layers = {'dFF': self.dFF
@@ -293,7 +296,8 @@ class TwoPhotonImagingTrial:
             adata = ad.AnnotatedData(X=self.Suite2p.raw, obs=obs_meta, var=var_meta.T, obsm=obs_m, layers=layers, data_label=__data_type)
 
             print(f"\n{adata}")
-            self.data = adata
+            return adata
+
         else:
             Warning('did not create anndata. anndata creation only available if experiments were processed with suite2p and .Paq file(s) provided for temporal synchronization')
 

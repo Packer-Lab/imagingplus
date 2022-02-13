@@ -7,7 +7,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
-from .paq import paqData
+from .paq import PaqData
 from packerlabimaging.utils.utils import threshold_detect
 
 
@@ -44,13 +44,13 @@ class OnePstim(TwoPhotonImagingTrial):
                                   analysis_save_path=analysis_save_path, save_downsampled_tiff=True, quick=False)
 
         # using the Paq module for loading Paq data
-        self.paq_data = paqData(paq_path=self.paq_path)
+        self.paq_data = PaqData(paq_path=self.paq_path)
         self._1p_stims(plot=False, optoloopback_channel='opto_loopback')
 
-        self.paqProcessing()
+        self._paqProcessingTwoPhotonImaging(,,
 
         # add all frames as bad frames incase want to include this trial in suite2p run
-        self.bad_frames = paqData.frames_discard(paq=paqData.paq_read(paq_path=self.paq_path), input_array=None, total_frames=self.n_frames, discard_all=True)
+        self.bad_frames = PaqData.frames_discard(paq=PaqData.paq_read(paq_path=self.paq_path), input_array=None, total_frames=self.n_frames, discard_all=True)
 
         self.save_pkl(pkl_path=self.pkl_path)
 
@@ -92,7 +92,7 @@ class OnePstim(TwoPhotonImagingTrial):
         opto_loopback_chan = self.paq_data['chan_names'].index(optoloopback_channel)
         
         # load up Paq data
-        _paq_data, _, _ = paqData.paq_read(paq_path=self.paq_path)
+        _paq_data, _, _ = PaqData.paq_read(paq_path=self.paq_path)
         
         stim_volts = _paq_data['data'][opto_loopback_chan, :]
         stim_times = threshold_detect(stim_volts, 1)
@@ -147,7 +147,7 @@ class OnePstim(TwoPhotonImagingTrial):
         shutter_idx = self.paq_data['chan_names'].index(shutter_channel)
 
         # load up Paq data
-        _paq_data, _, _ = paqData.paq_read(paq_path=self.paq_path)
+        _paq_data, _, _ = PaqData.paq_read(paq_path=self.paq_path)
 
         shutter_voltage = _paq_data['data'][shutter_idx, :]
 

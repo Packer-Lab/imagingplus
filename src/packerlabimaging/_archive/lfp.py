@@ -2,7 +2,9 @@
 
 # retrieving and processing on LFP recordings from the .Paq file
 import os.path
-import paq as Paq
+
+from packerlabimaging.processing.paq import paq2py
+
 
 class LFP:
     def __init__(self, chan_name, **kwargs):
@@ -15,7 +17,7 @@ class LFP:
         if not os.path.exists(paq_path):
             raise FileNotFoundError(f"Not found: {paq_path}")
 
-        paq, _ = Paq.paq2py(paq_path, plot=True)
+        paq, _ = paq2py(paq_path, plot=True)
         self.paq_rate = paq['rate']
 
         # find voltage (LFP recording signal) channel and save as lfp_signal attribute

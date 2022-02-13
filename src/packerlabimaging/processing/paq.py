@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import List
 
 import numpy as np
@@ -127,26 +128,16 @@ def paq2py(file_path=None, plot=False):
             "rate": rate,
             "num_datapoints": num_datapoints}, df
 
+def import_paqdata(paq_path):
+    paqdata, paq_rate, paq_channels = PaqData.paq_read(paq_path=paq_path, plot=False)
+    paq_data_obj = PaqData(paq_path=paq_path, paq_channels=paq_channels, paq_rate=paq_rate)
+    return paq_data_obj, paqdata
 
-class paqData:
-    def __init__(self, paq_path: str, frame_times_channame: str, option: str):
-        """
-        reads in Paq data from a .Paq file for an experiment performed using PackIO.
-
-        paq_path: full path to .Paq file to read
-        """
-        # self.frame_times = None
-        # self.frame_times_channame = frame_times_channame
-
-        self.paq_path = paq_path     # full path to the .Paq file to process
-        self.paq_channels: List[str] = ['None']     # recorded channels in Paq file
-        self.paq_rate: float = 0.0                  # sample rate of Paq collection
-
-        paq_data, self.paq_rate, self.paq_channels = self.paq_read(paq_path=self.paq_path)
-
-
-        # self.paqProcessing(paq=paq_data, options=option)
-
+@dataclass
+class PaqData:
+    paq_path: str
+    paq_channels: List[str]
+    paq_rate: float
 
     def __repr__(self):
         information = ""
@@ -155,16 +146,15 @@ class paqData:
                 information += f"\n\t{i}: {self.__dict__[i]}"
             else:
                 information += f"\n\t{i}: {[*self.__dict__[i]]}"
-
-
-        return f"packerlabimaging.processing.Paq.paqData: {information}"
+        return f"packerlabimaging.processing.Paq.PaqData: {information}"
 
     @staticmethod
-    def paq_read(paq_path: str = None, plot: bool = False):
+    def paq_read(paq_path: str, plot: bool = False):
         """
         Loads .Paq file and saves data from individual channels.
 
-        :param paq_path: (optional) path to the .Paq file for this data object
+        :param paq_path: path to the .Paq file for this data object
+        :param plot: (optional) whether to plot
         """
 
         print(f'\tloading Paq data from: {paq_path}')
@@ -177,7 +167,7 @@ class paqData:
 
     def storePaqChannel(self, chan_name):
         """add a specific channel's (`chan_name`) data from the .Paq file as attribute of the same name for
-        paqData object."""
+        PaqData object."""
 
         paq_data, _, paq_channels = self.paq_read(paq_path=self.paq_path)
         chan_name_idx = paq_channels.index(chan_name)
@@ -233,7 +223,7 @@ class paqData:
 
 
     @staticmethod
-    def paq_alloptical_stims(paq_data, frame_clock: List[int], plot: bool = False, stim_channel: str = ''):
+    def paq_alloptical_stims(paq_data, frame_clock: List[int],  stim_channel: str, plot: bool = False):
         if stim_channel not in paq_data['chan_names']:
             raise KeyError(f'{stim_channel} not found in .Paq channels. Specify channel containing frame signals.')
 

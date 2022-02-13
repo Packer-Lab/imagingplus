@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from packerlabimaging.processing.paq import paqData, paq2py
+from packerlabimaging.processing.paq import PaqData, paq2py
 
 from . TwoPhotonImagingMain import TwoPhotonImagingTrial
 
@@ -18,7 +18,7 @@ class OnePhotonStim(TwoPhotonImagingTrial):
 
         super().__init__(self.tiff_path, self.paq_path, metainfo=metainfo, analysis_save_path=analysis_save_path, microscope=microscope, **kwargs)
 
-        self.paq = paqData(paq_path=self.paq_path)
+        self.paq = PaqData(paq_path=self.paq_path)
         self.paq._1p_stim()
 
         self.save_pkl(pkl_path=self.pkl_path)
@@ -36,7 +36,7 @@ class OnePhotonStim(TwoPhotonImagingTrial):
         else:
             return f" -- unsaved TwoPhotonImagingTrial.OnePhotonStim experimental trial object -- "
 
-    def paqProcessing(self, **kwargs):
+    def _paqProcessingTwoPhotonImaging(self, **kwargs):
 
         print('\n-----processing Paq file for 1p photostim...')
 
