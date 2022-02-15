@@ -29,16 +29,15 @@ def twophoton_imaging_trial_fixture():
         animal_prep = initialization_dict['expID']
         date = data_path_base[-10:]
 
-        ## everything below should autopopulate and run automatically
-        paqs_loc = '%s/%s_%s_%s.Paq' % (
-        data_path_base, date, animal_prep, trial[2:])  # path to the .Paq files for the selected trials
-        tiffs_loc = f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif'
-
+        ## create dictionary containing necessary information for initialization
         initialization_dict["trialsInformation"][trial] = {'trialType': 'TwoPhotonImagingTrial',
-                                                           'tiff_path': f"{tiffs_loc}",
+                                                           'tiff_path': f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif',
                                                            's2p_use': True,
                                                            'expGroup': "pre 4ap 2p spont imaging",
-                                                           'paq_path': paqs_loc
+                                                           'paqInfoTrial': {
+                                                               'frame_channel':'frame_clock',
+                                                               'path': f'{data_path_base}/{date}_{animal_prep}_{trial[2:]}.paq'  # path to the .paq files for the selected trials
+                                                                }
                                                            }
         _metainfo = {
             'animal prep.': initialization_dict['expID'],
@@ -80,16 +79,15 @@ def alloptical_trial_fixture():
         animal_prep = initialization_dict['expID']
         date = data_path_base[-10:]
 
-        ## everything below should autopopulate and run automatically
-        paqs_loc = '%s/%s_%s_%s.Paq' % (
-        data_path_base, date, animal_prep, trial[2:])  # path to the .Paq files for the selected trials
-        tiffs_loc = f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif'
-
+        ## create dictionary containing necessary information for initialization
         initialization_dict["trialsInformation"][trial] = {'trialType': 'AllOpticalTrial',
-                                                           'tiff_path': f"{tiffs_loc}",
+                                                           'tiff_path': f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif',
                                                            's2p_use': True,
                                                            'expGroup': "pre 4ap 2p all optical",
-                                                           'paq_path': paqs_loc,
+                                                           'paqInfoTrial': {'frame_channel': 'frame_clock',
+                                                                            'path': f'{data_path_base}/{date}_{animal_prep}_{trial[2:]}.paq',  # path to the .paq files for the selected trials
+                                                                            'stim_channel': 'markpoints2packio'
+                                                                            },
                                                            'naparm_path': naparm_paths[trial]
                                                            }
 

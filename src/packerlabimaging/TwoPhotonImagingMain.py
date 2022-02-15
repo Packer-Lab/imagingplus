@@ -24,7 +24,7 @@ class TwoPhotonImagingTrial:
     """Just two photon imaging related functions - currently set up for data collected from Bruker microscopes and
     suite2p processed Ca2+ imaging data """
 
-    def __init__(self, metainfo: dict, analysis_save_path: str, microscope: str = 'Bruker', **kwargs):
+    def __init__(self, metainfo: dict, analysis_save_path: str, microscope: str = 'Bruker', paqOptions: dict = None, **kwargs):
         """
         TODO update function docstring for approp args
         :param tiff_path: path to t-series .tiff
@@ -52,14 +52,15 @@ class TwoPhotonImagingTrial:
         # self.last_good_frame = None  # indicates when the last good frame was during the t-series recording, if nothing was wrong the value is 0, otherwise it is >0 and that indicates that PV is not sure what happened after the frame listed, but it could be corrupt data
 
 
-        if 'date' in [*metainfo] and 'trial' in [*metainfo] and 'animal prep.' in [*metainfo] and 't series id' in [*metainfo] \
-                and 'trialsInformation' in [*metainfo]: self.__metainfo = metainfo
+        if 'date' in [*metainfo] and 'trial' in [*metainfo] and 'animal prep.' in [*metainfo] and 't series id' in [*metainfo] and 'trialsInformation' in [*metainfo]: self.__metainfo = metainfo
         else: raise ValueError("dev error: metainfo argument must contain the minimum fields: 'date', 'trial', 'animal prep.', 't series id', 'trialInformation dict")
         if os.path.exists(metainfo['trialsInformation']['tiff_path']): self.tiff_path = metainfo['trialsInformation']['tiff_path']
         else: raise FileNotFoundError(f"tiff_path does not exist: {metainfo['trialsInformation']['tiff_path']}")
-        if 'paq_path' in [*metainfo['trialsInformation']]:
-            if os.path.exists(metainfo['trialsInformation']['paq_path']): self.paq_path = metainfo['trialsInformation']['paq_path']
-            else: raise FileNotFoundError(f"paq_path does not exist: {metainfo['trialsInformation']['paq_path']}")
+        if 'path' in [*paqOptions]:
+            paq_path = paqOptions['path']
+            if os.path.exists(paq_path): self._use_paq = True
+            else: raise FileNotFoundError(f"paq_path does not exist: {paq_path}")
+        else: self._use_paq = False
 
         # set and create analysis save path directory
         self.analysis_save_dir = analysis_save_path
@@ -79,7 +80,10 @@ class TwoPhotonImagingTrial:
         #                                                                f'{microscope} microscope has not been implemented yet')
 
         # run Paq processing if paq_path is provided for trial
-        self.Paq = self._paqProcessingTwoPhotonImaging(paq_path=self.paq_path, frame_channel='frame_clock') if hasattr(self, 'paq_path') else None # TODO set option for specifying frame channel under different name
+        if self._use_paq:
+            frame_channel = paqOptions['frame_channel'] if 'frame_channel' in [
+                *paqOptions] else KeyError('No frame_channel specified for .paq processing')  # channel on Paq file to read for determining stims
+            self.Paq = self._paqProcessingTwoPhotonImaging(paq_path=paqOptions['path'], frame_channel=frame_channel)
 
         # collect mean FOV Trace
         self.meanFluImg, self.meanFovFluTrace  = self.meanRawFluTrace()
@@ -210,24 +214,24 @@ class TwoPhotonImagingTrial:
                        'user_batch_size'), 'No user_batch_size set for Suite2pResultsTrial, please create new attr for .Suite2p.user_batch_size, before continuing'
 
         if reg_tif_folder is None:
-            if self.s2pResultsPath:
-                reg_tif_folder = self.s2pResultsPath + '/reg_tif/'
+            if self.Suite2p.path:
+                reg_tif_folder = self.Suite2p.path + '/reg_tif/'
                 print(f"\- trying to load registerred tiffs from: {reg_tif_folder}")
         else:
             raise Exception(f"Must provide reg_tif_folder path for loading registered tiffs")
         if not os.path.exists(reg_tif_folder):
             raise Exception(f"no registered tiffs found at path: {reg_tif_folder}")
 
-        first_frame = self.trial_frames[0]
-        last_frame = self.trial_frames[-1]
+        first_frame = self.Suite2p.trial_frames[0]
+        last_frame = self.Suite2p.trial_frames[-1]
         frame_range = [first_frame, last_frame]
 
         start = first_frame // s2p_run_batch
         end = last_frame // s2p_run_batch + 1
 
         # set tiff paths to save registered tiffs:
-        tif_path_save = self.analysis_save_dir + 'reg_tiff_%s.tif' % self.metainfo['trial']
-        tif_path_save2 = self.analysis_save_dir + 'reg_tiff_%s_r.tif' % self.metainfo['trial']
+        tif_path_save = self.analysis_save_dir + 'reg_tiff_%s.tif' % self.trial
+        tif_path_save2 = self.analysis_save_dir + 'reg_tiff_%s_r.tif' % self.trial
         reg_tif_list = os.listdir(reg_tif_folder)
         reg_tif_list.sort()
         sorted_paths = [reg_tif_folder + tif for tif in reg_tif_list][start:end + 1]
@@ -252,6 +256,7 @@ class TwoPhotonImagingTrial:
     def _paqProcessingTwoPhotonImaging(self, paq_path, frame_channel):
         print(f"\n\- PROCESSING PAQDATA ... ")
         paq_data_obj, paqdata = import_paqdata(paq_path=paq_path)
+        assert frame_channel in paq_data_obj.paq_channels, print(f"{frame_channel} not found in channels in .paq data.")
         paq_data_obj.frame_times_channame = frame_channel
         paq_data_obj.frame_clock = paq_data_obj.paq_frame_times(paq_data=paqdata, frame_channel=frame_channel)
         paq_data_obj.sparse_paq_data = paq_data_obj.sparse_paq(paq_data=paqdata, frame_clock=paq_data_obj.frame_clock)
@@ -265,7 +270,7 @@ class TwoPhotonImagingTrial:
 
         """
 
-        if self.Suite2p._s2pResultExists and self.Paq.paq_channels:
+        if self.Suite2p._s2pResultExists and self.Paq:
             # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
             # build dataframe for obs_meta from suite2p stat information
             obs_meta = pd.DataFrame(columns=['original_index', 'footprint', 'mrs', 'mrs0', 'compact', 'med', 'npix', 'radius',

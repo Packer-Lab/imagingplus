@@ -16,9 +16,9 @@ class OnePhotonStim(TwoPhotonImagingTrial):
         print('-----Processing trial # %s-----' % trial)
         print('----------------------------------------\n')
 
-        super().__init__(self.tiff_path, self.paq_path, metainfo=metainfo, analysis_save_path=analysis_save_path, microscope=microscope, **kwargs)
+        super().__init__(self.tiff_path, self._paq_path, metainfo=metainfo, analysis_save_path=analysis_save_path, microscope=microscope, **kwargs)
 
-        self.paq = PaqData(paq_path=self.paq_path)
+        self.paq = PaqData(paq_path=self._paq_path)
         self.paq._1p_stim()
 
         self.save_pkl(pkl_path=self.pkl_path)
@@ -40,9 +40,9 @@ class OnePhotonStim(TwoPhotonImagingTrial):
 
         print('\n-----processing Paq file for 1p photostim...')
 
-        print('loading', self.paq_path)
+        print('loading', self._paq_path)
 
-        paq, _ = paq2py(self.paq_path, plot=True)
+        paq, _ = paq2py(self._paq_path, plot=True)
         self.paq_rate = paq['rate']
 
         frame_rate = self.fps / self.n_planes
@@ -123,7 +123,7 @@ class OnePhotonStim(TwoPhotonImagingTrial):
         self.seizures_lfp_timing_matarray = seizures_lfp_timing_matarray  # path to the matlab array containing paired measurements of seizures onset and offsets
 
         # retrieve seizure onset and offset times from the seizures info array input
-        paq = paq2py(file_path=self.paq_path, plot=False)
+        paq = paq2py(file_path=self._paq_path, plot=False)
 
         # print(Paq[0]['data'][0])  # print the frame clock signal from the .Paq file to make sure its being read properly
         # NOTE: the output of all of the following function is in dimensions of the FRAME CLOCK (not official Paq clock time)

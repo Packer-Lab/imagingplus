@@ -9,13 +9,13 @@ from matplotlib import pyplot as plt
 from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
 from .paq import PaqData
 from packerlabimaging.utils.utils import threshold_detect
-
+from packerlabimaging.ExperimentMain import paqInfoTrial
 
 class OnePstim(TwoPhotonImagingTrial):
 
     compatible_responses_options = ['pre-stim dFF', 'post - pre']
 
-    def __init__(self, data_path_base, date, animal_prep, trial, metainfo, analysis_save_path_base: str = None):
+    def __init__(self, data_path_base, date, animal_prep, trial, metainfo, analysis_save_path_base: str = None, paqInfoTrial: paqInfoTrial = None):
         # TODO need to review __init__ code to fit into package pipeline
         paqs_loc = '%s%s_%s_%s.Paq' % (
             data_path_base, date, animal_prep, trial[2:])  # path to the .Paq files for the selected trials
@@ -45,9 +45,9 @@ class OnePstim(TwoPhotonImagingTrial):
 
         # using the Paq module for loading Paq data
         self.paq_data = PaqData(paq_path=self.paq_path)
-        self._1p_stims(plot=False, optoloopback_channel='opto_loopback')
+        self._1p_stims(plot=False, optoloopback_channel=paqInfoTrial['stim_channel'])
 
-        self._paqProcessingTwoPhotonImaging(,,
+        self._paqProcessingTwoPhotonImaging(paq_path=paqInfoTrial['path'], frame_channel=paqInfoTrial['frame_channel'])
 
         # add all frames as bad frames incase want to include this trial in suite2p run
         self.bad_frames = PaqData.frames_discard(paq=PaqData.paq_read(paq_path=self.paq_path), input_array=None, total_frames=self.n_frames, discard_all=True)

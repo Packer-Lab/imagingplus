@@ -53,12 +53,17 @@ NEUROPIL_COEFF = 0.7
 
 ## CLASS DEFINITIONS
 
+class paqInfoTrial(TypedDict, total=False):
+    frame_channel: str
+    path: str  # complete path to .paq file for trial
+    stim_channel: Optional[str]
+
 
 class trialsInformation(TypedDict, total=False):
     trialType: str
     tiff_path: str
     expGroup: str
-    paq_path: Optional[str]
+    paqInfoTrial: Optional[paqInfoTrial]
     s2p_use: Optional[str]
     naparm_path: Optional[str]
     analysis_object_information: Optional[TypedDict('analysis_object_information',
@@ -198,22 +203,24 @@ class Experiment:
 
         if _metainfo['trialsInformation']['trialType'] == 'TwoPhotonImagingTrial':
             if self.trialsInformation[trialID]['s2p_use']:  # TODO could use switch statements in the 2p imaging trial class...
-                trial_obj = TwoPhotonImagingTrial(metainfo=_metainfo, analysis_save_path=self.analysisSavePath,
+                trial_obj = TwoPhotonImagingTrial(metainfo=_metainfo, analysis_save_path=self.analysisSavePath, paqOptions=_metainfo['trialsInformation']['paqInfoTrial'],
                                                   microscope=self.microscope, total_frames_stitched=total_frames_stitched, suite2p_experiment_obj=self.Suite2p)
             else:
-                trial_obj = TwoPhotonImagingTrial(metainfo=_metainfo, analysis_save_path=self.analysisSavePath, microscope=self.microscope)
+                trial_obj = TwoPhotonImagingTrial(metainfo=_metainfo, analysis_save_path=self.analysisSavePath, microscope=self.microscope,
+                                                  paqOptions=_metainfo['trialsInformation']['paqInfoTrial'])
 
         elif _metainfo['trialsInformation']['trialType'] == 'AllOpticalTrial':
             if self.trialsInformation[trialID]['s2p_use']:
                 trial_obj = AllOpticalTrial(metainfo=_metainfo,
-                                            naparm_path=_metainfo['trialsInformation']['naparm_path'],
+                                            naparm_path=_metainfo['trialsInformation']['naparm_path'], paqOptions=_metainfo['trialsInformation']['paqInfoTrial'],
                                             analysis_save_path=self.analysisSavePath, microscope=self.microscope,
                                             prestim_sec=1.0, poststim_sec=3.0, pre_stim_response_window=0.500,
-                                            post_stim_response_window=0.500, total_frames_stitched=total_frames_stitched,
+                                            post_stim_response_window=0.500,
+                                            total_frames_stitched=total_frames_stitched,
                                             suite2p_experiment_obj=self.Suite2p)
             else:
                 trial_obj = AllOpticalTrial(metainfo=_metainfo,
-                                            naparm_path=_metainfo['trialsInformation']['naparm_path'],
+                                            naparm_path=_metainfo['trialsInformation']['naparm_path'], paqOptions=_metainfo['trialsInformation']['paqInfoTrial'],
                                             analysis_save_path=self.analysisSavePath, microscope=self.microscope,
                                             prestim_sec=1.0, poststim_sec=3.0, pre_stim_response_window=0.500,
                                             post_stim_response_window=0.500)

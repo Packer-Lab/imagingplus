@@ -29,8 +29,8 @@ BADFRAMESLOC = '/home/pshah/Documents/code/packerlabimaging/tests/'
 class AllOpticalTrial(TwoPhotonImagingTrial):
     """This class provides methods for All Optical experiments"""
 
-    def __init__(self, metainfo: dict, naparm_path: str, analysis_save_path: str, microscope: str,
-                 analysisOptions: dict = {}, prestim_sec: float = 1.0, poststim_sec: float = 3.0, pre_stim_response_window: float = 0.500,
+    def __init__(self, metainfo: dict, naparm_path: str, analysis_save_path: str, microscope: str, paqOptions: dict = {},
+                 prestim_sec: float = 1.0, poststim_sec: float = 3.0, pre_stim_response_window: float = 0.500,
                  post_stim_response_window: float = 0.500, **kwargs):
 
         """
@@ -55,8 +55,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         # PHOTOSTIM PROTOCOL
         self.stim_start_times = None
         self.nomulti_sig_units = None
-        self.stim_channel = kwargs['stim_channel'] if 'stim_channel' in [
-            *analysisOptions] else 'markpoints2packio'  # channel on Paq file to read for determining stims
+        self.stim_channel = paqOptions['stim_channel'] if 'stim_channel' in [*paqOptions] else 'markpoints2packio'  # channel on Paq file to read for determining stims
 
         self.photostim_frames = []  # imaging frames that are classified as overlapping with photostimulation
         self.stim_start_frames = []  # frame numbers from the start of each photostim trial
@@ -112,10 +111,11 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             raise FileNotFoundError(f"path not found, naparm_path: {naparm_path}")
 
         # initialize object as TwoPhotonImagingTrial
-        TwoPhotonImagingTrial.__init__(self, metainfo=metainfo, analysis_save_path=analysis_save_path, microscope=microscope, **kwargs)
+        TwoPhotonImagingTrial.__init__(self, metainfo=metainfo, analysis_save_path=analysis_save_path, microscope=microscope,
+                                       paqOptions=paqOptions, **kwargs)
 
         # get stim timings from paq file
-        self.stim_start_frames, self.stim_start_times = self._paqProcessingAllOptical(stim_channel='markpoints2packio')
+        self.stim_start_frames, self.stim_start_times = self._paqProcessingAllOptical(stim_channel=paqOptions['stim_channel'], paq_path = paqOptions['path'])
         # process 2p stim protocol
         self.Targets, self.stim_duration_frames = self._stimProcessing()
         # determine bad frames in imaging data that correspond to photostim frames
@@ -205,8 +205,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
     ### ALLOPTICAL EXPERIMENT PHOTOSTIM PROTOCOL PROCESSING
 
-    def _paqProcessingAllOptical(self, stim_channel):
-        paqdata, _, _ = self.Paq.paq_read(paq_path=self.paq_path)
+    def _paqProcessingAllOptical(self, stim_channel: str, paq_path: str):
+        paqdata, _, _ = self.Paq.paq_read(paq_path=paq_path)
         stim_start_frames, stim_start_times = self.Paq.paq_alloptical_stims(paq_data=paqdata, frame_clock=self.Paq.frame_clock, stim_channel=stim_channel)
         
         return stim_start_frames, stim_start_times
@@ -921,7 +921,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             photostim_array     - dFF peri-photostim Flu array [cell x Flu frames x trial]
         '''
 
-        print('\n\-Collecting peri-stim traces ...')
+        print('\n\- Collecting peri-stim traces ...')
 
         trial_array = []
         _stims = self.stim_start_frames if stim_frames is None else stim_frames
@@ -1380,7 +1380,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         ## data path
         movie_path = self.tiff_path
-        sync_path = self.paq_path
+        sync_path = self._paq_path
 
         ## stamm save path
         stam_save_path = os.path.join(qnap_path, 'Analysis', self.metainfo['date'], 'STA_Movies',

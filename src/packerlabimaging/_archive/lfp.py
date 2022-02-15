@@ -8,7 +8,7 @@ from packerlabimaging.processing.paq import paq2py
 
 class LFP:
     def __init__(self, chan_name, **kwargs):
-        self.lfp_from_paq(chan_name, kwargs['paq_path']) if 'paq_path' in [*kwargs] else KeyError('no `paq_path` provided to load LFP from.')
+        self.lfp_from_paq(chan_name, kwargs['_paq_path']) if '_paq_path' in [*kwargs] else KeyError('no `paq_path` provided to load LFP from.')
 
     def lfp_from_paq(self, paq_path, chan_name: str = 'voltage'):
 
