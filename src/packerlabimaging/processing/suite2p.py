@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, Optional, List
 
 import numpy as np
 import suite2p
@@ -17,7 +17,7 @@ NEUROPIL_COEFF = 0.7
 class Suite2pResultsExperiment:
     """used to run and further process suite2p processed data, and analysis associated with suite2p processed data."""
 
-    def __init__(self, trialsSuite2p: list, s2pResultsPath: str = None, subtract_neuropil: bool = True):
+    def __init__(self, trialsSuite2p: list, s2pResultsPath: Optional[str] = None, subtract_neuropil: bool = True):
         print(f"\- ADDING Suite2p Results to Experiment object ... ")
 
         ## initialize attr's
@@ -258,58 +258,64 @@ class Suite2pResultsExperiment:
         return mean_img
 
 
-class Suite2pResultsTrial:
+class Suite2pResultsTrial(Suite2pResultsExperiment):
     """used to collect suite2p processed data for one trial - out of overall experiment."""
 
-    def __init__(self, suite2p_experiment_obj: Suite2pResultsExperiment, trial_frames: tuple):
-        print(f"\n\----- ADDING Suite2p class to Trial object ... ")
+    def __init__(self, trialsSuite2p: list, trial_frames: tuple, s2pResultsPath: Optional[str] = None,
+                 subtract_neuropil: bool = True):
+
+        super().__init__(trialsSuite2p, s2pResultsPath, subtract_neuropil)
+
+        print(f"\n\----- ADDING Suite2pResultsTrial ... ")
 
         ## initializing attributes to collect Suite2p results for this specific trial
         # self.dfof: list(np.ndarray) = []  # array of dFF normalized Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
-        self.raw: list(np.ndarray) = []  # array of raw Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
-        self.spks: list(np.ndarray) = []  # array of deconvolved spks values from suite2p output [num cells x length of imaging acquisition], one per plane
-        self.neuropil: list(np.ndarray) = []  # array of neuropil Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
+        self.__raw: List[np.ndarray] =  self.raw
+        self.__spks: List[np.ndarray] = self.spks
+        self.__neuropil: List[np.ndarray] = self.neuropil
 
         self.trial_frames = trial_frames  # tuple of first and last frame (out of the overall suite2p run) corresponding to the present trial
-        self.suite2p_overall = suite2p_experiment_obj
-        print(f"\t|- current trial frames: {trial_frames} out of {self.suite2p_overall.n_frames} total frames processed through suite2p")
-        self._get_suite2pResults() if self.suite2p_overall.path else None
+
+        # self.suite2p_overall = suite2p_experiment_obj
+        print(f"\t|- current trial frames: {trial_frames} out of {self.n_frames} total frames processed through suite2p")
+        self._get_suite2pResults() if self.path else None
 
         # path = suite2p_experiment_obj.path if hasattr(suite2p_experiment_obj, 'path') else None
         # Suite2pResultsExperiment.__init__(self, trialsSuite2p = suite2p_experiment_obj.trials, s2pResultsPath=path,
         #                                   subtract_neuropil=suite2p_experiment_obj.subtract_neuropil)
 
     def __repr__(self):
-        return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} frames x {self.suite2p_overall.n_units} s2p ROIs'
+        return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} frames x {self.n_units} s2p ROIs'
+
 
     def _get_suite2pResults(self):  # TODO complete code for getting suite2p results for trial
         """crop suite2p data for frames only for the present trial"""
 
-        for attr in ['n_units', 'cell_id', 'cell_plane', 'cell_x', 'cell_y', 'xoff', 'yoff', 'raw', 'spks', 'neuropil', 'stat']:
-            try:
-                setattr(self, attr, getattr(self.suite2p_overall, attr))
-            except AttributeError:
-                pass
+        # for attr in ['n_units', 'cell_id', 'cell_plane', 'cell_x', 'cell_y', 'xoff', 'yoff', 'raw', 'spks', 'neuropil', 'stat']:
+        #     try:
+        #         setattr(self, attr, getattr(self.suite2p_overall, attr))
+        #     except AttributeError:
+        #         pass
 
-        if self.suite2p_overall.n_planes == 1:
+        if self.n_planes == 1:
             self.cell_id = self.cell_id
             self.stat = self.stat[0]
 
-            self.raw = self.suite2p_overall.raw[:, self.trial_frames[0]:self.trial_frames[1]]
-            self.spks = self.suite2p_overall.spks[:, self.trial_frames[0]:self.trial_frames[1]]
-            self.neuropil = self.suite2p_overall.neuropil[:, self.trial_frames[0]:self.trial_frames[1]]
+            self.raw = self.__raw[:, self.trial_frames[0]:self.trial_frames[1]]  # array of raw Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
+            self.spks = self.__spks[:, self.trial_frames[0]:self.trial_frames[1]]  # array of deconvolved spks values from suite2p output [num cells x length of imaging acquisition], one per plane
+            self.neuropil = self.__neuropil[:, self.trial_frames[0]:self.trial_frames[1]]  # array of neuropil Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
 
 
 
             self.__s2pResultExists = True
 
         else:
-            for plane in range(self.suite2p_overall.n_planes):
-                self.raw.append(self.suite2p_overall.raw[plane][:, self.trial_frames[0]:self.trial_frames[1]])
-                self.spks.append(self.suite2p_overall.spks[plane][:, self.trial_frames[0]:self.trial_frames[1]])
-                self.neuropil.append(self.suite2p_overall.neuropil[plane][:, self.trial_frames[0]:self.trial_frames[1]])
+            for plane in range(self.n_planes):
+                self.raw.append(self.raw[plane][:, self.trial_frames[0]:self.trial_frames[1]])
+                self.spks.append(self.spks[plane][:, self.trial_frames[0]:self.trial_frames[1]])
+                self.neuropil.append(self.neuropil[plane][:, self.trial_frames[0]:self.trial_frames[1]])
 
-                self.dfof.append(normalize_dff(self.raw[plane]))  # calculate df/f based on relevant frames
+                # self.dfof.append(normalize_dff(self.raw[plane]))  # calculate df/f based on relevant frames
                 self.__s2pResultExists = True
 
     @property
@@ -318,7 +324,7 @@ class Suite2pResultsTrial:
 
     # @property
     # def stat(self):
-    #     if self.suite2p_overall.n_planes == 1:
-    #         return self.suite2p_overall.stat[0]
+    #     if self.n_planes == 1:
+    #         return self.stat[0]
     #     else:
-    #         return self.suite2p_overall.stat
+    #         return self.stat

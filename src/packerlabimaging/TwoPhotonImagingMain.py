@@ -89,9 +89,10 @@ class TwoPhotonImagingTrial:
             assert i in [*kwargs], f'{i} required in Suite2pResultsTrial call'
             assert kwargs[i] is not None, f'{i} Suite2pResultsTrial call is None'
         if 'suite2p_experiment_obj' in [*kwargs] and 'total_frames_stitched' in [*kwargs]:
-            self.Suite2p = suite2p.Suite2pResultsTrial(suite2p_experiment_obj=kwargs['suite2p_experiment_obj'],
-                                                        trial_frames=(kwargs['total_frames_stitched'],
-                                                                           kwargs['total_frames_stitched'] + self.imparams.n_frames))  # use trial obj's current trial frames
+            from packerlabimaging.processing.suite2p import Suite2pResultsExperiment
+            s2p_expobj: Suite2pResultsExperiment = kwargs['suite2p_experiment_obj']
+            self.Suite2p = suite2p.Suite2pResultsTrial(trialsSuite2p=s2p_expobj.trials, s2pResultsPath = s2p_expobj.path, subtract_neuropil = s2p_expobj.subtract_neuropil,
+                                                       trial_frames=(kwargs['total_frames_stitched'], kwargs['total_frames_stitched'] + self.imparams.n_frames))  # use trial obj's current trial frames
 
         # normalize dFF for raw Flu
         self.dfof()
@@ -292,7 +293,7 @@ class TwoPhotonImagingTrial:
                       }
 
             print(f"\n\----- CREATING annotated data object using AnnData:")
-            _data_type = 'Suite2p Raw (neuropil substracted)' if self.Suite2p.suite2p_overall.subtract_neuropil else 'Suite2p Raw'
+            _data_type = 'Suite2p Raw (neuropil substracted)' if self.Suite2p.subtract_neuropil else 'Suite2p Raw'
             adata = ad.AnnotatedData(X=self.Suite2p.raw, obs=obs_meta, var=var_meta.T, obsm=obs_m, layers=layers, data_label=_data_type)
 
             print(f"\n{adata}")

@@ -245,8 +245,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         # make an image of every cell area, filled with the index of that cell
         cell_img = np.zeros_like(targ_img)
 
-        cell_y = np.array(self.Suite2p.suite2p_overall.cell_x)
-        cell_x = np.array(self.Suite2p.suite2p_overall.cell_y)
+        cell_y = np.array(self.Suite2p.cell_x)
+        cell_x = np.array(self.Suite2p.cell_y)
 
         for i, coord in enumerate(zip(cell_x, cell_y)):
             cell_img[coord] = i + 1
@@ -255,10 +255,10 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         targ_cell = cell_img * targ_img
 
         targ_cell_ids = np.unique(targ_cell)[1:] - 1  # correct the cell id due to zero indexing
-        self.targeted_cells = np.zeros([self.Suite2p.suite2p_overall.n_units], dtype='bool')
+        self.targeted_cells = np.zeros([self.Suite2p.n_units], dtype='bool')
         self.targeted_cells[targ_cell_ids] = True
         # self.s2p_cell_targets = [self.cell_id[i] for i, x in enumerate(self.targeted_cells) if x is True]  # get ls of s2p cells that were photostim targetted
-        self.s2p_cell_targets = [self.Suite2p.suite2p_overall.cell_id[i] for i in np.where(self.targeted_cells)[0]]  # get ls of s2p cells that were photostim targetted
+        self.s2p_cell_targets = [self.Suite2p.cell_id[i] for i in np.where(self.targeted_cells)[0]]  # get ls of s2p cells that were photostim targetted
 
         self.n_targeted_cells = np.sum(self.targeted_cells)
 
@@ -275,8 +275,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         # make an image of every cell area, filled with the index of that cell
         cell_img = np.zeros_like(targ_img)
 
-        cell_y = np.array(self.Suite2p.suite2p_overall.cell_x)
-        cell_x = np.array(self.Suite2p.suite2p_overall.cell_y)
+        cell_y = np.array(self.Suite2p.cell_x)
+        cell_x = np.array(self.Suite2p.cell_y)
 
         for i, coord in enumerate(zip(cell_x, cell_y)):
             cell_img[coord] = i + 1
@@ -285,9 +285,9 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         targ_cell = cell_img * targ_img
 
         targ_cell_ids = np.unique(targ_cell)[1:] - 1  # correct the cell id due to zero indexing
-        self.exclude_cells = np.zeros([self.Suite2p.suite2p_overall.n_units], dtype='bool')
+        self.exclude_cells = np.zeros([self.Suite2p.n_units], dtype='bool')
         self.exclude_cells[targ_cell_ids] = True
-        self.s2p_cells_exclude = [self.Suite2p.suite2p_overall.cell_id[i] for i in
+        self.s2p_cells_exclude = [self.Suite2p.cell_id[i] for i in
                                   np.where(self.exclude_cells)[0]]  # get ls of s2p cells that were photostim targetted
 
         self.n_exclude_cells = np.sum(self.exclude_cells)
@@ -297,7 +297,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         print(f"\t|-Number of exclude Suite2p ROIs: {self.n_exclude_cells}")
 
         # define non targets from suite2p ROIs (exclude cells in the SLM targets exclusion - .s2p_cells_exclude)
-        self.Suite2p.s2p_nontargets = [cell for cell in self.Suite2p.suite2p_overall.cell_id if cell not in self.s2p_cells_exclude]  ## exclusion of cells that are classified as s2p_cell_targets
+        self.Suite2p.s2p_nontargets = [cell for cell in self.Suite2p.cell_id if cell not in self.s2p_cells_exclude]  ## exclusion of cells that are classified as s2p_cell_targets
 
         print(f"\t|-Number of good, s2p non-target ROIs: {len(self.Suite2p.s2p_nontargets)}")
 
@@ -562,8 +562,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         """uses registered tiffs to collect raw traces from SLM target areas"""
 
         if reg_tif_folder is None:
-            if self.Suite2p.suite2p_overall.path:
-                reg_tif_folder = self.Suite2p.suite2p_overall.path + '/reg_tif/'
+            if self.Suite2p.path:
+                reg_tif_folder = self.Suite2p.path + '/reg_tif/'
                 print(f"\- trying to load registerred tiffs from: {reg_tif_folder}")
         else:
             raise Exception(f"Must provide reg_tif_folder path for loading registered tiffs")
@@ -583,7 +583,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         targets_trace_full = np.zeros([len(self.Targets.target_coords_all), (end - start) * 2000], dtype='float32')
         counter = 0
         for i in range(start, end):
-            tif_path_save2 = self.Suite2p.suite2p_overall.path + '/reg_tif/' + reg_tif_list[i]
+            tif_path_save2 = self.Suite2p.path + '/reg_tif/' + reg_tif_list[i]
             with tf.TiffFile(tif_path_save2, multifile=False) as input_tif:
                 print('|- reading tiff: %s' % tif_path_save2)
                 data = input_tif.asarray()

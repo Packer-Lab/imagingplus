@@ -94,7 +94,7 @@ class Experiment:
 
         # 1) start suite2p action:
         self._trialsSuite2p = []
-        if self.useSuite2p or self.s2pResultsPath: self._add_suite2p()
+        if self.useSuite2p or self.s2pResultsPath: self._add_suite2p_experiment()
 
         # 2) create individual trial objects
         self._runExpTrialsProcessing()
@@ -135,7 +135,7 @@ class Experiment:
             __return_information = __return_information + self._get_trial_infor(trialID=trial)
         return f"{__return_information}\n"
 
-    def _add_suite2p(self):
+    def _add_suite2p_experiment(self):
         for trial in self.trialIDs:
             if trial not in self._trialsSuite2p:
                 assert 's2p_use' in [*self.trialsInformation[trial]], 'when trying to utilize suite2p , must provide value for `s2p_use` ' \

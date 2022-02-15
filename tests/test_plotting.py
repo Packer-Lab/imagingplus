@@ -14,6 +14,11 @@ expobj: Experiment = import_obj(pkl_path='/home/pshah/Documents/code/packerlabim
 trialobj: TwoPhotonImagingTrial = expobj.load_trial(trialID='t-005')
 
 
+def test_plotRoiLocations(existing_trialobj_twophotonimaging_fixture):
+    trialobj: TwoPhotonImagingTrial = existing_trialobj_twophotonimaging_fixture[0]
+    plotRoiLocations(trialobj, suite2p_rois, background = None)
+
+
 def test_makeSuite2pPlots(existing_expobj_fixture):
     expobj: Experiment = existing_expobj_fixture[0]
     makeSuite2pPlots(expobj)

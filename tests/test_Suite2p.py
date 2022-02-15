@@ -19,5 +19,10 @@ def test_Suite2pResultsTrial(existing_trialobj_twophotonimaging_fixture, existin
     expobj: Experiment = existing_expobj_fixture[0]
 
     for n_obj in [trialobj, trialobj_, alloptical_trialobj]:
-        n_obj.Suite2p = suite2p.Suite2pResultsTrial(suite2p_experiment_obj = expobj.Suite2p, trial_frames = trialobj.Suite2p.trial_frames)
+        from packerlabimaging.processing.suite2p import Suite2pResultsExperiment
+        s2p_expobj: Suite2pResultsExperiment = expobj.Suite2p
+        n_obj.Suite2p = suite2p.Suite2pResultsTrial(trialsSuite2p=s2p_expobj.trials, s2pResultsPath=s2p_expobj.path,
+                                                   subtract_neuropil=s2p_expobj.subtract_neuropil,
+                                                   trial_frames=n_obj.Suite2p.trial_frames)  # use trial obj's current trial frames
+
         n_obj.save()

@@ -5,6 +5,7 @@ import packerlabimaging as pkg
 def test_ExperimentClass(experiment_fixture):
     # print(experiment_fixture)
     expobj = pkg.Experiment(**experiment_fixture)
+    print(expobj)
 
 
 # %%

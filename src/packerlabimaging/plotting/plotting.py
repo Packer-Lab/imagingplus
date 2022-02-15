@@ -27,7 +27,7 @@ from packerlabimaging.utils.utils import normalize_dff
 # suite2p data
 # simple plot of the location of the given cell(s) against a black FOV
 @plotting_decorator(figsize=(5, 5))
-def plotRoiLocations(trialobj: TwoPhotonImagingTrial, suite2p_rois: list, background: np.array = None,
+def plotRoiLocations(trialobj: TwoPhotonImagingTrial, suite2p_rois: list, background: np.ndarray = None,
                      **kwargs):
     """
     plots an image of the FOV to show the locations of cells given in cells ls.
