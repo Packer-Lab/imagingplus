@@ -66,14 +66,6 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.frame_start_times: list = None  # Paq clock timestamps of the first imaging acquisition frame of t-series
         self.frame_end_times: list = None  # Paq clock timestamps of the last imaging acquisition frame of t-series
 
-        # SLM target coords attr's
-        self.n_targets = []  # total number of target coordinates per SLM group
-        self.target_coords = []  # x, y locations of target coordinates per SLM group
-        self.target_areas = []  # photostim targeted pixels area coordinates per SLM group
-        self.target_coords_all: list = []  # all SLM target coordinates
-        self.n_targets_total: int = 0  # total number of SLM targets
-        self.target_areas_exclude = []  # similar to .target_areas, but area diameter expanded to exclude when filtering for nontarget cells
-
         # set photostim trial Flu trace snippet collection and response measurement analysis time windows
         self.prestim_sec = prestim_sec  # length of pre stim trace collected (in frames)
         self.poststim_sec = poststim_sec  # length of post stim trace collected (in frames)
@@ -81,7 +73,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.post_stim_response_window_msec = post_stim_response_window  # time window for collecting post-stim measurement (units: msec)
 
         # attr's for statistical analysis of photostim trials responses
-        self.photostim_responses = None  # anndata object for collecting photostim responses and associated metadata for experiment and cells
+        self.photostimResponsesData = None  # anndata object for collecting photostim responses and associated metadata for experiment and cells
 
         ######## TODO update comment descriptions
         self.all_trials = []  # all trials for each cell, dff detrended
@@ -108,10 +100,6 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.responses_SLMtargets = []  # dF/prestimF responses for all SLM targets for each photostim trial
         self.responses_SLMtargets_tracedFF = []  # poststim dFF - prestim dFF responses for all SLM targets for each photostim trial
 
-        self.raw_SLMTargets, self.dFF_SLMTargets, self.meanFluImg_registered = self.collect_traces_from_targets(
-            curr_trial_frames=self.Suite2p.trial_frames, save=True)
-        self.targets_dff, self.targets_dff_avg, self.targets_dfstdF, self.targets_dfstdF_avg, self.targets_raw, self.targets_raw_avg = self.get_alltargets_stim_traces_norm(
-            process='trace dFF')
 
         ## ALL CELLS (from suite2p ROIs)
         # TODO add attr's related to numpy array's and pandas dataframes for photostim trials - suite2p ROIs
@@ -124,25 +112,39 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             raise FileNotFoundError(f"path not found, naparm_path: {naparm_path}")
 
         # initialize object as TwoPhotonImagingTrial
-        TwoPhotonImagingTrial.__init__(self, metainfo=metainfo, analysis_save_path=analysis_save_path,
-                                       microscope=microscope, **kwargs)
+        TwoPhotonImagingTrial.__init__(self, metainfo=metainfo, analysis_save_path=analysis_save_path, microscope=microscope, **kwargs)
 
-        # continue with photostimulation experiment processing
+        # get stim timings from paq file
         self.stim_start_frames, self.stim_start_times = self._paqProcessingAllOptical(stim_channel='markpoints2packio')
-        self._stimProcessing()
-        self._find_photostim_add_bad_framesnpy()
-        self.photostimFluArray, self.photostimResponseAmplitudes, self.photostim_responses = self.photostimProcessingAllCells()
-        # array of dFF pre + post stim Flu snippets for each stim and cell [num cells x num peri-stim frames collected x num stims]  TODO need to write a quick func to collect over all planes to allow for multiplane imaging
-        # photostim response amplitudes in a dataframe for each cell and each photostim
+        # process 2p stim protocol
+        self.Targets, self.stim_duration_frames = self._stimProcessing()
+        # determine bad frames in imaging data that correspond to photostim frames
+        self.photostim_frames = self._find_photostim_add_bad_framesnpy()
 
 
-        # extend annotated data object with imaging frames in photostim and stim_start_frames as additional keys in vars
+        # collect traces from SLM targets
+        self.raw_SLMTargets, self.dFF_SLMTargets, self.meanFluImg_registered = self.collect_traces_from_targets(
+            curr_trial_frames=self.Suite2p.trial_frames, save=True)
+        self.targets_dff, self.targets_dff_avg, self.targets_dfstdF, self.targets_dfstdF_avg, \
+        self.targets_raw, self.targets_raw_avg = self.get_alltargets_stim_traces_norm(process='trace dFF')
+
+        # Sutie2p ROIs processing:
+        #   create:
+        #       1) array of dFF pre + post stim Flu snippets for each stim and cell [num cells x num peri-stim frames collected x num stims]
+        #       2) photostim response amplitudes in a dataframe for each cell and each photostim
+        #       3) save photostim response amplitudes to AnnotatedData
+        self.photostimFluArray, self.photostimResponseAmplitudes, self.photostimResponsesData = self.photostimProcessingAllCells()
+
+
+        # extend annotated imaging data object with imaging frames in photostim and stim_start_frames as additional keys in vars
         __frames_in_stim = [False] * self.imparams.n_frames
         __stim_start_frame = [False] * self.imparams.n_frames
         for frame in self.photostim_frames: __frames_in_stim[frame] = True
         for frame in self.stim_start_frames: __stim_start_frame[frame] = True
         self.data.add_var(var_name='photostim_frame', values=__frames_in_stim)
         self.data.add_var(var_name='stim_start_frame', values=__stim_start_frame)
+
+
 
         ##
         self.save()
@@ -211,16 +213,16 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         
     def _stimProcessing(self):
-        self.Targets = Targets(naparm_path=self.naparm_path, frame_x=self.imparams.frame_x, frame_y=self.imparams.frame_y,
+        targets = Targets(naparm_path=self.naparm_path, frame_x=self.imparams.frame_x, frame_y=self.imparams.frame_y,
                                pix_sz_x=self.imparams.pix_sz_x, pix_sz_y=self.imparams.pix_sz_y)
 
         # correct the following based on txt file
-        duration_ms = self.Targets.stim_dur
+        duration_ms = targets.stim_dur
         frame_rate = self.imparams.fps / self.imparams.n_planes
         duration_frames = np.ceil((duration_ms / 1000) * frame_rate)
-        self.stim_duration_frames = int(duration_frames)
+        stim_duration_frames = int(duration_frames)
 
-        # self.paqProcessing(stim_channel=self.stim_channel)  # TODO switch to using .paq module
+        return targets, stim_duration_frames
 
     def _findTargetedS2pROIs(self, plot: bool = True):
         """finding s2p cell ROIs that were also SLM targets (or more specifically within the target areas as specified by _findTargetAreas - include 15um radius from center coordinate of spiral)
@@ -237,7 +239,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         ##### IDENTIFYING S2P ROIs THAT ARE WITHIN THE SLM TARGET SPIRAL AREAS
         # make all target area coords in to a binary mask
         targ_img = np.zeros([self.imparams.frame_x, self.imparams.frame_y], dtype='uint16')
-        target_areas = np.array(self.target_areas)
+        target_areas = np.array(self.Targets.target_areas)
         targ_img[target_areas[:, :, 1], target_areas[:, :, 0]] = 1
 
         # make an image of every cell area, filled with the index of that cell
@@ -267,7 +269,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         ##### IDENTIFYING S2P ROIs THAT ARE WITHIN THE EXCLUSION ZONES OF THE SLM TARGETS
         # make all target area coords in to a binary mask
         targ_img = np.zeros([self.imparams.frame_x, self.imparams.frame_y], dtype='uint16')
-        target_areas_exclude = np.array(self.target_areas_exclude)
+        target_areas_exclude = np.array(self.Targets.target_areas_exclude)
         targ_img[target_areas_exclude[:, :, 1], target_areas_exclude[:, :, 0]] = 1
 
         # make an image of every cell area, filled with the index of that cell
@@ -303,11 +305,11 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             fig, ax = plt.subplots(figsize=[6, 6])
 
             targ_img = np.zeros([self.imparams.frame_x, self.imparams.frame_y], dtype='uint16')
-            target_areas = np.array(self.target_areas)
+            target_areas = np.array(self.Targets.target_areas)
             targ_img[target_areas[:, :, 1], target_areas[:, :, 0]] = 1
             ax.imshow(targ_img, cmap='Greys_r', zorder=0)
             ax.set_title('SLM targets areas')
-            # for (x, y) in self.target_coords_all:
+            # for (x, y) in self.Targets.target_coords_all:
             #     ax.scatter(x=x, y=y, edgecolors='white', facecolors='none', linewidths=1.0)
             fig.show()
 
@@ -320,22 +322,26 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         print('\n\----- Finding photostimulation frames in imaging frames ...')
         print('# of photostim frames calculated per stim. trial: ', self.stim_duration_frames + 1)
 
+        photostim_frames=[]
+
         for j in self.stim_start_frames:
             for i in range(
                     self.stim_duration_frames + 1):  # usually need to remove 1 more frame than the stim duration, as the stim isn't perfectly aligned with the start of the imaging frame
-                self.photostim_frames.append(j + i)
+                photostim_frames.append(j + i)
 
         # print(photostim_frames)
         print('\t|- Original # of frames:', self.imparams.n_frames, 'frames')
         print('\t|- # of Photostim frames:', len(self.photostim_frames), 'frames')
-        print('\t|- Minus photostim. frames total:', self.imparams.n_frames - len(self.photostim_frames), 'frames')
+        print('\t|- Minus photostim. frames total:', self.imparams.n_frames - len(photostim_frames), 'frames')
 
         if len(self.photostim_frames) > 0:
             print(
                 # f'***Saving a total of {len(self.photostim_frames)} photostim frames to bad_frames.npy at: {self.tiff_path_dir}/bad_frames.npy')
-                f'***Saving a total of {len(self.photostim_frames)} photostim frames to bad_frames.npy at: {BADFRAMESLOC}/bad_frames.npy')  # TODO replace BADFRAMESLOC with self.tiff_path_dir
+                f'***Saving a total of {len(photostim_frames)} photostim frames to bad_frames.npy at: {BADFRAMESLOC}/bad_frames.npy')  # TODO replace BADFRAMESLOC with self.tiff_path_dir
             np.save(f'{self.tiff_path_dir}/bad_frames.npy',
-                    self.photostim_frames)  # save to npy file and remember to move npy file to tiff folder before running with suite2p
+                    photostim_frames)  # save to npy file and remember to move npy file to tiff folder before running with suite2p
+
+        return photostim_frames
 
     #### TODO review attr's and write docs from the following functions: // start
     # used for creating tiffs that remove artifacts from alloptical experiments with photostim artifacts
@@ -574,7 +580,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         mean_img_stack = np.zeros([end - start, self.imparams.frame_x, self.imparams.frame_y])
         # collect mean traces from target areas of each target coordinate by reading in individual registered tiffs that contain frames for current trial
-        targets_trace_full = np.zeros([len(self.target_coords_all), (end - start) * 2000], dtype='float32')
+        targets_trace_full = np.zeros([len(self.Targets.target_coords_all), (end - start) * 2000], dtype='float32')
         counter = 0
         for i in range(start, end):
             tif_path_save2 = self.Suite2p.suite2p_overall.path + '/reg_tif/' + reg_tif_list[i]
@@ -582,10 +588,10 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
                 print('|- reading tiff: %s' % tif_path_save2)
                 data = input_tif.asarray()
 
-            targets_trace = np.zeros([len(self.target_coords_all), data.shape[0]], dtype='float32')
-            for coord in range(len(self.target_coords_all)):
+            targets_trace = np.zeros([len(self.Targets.target_coords_all), data.shape[0]], dtype='float32')
+            for coord in range(len(self.Targets.target_coords_all)):
                 target_areas = np.array(
-                    self.target_areas)  # TODO update this so that it doesn't include the extra exclusion zone
+                    self.Targets.target_areas)  # TODO update this so that it doesn't include the extra exclusion zone
                 x = data[:, target_areas[coord, :, 1], target_areas[coord, :, 0]]  # = 1
                 targets_trace[coord] = np.mean(x, axis=1)
 
@@ -619,8 +625,6 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         :param filter_sz: whether to filter out stims that are occuring seizures
         :return: lists of individual targets dFF traces, and averaged targets dFF over all stims for each target
         """
-        if filter_sz:
-            print('\n -- filter_sz active --')
 
         if stims is None:
             stim_timings = self.stim_start_frames
@@ -656,17 +660,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         if targets_idx is not None:
             print('collecting stim traces for cell ', targets_idx + 1)
-            if filter_sz:
-                flu = [targets_trace[targets_idx][stim - pre_stim: stim + self.stim_duration_frames + post_stim] for
-                       stim in
-                       stim_timings if
-                       stim not in self.seizure_frames]
-            else:
-                flu = [targets_trace[targets_idx][stim - pre_stim: stim + self.stim_duration_frames + post_stim] for
-                       stim in
-                       stim_timings]
-            # flu_dfstdF = []
-            # flu_dff = []
+            flu = [targets_trace[targets_idx][stim - pre_stim: stim + self.stim_duration_frames + post_stim] for stim in stim_timings]
             for i in range(len(flu)):
                 trace = flu[i]
                 mean_pre = np.mean(trace[0:pre_stim])
@@ -689,25 +683,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             for cell_idx in range(num_cells):
                 print('collecting stim traces for cell %s' % subselect_cells[cell_idx]) if subselect_cells else None
 
-                if filter_sz:
-                    if hasattr(self, 'slmtargets_szboundary_stim') and self.slmtargets_szboundary_stim is not None:
-                        flu = []
-                        for stim in stim_timings:
-                            if stim in self.slmtargets_szboundary_stim.keys():  # some stims dont have sz boundaries because of issues with their TIFFs not being made properly (not readable in Fiji), usually it is the first TIFF in a seizure
-                                if cell_idx not in self.slmtargets_szboundary_stim[stim]:
-                                    flu.append(targets_trace[cell_idx][
-                                               stim - pre_stim: stim + self.stim_duration_frames + post_stim])
-                    else:
-                        flu = []
-                        print('classifying of sz boundaries not completed for this expobj',
-                              self.metainfo['animal prep.'], self.metainfo['trial'])
-                    # flu = [targets_trace[cell_idx][stim - pre_stim_sec: stim + self.stim_duration_frames + post_stim_sec] for
-                    #        stim
-                    #        in stim_timings if
-                    #        stim not in self.seizure_frames]
-                else:
-                    flu = [targets_trace[cell_idx][stim - pre_stim: stim + self.stim_duration_frames + post_stim] for
-                           stim in stim_timings]
+                flu = [targets_trace[cell_idx][stim - pre_stim: stim + self.stim_duration_frames + post_stim] for
+                       stim in stim_timings]
 
                 # flu_dfstdF = []
                 # flu_dff = []

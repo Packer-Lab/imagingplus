@@ -1,5 +1,13 @@
 import packerlabimaging as pkg
 
+
+# pytest framework
+def test_ExperimentClass(experiment_fixture):
+    # print(experiment_fixture)
+    expobj = pkg.Experiment(**experiment_fixture)
+
+
+# %%
 # # INITIALIZING ALLOPTICAL + TWOPHOTON IMAGING EXPERIMENT OBJECT FROM SCRATCH
 # # experiment dictionary
 # initialization_dict = {
@@ -58,7 +66,3 @@ import packerlabimaging as pkg
 #
 # expobj = pkg.Experiment(**initialization_dict)
 
-# trying to use pytest -- seems to work (!)
-def test_ExperimentClass(experiment_fixture):
-    # print(experiment_fixture)
-    expobj = pkg.Experiment(**experiment_fixture)

@@ -21,12 +21,12 @@ setup(
         'tifffile',
         'numpy>=1.18.5',
         'seaborn',
-        'suite2p',
         'matplotlib',
         'pandas',
         'scipy',
         'statsmodels',
-        'scikit-image'
+        'scikit-image',
+        'suite2p'
     ],
     tests_require=TESTS_REQUIRE,
     zip_safe=False

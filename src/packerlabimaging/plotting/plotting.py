@@ -573,7 +573,7 @@ def plot_periphotostim_avg2(dataset, fps=None, legend_labels=None, colors=None, 
 ### photostim analysis - PLOT avg over all photstim. trials traces from PHOTOSTIM TARGETTED cells
 @plotting_decorator(figsize=(5, 5.5))
 def plot_periphotostim_avg(arr: np.ndarray, trialobj: AllOpticalTrial, pre_stim_sec=1.0, post_stim_sec=3.0, title='',
-                           avg_only: bool = False, x_label=None, y_label=None, ax=None, pad=20, **kwargs):
+                           avg_only: bool = False, x_label=None, y_label=None, pad=20, **kwargs):
     """
     plot trace across all stims
     :param arr: Flu traces to plot (will be plotted as individual traces unless avg_only is True) dimensions should be cells x stims x frames
@@ -595,12 +595,16 @@ def plot_periphotostim_avg(arr: np.ndarray, trialobj: AllOpticalTrial, pre_stim_
     :return: ls containing some items about the traces
     """
 
-    fps = trialobj.fps  # frames per second rate of the imaging data collection for the data to be plotted
-    exp_prestim = trialobj.pre_stim  # frames of pre-stim data collected for each trace for this trialobj (should be same as what's under trialobj.pre_stim_sec)
+    fps = trialobj.imparams.fps  # frames per second rate of the imaging data collection for the data to be plotted
+    exp_prestim = trialobj.pre_stim_frames  # frames of pre-stim data collected for each trace for this trialobj (should be same as what's under trialobj.pre_stim_sec)
     if 'stim_duration' in kwargs.keys():
         stim_duration = kwargs['stim_duration']
     else:
-        stim_duration = trialobj.stim_dur / 1000  # seconds of stimulation duration
+        stim_duration = trialobj.Targets.stim_dur / 1000  # seconds of stimulation duration
+
+    dataplot_frame_options()
+    ax = kwargs['ax']
+    kwargs.pop('ax')
 
     x = list(range(arr.shape[1]))
     # x range in time (secs)
@@ -620,6 +624,8 @@ def plot_periphotostim_avg(arr: np.ndarray, trialobj: AllOpticalTrial, pre_stim_
         x = x_time  # set the x plotting range
         if x_label is not None:
             x_label = x_label + 'post-stimulation relative'
+        else:
+            x_label = 'Time (secs post-stimulation)'
 
         if avg_only is True:
             # ax.axvspan(exp_prestim/fps, (exp_prestim + stim_duration + 1) / fps, alpha=alpha, color='plum', zorder = 3)
@@ -650,11 +656,6 @@ def plot_periphotostim_avg(arr: np.ndarray, trialobj: AllOpticalTrial, pre_stim_
         else:
             ax.set_xlim(exp_prestim - int(pre_stim_sec * fps), exp_prestim + int(stim_duration * fps) + int(post_stim_sec * fps) + 1)
 
-    # spine options
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.spines['left'].set_visible(False)
-
     # set axis labels
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
@@ -666,8 +667,8 @@ def plot_periphotostim_avg(arr: np.ndarray, trialobj: AllOpticalTrial, pre_stim_
         ax.set_title((title + ' - %s' % len_ + ' traces'), horizontalalignment='center', verticalalignment='top',
                      pad=pad, fontsize=10, wrap=True)
 
-    if avg_only:
-        return flu_avg
+    dataplot_ax_options(ax=ax, data_length=arr.shape[1], **kwargs)
+
 # alloptical trial
 
 

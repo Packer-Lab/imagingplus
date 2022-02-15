@@ -1,11 +1,13 @@
 import pytest
 from packerlabimaging._io import import_obj
 
+SUITE2P_FRAMES_SPONT_t005t006 = [0, 14880]
+SUITE2P_FRAMES_t013 = 103525
+
 
 @pytest.fixture(scope="session")
 def twophoton_imaging_trial_fixture():
     expobj = import_obj('/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
-    SUITE2P_FRAMES = 0
 
     initialization_dict = {
         'dataPath': '/home/pshah/mnt/qnap/Data/2020-12-19',
@@ -48,7 +50,7 @@ def twophoton_imaging_trial_fixture():
         initialization_dict['metainfo'] = _metainfo
         initialization_dict['analysis_save_path'] = initialization_dict['analysisSavePath']
         initialization_dict['suite2p_experiment_obj'] = expobj.Suite2p
-        initialization_dict['total_frames_stitched'] = SUITE2P_FRAMES
+        initialization_dict['total_frames_stitched'] = SUITE2P_FRAMES_SPONT_t005t006[idx]
 
 
     return initialization_dict
@@ -56,7 +58,6 @@ def twophoton_imaging_trial_fixture():
 @pytest.fixture(scope="session")
 def alloptical_trial_fixture():
     expobj = import_obj('/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
-    SUITE2P_FRAMES = 0
 
     initialization_dict = {
         'dataPath': '/home/pshah/mnt/qnap/Data/2020-12-19',
@@ -104,7 +105,7 @@ def alloptical_trial_fixture():
         initialization_dict['naparm_path'] = initialization_dict["trialsInformation"][trial]['naparm_path']
         initialization_dict['analysis_save_path'] = initialization_dict['analysisSavePath']
         initialization_dict['suite2p_experiment_obj'] = expobj.Suite2p
-        initialization_dict['total_frames_stitched'] = SUITE2P_FRAMES
+        initialization_dict['total_frames_stitched'] = SUITE2P_FRAMES_t013
 
     return initialization_dict
 

@@ -7,10 +7,8 @@ from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
 
 from packerlabimaging.ExperimentMain import Experiment
 
-import packerlabimaging.plotting as plotting
-from packerlabimaging.plotting._utils import heatmap_options, image_frame_options
 from packerlabimaging.plotting.plotting import makeSuite2pPlots, plot_flu_trace, plotMeanFovFluTrace, \
-    plot_photostim_traces_overlap
+    plot_photostim_traces_overlap, plot_periphotostim_avg
 
 expobj: Experiment = import_obj(pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
 trialobj: TwoPhotonImagingTrial = expobj.load_trial(trialID='t-005')
@@ -33,4 +31,10 @@ def test_plotMeanFovFluTrace(existing_trialobj_twophotonimaging_fixture):
 
 def test_plot_photostim_traces_overlap(existing_trialobj_alloptical_fixture):
     trialobj: AllOpticalTrial = existing_trialobj_alloptical_fixture
-    plot_photostim_traces_overlap(array=trialobj.photostimFluArray, trialobj=trialobj)
+    plot_photostim_traces_overlap(array=trialobj.targets_dff_avg, trialobj=trialobj)
+
+
+def test_plot_periphotostim_avg(existing_trialobj_alloptical_fixture):
+    trialobj: AllOpticalTrial = existing_trialobj_alloptical_fixture
+    plot_periphotostim_avg(arr=trialobj.targets_dff_avg, trialobj=trialobj)
+

@@ -124,13 +124,24 @@ class naparm:
 
 class Targets(naparm):
     def __init__(self, naparm_path, frame_x, frame_y, pix_sz_x, pix_sz_y):
+
+        # SLM target coords attr's
+        # self.n_targets = []  # total number of target coordinates per SLM group
+        # self.target_coords = []  # x, y locations of target coordinates per SLM group
+        self.target_areas = []  # photostim targeted pixels area coordinates per SLM group
+        # self.target_coords_all: list = []  # all SLM target coordinates
+        # self.n_targets_total: int = 0  # total number of SLM targets
+        self.target_areas_exclude = []  # similar to .target_areas, but area diameter expanded (used in excluding data from this expanded region)
+
+
+
         naparm.__init__(self, naparm_path=naparm_path)
         self.__frame_x = frame_x
         self.__frame_y = frame_y
         self.__pix_sz_x = pix_sz_x
         self.__pix_sz_y = pix_sz_y
 
-        self.targets, self.target_coords, self.n_targets = self._readTargetsImage(self.__frame_x, self.__frame_y)
+        self.target_coords_all, self.target_coords, self.n_targets, self.n_targets_total = self._readTargetsImage(self.__frame_x, self.__frame_y)
         self.target_areas, self.target_areas_exclude = self._findTargetsAreas(self.__frame_x, self.__pix_sz_x)
         self.euclid_dist = self._euclidDist(resp_positions=self.target_coords)
 
@@ -139,6 +150,7 @@ class Targets(naparm):
         scale_factor_y = frame_y / 512  ## TODO how does the OBFOV scaling work?
 
         print('\n\t\----- Loading up target coordinates...')
+        scale_factor = frame_x / 512  ## TODO need to get this from the NAPARM OUTPUT somehow...
 
         # load naparm targets file for this experiment
         naparm_path = os.path.join(self.naparm_path, 'Targets')
@@ -175,8 +187,10 @@ class Targets(naparm):
             counter += 1
 
         target_coords = np.asarray(target_coords)
+        target_coords_all = target_coords.reshape(-1, target_coords.shape[-1])
+        n_targets_total = len(target_coords_all)
 
-        return targets, target_coords, n_targets
+        return target_coords_all, target_coords, n_targets, n_targets_total
 
     def _findTargetsAreas(self, frame_x, pix_sz_x, frame_y=None, pix_sz_y=None):  # TODO needs review by Rob - any bits of code missing under here? for e.g. maybe for target coords under multiple SLM groups?
 
@@ -187,13 +201,13 @@ class Targets(naparm):
         """
 
 
-        scale_factor = frame_x / 512  ## TODO need to get this from the NAPARM OUTPUT somehow...
 
         # targets_1 = np.where(target_image_scaled_1 > 0)
         # targets_2 = np.where(target_image_scaled_2 > 0)
 
-        targetCoordinates = list(zip(self.targets[1] * scale_factor, self.targets[0] * scale_factor))
-        print('\t\tNumber of targets:', len(targetCoordinates))
+        # targetCoordinates = list(zip(self.targets[1] * scale_factor, self.targets[0] * scale_factor))
+        # targetCoordinates = list(zip(self.target_coords[1] * scale_factor, self.target_coords[0] * scale_factor))  # NOTE: TODO need to debug!!!!
+        print('\t\tNumber of targets (total):', len(self.target_coords_all))
 
         # targetCoordinates_1 = ls(zip(targets_1[1], targets_1[0]))
         # print('Number of targets, SLM group #1:', len(targetCoordinates_1))
@@ -201,10 +215,9 @@ class Targets(naparm):
         # targetCoordinates_2 = ls(zip(targets_2[1], targets_2[0]))
         # print('Number of targets, SLM group #2:', len(targetCoordinates_2))
 
-        self.target_coords_all = targetCoordinates
+        # self.target_coords_all = targetCoordinates
         # self.target_coords_1 = targetCoordinates_1
         # self.target_coords_2 = targetCoordinates_2
-        self.n_targets_total = len(targetCoordinates)
 
         ## specifying target areas in pixels to use for measuring responses of SLM targets
         radius_px = int(np.ceil(((self.spiral_size / 2) + 0) / pix_sz_x))
@@ -213,7 +226,7 @@ class Targets(naparm):
         print("\t\tradius (in pixels): {:.2f}px".format(radius_px * pix_sz_x))
 
         target_areas = []
-        for coord in targetCoordinates:
+        for coord in self.target_coords_all:
             target_area = ([item for item in points_in_circle_np(radius_px, x0=coord[0], y0=coord[1])])
             target_areas.append(target_area)
 
@@ -222,7 +235,7 @@ class Targets(naparm):
         print("\t\tradius of target exclusion zone (in pixels): {:.2f}px".format(radius_px * pix_sz_x))
 
         target_areas_exclude = []
-        for coord in targetCoordinates:
+        for coord in self.target_coords_all:
             target_area = ([item for item in points_in_circle_np(radius_px, x0=coord[0], y0=coord[1])])
             target_areas_exclude.append(target_area)
 
