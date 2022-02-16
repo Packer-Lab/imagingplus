@@ -90,7 +90,7 @@ Further processing on the raw data is added to the AnnData object as `layers`. F
 The primary benefit of anndata is that it enforces an intuitive data structure and allows a workflow that maintains relationships between different data sources and types, including processed data. Lastly, AnnData objects are highly scalable, allowing individual users to further modify and add observations and variables of their own as their experiment dictates. Note: since AnnData is an independent library, they have an implementation for unstructured data annotations, however usage of this feature is not recommended within the packerlabimaging ecosystem as unstructured data elements should be built as attributes of the `trialobject`.
 
 
-***Flow of the TwoPhotonImaging Experiment class***
+##*Flow of the TwoPhotonImaging Experiment class*
 
 - TwoPhotonImagingTrial
     1. paqProcessing
@@ -102,7 +102,7 @@ The primary benefit of anndata is that it enforces an intuitive data structure a
 ![TwoPhoton Imaging Workflow #2.jpg](https://github.com/Packer-Lab/packerlabimaging/blob/4dd9ee035df2fd2e9ac7b1f3b82a7e7606d38492/files/TwoPhoton%20Imaging%20Workflow%20%232.jpg)
 
 
-***Flow of the AllOptical Experiment class***
+##*Flow of the AllOptical Experiment class*
 
 ![alloptical-workflow-1.drawio.png](https://github.com/Packer-Lab/packerlabimaging/blob/4dd9ee035df2fd2e9ac7b1f3b82a7e7606d38492/files/alloptical-workflow-1.drawio.png)
 
