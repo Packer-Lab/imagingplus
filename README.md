@@ -104,53 +104,78 @@ The primary benefit of anndata is that it enforces an intuitive data structure a
 
 ***Flow of the AllOptical Experiment class***
 
-- `AllOpticalTrial.__init__()`: setting up the alloptical trial object
-    1. 2p imaging `__init__()`
-    2. `stimProcessing()`
-        1. unpacks Naparm outputs xml and gpl
-            1. determines stim duration and stim properties
-        2. unpacks paq File
-            1. locates stim frames based on the specified `stim_channel`
-            
-    3. `_findTargetsAreas()`
-        - Loads target coordinates, and organizes target coordinates per SLM groups
-        - creates target_areas - circle of pixels outward from the center of the target
-        - creates target_areas_exclude - expanded circle of pixels outward from the center of the target that includes the region for excluding nontarget cells
-        - creates images of targets // scaled somehow?? not totally sure - dont remember, has been commented out for a while now for myself - maybe check what Rob suggests adding here?
-    4. `_find_photostim_add_bad_framesnpy()`
-        - finds all imaging frame that are overlapping with photostimulation trials, and creates bad_frames.npy file using these photostim frames for suite2p to exclude
-
 ![alloptical-workflow-1.drawio.png](https://github.com/Packer-Lab/packerlabimaging/blob/4dd9ee035df2fd2e9ac7b1f3b82a7e7606d38492/files/alloptical-workflow-1.drawio.png)
 
-- SLM targets processing+analysis: running processing and analysis specific to data collected from coordinates from registerred movie
-    - [ ]  get input coordinates - alloptical workflow: SLM targets areas
-    - [ ]  making trace snippets from all coords targets areas
-    - [ ]  measure dFF responses across stims
-    - [ ]  create new anndata object for storing measured photostim responses from data, with other relevant data for SLM targets
+- `AllOpticalTrial.__init__()`: setting up the alloptical trial object
+    1. 2p imaging `__init__()`
+    2. `_paqProcessingAllOptical()`
+        1. unpacks paq File
+        2. locates stim frames based on the specified `stim_channel`
+        3. returns stim timings as frame numbers
+    3. `_stimProcessing()`
+        1. processes information about the 2p stim protocol
+            1. setup to use `naparm` and `Targets(naparm)` submodules to unpack naparm outputs
+            2. 
         
-        anndata metadata:
+    4. `_find_photostim_add_bad_framesnpy()`
+        - finds all imaging frame that are overlapping with photostimulation trials, and creates bad_frames.npy file using these photostim frames for suite2p to exclude
+    - 5. SLM targets processing+analysis: running processing and analysis specific to data collected from coordinates from registered movie
+        1. `collect_traces_from_targets`
+            1. *uses registered tiffs to collect raw traces from SLM target areas*
+        2. `get_alltargets_stim_traces_norm`
+            1. *primary function to measure the dFF and dF/setdF trace SNIPPETS for photostimulated targets*
+        - [ ]  create new anndata object for storing measured photostim responses from data, with other relevant data
+            
+            `_allCellsPhotostimResponsesAnndata`
+            
+            - [ ]  create new anndata object for storing measured photostim responses from data, with other relevant data for SLM targets
+                
+                anndata module for alloptical trial object: `.photostimResponsesData`
+                
+                metadata to add to anndata object:
+                
+                - [ ]  SLM groups
+            
+            anndata metadata: - function in place, not tested really yet though. 
+            
+            - [ ]  SLM targets or not
+            - [ ]  SLM photostim exclusion region
+            - [ ]  `prob_response`
+                - [ ]  - need to review code for calculating prob response
         
-        - [ ]  SLM groups
-    
-- All cells processing+analysis: running processing and analysis specific to data collected from all Suite2p ROIs: `photostimProcessingAllCells()`
-    1. finding Suite2p ROIs that are also targets: `_findTargetedS2pROIs`
-        - [ ]  test out finding suite2p ROI targets - save in `.targeted_cells`
-        - [ ]  adding obs annotations of SLM group IDs to Suite2p ROIs targets
-    
-    `photostimProcessingAllCells()`:
-    
-    1. making trace snippets from all cells from suite2p:  `_makePhotostimTrialFluSnippets()`
-    - [x]  measure photostim dFF responses: create dataframe of suite2p cells x stims containing responses: no independent method
-    - [x]  statistical analysis of responses: `_runWilcoxonsTest()`
-        - [ ]  singleTrialSignificance stats measurements?
-    - [ ]  create new anndata object for storing measured photostim responses from data, with other relevant data
+    - 6. All cells processing+analysis: running processing and analysis specific to data collected from all Suite2p ROIs: `photostimProcessingAllCells()`
+        1. finding Suite2p ROIs that are also targets: `_findTargetedS2pROIs`
+            - [ ]  test out finding suite2p ROI targets - save in `.targeted_cells`
+            - [ ]  adding obs annotations of SLM group IDs to Suite2p ROIs targets
         
-        anndata metadata: - function in place, not tested really yet though. 
+        `photostimProcessingAllCells()`:
         
-        - [ ]  SLM targets or not
-        - [ ]  SLM photostim exclusion region
-        - [ ]  `prob_response`
-            - [ ]  - need to review code for calculating prob response
+        1. making trace snippets from all cells from suite2p:  `_makePhotostimTrialFluSnippets()`
+        - [x]  measure photostim dFF responses: create dataframe of suite2p cells x stims containing responses: no independent method
+        - [x]  statistical analysis of responses: `_runWilcoxonsTest()`
+            - [ ]  singleTrialSignificance stats measurements?
+            
+        - [ ]  create new anndata object for storing measured photostim responses from data, with other relevant data
+            
+            `_allCellsPhotostimResponsesAnndata`
+            
+            - [ ]  create new anndata object for storing measured photostim responses from data, with other relevant data for SLM targets
+                
+                anndata module for alloptical trial object: `.photostimResponsesData`
+                
+                metadata to add to anndata object:
+                
+                - [ ]  SLM groups
+            
+            anndata metadata: - function in place, not tested really yet though. 
+            
+            - [ ]  SLM targets or not
+            - [ ]  SLM photostim exclusion region
+            - [ ]  `prob_response`
+                - [ ]  - need to review code for calculating prob response
+
+
+
 
 ## **Plotting of data/analysis**
 
