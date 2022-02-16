@@ -8,7 +8,7 @@ from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
 from packerlabimaging.ExperimentMain import Experiment
 
 from packerlabimaging.plotting.plotting import makeSuite2pPlots, plot_flu_trace, plotMeanFovFluTrace, \
-    plot_photostim_traces_overlap, plot_periphotostim_avg
+    plot_photostim_traces_overlap, plot_periphotostim_avg, plotRoiLocations
 
 expobj: Experiment = import_obj(pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
 trialobj: TwoPhotonImagingTrial = expobj.load_trial(trialID='t-005')
@@ -16,12 +16,16 @@ trialobj: TwoPhotonImagingTrial = expobj.load_trial(trialID='t-005')
 
 def test_plotRoiLocations(existing_trialobj_twophotonimaging_fixture):
     trialobj: TwoPhotonImagingTrial = existing_trialobj_twophotonimaging_fixture[0]
-    plotRoiLocations(trialobj, suite2p_rois, background = None)
+    plotRoiLocations(trialobj=trialobj, suite2p_rois='all', background = None)
+    plotRoiLocations(trialobj=trialobj, suite2p_rois='all', background = None, scalebar=True)
 
 
-def test_makeSuite2pPlots(existing_expobj_fixture):
+def test_makeSuite2pPlots(existing_expobj_fixture, existing_trialobj_twophotonimaging_fixture):
     expobj: Experiment = existing_expobj_fixture[0]
-    makeSuite2pPlots(expobj)
+    makeSuite2pPlots(obj=expobj)
+
+    trialobj: TwoPhotonImagingTrial = existing_trialobj_twophotonimaging_fixture[0]
+    makeSuite2pPlots(obj=trialobj, scalebar=True)
 
 
 def test_plot_flu_trace(existing_trialobj_twophotonimaging_fixture):

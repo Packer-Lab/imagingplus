@@ -27,12 +27,13 @@ from packerlabimaging.utils.utils import normalize_dff
 # suite2p data
 # simple plot of the location of the given cell(s) against a black FOV
 @plotting_decorator(figsize=(5, 5))
-def plotRoiLocations(trialobj: TwoPhotonImagingTrial, suite2p_rois: list, background: np.ndarray = None,
+def plotRoiLocations(trialobj: TwoPhotonImagingTrial, suite2p_rois: Union[list, str]='all', background: np.ndarray = None,
                      **kwargs):
     """
     plots an image of the FOV to show the locations of cells given in cells ls.
     :param background: either 2dim numpy array to use as the backsplash or None (where black backsplash will be created)
     :param trialobj: alloptical or 2p imaging object
+    :param suite2p_rois: list of ROIs (suite2p cell IDs) to show coord location, default is 'all' (which is all ROIs)
     :param edgecolor: str to specify edgecolor of the scatter plot for cells
     :param cells: ls of cells to plot
     :param title: str title for plot
@@ -45,14 +46,20 @@ def plotRoiLocations(trialobj: TwoPhotonImagingTrial, suite2p_rois: list, backgr
             fig: a fig plt.subplots() instance, if provided use this fig for making figure
             ax: a ax plt.subplots() instance, if provided use this ax for plotting
     """
-    image_frame_options()
+    # image_frame_options()
 
     # fig = kwargs['fig']
     # suptitle = kwargs['suptitle'] if 'suptitle' in [*kwargs] else None
+    image_frame_options() if 'apply_image_frame_options' not in [*kwargs] or kwargs['apply_image_frame_options'] else None
+
     ax = kwargs['ax']
+    kwargs.pop('ax')
+
     facecolors = kwargs['facecolors'] if 'facecolors' in [*kwargs] else 'none'
     edgecolors = kwargs['edgecolors'] if 'edgecolors' in [*kwargs] else 'orange'
 
+    if suite2p_rois == 'all':
+        suite2p_rois = trialobj.Suite2p.cell_id
 
     for cell in suite2p_rois:
         y, x = trialobj.Suite2p.stat[trialobj.Suite2p.cell_id.index(cell)]['med']
@@ -70,31 +77,41 @@ def plotRoiLocations(trialobj: TwoPhotonImagingTrial, suite2p_rois: list, backgr
     ax.invert_yaxis()
 
     _add_scalebar(trialobj=trialobj, ax=ax) if 'scalebar' in [*kwargs] and kwargs['scalebar'] is True else None
+    mpl.pyplot.rcdefaults()
 
-def makeSuite2pPlots(obj: Union[Experiment, TwoPhotonImagingTrial]):
-    "credit: run_s2p tutorial on Mouseland/Suite2p on github"
+
+@plotting_decorator(figsize=(15,5), nrows=1, ncols=4)
+def makeSuite2pPlots(obj: Union[Experiment, TwoPhotonImagingTrial], **kwargs):
+    """credit: run_s2p tutorial on Mouseland/Suite2p on github"""
 
     image_frame_options()
     heatmap_options()
 
-    plt.figure(figsize=[15, 5])
-    plt.subplot(1, 4, 1)
-    plt.imshow(obj.Suite2p.output_op['max_proj'], cmap='gray')
-    plt.title("Registered Image, Max Projection", wrap=True)
 
-    plt.subplot(1, 4, 2)
-    plt.imshow(np.nanmax(obj.Suite2p.im, axis=0), cmap='jet')
-    plt.title("All ROIs Found")
+    axs = kwargs['axs']
+    kwargs.pop('axs')
 
-    plt.subplot(1, 4, 3)
-    plt.imshow(np.nanmax(obj.Suite2p.im[~obj.Suite2p.iscell], axis=0, ), cmap='jet')
-    plt.title("All Non-Cell ROIs")
+    # f, axs = plt.subplots(figsize=[15, 5], nrows=1, ncols=4)
 
-    plt.subplot(1, 4, 4)
-    plt.imshow(np.nanmax(obj.Suite2p.im[obj.Suite2p.iscell], axis=0), cmap='jet')
-    plt.title("All Cell ROIs")
+    # plt.subplot(1, 4, 1)
+    axs[0].imshow(obj.Suite2p.output_op['max_proj'], cmap='gray')
+    axs[0].set_title("Registered Image, Max Projection", wrap=True)
 
-    plt.show()
+    # plt.subplot(1, 4, 2)
+    axs[1].imshow(np.nanmax(obj.Suite2p.im, axis=0), cmap='jet')
+    axs[1].set_title("All ROIs Found", wrap=True)
+
+    # plt.subplot(1, 4, 3)
+    axs[2].imshow(np.nanmax(obj.Suite2p.im[~obj.Suite2p.iscell], axis=0, ), cmap='jet')
+    axs[2].set_title("All Non-Cell ROIs", wrap=True)
+
+    # plt.subplot(1, 4, 4)
+    axs[3].imshow(np.nanmax(obj.Suite2p.im[obj.Suite2p.iscell], axis=0), cmap='jet')
+    axs[3].set_title("All Cell ROIs", wrap=True)
+
+    _add_scalebar(trialobj=obj, ax=axs[3]) if 'scalebar' in [*kwargs] and kwargs['scalebar'] is True else None
+    mpl.pyplot.rcdefaults()
+
 
 
 # (full) plot individual cell's flu or dFF trace, with photostim. timings for that cell
@@ -125,6 +142,8 @@ def plot_flu_trace(trialobj: TwoPhotonImagingTrial, cell, to_plot='raw',
     ax.plot(data_to_plot, linewidth=lw)
 
     dataplot_ax_options(ax=ax, data_length=len(data_to_plot), **kwargs)
+    mpl.pyplot.rcdefaults()
+
 
 # plots the raw trace for the Flu mean of the FOV (similar to the ZProject in Fiji)
 @plotting_decorator(figsize=(10, 3))

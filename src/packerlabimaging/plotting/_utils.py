@@ -6,9 +6,9 @@ import os
 import numpy as np
 import functools
 import random
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
+
 
 from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
 
@@ -16,7 +16,10 @@ from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
 # %% UTILITY FUNCS
 
 # wrapper for piping plots in and out of figures
-def plotting_decorator(figsize=(3, 3)):
+from packerlabimaging.utils.utils import ObjectClassError
+
+
+def plotting_decorator(figsize=(3, 3), nrows=1, ncols=1, apply_image_frame_options=False, apply_heatmap_options=False):
     def plotting_decorator(plotting_func):
         """
         Wrapper to help simplify creating plots from matplotlib.pyplot
@@ -36,23 +39,23 @@ def plotting_decorator(figsize=(3, 3)):
 
         >>> example_decorated_plot()
 
-
         """
 
         @functools.wraps(plotting_func)
         def inner(*args, **kwargs):
+
             return_fig_obj = False
 
             # set number of rows, cols and figsize
             if 'nrows' in [*kwargs]:
-                nrows = kwargs['nrows']
+                nrows_ = kwargs['nrows']
             else:
-                nrows = 1
+                nrows_ = nrows
 
             if 'ncols' in [*kwargs]:
-                ncols = kwargs['ncols']
+                ncols_ = kwargs['ncols']
             else:
-                ncols = 1
+                ncols_ = ncols
 
             if 'figsize' in [*kwargs]:
                 figsize_ = kwargs['figsize']
@@ -63,7 +66,10 @@ def plotting_decorator(figsize=(3, 3)):
             if 'fig' in [*kwargs] and 'ax' in [*kwargs]:
                 if kwargs['fig'] is None or kwargs['ax'] is None:
                     # print('\-creating fig, ax [1]')
-                    kwargs['fig'], kwargs['ax'] = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize_)
+                    kwargs['fig'], kwargs['axs'] = plt.subplots(nrows=nrows_, ncols=ncols_, figsize=figsize_)
+                else: pass
+            elif ncols_ > 1 or nrows_ > 1:
+                kwargs['fig'], kwargs['axs'] = plt.subplots(nrows=nrows_, ncols=ncols_, figsize=figsize_)
             else:
                 kwargs['fig'], kwargs['ax'] = plt.subplots(figsize=figsize_)
 
@@ -156,21 +162,27 @@ def _add_scalebar(trialobj: TwoPhotonImagingTrial, ax: plt.Axes, scale_bar_um: f
     Option to specify scale bar um length to add to plot.
 
     """
-    numpx = scale_bar_um/trialobj.imparams.pix_sz_x
 
-    lw = 5 if 'lw' not in [*kwargs] else kwargs['lw']
-    color = 'white' if 'color' not in [*kwargs] else kwargs['color']
-    right_offset = 50 if 'right_offset' not in [*kwargs] else kwargs['right_offset']
-    bottom_offset = 50 if 'bottom_offset' not in [*kwargs] else kwargs['bottom_offset']
+    if type(trialobj) is not TwoPhotonImagingTrial:
+        raise ObjectClassError(function='_add_scalebar', valid_class=TwoPhotonImagingTrial, invalid_class=type(trialobj))
+    else:
+        numpx = scale_bar_um/trialobj.imparams.pix_sz_x
 
-    ax.plot(np.linspace(trialobj.imparams.frame_x - right_offset - numpx, trialobj.imparams.frame_x - right_offset, 40),
-            [trialobj.imparams.frame_y - bottom_offset]*40,
-            color=color, lw=lw)
-    return ax
+        lw = 5 if 'lw' not in [*kwargs] else kwargs['lw']
+        color = 'white' if 'color' not in [*kwargs] else kwargs['color']
+        right_offset = 50 if 'right_offset' not in [*kwargs] else kwargs['right_offset']
+        bottom_offset = 50 if 'bottom_offset' not in [*kwargs] else kwargs['bottom_offset']
+
+        ax.plot(np.linspace(trialobj.imparams.frame_x - right_offset - numpx, trialobj.imparams.frame_x - right_offset, 40),
+                [trialobj.imparams.frame_y - bottom_offset]*40,
+                color=color, lw=lw)
+        return ax
 
 # Figure Style settings for notebook.
-def image_frame_options(ax = plt.Axes, fig = plt.Figure):
-    mpl.pyplot.rcdefaults()
+def image_frame_options():
+    import matplotlib as mpl
+
+    # mpl.pyplot.rcdefaults()
 
     mpl.rcParams.update({
         'axes.spines.left': False,
@@ -180,9 +192,25 @@ def image_frame_options(ax = plt.Axes, fig = plt.Figure):
         'legend.frameon': False,
         'figure.subplot.wspace': .01,
         'figure.subplot.hspace': .01,
+        'figure.figsize': (18, 13),
         'ytick.major.left': False,
         'xtick.major.bottom': False
+
     })
+
+
+    #
+    # mpl.rcParams.update({
+    #     'axes.spines.left': False,
+    #     'axes.spines.bottom': False,
+    #     'axes.spines.top': False,
+    #     'axes.spines.right': False,
+    #     'legend.frameon': False,
+    #     'figure.subplot.wspace': .01,
+    #     'figure.subplot.hspace': .01,
+    #     'ytick.major.left': False,
+    #     'xtick.major.bottom': False
+    # })
 
     # ax.spines.left = False
     # ax.spines.bottom = False
@@ -198,7 +226,7 @@ def image_frame_options(ax = plt.Axes, fig = plt.Figure):
 
 
 def dataplot_frame_options():
-    mpl.pyplot.rcdefaults()
+    import matplotlib as mpl
 
     mpl.rcParams.update({
         'axes.spines.top': False,
@@ -253,7 +281,7 @@ def dataplot_ax_options(ax, data_length: int, **kwargs):
 
 
 def heatmap_options():
-    mpl.pyplot.rcdefaults()
+    import matplotlib as mpl
 
     jet = mpl.cm.get_cmap('jet')
     jet.set_bad(color='k')

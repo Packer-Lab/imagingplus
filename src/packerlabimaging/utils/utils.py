@@ -12,8 +12,7 @@ import csv
 import math
 import copy
 from suite2p.run_s2p import run_s2p
-from packerlabimaging import _io
-
+from packerlabimaging import _io, Experiment
 
 # # global plotting params
 # params = {'legend.fontsize': 'x-large',
@@ -30,10 +29,18 @@ from packerlabimaging import _io
 pd.options.display.max_rows = 100
 pd.options.display.max_columns = 10
 
-class Utils:
+class ObjectClassError(Exception):
+    """handles exceptions caused by calling function on invalid class type."""
+    def __init__(self, function, valid_class, invalid_class):
+        self.function = function
+        self.valid_class = valid_class
+        self.invalid_class = invalid_class
+        self.message = f'Invalid class ({self.invalid_class}) being used. <{self.function}> only available for {self.valid_class}.'
+        super().__init__(self.message)
 
-    # default ops dict
-    ops = {
+class Utils:
+    # default ops dict for suite2p
+    default_ops = {
         'batch_size': 2000, # reduce if running out of RAM
         'fast_disk': os.path.expanduser('/mnt/sandbox/pshah/suite2p_tmp'), # used to store temporary binary file, defaults to save_path0 (set as a string NOT a list)
          #'save_path0': '/media/jamesrowland/DATA/plab/suite_2p', # stores results, defaults to first item in data_path
@@ -81,7 +88,7 @@ class Utils:
 
     ## suite2p methods
     @staticmethod
-    def s2pRun(expobj: 'main.Experiment', user_batch_size=2000, trialsSuite2P: list = None, **kwargs):  ## TODO gotta specify # of planes somewhere here
+    def s2pRun(expobj: Experiment, user_batch_size=2000, trialsSuite2P: list = None, **kwargs):  ## TODO gotta specify # of planes somewhere here
         """run suite2p for an Experiment object, using trials specified in current experiment object, using the attributes
         determined directly from the experiment object.
 
@@ -151,13 +158,6 @@ class Utils:
         expobj.s2pResultsPath = expobj._suite2p_save_path + '/plane0/'  ## need to further debug that the flow of the suite2p path makes sense
 
         expobj.save()
-
-
-    @staticmethod
-    def create_anndata2(X, obs_meta, var_meta, obsm, layers):
-        adata = anndata.AnnData(X=X, obs=obs_meta, var=var_meta, obsm=obsm, layers=layers)
-        return adata
-
 
 
 

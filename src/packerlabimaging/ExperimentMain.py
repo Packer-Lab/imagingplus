@@ -25,11 +25,7 @@ from suite2p.run_s2p import run_s2p
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
 
-from .TwoPhotonImagingMain import TwoPhotonImagingTrial
-from .onePstimMain import OnePhotonStim
-from .AllOpticalMain import AllOpticalTrial
 from . import _io
-from .processing import suite2p
 
 ## UTILITIES
 
@@ -141,6 +137,8 @@ class Experiment:
         return f"{__return_information}\n"
 
     def _add_suite2p_experiment(self):
+        from .processing import suite2p
+
         for trial in self.trialIDs:
             if trial not in self._trialsSuite2p:
                 assert 's2p_use' in [*self.trialsInformation[trial]], 'when trying to utilize suite2p , must provide value for `s2p_use` ' \
@@ -165,6 +163,8 @@ class Experiment:
             self.Suite2p = _suite2p.Suite2pResultsExperiment(trialsSuite2p = self._trialsSuite2p)
 
     def update_suite2p(self, trialID: str = None, s2pResultsPath: str = None):
+        from .processing import suite2p
+
         if trialID is not None and trialID not in self._trialsSuite2p:
             assert 's2p_use' in [*self.trialsInformation[trial]], 'when trying to utilize suite2p , must provide value for `s2p_use` ' \
                          'in trialsInformation[trial] for each trial to specify if to use trial for this suite2p associated with this experiment'
@@ -191,6 +191,10 @@ class Experiment:
             raise ValueError(f"something went wrong. could not update suit2p results path.")
 
     def add_trial(self, trialID: str, total_frames_stitched: int,  trialsInformation: trialsInformation = None):  # TODO need to figure out if there's a way around providing total_frames_stitched as arg! also add example of .add_trial() to tutorial!
+        from .TwoPhotonImagingMain import TwoPhotonImagingTrial
+        from .AllOpticalMain import AllOpticalTrial
+        from .onePstimMain import OnePhotonStim
+
         print(f"\n\n\- ADDING trial: {trialID}, expID: ({self.expID})")
         __trialsInformation = trialsInformation if trialsInformation else self.trialsInformation[trialID]
         _metainfo = {
