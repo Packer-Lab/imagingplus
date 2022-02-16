@@ -204,3 +204,40 @@ The primary benefit of anndata is that it enforces an intuitive data structure a
 11) `plot_periphotostim_avg2()`
 
 12) `plot_periphotostim_avg()`
+
+
+
+## TODO items:
+
+**Major code base related tasks:**
+
+- [x]  need to debug `_findTargetsAreas` and `targetCoordinates`(already ipr)
+- [x]  add 2pstim module - for NAPARM related funcs and methods
+    - [x]  update 2p stim related attr’s to use the naparm submodule
+- [x]  refactor out stats testing
+- [x]  add new class for `STAMovieMaker_nogui` - or add as method for `AllOpticalTrial`?
+- [x]  adding plotting module
+- [x]  add onePstim module
+    - [ ]  need to edit `__init__` to fit into the package pipeline
+- [x]  consider making anndata extension funcs as staticmethods, so they are more easily (?potentially) accessible widely - no need...
+- [x]  finalize plotting sub-module
+    - [x]  plotROIlocations test/debug
+- [x]  update Two-photon processing and Alloptical processing tutorials with processing steps (e.g. dFF normalization, calculating photostim responses, sig diff testing), and also plots
+    - all optical first pass through should be done to review with Adam?
+    - twophoton first pass through also pretty solid
+
+**Major packaging related tasks:**
+
+- [ ]  Interactive plotting using mpl_point_clicker
+- [ ]  Add instructions to the README.md for installation of the package
+- [ ]  figure out how to release an alpha version of the package
+    - [ ]  add documentation for installation of package
+- [ ]  writing out documentation for user-facing functions/methods
+- [ ]  implementing tests
+- [ ]  figuring out how to cache during running tests??
+
+**Less important tasks/considerations:**
+
+- [ ]  try out making trial objs children of Experiments
+    - allows loading of trial objects from: `expobj.t-001`
+    - [ ]  need to remove requirement for providing `suite2p_experiment_obj`, and `total_frames_stitched`  args for `TwoPhotonImagingTrial` (probably part of making trial objs children of Experiment)
