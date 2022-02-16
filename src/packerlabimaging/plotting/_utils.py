@@ -2,14 +2,16 @@
 
 # imports
 import os
+from typing import Union
 
 import numpy as np
 import functools
 import random
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import seaborn as sns
 
-
+from packerlabimaging.AllOpticalMain import AllOpticalTrial
 from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
 
 
@@ -157,14 +159,14 @@ def make_random_color_array(n_colors):
     return colors
 
 
-def _add_scalebar(trialobj: TwoPhotonImagingTrial, ax: plt.Axes, scale_bar_um: float = 100, **kwargs):
+def _add_scalebar(trialobj: Union[TwoPhotonImagingTrial, AllOpticalTrial], ax: plt.Axes, scale_bar_um: float = 100, **kwargs):
     """add scalebar to the image being plotted on the a single matplotlib.axes.Axes object using the TwoPhotonImaging object information.
     Option to specify scale bar um length to add to plot.
 
     """
 
-    if type(trialobj) is not TwoPhotonImagingTrial:
-        raise ObjectClassError(function='_add_scalebar', valid_class=TwoPhotonImagingTrial, invalid_class=type(trialobj))
+    if type(trialobj) not in [TwoPhotonImagingTrial, AllOpticalTrial]:
+        raise ObjectClassError(function='_add_scalebar', valid_class=[TwoPhotonImagingTrial, AllOpticalTrial], invalid_class=type(trialobj))
     else:
         numpx = scale_bar_um/trialobj.imparams.pix_sz_x
 
@@ -178,13 +180,8 @@ def _add_scalebar(trialobj: TwoPhotonImagingTrial, ax: plt.Axes, scale_bar_um: f
                 color=color, lw=lw)
         return ax
 
-# Figure Style settings for notebook.
-def image_frame_options():
-    import matplotlib as mpl
 
-    # mpl.pyplot.rcdefaults()
-
-    mpl.rcParams.update({
+image_frame_ops = {
         'axes.spines.left': False,
         'axes.spines.bottom': False,
         'axes.spines.top': False,
@@ -194,9 +191,26 @@ def image_frame_options():
         'figure.subplot.hspace': .01,
         'figure.figsize': (18, 13),
         'ytick.major.left': False,
-        'xtick.major.bottom': False
+        'xtick.major.bottom': False}
 
-    })
+# Figure Style settings for notebook.
+def image_frame_options(fig, ax):
+
+    # mpl.pyplot.rcdefaults()
+
+    # mpl.rcParams.update({
+    #     'axes.spines.left': False,
+    #     'axes.spines.bottom': False,
+    #     'axes.spines.top': False,
+    #     'axes.spines.right': False,
+    #     'legend.frameon': False,
+    #     'figure.subplot.wspace': .01,
+    #     'figure.subplot.hspace': .01,
+    #     'figure.figsize': (18, 13),
+    #     'ytick.major.left': False,
+    #     'xtick.major.bottom': False
+    #
+    # })
 
 
     #
@@ -212,13 +226,14 @@ def image_frame_options():
     #     'xtick.major.bottom': False
     # })
 
-    # ax.spines.left = False
-    # ax.spines.bottom = False
-    # ax.spines.top = False
-    # ax.spines.right = False
-    # fig.legend.frameon = False
-    # fig.subplots_adjust(hspace=0.01)
-    # fig.subplots_adjust(wspace=0.01)
+    ax.spines.left = False
+    ax.spines.bottom = False
+    ax.spines.top = False
+    ax.spines.right = False
+    fig.subplots_adjust(hspace=0.01)
+    fig.subplots_adjust(wspace=0.01)
+    ax.set_xticks([])
+    ax.set_yticks([])
     # ax.xaxis.set_major_locator([])
     # ax.yaxis.set_major_locator([])
     # ax.xaxis.set_minor_locator([])
@@ -281,7 +296,7 @@ def dataplot_ax_options(ax, data_length: int, **kwargs):
 
 
 def heatmap_options():
-    import matplotlib as mpl
+    # import matplotlib as mpl
 
     jet = mpl.cm.get_cmap('jet')
     jet.set_bad(color='k')

@@ -18,14 +18,15 @@ from packerlabimaging.AllOpticalMain import AllOpticalTrial
 
 from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
 from packerlabimaging.plotting._utils import plotting_decorator, make_random_color_array, _add_scalebar, \
-    image_frame_options, dataplot_frame_options, dataplot_ax_options, plot_coordinates, heatmap_options
-from packerlabimaging.utils.utils import normalize_dff
+    image_frame_options, dataplot_frame_options, dataplot_ax_options, plot_coordinates, heatmap_options, image_frame_ops
+from packerlabimaging.utils.utils import normalize_dff, ObjectClassError
 
 
 # DATA ANALYSIS PLOTTING FUNCS
 
 # suite2p data
 # simple plot of the location of the given cell(s) against a black FOV
+@mpl.rc_context(image_frame_ops)
 @plotting_decorator(figsize=(5, 5))
 def plotRoiLocations(trialobj: TwoPhotonImagingTrial, suite2p_rois: Union[list, str]='all', background: np.ndarray = None,
                      **kwargs):
@@ -79,12 +80,11 @@ def plotRoiLocations(trialobj: TwoPhotonImagingTrial, suite2p_rois: Union[list, 
     _add_scalebar(trialobj=trialobj, ax=ax) if 'scalebar' in [*kwargs] and kwargs['scalebar'] is True else None
     mpl.pyplot.rcdefaults()
 
-
+@mpl.rc_context(image_frame_ops)
 @plotting_decorator(figsize=(15,5), nrows=1, ncols=4)
 def makeSuite2pPlots(obj: Union[Experiment, TwoPhotonImagingTrial], **kwargs):
     """credit: run_s2p tutorial on Mouseland/Suite2p on github"""
 
-    image_frame_options()
     heatmap_options()
 
 
@@ -321,7 +321,7 @@ def plotLfpSignal(trialobj: TwoPhotonImagingTrial, stim_span_color='powderblue',
     else:
         ax.set_xlabel('Paq clock')
     ax.set_ylabel('Voltage')
-    # ax.set_xlim([trialobj.frame_start_time_actual, trialobj.frame_end_time_actual])  ## this should be limited to the 2p acquisition duration only
+    # ax.set_xlim([trialobj.imparams.frame_start_time_actual, trialobj.imparams.frame_end_time_actual])  ## this should be limited to the 2p acquisition duration only
 
     # set ylimits:
     if 'ylims' in kwargs:
@@ -352,79 +352,7 @@ def plotLfpSignal(trialobj: TwoPhotonImagingTrial, stim_span_color='powderblue',
 # LFP
 
 
-# alloptical trial
-### plot the location of all SLM targets, along with option for plotting the mean img of the current trial
-@plotting_decorator(figsize=(5, 5))
-def plot_SLMtargets_Locs(trialobj: AllOpticalTrial, targets_coords: list = None, background: np.ndarray = None, fig=None, ax=None, **kwargs):
-    """
-    plot SLM target coordinate locations
 
-    :param trialobj:
-    :param targets_coords: ls containing (x,y) coordinates of targets to plot
-    :param background:
-    :param kwargs:
-    :return:
-    """
-
-    # if 'fig' in kwargs.keys():
-    #     fig = kwargs['fig']
-    #     ax = kwargs['ax']
-    # else:
-    #     if 'figsize' in kwargs.keys():
-    #         fig, ax = plt.subplots(figsize=kwargs['figsize'])
-    #     else:
-    #         fig, ax = plt.subplots()
-
-    if background is None:
-        background = np.zeros((trialobj.frame_x, trialobj.frame_y), dtype='uint16')
-        ax.imshow(background, cmap='gray')
-    else:
-        ax.imshow(background, cmap='gray')
-
-    colors = make_random_color_array(len(trialobj.target_coords))
-    if targets_coords is None:
-        if len(trialobj.target_coords) > 1:
-            for i in range(len(trialobj.target_coords)):
-                for (x, y) in trialobj.target_coords[i]:
-                    ax.scatter(x=x, y=y, edgecolors=colors[i], facecolors='none', linewidths=2.0)
-        else:
-            if 'edgecolors' in kwargs.keys():
-                edgecolors = kwargs['edgecolors']
-            else:
-                edgecolors = 'yellowgreen'
-            for (x, y) in trialobj.target_coords_all:
-                ax.scatter(x=x, y=y, edgecolors=edgecolors, facecolors='none', linewidths=2.0)
-    elif targets_coords:
-        if 'edgecolors' in kwargs.keys():
-            edgecolors = kwargs['edgecolors']
-        else:
-            edgecolors = 'yellowgreen'
-        plot_coordinates(coords=targets_coords, frame_x=trialobj.frame_x, frame_y=trialobj.frame_y, edgecolors=edgecolors,
-                            background=background, fig=fig, ax=ax)
-
-    ax.margins(0)
-
-    ax = _add_scalebar(trialobj=trialobj, ax=ax)
-
-    fig.tight_layout()
-
-    if 'title' in kwargs.keys():
-        if kwargs['title'] is not None:
-            ax.set_title(kwargs['title'])
-        else:
-            pass
-    else:
-        ax.set_title(f'SLM targets location - {trialobj.t_series_name}')
-
-    # if 'show' in kwargs.keys():
-    #     if kwargs['show'] is True:
-    #         fig.show()
-    #     else:
-    #         return fig, ax
-    # else:
-    #     fig.show()
-    #
-    # return fig, ax if 'fig' in kwargs.keys() else None
 
 
 ### plot entire trace of individual targeted cells as super clean subplots, with the same y-axis lims
@@ -494,7 +422,6 @@ def plot_periphotostim_avg2(dataset, fps=None, legend_labels=None, colors=None, 
     #         fig, ax = plt.subplots(figsize=kwargs['figsize'])
     #     else:
     #         fig, ax = plt.subplots(figsize=[5, 4])
-
 
 
     meantraces = []
@@ -688,6 +615,73 @@ def plot_periphotostim_avg(arr: np.ndarray, trialobj: AllOpticalTrial, pre_stim_
 
     dataplot_ax_options(ax=ax, data_length=arr.shape[1], **kwargs)
 
+# alloptical trial
+### plot the location of all SLM targets, along with option for plotting the mean img of the current trial
+
+@mpl.rc_context(image_frame_ops)
+@plotting_decorator(figsize=(5, 5))
+def plot_SLMtargets_Locs(trialobj: AllOpticalTrial, targets_coords: Union[list, str] = 'all', background: np.ndarray = None, **kwargs):
+    """
+    plot SLM target coordinate locations
+
+    :param trialobj:
+    :param targets_coords: ls containing (x,y) coordinates of targets to plot
+    :param background:
+    :param kwargs:
+    :return:
+    """
+
+    if not type(trialobj) == AllOpticalTrial:
+        raise ObjectClassError(function='plot_SLMtargets_Locs', valid_class=[AllOpticalTrial],
+                         invalid_class=type(trialobj))
+    ax = kwargs['ax']
+    kwargs.pop('ax')
+
+    if background is None:
+        background = np.zeros((trialobj.imparams.frame_x, trialobj.imparams.frame_y), dtype='uint16')
+        ax.imshow(background, cmap='gray')
+    else:
+        ax.imshow(background, cmap='gray')
+
+    colors = make_random_color_array(len(trialobj.Targets.target_coords))
+    if targets_coords is 'all':
+        if len(trialobj.Targets.target_coords) > 1:
+            for i in range(len(trialobj.Targets.target_coords)):
+                ax.scatter(x=trialobj.Targets.target_coords[i][:, 0], y=trialobj.Targets.target_coords[i][:, 1], edgecolors=colors[i], facecolors='none', linewidths=2.0, label=f'SLM Group {i}')
+                # for (x, y) in trialobj.Targets.target_coords[i]:
+                #     ax.scatter(x=x, y=y, edgecolors=colors[i], facecolors='none', linewidths=2.0)
+        else:
+            if 'edgecolors' in kwargs.keys():
+                edgecolors = kwargs['edgecolors']
+            else:
+                edgecolors = 'yellowgreen'
+            for (x, y) in trialobj.Targets.target_coords_all:
+                ax.scatter(x=x, y=y, edgecolors=edgecolors, facecolors='none', linewidths=2.0)
+    elif targets_coords:
+        if 'edgecolors' in kwargs.keys():
+            edgecolors = kwargs['edgecolors']
+        else:
+            edgecolors = 'yellowgreen'
+        plot_coordinates(coords=targets_coords, frame_x=trialobj.imparams.frame_x, frame_y=trialobj.imparams.frame_y, edgecolors=edgecolors,
+                            background=background, fig=fig, ax=ax)
+
+    ax.legend(loc='upper right', labelcolor='white', frameon=False)
+    ax.margins(0)
+
+    ax = _add_scalebar(trialobj=trialobj, ax=ax)
+
+    # fig.tight_layout()
+
+    if 'title' in kwargs.keys():
+        if kwargs['title'] is not None:
+            ax.set_title(kwargs['title'])
+        else:
+            pass
+    else:
+        ax.set_title(f'SLM targets location - {trialobj.t_series_name}')
+
+    # mpl.pyplot.rcdefaults()
+    # fig.show()
 # alloptical trial
 
 
