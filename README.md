@@ -10,7 +10,7 @@ data processing for ROI detection. Ultimately, the goal of this package is to ju
 It should be completely usable and understandable for anyone with the correct data in hand and basic knowledge of Python. There are tutorials to help along the way.  
 We hope that it provides a useful structure to organize your experimental data, and some functionality to interact and process your data in an efficient manner. 
 
-### Installation instructions
+## Installation instructions
 
 1. Download the git repo of the package. Remember the `path_to_directory` that the repo was downloaded to.
    1. to download to a Linux server from command line use: `{TODO}`
@@ -24,7 +24,7 @@ We hope that it provides a useful structure to organize your experimental data, 
 3. Import the package: `import packerlabimaging` or `import packerlabimaging as pkg`.
 
 
-
+## Overview
 ### Data Analysis Structure and Organization
 
 The data organization of the package follows object-oriented programming in Python.
@@ -44,7 +44,7 @@ Given this structure, each Experiment is meant to be built from all individual i
 Most presciently, all imaging trials that are run together in Suite2p can be part of a single Experiment. 
 
 
-***TwoPhotonImagingTrial class***
+### TwoPhotonImagingTrial class
 
 `trialobj: TwoPhotonImagingTrial` - packerlabimaging —> `TwoPhotonImagingTrial` trial class
 
@@ -61,7 +61,7 @@ Attributes:
 
     `trialobj.data` - annotated data object (based on AnnData library) for centralized storage of raw and processed data related to the experiment. contains methods for further modifying the stored annotated data object.
 
-***AllOpticalTrial class***
+### AllOpticalTrial class
 
 `trialobj: AllOpticalTrial` - packerlabimaging —> `TwoPhotonImagingTrial` —> `AllOpticalTrial` trial class
 
