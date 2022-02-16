@@ -29,6 +29,8 @@ from packerlabimaging import _io, Experiment
 pd.options.display.max_rows = 100
 pd.options.display.max_columns = 10
 
+
+
 class ObjectClassError(Exception):
     """handles exceptions caused by calling function on invalid class type."""
     def __init__(self, function, valid_class, invalid_class):
@@ -37,6 +39,15 @@ class ObjectClassError(Exception):
         self.invalid_class = invalid_class
         self.message = f'Invalid class ({self.invalid_class}) being used. <{self.function}> only available for {self.valid_class}.'
         super().__init__(self.message)
+
+class IncompatibleFunctionError(Exception):
+    """handles exceptions caused by incompatible functions"""
+    pass
+
+class UnavailableOptionError(Exception):
+    """handles exceptions caused by unavailable options"""
+    pass
+
 
 class Utils:
     # default ops dict for suite2p

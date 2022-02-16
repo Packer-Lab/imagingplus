@@ -16,7 +16,7 @@ import tifffile as tf
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
 from anndata import AnnData
 
-from packerlabimaging.utils.utils import convert_to_8bit, normalize_dff, Utils
+from packerlabimaging.utils.utils import convert_to_8bit, normalize_dff, Utils, UnavailableOptionError
 from . TwoPhotonImagingMain import TwoPhotonImagingTrial
 from .processing.TwoPstim import Targets
 
@@ -104,31 +104,31 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         # TODO add attr's related to numpy array's and pandas dataframes for photostim trials - suite2p ROIs
 
 
-        #### functions to run after init's all attr's
-        if os.path.exists(naparm_path):
-            self.__naparm_path = naparm_path
-        else:
-            raise FileNotFoundError(f"path not found, naparm_path: {naparm_path}")
+        #### FUNCTIONS TO RUN AFTER init's of ALL ATTR'S
 
-        # initialize object as TwoPhotonImagingTrial
+        # 1) initialize object as TwoPhotonImagingTrial
         TwoPhotonImagingTrial.__init__(self, metainfo=metainfo, analysis_save_path=analysis_save_path, microscope=microscope,
                                        paqOptions=paqOptions, **kwargs)
 
-        # get stim timings from paq file
-        self.stim_start_frames, self.stim_start_times = self._paqProcessingAllOptical(stim_channel=paqOptions['stim_channel'], paq_path = paqOptions['path'])
-        # process 2p stim protocol
-        self.Targets, self.stim_duration_frames = self._stimProcessing()
-        # determine bad frames in imaging data that correspond to photostim frames
+        # 2) get stim timings from paq file
+        self.stim_start_frames = self._paqProcessingAllOptical(stim_channel=paqOptions['stim_channel'], paq_path = paqOptions['path'])
+
+        # 3) process 2p stim protocol
+        # set naparm path
+        self.__naparm_path = naparm_path if os.path.exists(naparm_path) else FileNotFoundError(f"path not found, naparm_path: {naparm_path}")
+        self.Targets, self.stim_duration_frames = self._stimProcessing(protocol='naparm')
+
+        # 4) determine bad frames in imaging data that correspond to photostim frames
         self.photostim_frames = self._find_photostim_add_bad_framesnpy()
 
 
-        # collect traces from SLM targets
+        # 5) collect Flu traces from SLM targets
         self.raw_SLMTargets, self.dFF_SLMTargets, self.meanFluImg_registered = self.collect_traces_from_targets(
             curr_trial_frames=self.Suite2p.trial_frames, save=True)
         self.targets_dff, self.targets_dff_avg, self.targets_dfstdF, self.targets_dfstdF_avg, \
         self.targets_raw, self.targets_raw_avg = self.get_alltargets_stim_traces_norm(process='trace dFF')
 
-        # Sutie2p ROIs processing:
+        # 6) Collect Flu traces from Suite2p ROIs:
         #   create:
         #       1) array of dFF pre + post stim Flu snippets for each stim and cell [num cells x num peri-stim frames collected x num stims]
         #       2) photostim response amplitudes in a dataframe for each cell and each photostim
@@ -209,20 +209,24 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         paqdata, _, _ = self.Paq.paq_read(paq_path=paq_path)
         stim_start_frames, stim_start_times = self.Paq.paq_alloptical_stims(paq_data=paqdata, frame_clock=self.Paq.frame_clock, stim_channel=stim_channel)
         
-        return stim_start_frames, stim_start_times
+        return stim_start_frames
 
         
-    def _stimProcessing(self):
-        targets = Targets(naparm_path=self.naparm_path, frame_x=self.imparams.frame_x, frame_y=self.imparams.frame_y,
-                               pix_sz_x=self.imparams.pix_sz_x, pix_sz_y=self.imparams.pix_sz_y)
+    def _stimProcessing(self, protocol: str='naparm'):
+        _available_protocols = ['naparm']
+        if protocol == 'naparm':
+            targets = Targets(naparm_path=self.naparm_path, frame_x=self.imparams.frame_x, frame_y=self.imparams.frame_y,
+                                   pix_sz_x=self.imparams.pix_sz_x, pix_sz_y=self.imparams.pix_sz_y)
 
-        # correct the following based on txt file
-        duration_ms = targets.stim_dur
-        frame_rate = self.imparams.fps / self.imparams.n_planes
-        duration_frames = np.ceil((duration_ms / 1000) * frame_rate)
-        stim_duration_frames = int(duration_frames)
+            # correct the following based on txt file
+            duration_ms = targets.stim_dur
+            frame_rate = self.imparams.fps / self.imparams.n_planes
+            duration_frames = np.ceil((duration_ms / 1000) * frame_rate)
+            stim_duration_frames = int(duration_frames)
 
-        return targets, stim_duration_frames
+            return targets, stim_duration_frames
+        else:
+            raise UnavailableOptionError(f"{protocol} is not available for 2p stim processing. Available options are: {_available_protocols}")
 
     def _findTargetedS2pROIs(self, plot: bool = True):
         """finding s2p cell ROIs that were also SLM targets (or more specifically within the target areas as specified by _findTargetAreas - include 15um radius from center coordinate of spiral)
