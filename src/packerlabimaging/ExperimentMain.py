@@ -30,6 +30,8 @@ from . import _io
 ## UTILITIES
 
 # dictionary of terms, phrases, etc. that are used in the processing and analysis of imaging data
+from .processing.suite2p import Suite2pResultsExperiment
+
 terms_dictionary = {
     'dFF': "normalization of datatrace for a given imaging ROI by subtraction and division of a given baseline value",
     'ROI': "a single ROI from the imaging data"
@@ -113,7 +115,7 @@ class Experiment:
 
     def _get_save_location(self):
         if self.analysisSavePath[-4:] == '.pkl':
-            self.__pkl_path = analysis_save_path
+            self.__pkl_path = self.analysisSavePath
             self.analysisSavePath = self.analysisSavePath[:[(s.start(), s.end()) for s in re.finditer('/', self.analysisSavePath)][-1][0]]
         else:
             self.analysisSavePath = self.analysisSavePath + '/' if self.analysisSavePath[-1] != '/' else self.analysisSavePath
@@ -156,19 +158,19 @@ class Experiment:
             if self._s2pResultExists:
                 self.Suite2p = suite2p.Suite2pResultsExperiment(s2pResultsPath=self.s2pResultsPath, trialsSuite2p = self._trialsSuite2p)
             else:
-                raise ValueError(f"suite2p results could not be found. `suite2pPath` provided was: {self.suite2pPath}")
+                raise ValueError(f"suite2p results could not be found. `suite2pPath` provided was: {self.s2pResultsPath}")
         elif self.useSuite2p:  # no s2pResultsPath provided, so initialize without pre-loading any results
             self._s2pResultExists = False
             self._suite2p_save_path = self.analysisSavePath + '/suite2p/'
-            self.Suite2p = _suite2p.Suite2pResultsExperiment(trialsSuite2p = self._trialsSuite2p)
+            self.Suite2p = Suite2pResultsExperiment(trialsSuite2p = self._trialsSuite2p)
 
     def update_suite2p(self, trialID: str = None, s2pResultsPath: str = None):
         from .processing import suite2p
 
         if trialID is not None and trialID not in self._trialsSuite2p:
-            assert 's2p_use' in [*self.trialsInformation[trial]], 'when trying to utilize suite2p , must provide value for `s2p_use` ' \
+            assert 's2p_use' in [*self.trialsInformation[trialID]], 'when trying to utilize suite2p , must provide value for `s2p_use` ' \
                          'in trialsInformation[trial] for each trial to specify if to use trial for this suite2p associated with this experiment'
-            self._trialsSuite2p.append(trial) if self.trialsInformation[trial]['s2p_use'] else None
+            self._trialsSuite2p.append(trialID) if self.trialsInformation[trialID]['s2p_use'] else None
         try:
             if s2pResultsPath:  # if s2pResultsPath provided then try to find and pre-load results from provided path, raise error if cannot find results
                 # search for suite2p results items in self.suite2pPath, and auto-assign s2pRunComplete --> True if found successfully
@@ -179,14 +181,14 @@ class Experiment:
                         _s2pResultExists = True
                         break
                 if _s2pResultExists:
-                    self.Suite2p = suite2p.Suite2pResultsExperiment(s2pResultsPath=s2pResultsPath, trialsSuite2p = self._trialsSuite2p)
+                    self.Suite2p = Suite2pResultsExperiment(s2pResultsPath=s2pResultsPath, trialsSuite2p = self._trialsSuite2p)
                     self.s2pResultsPath = s2pResultsPath
                 else:
-                    raise ValueError(f"suite2p results could not be found. `suite2pPath` provided was: {self.suite2pPath}")
+                    raise ValueError(f"suite2p results could not be found. `suite2pPath` provided was: {self.s2pResultsPath}")
             elif self.useSuite2p:  # no s2pResultsPath provided, so initialize without pre-loading any results
                 self._s2pResultExists = False
                 self._suite2p_save_path = self.analysisSavePath + '/suite2p/'
-                self.Suite2p = _suite2p.Suite2pResultsExperiment(trialsSuite2p = self._trialsSuite2p)
+                self.Suite2p = Suite2pResultsExperiment(trialsSuite2p = self._trialsSuite2p)
         except:
             raise ValueError(f"something went wrong. could not update suit2p results path.")
 
@@ -216,7 +218,7 @@ class Experiment:
         elif _metainfo['trialsInformation']['trialType'] == 'AllOpticalTrial':
             if self.trialsInformation[trialID]['s2p_use']:
                 trial_obj = AllOpticalTrial(metainfo=_metainfo,
-                                            naparm_path=_metainfo['trialsInformation']['naparm_path'], paqOptions=_metainfo['trialsInformation']['paqInfoTrial'],
+                                            naparm_path=_metainfo['trialsInformation']['naparm_path'], paq_options=_metainfo['trialsInformation']['paqInfoTrial'],
                                             analysis_save_path=self.analysisSavePath, microscope=self.microscope,
                                             prestim_sec=1.0, poststim_sec=3.0, pre_stim_response_window=0.500,
                                             post_stim_response_window=0.500,
@@ -224,7 +226,7 @@ class Experiment:
                                             suite2p_experiment_obj=self.Suite2p)
             else:
                 trial_obj = AllOpticalTrial(metainfo=_metainfo,
-                                            naparm_path=_metainfo['trialsInformation']['naparm_path'], paqOptions=_metainfo['trialsInformation']['paqInfoTrial'],
+                                            naparm_path=_metainfo['trialsInformation']['naparm_path'], paq_options=_metainfo['trialsInformation']['paqInfoTrial'],
                                             analysis_save_path=self.analysisSavePath, microscope=self.microscope,
                                             prestim_sec=1.0, poststim_sec=3.0, pre_stim_response_window=0.500,
                                             post_stim_response_window=0.500)

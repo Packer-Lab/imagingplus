@@ -1,35 +1,36 @@
 # TODO update all 2p stim related attr's to naparm submodule
 
-import os
-import time
 import glob
+import os
+import signal
+import time
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import scipy.stats as stats
-import signal
-import matplotlib.pyplot as plt
-import seaborn as sns
-
 import tifffile as tf
 
-# grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from anndata import AnnData
-
-from packerlabimaging.utils.utils import convert_to_8bit, normalize_dff, Utils, UnavailableOptionError
-from . TwoPhotonImagingMain import TwoPhotonImagingTrial
+from packerlabimaging.utils.utils import convert_to_8bit, normalize_dff, UnavailableOptionError
+from .TwoPhotonImagingMain import TwoPhotonImagingTrial
 from .processing.TwoPstim import Targets
-
 # %%
 from .processing.anndata import AnnotatedData
+
+# grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
 
 PLANE = 0
 BADFRAMESLOC = '/home/pshah/Documents/code/packerlabimaging/tests/'
 
+
+def getTargetImage(): # TODO write this function and probably add to the Targets class
+    pass
+
+
 class AllOpticalTrial(TwoPhotonImagingTrial):
     """This class provides methods for All Optical experiments"""
 
-    def __init__(self, metainfo: dict, naparm_path: str, analysis_save_path: str, microscope: str, paqOptions: dict = {},
+    def __init__(self, metainfo: dict, naparm_path: str, analysis_save_path: str, microscope: str, paq_options: dict = None,
                  prestim_sec: float = 1.0, poststim_sec: float = 3.0, pre_stim_response_window: float = 0.500,
                  post_stim_response_window: float = 0.500, **kwargs):
 
@@ -55,15 +56,15 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         # PHOTOSTIM PROTOCOL
         self.stim_start_times = None
         self.nomulti_sig_units = None
-        self.stim_channel = paqOptions['stim_channel'] if 'stim_channel' in [*paqOptions] else 'markpoints2packio'  # channel on Paq file to read for determining stims
+        self.stim_channel = paq_options['stim_channel'] if 'stim_channel' in [*paq_options] else 'markpoints2packio'  # channel on Paq file to read for determining stims
 
         self.photostim_frames = []  # imaging frames that are classified as overlapping with photostimulation
         self.stim_start_frames = []  # frame numbers from the start of each photostim trial
 
         # Paq file attr's
-        self.paq_rate: int = None  # PackIO acquisition rate for .Paq file
-        self.frame_start_times: list = None  # Paq clock timestamps of the first imaging acquisition frame of t-series
-        self.frame_end_times: list = None  # Paq clock timestamps of the last imaging acquisition frame of t-series
+        self.paq_rate: int = -1  # PackIO acquisition rate for .Paq file
+        self.frame_start_times: list = [None]  # Paq clock timestamps of the first imaging acquisition frame of t-series
+        self.frame_end_times: list = [None]  # Paq clock timestamps of the last imaging acquisition frame of t-series
 
         # set photostim trial Flu trace snippet collection and response measurement analysis time windows
         self.prestim_sec = prestim_sec  # length of pre stim trace collected (in frames)
@@ -108,10 +109,10 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         # 1) initialize object as TwoPhotonImagingTrial
         TwoPhotonImagingTrial.__init__(self, metainfo=metainfo, analysis_save_path=analysis_save_path, microscope=microscope,
-                                       paqOptions=paqOptions, **kwargs)
+                                       paqOptions=paq_options, **kwargs)
 
         # 2) get stim timings from paq file
-        self.stim_start_frames = self._paqProcessingAllOptical(stim_channel=paqOptions['stim_channel'], paq_path = paqOptions['path'])
+        self.stim_start_frames = self._paqProcessingAllOptical(stim_channel=paq_options['stim_channel'], paq_path = paq_options['path'])
 
         # 3) process 2p stim protocol
         # set naparm path
@@ -197,10 +198,9 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
     @property
     def timeVector(self):
-        "vector of frame times in milliseconds rather than frames"
-        n_frames = self.all_trials[0].shape[1]  ## <--- TODO double check this line returns as expected
-        time = np.linspace(-self.prestim_sec, self.poststim_sec, self.imparams.n_frames)
-        return time
+        """vector of frame times in milliseconds rather than frames"""
+        time_vector = np.linspace(-self.prestim_sec, self.poststim_sec, self.imparams.n_frames)
+        return time_vector
 
 
     ### ALLOPTICAL EXPERIMENT PHOTOSTIM PROTOCOL PROCESSING
@@ -349,23 +349,23 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
     #### TODO review attr's and write docs from the following functions: // start
     # used for creating tiffs that remove artifacts from alloptical experiments with photostim artifacts
-    def rm_artifacts_tiffs(expobj, tiffs_loc, new_tiffs):
+    def rm_artifacts_tiffs(self, tiffs_loc, new_tiffs):
         ### make a new tiff file (not for suite2p) with the first photostim frame whitened, and save new tiff
         print('\n-----making processed photostim .tiff from:')
         tiff_path = tiffs_loc
         print(tiff_path)
-        im_stack = tf.imread(tiff_path, key=range(expobj.n_frames))
+        im_stack = tf.imread(tiff_path, key=range(self.n_frames))
         print('Processing experiment tiff of shape: ', im_stack.shape)
 
         frames_to_whiten = []
-        for j in expobj.stim_start_frames:
+        for j in self.stim_start_frames:
             frames_to_whiten.append(j)
 
         # number of photostim frames with artifacts
         frames_to_remove = []
-        for j in expobj.stim_start_frames:
+        for j in self.stim_start_frames:
             for i in range(0,
-                           expobj.stim_duration_frames + 1):  # usually need to remove 1 more frame than the stim duration, as the stim isn't perfectly aligned with the start of the imaging frame
+                           self.stim_duration_frames + 1):  # usually need to remove 1 more frame than the stim duration, as the stim isn't perfectly aligned with the start of the imaging frame
                 frames_to_remove.append(j + i)
 
         print('# of total photostim artifact frames:', len(frames_to_remove))
@@ -391,23 +391,20 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         im_stack_2 = im_stack
         print('Shape', im_stack_2.shape)
 
-        for stim in range(expobj.n_groups):
+        for stim in range(self.Targets.n_groups):
             b = np.full_like(im_stack_2[0], fill_value=0)
-            targets = expobj.target_areas[stim]
+            targets = self.Targets.target_areas[stim]
             for i in np.arange(len(targets)):
                 for j in targets[i]:
                     b[j] = 5000
 
             all_stim_start_frames = []
-            for stim_frame in expobj.stim_start_frames[stim::expobj.n_groups]:
+            for stim_frame in self.stim_start_frames[stim::self.Targets.n_groups]:
                 all_stim_start_frames.append(stim_frame)
             for frame in all_stim_start_frames:
-                #         im_stack_2[frame-4] = im_stack_2[frame-4]+b
-                #         im_stack_2[frame-3] = im_stack_2[frame-3]+b
-                #        im_stack_2[frame-2] = im_stack_2[frame-2]+b
                 im_stack_2[frame - 1] = im_stack_2[frame - 1] + b
 
-        im_stack_2 = np.delete(im_stack_2, expobj.photostim_frames, axis=0)
+        im_stack_2 = np.delete(im_stack_2, self.photostim_frames, axis=0)
 
         print('After delete shape targetcells', im_stack_2.shape)
 
@@ -419,7 +416,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         del im_stack_2
         del im_stack
 
-    def s2pMasks(expobj, s2p_path, cell_ids):
+    def s2pMasks(self, s2p_path, cell_ids):
         os.chdir(s2p_path)
         stat = np.load('stat.npy', allow_pickle=True)
         ops = np.load('ops.npy', allow_pickle=True).item()
@@ -434,7 +431,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         # s2p targets - all SLM targets
         targets_s2p_img = np.zeros((ops['Ly'], ops['Lx']), dtype='uint8')
         for n in range(0, len(iscell)):
-            if n in expobj.s2p_cell_targets:
+            if n in self.s2p_cell_targets:
                 ypix = stat[n]['ypix']
                 xpix = stat[n]['xpix']
                 targets_s2p_img[ypix, xpix] = 3000
@@ -457,42 +454,40 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         return mask_img, targets_s2p_img,  # targets_s2p_img_1, targets_s2p_img_2
 
-    def s2pMaskStack(obj, pkl_list, s2p_path, parent_folder, force_redo: bool = False):
+    def s2pMaskStack(self, pkl_list, s2p_path, parent_folder, force_redo: bool = False):
         """makes a TIFF stack with the s2p mean image, and then suite2p ROI masks for all cells detected, target cells, and also SLM targets as well?"""
 
         for pkl in pkl_list:
-            expobj = obj
-
             print('Retrieving s2p masks for:', pkl, end='\r')
 
             # with open(pkl, 'rb') as f:
-            #     expobj = pickle.load(f)
+            #     self = pickle.load(f)
 
             # ls of cell ids to filter s2p masks by
             # cell_id_list = [ls(range(1, 99999)),  # all
-            #                 expobj.photostim_r.cell_id[0],  # cells
-            #                 [expobj.photostim_r.cell_id[0][i] for i, b in enumerate(expobj.photostim_r.cell_s1[0]) if
+            #                 self.photostim_r.cell_id[0],  # cells
+            #                 [self.photostim_r.cell_id[0][i] for i, b in enumerate(self.photostim_r.cell_s1[0]) if
             #                  b == False],  # s2 cells
-            #                 [expobj.photostim_r.cell_id[0][i] for i, b in enumerate(expobj.photostim_r.is_target) if
+            #                 [self.photostim_r.cell_id[0][i] for i, b in enumerate(self.photostim_r.is_target) if
             #                  b == 1],  # pr cells
-            #                 [expobj.photostim_s.cell_id[0][i] for i, b in enumerate(expobj.photostim_s.is_target) if
+            #                 [self.photostim_s.cell_id[0][i] for i, b in enumerate(self.photostim_s.is_target) if
             #                  b == 1],  # ps cells
             #                 ]
             #
-            cell_ids = expobj.cell_id
+            cell_ids = self.Suite2p.cell_id
 
             # empty stack to fill with images
-            stack = np.empty((0, expobj.frame_y, expobj.frame_x), dtype='uint8')
+            stack = np.empty((0, self.imparams.frame_y, self.imparams.frame_x), dtype='uint8')
 
             s2p_path = s2p_path
 
             # mean image from s2p
-            mean_img = obj.s2pMeanImage(s2p_path)
+            mean_img = self.Suite2p.s2pMeanImage(s2p_path)
             mean_img = np.expand_dims(mean_img, axis=0)
             stack = np.append(stack, mean_img, axis=0)
 
             # mask images from s2p
-            mask_img, targets_s2p_img = obj.s2pMasks(s2p_path=s2p_path, cell_ids=cell_ids)
+            mask_img, targets_s2p_img = self.s2pMasks(s2p_path=s2p_path, cell_ids=cell_ids)
             mask_img = np.expand_dims(mask_img, axis=0)
             targets_s2p_img = np.expand_dims(targets_s2p_img, axis=0)
             # targets_s2p_img_1 = np.expand_dims(targets_s2p_img_1, axis=0)
@@ -504,10 +499,10 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
             # # sta images
             # for file in os.listdir(stam_save_path):
-            #     if all(s in file for s in ['AvgImage', expobj.photostim_r.tiff_path.split('/')[-1]]):
+            #     if all(s in file for s in ['AvgImage', self.photostim_r.tiff_path.split('/')[-1]]):
             #         pr_sta_img = tf.imread(os.path.join(stam_save_path, file))
             #         pr_sta_img = np.expand_dims(pr_sta_img, axis=0)
-            #     elif all(s in file for s in ['AvgImage', expobj.photostim_s.tiff_path.split('/')[-1]]):
+            #     elif all(s in file for s in ['AvgImage', self.photostim_s.tiff_path.split('/')[-1]]):
             #         ps_sta_img = tf.imread(os.path.join(stam_save_path, file))
             #         ps_sta_img = np.expand_dims(ps_sta_img, axis=0)
 
@@ -515,7 +510,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             # stack = np.append(stack, ps_sta_img, axis=0)
 
             # target images
-            targ_img = obj.getTargetImage()
+            targ_img = getTargetImage()
             targ_img = np.expand_dims(targ_img, axis=0)
             stack = np.append(stack, targ_img, axis=0)
 
@@ -530,8 +525,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             # c, x, y = stack.shape
             # stack.shape = 1, 1, c, x, y, 1  # dimensions in TZCYXS order
 
-            x_pix = expobj.pix_sz_x
-            y_pix = expobj.pix_sz_y
+            x_pix = self.imparams.pix_sz_x
+            y_pix = self.imparams.pix_sz_y
 
             save_path = os.path.join(parent_folder, pkl.split('/')[-1][:-4] + '_s2p_masks.tif')
 
@@ -551,8 +546,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.stas.append(stas)
 
         # make sta amplitudes, [plane x cell]
-        pre_sta = np.mean(stas[:, self.pre_trial_frames], axis=1)
-        post_sta = np.mean(stas[:, self.post_trial_frames], axis=1)
+        pre_sta = np.mean(stas[:, self.pre_stim_frames], axis=1)
+        post_sta = np.mean(stas[:, self.post_stim_frames], axis=1)
         sta_amplitudes = post_sta - pre_sta
         self.sta_amplitudes.append(sta_amplitudes)
 
@@ -872,14 +867,14 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
     ### TODO ROB: how important are these two functions? I also see that detrending is commented out in makeFluTrials - should we include or not?
 
     def _baselineFluTrial(self, flu_trial, stim_end):
-        '''
+        """
         Subtract baseline from dff trials to normalise across cells
 
         Inputs:
             flu_trial           - [cell x frame] dff trial for all cells
         Outputs:
             baselined_flu_trial - detrended dff trial with zeros replacing stim artifact
-        '''
+        """
         # baseline the flu_trial using pre-stim period mean flu for each cell
         baseline_flu = np.mean(flu_trial[:, :self.pre_stim_frames], axis=1)
         # repeat the baseline_flu value across all frames for each cell
@@ -893,7 +888,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         return baselined_flu_trial
 
     def _detrendFluTrial(self, flu_trial, stim_end):
-        '''
+        """
         Detrend dff trials to account for drift of signal over a trial
 
         Inputs:
@@ -901,7 +896,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             stim_end            - frame n of the stim end
         Outputs:
             detrended_flu_trial - detrended dff trial with zeros replacing stim artifact
-        '''
+        """
         # set stim artifact period to 0
         flu_trial[:, self.pre_frames:stim_end] = 0
 
@@ -914,7 +909,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
     #### TEMP // end
 
     def _makePhotostimTrialFluSnippets(self, plane_flu: np.ndarray, plane: int = 0, stim_frames: list = None) -> np.ndarray:  # base code copied from Vape's _makeFluTrials
-        '''
+        """
         Make Flu snippets timed on photostimulation, for each cell, for each stim instance. [cells x Flu frames x stims]  # TODO triple check order of this array's dimensions
 
         Inputs:
@@ -923,7 +918,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             stim_frames - optional, if provided then only use these photostim frames to collect photostim_array
         Outputs:
             photostim_array     - dFF peri-photostim Flu array [cell x Flu frames x trial]
-        '''
+        """
 
         print('\n\- Collecting peri-stim traces ...')
 
@@ -1048,16 +1043,16 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         from packerlabimaging.processing.stats import AllOpticalStats
 
         self.wilcoxons = AllOpticalStats.runWilcoxonsTest(array1=self.__pre_array, array2=self.__post_array)
-        self.sig_units = AllOpticalStats.sigTestAvgResponse(expobj=self, p_vals=self.wilcoxons, alpha=0.1)
+        self.sig_units = AllOpticalStats.sigTestAvgResponse(self=self, p_vals=self.wilcoxons, alpha=0.1)
 
     @property
     def pre_stim_test_slice(self):
-        "num of prestim frames used for quantification of photostim responses"
+        """num of prestim frames used for quantification of photostim responses"""
         return np.s_[self.pre_stim_frames - self.pre_stim_response_frames_window: self.pre_stim_frames]
 
     @property
     def post_stim_test_slice(self):
-        "num of poststim frames used for quantification of photostim responses"
+        """num of poststim frames used for quantification of photostim responses"""
         stim_end = self.pre_stim_frames + self.stim_duration_frames
         return np.s_[stim_end: stim_end + self.post_stim_response_frames_window]
 
@@ -1066,13 +1061,13 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
     ## NOT REVIEWED FOR USAGE YET
     def _probResponse(self, plane,
                       trial_sig_calc):  ## FROM VAPE'S CODE, TODO NEED TO CHOOSE BETWEEN HERE AND BOTTOM RELIABILITY CODE
-        '''
+        """
         Calculate the response probability, i.e. proportion of trials that each cell responded on
 
         Inputs:
             plane          - imaging plane n
             trial_sig_calc - indicating which calculation was used for significance testing ('dff'/'dfsf')
-        '''
+        """
         n_trials = self.n_trials
 
         # get the number of responses for each across all trials
@@ -1379,7 +1374,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             print('skipping remaking of avg stim images')
 
     def run_stamm_nogui(self, numDiffStims, startOnStim, everyXStims, preSeconds=0.75, postSeconds=1.25):
-        """run STAmoviemaker for the expobj's trial"""
+        """run STAmoviemaker for the self's trial"""
         qnap_path = os.path.expanduser('/home/pshah/mnt/qnap')
 
         ## data path
@@ -1440,7 +1435,6 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         # show the MaxResponseImage
         img = glob.glob(stam_save_path + '/*MaxResponseImage.tif')[0]
-        from .plotting import plotting
         # plot_single_tiff(img, frame_num=0)
 
     def _targetSpread(self):

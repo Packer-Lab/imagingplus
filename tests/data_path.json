@@ -1,0 +1,32 @@
+{ "jrowland":
+    {"paths": {
+      "base_path": "/home/jrowland/Documents/code",
+      "vape_path": "/home/jrowland/Documents/code/Vape",
+      "pkl_path": "/home/jrowland/mnt/qnap/run_pkls",
+      "oasis_path": "/home/jrowland/Documents/code/OASIS"
+              }
+    },
+  "tplas":
+    {"paths": {
+      "base_path": "~/data/mice",
+      "vape_path": "~/repos/Vape",
+      "pkl_path":  "/home/jrowland/mnt/qnap/run_pkls",
+      "oasis_path": "~/repos/OASIS"
+              }
+    },
+  "thijs":
+    {"paths": {
+      "base_path": "~/data_jimmy",
+      "vape_path": "~/repos/Vape",
+      "pkl_path": "~/data_jimmy",
+      "oasis_path": "~/repos/OASIS"
+              }
+    },
+
+  "pshah":
+    {"paths": {
+      "base_path": "~/mnt/qnap/Data",
+      "pkl_path": "~/Documents/code/packerlabimaging/tets"
+              }
+    }
+}
