@@ -12,14 +12,14 @@ We hope that it provides a useful structure to organize your experimental data, 
 
 ## Installation instructions
 
-1. Download the git repo of the package. Remember the `path_to_directory` that the repo was downloaded to.
-   1. to download to a Linux server from command line use: `{TODO}`
-2. Activate any conda environment (if using)
-3. `cd` to `path_to_directory` where the repo was downloaded to.
-4. From `path_to_directory` run `pip install -e packerlabimaging`.
+1. Clone this github repository using `git clone https://github.com/Packer-Lab/packerlabimaging.git` in the terminal. 
+2. Install the conda environment provided in this repository (`myenv.yml`) using `conda env create -f myenv.yml` from the terminal.
+3. Activite the conda environment `conda activate plitest2`.
+4. `cd` to the parent directory of where this repo was downloaded to.
+5. From this parent directly, run `pip install -e packerlabimaging` from terminal to install this package `packerlabimaging`.
 
 #### Test that `packerlabimaging` is successfully installed:
-1. activate conda environment from which `packerlabimaging` was installed.
+1. Ensure that you are in the conda environment from which `packerlabimaging` was installed.
 2. start python from command line using: `python`, or start python in your preferred method (e.g. jupyter notebook or IDE).
 3. Import the package: `import packerlabimaging` or `import packerlabimaging as pkg`.
 
