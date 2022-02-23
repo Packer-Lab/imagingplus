@@ -1,7 +1,7 @@
 # packerlabimaging package
 
 packerlabimaging is a simple Python package for essential processing and analysis of 2photon imaging data collected in the Packer Lab. 
-Especially, there is a fully complete code pipeline for analysis and plotting of standard Ca2+ imaging data, and of standard all optical experiments (both 2photon optogenetic stim and 1photon optogenetic stim, with combined 2photon Ca2+ imaging).
+Especially, there is a fully implemented pipeline for data structuring, processing, analysis and plotting of 2photon Ca2+ imaging experiments, and experiments based around 2photon imaging such as all optical experiments (i.e. 2photon optogenetic stim or 1photon optogenetic stim, with combined 2photon Ca2+ imaging).
 
 ![Overall packerlabimaging package Flow Diagram](https://github.com/Packer-Lab/packerlabimaging/blob/7e16cf76588fa3fa34f634b9b455d9f386c54226/files/Overall%20Package%20Flow%20Diagram.drawio.png "Overall Flow Diagram")
 
@@ -34,8 +34,8 @@ The primary entry point of the package is the Experiment object.
 Multiple individual Trial objects are collected in a single Experiment object. 
 
 The definition of an "experiment" is purposefully loose to allow for accommodation across different experimental designs.  
-On the other hand, a "trial" is strictly a single time series of 2photon imaging data collection. 
-Each trial may correspond to either a 2photon imaging only or an all optical trial. 
+On the other hand, a "trial" is strictly a single continuous time series of 2photon imaging data collection. 
+Each trial may correspond to any of the implemented trial types. Currently, the implemented trial types are: 2-photon imaging only, all optical, one photon stim + 2p imaging.  
 
 ### Experiment class
 
