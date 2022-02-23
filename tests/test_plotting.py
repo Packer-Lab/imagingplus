@@ -1,7 +1,6 @@
-import numpy as np
 from packerlabimaging.AllOpticalMain import AllOpticalTrial
 
-from packerlabimaging._io import import_obj
+from packerlabimaging.utils._io import import_obj
 
 from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
 

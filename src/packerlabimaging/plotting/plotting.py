@@ -1,16 +1,11 @@
 # library of convenience plotting funcs that are used for making various plots for all optical photostimulation/imaging experiments
 
 # imports
-import os
 from typing import Union
 
 import numpy as np
-import functools
-import random
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import seaborn as sns
-from packerlabimaging._io import import_obj
 
 from packerlabimaging import Experiment
 
@@ -19,7 +14,7 @@ from packerlabimaging.AllOpticalMain import AllOpticalTrial
 from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
 from packerlabimaging.plotting._utils import plotting_decorator, make_random_color_array, _add_scalebar, \
     image_frame_options, dataplot_frame_options, dataplot_ax_options, plot_coordinates, heatmap_options, image_frame_ops
-from packerlabimaging.utils.utils import normalize_dff, ObjectClassError
+from packerlabimaging.utils.utils import ObjectClassError
 
 
 # DATA ANALYSIS PLOTTING FUNCS

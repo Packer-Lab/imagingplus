@@ -10,10 +10,12 @@ def test_Suite2pResultsExperiment(existing_expobj_fixture):
     trialSuite2p = existing_expobj_fixture[1]
     s2pResultsPath = existing_expobj_fixture[2]
 
-    expobj.Suite2p = suite2p.Suite2pResultsExperiment(trialsSuite2p = trialSuite2p,
-                                                      s2pResultsPath = s2pResultsPath)
+    expobj.Suite2p = suite2p.Suite2pResultsExperiment(trialsSuite2p=trialSuite2p,
+                                                      s2pResultsPath=s2pResultsPath)
 
-def test_Suite2pResultsTrial(existing_trialobj_twophotonimaging_fixture, existing_trialobj_alloptical_fixture, existing_expobj_fixture):
+
+def test_Suite2pResultsTrial(existing_trialobj_twophotonimaging_fixture, existing_trialobj_alloptical_fixture,
+                             existing_expobj_fixture):
     trialobj, trialobj_ = existing_trialobj_twophotonimaging_fixture
     alloptical_trialobj = existing_trialobj_alloptical_fixture
     expobj: Experiment = existing_expobj_fixture[0]
@@ -22,7 +24,7 @@ def test_Suite2pResultsTrial(existing_trialobj_twophotonimaging_fixture, existin
         from packerlabimaging.processing.suite2p import Suite2pResultsExperiment
         s2p_expobj: Suite2pResultsExperiment = expobj.Suite2p
         n_obj.Suite2p = suite2p.Suite2pResultsTrial(trialsSuite2p=s2p_expobj.trials, s2pResultsPath=s2p_expobj.path,
-                                                   subtract_neuropil=s2p_expobj.subtract_neuropil,
-                                                   trial_frames=n_obj.Suite2p.trial_frames)  # use trial obj's current trial frames
+                                                    subtract_neuropil=s2p_expobj.subtract_neuropil,
+                                                    trial_frames=n_obj.Suite2p.trial_frames)  # use trial obj's current trial frames
 
         n_obj.save()

@@ -14,7 +14,9 @@ from matplotlib import patches
 from scipy import signal
 from statsmodels import stats
 from suite2p.run_s2p import run_s2p
-from packerlabimaging import _io, Experiment
+
+from packerlabimaging import Experiment
+from packerlabimaging.utils import _io
 
 # # global plotting params
 # params = {'legend.fontsize': 'x-large',

@@ -21,7 +21,7 @@ We hope that it provides a useful structure to organize your experimental data, 
 #### Test `packerlabimaging` is successfully installed (import package in python):
 1. Ensure that the conda environment from which `packerlabimaging` was installed is activated.
 2. start python from command line using: `python`, or start python from the same conda environment in your preferred method (e.g. jupyter notebook or IDE).
-3. Import the package: `import packerlabimaging` or `import packerlabimaging as pkg`.
+3. Import the package: `import packerlabimaging` or `import packerlabimaging as pli`.
 
 
 ## Overview
