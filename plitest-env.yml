@@ -1,4 +1,4 @@
-name: plitest2
+name: plitest
 channels:
   - defaults
 dependencies:

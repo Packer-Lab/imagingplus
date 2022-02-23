@@ -2,7 +2,6 @@
 
 import os
 import json
-import sys
 import getpass
 from pathlib import Path
 

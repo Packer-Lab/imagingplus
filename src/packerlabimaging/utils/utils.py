@@ -1,5 +1,4 @@
-## TODO - Rob to update with current utils_func from Vape
-
+import bisect
 import io
 import time
 import numpy as np
@@ -7,10 +6,13 @@ import pandas as pd
 import tifffile as tf
 import os
 import matplotlib.pyplot as plt
-import anndata
 import csv
 import math
 import copy
+
+from matplotlib import patches
+from scipy import signal
+from statsmodels import stats
 from suite2p.run_s2p import run_s2p
 from packerlabimaging import _io, Experiment
 
@@ -34,19 +36,17 @@ pd.options.display.max_columns = 10
 class ObjectClassError(Exception):
     """handles exceptions caused by calling function on invalid class type."""
     def __init__(self, function, valid_class, invalid_class):
-        self.function = function
-        self.valid_class = valid_class
-        self.invalid_class = invalid_class
-        self.message = f'Invalid class ({self.invalid_class}) being used. <{self.function}> only available for {self.valid_class}.'
-        super().__init__(self.message)
+        super().__init__(f'Invalid class ({invalid_class}) being used. <{function}> only available for {valid_class}.')
 
 class IncompatibleFunctionError(Exception):
     """handles exceptions caused by incompatible functions"""
-    pass
+    def __init__(self, function):
+        super().__init__(f'Incompatible function call. <{function}>')
 
 class UnavailableOptionError(Exception):
     """handles exceptions caused by unavailable options"""
-    pass
+    def __init__(self, option):
+        super().__init__(f'Unavailable option for object. <{option}>')
 
 
 class Utils:
