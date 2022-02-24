@@ -14,6 +14,16 @@ import seaborn as sns
 from packerlabimaging.AllOpticalMain import AllOpticalTrial
 from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
 
+# global plotting params
+params = {'legend.fontsize': 'x-large',
+          'axes.labelsize': 'x-large',
+          'axes.titlesize': 'x-large',
+          'xtick.labelsize': 'x-large',
+          'ytick.labelsize': 'x-large'}
+plt.rcParams.update(params)
+sns.set()
+sns.set_style('white')
+
 
 # %% UTILITY FUNCS
 

@@ -18,35 +18,28 @@ from suite2p.run_s2p import run_s2p
 from packerlabimaging import Experiment
 from packerlabimaging.utils import _io
 
-# # global plotting params
-# params = {'legend.fontsize': 'x-large',
-#           'axes.labelsize': 'x-large',
-#           'axes.titlesize': 'x-large',
-#           'xtick.labelsize': 'x-large',
-#           'ytick.labelsize': 'x-large'}
-# plt.rcParams.update(params)
-# sns.set()
-# sns.set_style('white')
-
-##### PRAJAY'S FUNCTIONS THAT MIGHT BE APPROP FOR THIS SCRIPT ####### / start
 
 pd.options.display.max_rows = 100
 pd.options.display.max_columns = 10
 
 
-
 class ObjectClassError(Exception):
     """handles exceptions caused by calling function on invalid class type."""
+
     def __init__(self, function, valid_class, invalid_class):
         super().__init__(f'Invalid class ({invalid_class}) being used. <{function}> only available for {valid_class}.')
 
+
 class IncompatibleFunctionError(Exception):
     """handles exceptions caused by incompatible functions"""
+
     def __init__(self, function):
         super().__init__(f'Incompatible function call. <{function}>')
 
+
 class UnavailableOptionError(Exception):
     """handles exceptions caused by unavailable options"""
+
     def __init__(self, option):
         super().__init__(f'Unavailable option for object. <{option}>')
 
@@ -54,54 +47,57 @@ class UnavailableOptionError(Exception):
 class Utils:
     # default ops dict for suite2p
     default_ops = {
-        'batch_size': 2000, # reduce if running out of RAM
-        'fast_disk': os.path.expanduser('/mnt/sandbox/pshah/suite2p_tmp'), # used to store temporary binary file, defaults to save_path0 (set as a string NOT a list)
-         #'save_path0': '/media/jamesrowland/DATA/plab/suite_2p', # stores results, defaults to first item in data_path
-        'delete_bin': True, # whether to delete binary file after processing
+        'batch_size': 2000,  # reduce if running out of RAM
+        'fast_disk': os.path.expanduser('/mnt/sandbox/pshah/suite2p_tmp'),
+        # used to store temporary binary file, defaults to save_path0 (set as a string NOT a list)
+        # 'save_path0': '/media/jamesrowland/DATA/plab/suite_2p', # stores results, defaults to first item in data_path
+        'delete_bin': True,  # whether to delete binary file after processing
         # main settings
-        'nplanes' : 1, # each tiff has these many planes in sequence
-        'nchannels' : 1, # each tiff has these many channels per plane
-        'functional_chan' : 1, # this channel is used to extract functional ROIs (1-based)
-        'diameter': 12, # this is the main parameter for cell detection, 2-dimensional if Y and X are different (e.g. [6 12])
-        'tau':  1.26, # this is the main parameter for deconvolution (1.25-1.5 for gcamp6s)
+        'nplanes': 1,  # each tiff has these many planes in sequence
+        'nchannels': 1,  # each tiff has these many channels per plane
+        'functional_chan': 1,  # this channel is used to extract functional ROIs (1-based)
+        'diameter': 12,
+        # this is the main parameter for cell detection, 2-dimensional if Y and X are different (e.g. [6 12])
+        'tau': 1.26,  # this is the main parameter for deconvolution (1.25-1.5 for gcamp6s)
         'fs': 30,  # sampling rate (total across planes)
         # output settings
-        'save_mat': True, # whether to save output as matlab files
-        'combined': True, # combine multiple planes into a single result /single canvas for GUI
+        'save_mat': True,  # whether to save output as matlab files
+        'combined': True,  # combine multiple planes into a single result /single canvas for GUI
         # parallel settings
-        'num_workers': 50, # 0 to select num_cores, -1 to disable parallelism, N to enforce value
-        'num_workers_roi': 0, # 0 to select number of planes, -1 to disable parallelism, N to enforce value
+        'num_workers': 50,  # 0 to select num_cores, -1 to disable parallelism, N to enforce value
+        'num_workers_roi': 0,  # 0 to select number of planes, -1 to disable parallelism, N to enforce value
         # registration settings
-        'do_registration': True, # whether to register data
-        'nimg_init': 200, # subsampled frames for finding reference image
-        'maxregshift': 0.1, # max allowed registration shift, as a fraction of frame max(width and height)
-        'align_by_chan' : 1, # when multi-channel, you can align by non-functional channel (1-based)
-        'reg_tif': True, # whether to save registered tiffs
-        'subpixel' : 10, # precision of subpixel registration (1/subpixel steps)
+        'do_registration': True,  # whether to register data
+        'nimg_init': 200,  # subsampled frames for finding reference image
+        'maxregshift': 0.1,  # max allowed registration shift, as a fraction of frame max(width and height)
+        'align_by_chan': 1,  # when multi-channel, you can align by non-functional channel (1-based)
+        'reg_tif': True,  # whether to save registered tiffs
+        'subpixel': 10,  # precision of subpixel registration (1/subpixel steps)
         # cell detection settings
-        'connected': True, # whether or not to keep ROIs fully connected (set to 0 for dendrites)
-        'navg_frames_svd': 5000, # max number of binned frames for the SVD
-        'nsvd_for_roi': 1000, # max number of SVD components to keep for ROI detection
-        'max_iterations': 20, # maximum number of iterations to do cell detection
-        'ratio_neuropil': 6., # ratio between neuropil basis size and cell radius
-        'ratio_neuropil_to_cell': 3, # minimum ratio between neuropil radius and cell radius
-        'tile_factor': 1., # use finer (>1) or coarser (<1) tiles for neuropil estimation during cell detection
-        'threshold_scaling': 1., # adjust the automatically determined threshold by this scalar multiplier
-        'max_overlap': 0.75, # cells with more overlap than this get removed during triage, before refinement
-        'inner_neuropil_radius': 2, # number of pixels to keep between ROI and neuropil donut
-        'outer_neuropil_radius': np.inf, # maximum neuropil radius
-        'min_neuropil_pixels': 350, # minimum number of pixels in the neuropil
+        'connected': True,  # whether or not to keep ROIs fully connected (set to 0 for dendrites)
+        'navg_frames_svd': 5000,  # max number of binned frames for the SVD
+        'nsvd_for_roi': 1000,  # max number of SVD components to keep for ROI detection
+        'max_iterations': 20,  # maximum number of iterations to do cell detection
+        'ratio_neuropil': 6.,  # ratio between neuropil basis size and cell radius
+        'ratio_neuropil_to_cell': 3,  # minimum ratio between neuropil radius and cell radius
+        'tile_factor': 1.,  # use finer (>1) or coarser (<1) tiles for neuropil estimation during cell detection
+        'threshold_scaling': 1.,  # adjust the automatically determined threshold by this scalar multiplier
+        'max_overlap': 0.75,  # cells with more overlap than this get removed during triage, before refinement
+        'inner_neuropil_radius': 2,  # number of pixels to keep between ROI and neuropil donut
+        'outer_neuropil_radius': np.inf,  # maximum neuropil radius
+        'min_neuropil_pixels': 350,  # minimum number of pixels in the neuropil
         # deconvolution settings
-        'baseline': 'maximin', # baselining mode
-        'win_baseline': 60., # window for maximin
-        'sig_baseline': 10., # smoothing constant for gaussian filter
-        'prctile_baseline': 8.,# optional (whether to use a percentile baseline)
+        'baseline': 'maximin',  # baselining mode
+        'win_baseline': 60.,  # window for maximin
+        'sig_baseline': 10.,  # smoothing constant for gaussian filter
+        'prctile_baseline': 8.,  # optional (whether to use a percentile baseline)
         'neucoeff': .7,  # neuropil coefficient
-      }
+    }
 
     ## suite2p methods
     @staticmethod
-    def s2pRun(expobj: Experiment, user_batch_size=2000, trialsSuite2P: list = None, **kwargs):  ## TODO gotta specify # of planes somewhere here
+    def s2pRun(expobj: Experiment, user_batch_size=2000, trialsSuite2P: list = None,
+               **kwargs):  ## TODO gotta specify # of planes somewhere here
         """run suite2p for an Experiment object, using trials specified in current experiment object, using the attributes
         determined directly from the experiment object.
 
@@ -109,7 +105,6 @@ class Utils:
         :param user_batch_size: batch size for suite2p registration stage - adjust if running into MemmoryError while running suite2p
         :param trialsSuite2P: list of trialIDs from experiment to use in running suite2p
         """
-
 
         expobj.Suite2p.trials = trialsSuite2P if trialsSuite2P else expobj.Suite2p.trials
         expobj._trialsSuite2p = trialsSuite2P if trialsSuite2P else expobj._trialsSuite2p
@@ -129,7 +124,8 @@ class Utils:
         pix_sz_y = trialobj.pix_sz_y if 'pix_sz_y' not in [*kwargs] else kwargs['pix_sz_y']
         frame_x = trialobj.frame_x if 'frame_x' not in [*kwargs] else kwargs['frame_x']
         frame_y = trialobj.frame_y if 'frame_y' not in [*kwargs] else kwargs['frame_y']
-        n_channels = kwargs['n_channels'] if 'n_channels' in [*kwargs] else 1  # default is 1 channel imaging in .tiffs for suite2p
+        n_channels = kwargs['n_channels'] if 'n_channels' in [
+            *kwargs] else 1  # default is 1 channel imaging in .tiffs for suite2p
 
         # setup ops dictionary
         ops = expobj.Suite2p.ops
@@ -140,8 +136,8 @@ class Utils:
         ops['diameter'] = int(diameter_x), int(diameter_y) if diameter_y != diameter_x else diameter_x
         expobj.Suite2p.user_batch_size = user_batch_size
         ops['batch_size'] = expobj.Suite2p.user_batch_size
-        batch_size = expobj.Suite2p.user_batch_size * (262144 / (frame_x * frame_y))  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
-
+        batch_size = expobj.Suite2p.user_batch_size * (262144 / (
+                    frame_x * frame_y))  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
 
         # set other ops parameters if provided in kwargs:
         for key in [*kwargs]:
@@ -154,14 +150,12 @@ class Utils:
               'tiff_list': tiffs_paths_to_use_s2p, 'data_path': expobj.dataPath,
               'save_folder': expobj._suite2p_save_path}
 
-
         print(f'db: \n\t{db}')
 
         t1 = time.time()
         opsEnd = run_s2p(ops=ops, db=db)
         t2 = time.time()
         print('Total time to run suite2p was {}'.format(t2 - t1))
-
 
         # update expobj.Suite2p.ops and db
         expobj.Suite2p.db = db
@@ -171,7 +165,6 @@ class Utils:
         expobj.s2pResultsPath = expobj._suite2p_save_path + '/plane0/'  ## need to further debug that the flow of the suite2p path makes sense
 
         expobj.save()
-
 
 
 def normalize_dff(arr, threshold_pct=20, threshold_val=None):
@@ -206,6 +199,7 @@ def normalize_dff(arr, threshold_pct=20, threshold_val=None):
 
     return new_array
 
+
 # calculates average over sliding window for an array
 def moving_average(arr, n=4):
     """
@@ -217,6 +211,7 @@ def moving_average(arr, n=4):
     ret = np.cumsum(arr)
     ret[n:] = ret[n:] - ret[:-n]
     return ret[n - 1:] / n
+
 
 # finding paths to files with a certain extension
 def path_finder(umbrella, *args, is_folder=False):
@@ -261,12 +256,14 @@ def path_finder(umbrella, *args, is_folder=False):
 
     return paths
 
+
 def points_in_circle_np(radius, x0=0, y0=0):
     x_ = np.arange(x0 - radius - 1, x0 + radius + 1, dtype=int)
     y_ = np.arange(y0 - radius - 1, y0 + radius + 1, dtype=int)
     x, y = np.where((x_[:, np.newaxis] - x0) ** 2 + (y_ - y0) ** 2 <= radius ** 2)
     for x, y in zip(x_[x], y_[y]):
         yield x, y
+
 
 # useful for returning indexes when a
 def threshold_detect(signal, threshold):
@@ -275,6 +272,7 @@ def threshold_detect(signal, threshold):
     thresh_signal[1:][thresh_signal[:-1] & thresh_signal[1:]] = False
     frames = np.where(thresh_signal)
     return frames[0]
+
 
 # simple ZProfile function for any sized square in the frame (equivalent to ZProfile function in Fiji)
 def ZProfile(movie, area_center_coords: tuple = None, area_size: int = -1, plot_trace: bool = True,
@@ -306,7 +304,7 @@ def ZProfile(movie, area_center_coords: tuple = None, area_size: int = -1, plot_
     assert area_size <= movie.shape[1] and area_size <= movie.shape[2], "area_size must be smaller than the image"
     if area_size == -1:  # this parameter used to plot whole FOV area
         area_size = movie.shape[1]
-        area_center_coords = (movie.shape[1]/2, movie.shape[2]/2)
+        area_center_coords = (movie.shape[1] / 2, movie.shape[2] / 2)
     assert area_size % 2 == 0, "pls give an even area size"
 
     x = area_center_coords[0]
@@ -342,7 +340,7 @@ def ZProfile(movie, area_center_coords: tuple = None, area_size: int = -1, plot_
             figsize = [10, 4]
         fig, ax2 = plt.subplots(figsize=figsize)
         if img_fps is not None:
-            ax2.plot(np.arange(smol_mean.shape[0])/img_fps, smol_mean, linewidth=0.5, color='black')
+            ax2.plot(np.arange(smol_mean.shape[0]) / img_fps, smol_mean, linewidth=0.5, color='black')
             ax2.set_xlabel('Time (sec)')
         else:
             ax2.plot(smol_mean, linewidth=0.5, color='black')
@@ -355,7 +353,8 @@ def ZProfile(movie, area_center_coords: tuple = None, area_size: int = -1, plot_
     return smol_mean
 
 
-def SaveDownsampledTiff(tiff_path: str = None, stack: np.array = None, group_by: int = 4, save_as: str = None, plot_zprofile: bool = True):
+def SaveDownsampledTiff(tiff_path: str = None, stack: np.array = None, group_by: int = 4, save_as: str = None,
+                        plot_zprofile: bool = True):
     """
     Create and save a downsampled version of the original tiff file. Original tiff file can be given as a numpy array stack
     or a str path to the tiff.
@@ -421,7 +420,8 @@ def SaveDownsampledTiff(tiff_path: str = None, stack: np.array = None, group_by:
     return final_stack
 
 
-def subselect_tiff(tiff_path: str = None, tiff_stack: np.array = None, select_frames: tuple = (0, 0), save_as: str = None):
+def subselect_tiff(tiff_path: str = None, tiff_stack: np.array = None, select_frames: tuple = (0, 0),
+                   save_as: str = None):
     if tiff_stack is None:
         # open tiff file
         print('running subselecting tiffs')
@@ -483,6 +483,7 @@ def _check_path_exists(path_arg: str, path: str):
         return True
     except AssertionError:
         return False
+
 
 def clean_lfp_signal(paq, input_array: str, chan_name: str = 'voltage', plot=False):
     '''
@@ -1168,7 +1169,7 @@ def averager(array_list, pre_frames=10, post_frames=50, offset=0,
         plt.plot(x_axis[pre_frames + offset:pre_frames + offset
                                             + (post_frames - offset)], grand_average[pre_frames + offset:
                                                                                      pre_frames + offset + (
-                                                                                                 post_frames - offset)],
+                                                                                             post_frames - offset)],
                  color='red')
         for s in scaled_average:
             plt.plot(x_axis, s, alpha=0.2, color='grey')
@@ -1232,9 +1233,9 @@ def raster_plot(arr, y_pos=1, color=np.random.rand(3, ), alpha=1,
              color=color, alpha=alpha, markersize=markersize,
              label=label)
 
+
 def get_spiral_start(x_galvo, debounce_time):
-    
-    """ Get the sample at which the first spiral in a trial began 
+    """ Get the sample at which the first spiral in a trial began
     
     Experimental function involving lots of magic numbers
     to detect spiral onsets.
@@ -1245,26 +1246,26 @@ def get_spiral_start(x_galvo, debounce_time):
                     ensures only spiral at start of trial is captured
     
     """
-    #x_galvo = np.round(x_galvo, 2)
+    # x_galvo = np.round(x_galvo, 2)
     x_galvo = my_floor(x_galvo, 2)
-    
+
     # Threshold above which to determine signal as onset of square pulse
     square_thresh = 0.02
     # Threshold above which to consider signal a spiral (empirically determined)
     diff_thresh = 10
-    
+
     # remove noise from parked galvo signal
     x_galvo[x_galvo < -0.5] = -0.6
-    
+
     diffed = np.diff(x_galvo)
     # remove the onset of galvo movement from f' signal
     diffed[diffed > square_thresh] = 0
     diffed = non_zero_smoother(diffed, window_size=200)
-    diffed[diffed>30] = 0
-    
+    diffed[diffed > 30] = 0
+
     # detect onset of sprials
     spiral_start = threshold_detect(diffed, diff_thresh)
-    
+
     if len(spiral_start) == 0:
         print('No spirals found')
         return None
@@ -1273,100 +1274,96 @@ def get_spiral_start(x_galvo, debounce_time):
         spiral_start = spiral_start[np.hstack((np.inf, np.diff(spiral_start))) > debounce_time]
         n_squares = len(threshold_detect(x_galvo, -0.5))
         assert len(spiral_start) == n_squares, \
-        'spiral_start has len {} but there are {} square pulses'.format(len(spiral_start), n_squares)
+            'spiral_start has len {} but there are {} square pulses'.format(len(spiral_start), n_squares)
         return spiral_start
 
 
 def non_zero_smoother(arr, window_size=200):
-    
     """ Smooths an array by changing values to the number of
         non-0 elements with window
         
         """
-    
+
     windows = np.arange(0, len(arr), window_size)
     windows = np.append(windows, len(arr))
 
     for idx in range(len(windows)):
 
         chunk_start = windows[idx]
-        
+
         if idx == len(windows) - 1:
             chunk_end = len(arr)
         else:
-            chunk_end = windows[idx+1]
-            
+            chunk_end = windows[idx + 1]
+
         arr[chunk_start:chunk_end] = np.count_nonzero(arr[chunk_start:chunk_end])
-    
+
     return arr
 
 
 def my_floor(a, precision=0):
     # Floors to a specified number of dps
-    return np.round(a - 0.5 * 10**(-precision), precision)
+    return np.round(a - 0.5 * 10 ** (-precision), precision)
 
 
 def get_trial_frames(clock, start, pre_frames, post_frames, paq_rate, fs=30):
-
     # The frames immediately preceeding stim
     start_idx = closest_frame_before(clock, start)
-    frames = np.arange(start_idx-pre_frames, start_idx+post_frames)
-    
+    frames = np.arange(start_idx - pre_frames, start_idx + post_frames)
+
     # Is the trial outside of the frame clock
     is_beyond_clock = np.max(frames) >= len(clock) or np.min(frames) < 0
-    
+
     if is_beyond_clock:
         return None, None
-    
+
     frame_to_start = (start - clock[start_idx]) / paq_rate  # time (s) from frame to trial_start
     frame_time_diff = np.diff(clock[frames]) / paq_rate  # ifi (s)
-    
+
     # did the function find the correct frame
-    is_not_correct_frame = clock[start_idx+1]  < start or clock[start_idx] > start
+    is_not_correct_frame = clock[start_idx + 1] < start or clock[start_idx] > start
     # the nearest frame to trial start was not during trial
     # if the time to the nearest frame is less than upper bound of inter-frame-interval
-    trial_not_running = frame_to_start > 1/(fs-1)
-    frames_not_consecutive = np.max(frame_time_diff) > 1/(fs-1)
-    
+    trial_not_running = frame_to_start > 1 / (fs - 1)
+    frames_not_consecutive = np.max(frame_time_diff) > 1 / (fs - 1)
+
     if trial_not_running or frames_not_consecutive:
         return None, None
-    
+
     return frames, start_idx
 
 
 def between_two_hits(idxs, easy_idxs, easy_outcome):
-    
     assert len(easy_idxs) == len(easy_outcome)
-    
+
     # Next easy trial from each test trial
     closest_after = np.array([bisect.bisect_left(easy_idxs, idx) for idx in idxs])
     # Previous easy trial from each test trial
     closest_before = closest_after - 1
     # Test trials before the first easy trial should have both previous and next
     # as the first easy trial
-    closest_before[closest_before==-1] = 0
+    closest_before[closest_before == -1] = 0
     # Test trials after the last easy trial should have both previous and next
     # as the last easy trial
-    closest_after[idxs>easy_idxs[-1]] = len(easy_idxs)-1
-    
+    closest_after[idxs > easy_idxs[-1]] = len(easy_idxs) - 1
+
     assert len(idxs) == len(closest_before) == len(closest_after)
-    
+
     between_two = []
     for before, after in zip(closest_before, closest_after):
         if easy_outcome[before] and easy_outcome[after] == 'hit':
             between_two.append(True)
         else:
             between_two.append(False)
-    
+
     assert len(between_two) == len(idxs)
-    
+
     return between_two
 
 
 def points_in_circle_np(radius, x0=0, y0=0, ):
     x_ = np.arange(x0 - radius - 1, x0 + radius + 1, dtype=int)
     y_ = np.arange(y0 - radius - 1, y0 + radius + 1, dtype=int)
-    x, y = np.where((x_[:,np.newaxis] - x0)**2 + (y_ - y0)**2 <= radius**2)
+    x, y = np.where((x_[:, np.newaxis] - x0) ** 2 + (y_ - y0) ** 2 <= radius ** 2)
     for x, y in zip(x_[x], y_[y]):
         yield x, y
-
