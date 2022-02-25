@@ -42,6 +42,7 @@ Test ``packerlabimaging`` is successfully installed by importing the package in 
 
 , or start python from the same conda environment in your preferred method (e.g. jupyter notebook or IDE).
 3. Import the package::
+
     import packerlabimaging
     #or
     import packerlabimaging as pli
