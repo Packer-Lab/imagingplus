@@ -12,7 +12,7 @@ Welcome to packerlabimaging's documentation!
 
    Installation <installation.rst>
    Quick start guide <quick-start-guide.rst>
-
+   Overview <overview.rst>
 
 
 Indices and tables

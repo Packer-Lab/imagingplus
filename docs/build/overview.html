@@ -1,0 +1,152 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Overview &#8212; packerlabimaging 0.1-alpha documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Quick Start Guide" href="quick-start-guide.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="overview">
+<span id="id1"></span><h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<section id="data-analysis-structure-and-organization">
+<h2>Data Analysis Structure and Organization<a class="headerlink" href="#data-analysis-structure-and-organization" title="Permalink to this headline">¶</a></h2>
+<p>The data organization of the package follows object-oriented programming in Python.
+There are two general types of objects within packerlabimaging: the <em>Experiment</em> object and the <em>Trial</em> object.
+In general, it follows that a typical 2photon imaging and/or all optical experiment contains multiple imaging trials of varying durations and/or combined 2photon imaging + optogenetic stim.
+The primary entry point of the package is the Experiment object.
+Multiple individual Trial objects are collected in a single Experiment object.</p>
+<p>The definition of an “experiment” is purposefully loose to allow for accommodation across different experimental designs.
+On the other hand, a “trial” is strictly a single continuous time series of 2photon imaging data collection.
+Each trial may correspond to any of the implemented trial types. Currently, the implemented trial types are: 2-photon imaging only, all optical, one photon stim + 2p imaging.</p>
+<section id="experiment-class">
+<h3>Experiment class<a class="headerlink" href="#experiment-class" title="Permalink to this headline">¶</a></h3>
+<p>Each imaging experiment is associated with a super-class Experiment object. Each Experiment object has optional access to Suite2p processing associated with that Experiment.
+Given this structure, each Experiment is meant to be built from all individual imaging trials that are closely related to each other based on their imaging characteristics.
+Most presciently, all imaging trials that are run together in Suite2p can be part of a single Experiment.</p>
+</section>
+<section id="twophotonimagingtrial-class">
+<h3>TwoPhotonImagingTrial class<a class="headerlink" href="#twophotonimagingtrial-class" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">trialobj:</span> <span class="pre">TwoPhotonImagingTrial</span></code> - packerlabimaging —&gt; <code class="docutils literal notranslate"><span class="pre">TwoPhotonImagingTrial</span></code> trial class</p>
+<p>Attributes:
+* this class is the parent for all other trial classes</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">trialobj.imparams</span></code> - stores metadata retrieved from microscope regarding imaging collection</p>
+<p><code class="docutils literal notranslate"><span class="pre">trialobj.paq</span></code> - stores data from PackIO .paq files</p>
+<p><code class="docutils literal notranslate"><span class="pre">trialobj.suite2p</span></code> - stores data and methods related to Suite2p (library for processing calcium imaging data)</p>
+<p><code class="docutils literal notranslate"><span class="pre">trialobj.lfp</span></code> - stores local field potential data (read in from .paq files)</p>
+<p><code class="docutils literal notranslate"><span class="pre">trialobj.data</span></code> - annotated data object (based on AnnData library) for centralized storage of raw and processed data related to the experiment. contains methods for further modifying the stored annotated data object.</p>
+</div></blockquote>
+</section>
+<section id="allopticaltrial-class">
+<h3>AllOpticalTrial class<a class="headerlink" href="#allopticaltrial-class" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">trialobj:</span> <span class="pre">AllOpticalTrial</span></code> - packerlabimaging —&gt; <code class="docutils literal notranslate"><span class="pre">TwoPhotonImagingTrial</span></code> —&gt; <code class="docutils literal notranslate"><span class="pre">AllOpticalTrial</span></code> trial class</p>
+<p>Attributes:</p>
+<ul>
+<li><p>this class is a child of the <code class="docutils literal notranslate"><span class="pre">TwoPhotonImaging</span></code> Trial (i.e. inherits all attributes and methods of <code class="docutils literal notranslate"><span class="pre">TwoPhotonImagingTrial</span></code>)</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">trialobj._2pstim</span></code> - stores data and methods related to processing of 2p stim protocols</p>
+<p><code class="docutils literal notranslate"><span class="pre">trialobj.data</span></code> - additional 2p stim related variables (e.g. <code class="docutils literal notranslate"><span class="pre">photostim_frame</span></code> and <code class="docutils literal notranslate"><span class="pre">stim_start_frame</span></code> ) to <code class="docutils literal notranslate"><span class="pre">.data</span></code></p>
+</div></blockquote>
+</li>
+</ul>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">packerlabimaging</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick-start-guide.html">Quick start guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="quick-start-guide.html" title="previous chapter">Quick Start Guide</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Packer Lab.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/overview.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

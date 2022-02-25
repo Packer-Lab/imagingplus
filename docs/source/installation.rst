@@ -41,6 +41,7 @@ Test ``packerlabimaging`` is successfully installed by importing the package in 
     python
 
 or start a python session from the same conda environment in your preferred method (e.g. jupyter notebook or IDE).
+
 3. Import the package::
 
     import packerlabimaging
@@ -55,3 +56,10 @@ Dependencies
 These dependencies are automatically confirmed during the installation phase of ``packerlabimaging``.
 However, if there are any non-trivial issues with dependencies during installation, please be sure to report this by raising an issue on Github.
 
+
+Next
+----
+
+:ref:`overview`
+
+:ref:`Quick start guide`

@@ -1,3 +1,5 @@
+.. _Quick start guide:
+
 Quick Start Guide
 =================
 
