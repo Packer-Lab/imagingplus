@@ -343,7 +343,7 @@ class Experiment:
     def load_trial(self, trialID: str):
         "method for importing individual trial objects from Experiment instance using the trial id for a given trial"
         try:
-            trial_pkl_path = self.TrialsInformation[trialID]['analysis_object_information']['pkl s2pResultsPath']
+            trial_pkl_path = self.TrialsInformation[trialID]['analysis_object_information']['pkl path']
             trialobj = _io.import_obj(trial_pkl_path)
             return trialobj
         except KeyError:

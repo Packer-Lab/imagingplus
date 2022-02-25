@@ -106,6 +106,7 @@ def alloptical_trial_fixture():
         initialization_dict['naparm_path'] = initialization_dict["TrialsInformation"][trial]['naparm_path']
         initialization_dict['analysis_save_path'] = initialization_dict['analysisSavePath']
         initialization_dict['suite2p_experiment_obj'] = expobj.Suite2p
+        initialization_dict['paq_options'] = _metainfo['TrialsInformation']['PaqInfoTrial']
         initialization_dict['total_frames_stitched'] = SUITE2P_FRAMES_t013
 
     return initialization_dict

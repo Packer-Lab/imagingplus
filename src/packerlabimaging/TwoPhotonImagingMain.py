@@ -119,7 +119,7 @@ class TwoPhotonImagingTrial:
         # create annotated data object
         self.data = self.create_anndata()
 
-        ##### SAVE Trial OBJECT
+        # SAVE Trial OBJECT
         self.save()
         print(f'\----- CREATING TwoPhotonImagingTrial for trial: {metainfo["trial_id"]},  {metainfo["t series id"]}')
 
@@ -132,17 +132,6 @@ class TwoPhotonImagingTrial:
 
     def __repr__(self):
         return repr(f"TwoPhotonImagingTrial experimental data object")
-
-    @property
-    def paths(self):
-        """TODO returns a dictionary of all paths associated with trial"""
-
-        paths_dict = {}
-        for attr in [*self.__dict__]:
-            if 'path' in attr:
-                paths_dict[attr] = self.__getattribute__(name=attr)
-
-        return paths_dict
 
     @property
     def fig_save_path(self):
@@ -183,7 +172,7 @@ class TwoPhotonImagingTrial:
 
     @property
     def pkl_path(self):
-        "path in Analysis folder to save pkl object"
+        """path in Analysis folder to save pkl object"""
         return self.__pkl_path
 
     @pkl_path.setter
