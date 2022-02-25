@@ -1,1 +1,1 @@
-__version__ = "under...alpha...development"
+__version__ = "0.1-alpha"
