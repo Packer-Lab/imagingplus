@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Installation instructions &#8212; packerlabimaging 0.1-alpha documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Quick Start Guide" href="quick-start-guide.html" />
+    <link rel="prev" title="Welcome to packerlabimaging’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="installation-instructions">
+<h1>Installation instructions<a class="headerlink" href="#installation-instructions" title="Permalink to this headline">¶</a></h1>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code> can be installed by downloading the source code or cloning the GitHub repository and running:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="n">packerlabimaging</span>
+</pre></div>
+</div>
+<p><strong>We recommend following the steps below:</strong></p>
+<ol class="arabic">
+<li><p>Clone this github repository using <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/Packer-Lab/packerlabimaging.git</span></code> in the terminal.</p></li>
+<li><p>Install the conda environment provided in this repository (<code class="docutils literal notranslate"><span class="pre">plitest.yml</span></code>) using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">env</span> <span class="n">create</span> <span class="o">-</span><span class="n">f</span> <span class="n">myenv</span><span class="o">.</span><span class="n">yml</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>from the terminal.</p>
+<p>Note: The package is installable as a stand-alone python package. You can install the package into an existing conda environment, or you may choose to skip using conda environment all together.
+3. Activate the conda environment:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">activate</span> <span class="n">plitest</span>
+</pre></div>
+</div>
+<ol class="arabic" start="4">
+<li><p><code class="docutils literal notranslate"><span class="pre">cd</span></code> to the parent directory of where this repo was downloaded to.</p></li>
+<li><p>From this parent directly, run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="n">packerlabimaging</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>from terminal to install <code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code> as a python package under developer settings (preferred for current release).</p>
+</section>
+<section id="test-import-installation">
+<h2>Test/Import Installation<a class="headerlink" href="#test-import-installation" title="Permalink to this headline">¶</a></h2>
+<p>Test <code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code> is successfully installed by importing the package in python:</p>
+<ol class="arabic simple">
+<li><p>Ensure that the conda environment from which <cite>packerlabimaging</cite> was installed is activated.</p></li>
+<li><p>start python from command line using: <cite>python</cite>, or start python from the same conda environment in your preferred method (e.g. jupyter notebook or IDE).</p></li>
+<li><p>Import the package: <cite>import packerlabimaging</cite> or <cite>import packerlabimaging as pli</cite>.</p></li>
+</ol>
+</section>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code> requires the use of multiple scientific python packages (e.g numpy, pandas, anndata, matplotlib).
+These dependencies are automatically confirmed during the installation phase of <code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code>.
+However, if there are any non-trivial issues with dependencies during installation, please be sure to report this by raising an issue on Github.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">packerlabimaging</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick-start-guide.html">Quick start guide</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to packerlabimaging’s documentation!</a></li>
+      <li>Next: <a href="quick-start-guide.html" title="next chapter">Quick Start Guide</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Packer Lab.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/installation.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

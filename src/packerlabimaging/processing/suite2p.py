@@ -6,8 +6,9 @@ import numpy as np
 import suite2p
 import tifffile as tf
 import matplotlib.pyplot as plt
-from packerlabimaging.utils.utils import make_tiff_stack, s2p_loader, normalize_dff, Utils
 
+from packerlabimaging.ExperimentMain import TrialsInformation
+from packerlabimaging.utils.utils import make_tiff_stack, s2p_loader, normalize_dff, Utils
 
 # TEMP VARIABLES FOR DEVELOPMENT USAGES
 N_PLANES = 1
@@ -18,6 +19,12 @@ class Suite2pResultsExperiment:
     """used to run and further process suite2p processed data, and analysis associated with suite2p processed data."""
 
     def __init__(self, trialsSuite2p: list, s2pResultsPath: Optional[str] = None, subtract_neuropil: bool = True):
+        self.reg_tiff_path = None
+        self.ops_end = None
+        self.s2pResultsPath = None
+        self._s2pResultExists = None
+        self.db = None
+        self.ops = None
         print(f"\- ADDING Suite2p Results to Experiment object ... ")
 
         ## initialize attr's
@@ -44,18 +51,17 @@ class Suite2pResultsExperiment:
         self.trials = trialsSuite2p
         self.subtract_neuropil = subtract_neuropil
         assert len(
-            self.trials) > 0, "no trials found to run suite2p, option available to provide list of trial IDs in `trialsSuite2P`"
+            self.trials) > 0, "no trials found to run suite2p, option available to provide list of trial IDs in " \
+                              "`trialsSuite2P` "
 
         if s2pResultsPath is None:
-            ## initialize needed variables and attr's for future calling of s2pRun
-            self.path = None
-            self.ops = Utils.ops  ## TODO need to set ops before getting to s2p run fx call
-            self.db = {}  ## TODO need to set db before getting to s2p run fx call
+            # initialize needed variables and attr's for future calling of s2pRun
+            self.s2pResultsPath = None
         else:
-            self.path = s2pResultsPath
+            self.s2pResultsPath = s2pResultsPath
             try:
                 neuropil_coeff = NEUROPIL_COEFF if subtract_neuropil else 0
-                self._retrieveSuite2pData(self.path, neuropil_coeff=neuropil_coeff)
+                self._retrieveSuite2pData(self.s2pResultsPath, neuropil_coeff=neuropil_coeff)
             except:
                 raise ValueError(
                     f'Something went wrong while trying to load suite2p processed data from: {s2pResultsPath}')
@@ -68,18 +74,18 @@ class Suite2pResultsExperiment:
 
     def _retrieveSuite2pData(self, s2p_path: str = None, neuropil_coeff: float = 0.7):
         """processing of suite2p data from the current t-series
-        :param s2p_path: path to the directory containing suite2p outputs
+        :param s2p_path: s2pResultsPath to the directory containing suite2p outputs
         :param neuropil_coeff: choose to subtract neuropil or not when loading s2p traces
         :param save: choose to save data object or not
         """
 
-        s2p_path = self.path if s2p_path is None else s2p_path
+        s2p_path = self.s2pResultsPath if s2p_path is None else s2p_path
 
-        for plane in range(self.n_planes):  ## TODO really don't know how planes are collected and fed into suite2p
+        for plane in range(self.n_planes):  # TODO really don't know how planes are collected and fed into suite2p
 
             # extract suite2p stat.npy and neuropil-subtracted F
             substract_neuropil = True if neuropil_coeff > 0 else False
-            FminusFneu, spks, stat, neuropil = s2p_loader(self.path, subtract_neuropil=substract_neuropil,
+            FminusFneu, spks, stat, neuropil = s2p_loader(self.s2pResultsPath, subtract_neuropil=substract_neuropil,
                                                           neuropil_coeff=neuropil_coeff)
             self.raw.append(FminusFneu)  # raw F of each suite2p ROI
             self.spks.append(spks)  # deconvolved spikes each suite2p ROI
@@ -135,11 +141,10 @@ class Suite2pResultsExperiment:
             self.cell_x = self.cell_x[0]
             self.cell_y = self.cell_y[0]
 
-
         # read in other files
-        self.output_op = np.load(Path(self.path).joinpath('ops.npy'), allow_pickle=True).item()
-        stats_file = Path(self.path).joinpath('stat.npy')
-        self.iscell = np.load(Path(self.path).joinpath('iscell.npy'), allow_pickle=True)[:, 0].astype(bool)
+        self.output_op = np.load(Path(self.s2pResultsPath).joinpath('ops.npy'), allow_pickle=True).item()
+        stats_file = Path(self.s2pResultsPath).joinpath('stat.npy')
+        self.iscell = np.load(Path(self.s2pResultsPath).joinpath('iscell.npy'), allow_pickle=True)[:, 0].astype(bool)
         self.stats = np.load(stats_file, allow_pickle=True)
 
         # quick workaround (patch of suite2p code) because of suite2p internal error for these methods in ROI class
@@ -163,8 +168,6 @@ class Suite2pResultsExperiment:
         self.im = stats_dicts_to_3d_array_()
         self.im[self.im == 0] = np.nan
 
-        # self.im = suite2p.ROI.stats_dicts_to_3d_array(self.stats, Ly=self.output_op['Ly'], Lx=self.output_op['Lx'], label_id=True)
-
     # consider use of properties
     # @property
     # def raw(self):
@@ -181,7 +184,6 @@ class Suite2pResultsExperiment:
     #     if self.n_planes == 1:
     #         return self.neuropil[0]
 
-
     def stitch_reg_tiffs(self, first_frame: int, last_frame: int, reg_tif_folder: str = None, force_crop: bool = False,
                          s2p_run_batch: int = 2000):  # TODO review and refactor as method for trial object
         """
@@ -195,13 +197,13 @@ class Suite2pResultsExperiment:
         """
 
         if reg_tif_folder is None:
-            if self.path:
-                reg_tif_folder = self.path + '/reg_tif/'
-                print(f"\- trying to load registerred tiffs from: {reg_tif_folder}")
+            if self.s2pResultsPath:
+                reg_tif_folder = self.s2pResultsPath + '/reg_tif/'
+                print(f"|____ trying to load registered tiffs from: {reg_tif_folder}")
         else:
-            raise Exception(f"Must provide reg_tif_folder path for loading registered tiffs")
+            raise Exception(f"Must provide reg_tif_folder s2pResultsPath for loading registered tiffs")
         if not os.path.exists(reg_tif_folder):
-            raise Exception(f"no registered tiffs found at path: {reg_tif_folder}")
+            raise Exception(f"no registered tiffs found at s2pResultsPath: {reg_tif_folder}")
 
         frame_range = [first_frame, last_frame]
 
@@ -209,8 +211,7 @@ class Suite2pResultsExperiment:
         end = last_frame // s2p_run_batch + 1
 
         # set tiff paths to save registered tiffs:
-        tif_path_save = self.analysis_save_dir + 'reg_tiff_%s.tif' % self.metainfo['trial']
-        tif_path_save2 = self.analysis_save_dir + 'reg_tiff_%s_r.tif' % self.metainfo['trial']
+        tif_path_save = self.s2pResultsPath + 'reg_tiff.tif'
         reg_tif_list = os.listdir(reg_tif_folder)
         reg_tif_list.sort()
         sorted_paths = [reg_tif_folder + tif for tif in reg_tif_list][start:end + 1]
@@ -221,28 +222,20 @@ class Suite2pResultsExperiment:
         if os.path.exists(tif_path_save):
             make_tiff_stack(sorted_paths, save_as=tif_path_save)
 
-        if not os.path.exists(tif_path_save2) or force_crop:
-            with tf.TiffWriter(tif_path_save2, bigtiff=True) as tif:
-                with tf.TiffFile(tif_path_save, multifile=False) as input_tif:
-                    print('cropping registered tiff')
-                    data = input_tif.asarray()
-                    print('shape of stitched tiff: ', data.shape)
-                reg_tif_crop = data[frame_range[0] - start * s2p_run_batch: frame_range[1] - (
-                        frame_range[0] - start * s2p_run_batch)]
-                print('saving cropped tiff ', reg_tif_crop.shape)
-                tif.save(reg_tif_crop)
+        self.reg_tiff_path = tif_path_save
+
 
     def s2pMeanImage(self, plot: bool = True):
         """
         Return array of the s2p mean image.
-        :param s2p_path: (optional) path to location of s2p data
+        :param s2p_path: (optional) s2pResultsPath to location of s2p data
         :param plot: (optional) option to plot the s2p mean image
         :return:
         """
 
-        print(f'Plotting s2p mean image .. {self.path}')
+        print(f'Plotting s2p mean image .. {self.s2pResultsPath}')
 
-        os.chdir(self.path)
+        os.chdir(self.s2pResultsPath)
 
         ops = np.load('ops.npy', allow_pickle=True).item()
 
@@ -257,6 +250,27 @@ class Suite2pResultsExperiment:
 
         return mean_img
 
+    # suite2p methods - refactored currently to _utils.Utils !!!!!
+    def s2pRun(self, ops, db):  # TODO gotta specify # of planes somewhere here
+        """
+        run suite2p on the experiment object, using trials specified in current experiment object, using the attributes
+        determined directly from the experiment object.
+
+        :param ops:
+        :param db:
+        """
+
+        self.ops = ops
+        self.db = db
+
+        print(f'Starting Suite2p run for : \n\t{db}')
+
+        from suite2p import run_s2p
+        self.ops_end = run_s2p(ops=ops, db=db)
+
+        self._s2pResultExists = True
+        self.s2pResultsPath = self.ops_end['save_path']
+
 
 class Suite2pResultsTrial(Suite2pResultsExperiment):
     """used to collect suite2p processed data for one trial - out of overall experiment."""
@@ -270,23 +284,23 @@ class Suite2pResultsTrial(Suite2pResultsExperiment):
 
         ## initializing attributes to collect Suite2p results for this specific trial
         # self.dfof: list(np.ndarray) = []  # array of dFF normalized Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
-        self.__raw: List[np.ndarray] =  self.raw
+        self.__raw: List[np.ndarray] = self.raw
         self.__spks: List[np.ndarray] = self.spks
         self.__neuropil: List[np.ndarray] = self.neuropil
 
         self.trial_frames = trial_frames  # tuple of first and last frame (out of the overall suite2p run) corresponding to the present trial
 
         # self.suite2p_overall = suite2p_experiment_obj
-        print(f"\t|- current trial frames: {trial_frames} out of {self.n_frames} total frames processed through suite2p")
-        self._get_suite2pResults() if self.path else None
+        print(
+            f"\t|- current trial frames: {trial_frames} out of {self.n_frames} total frames processed through suite2p")
+        self._get_suite2pResults() if self.s2pResultsPath else None
 
-        # path = suite2p_experiment_obj.path if hasattr(suite2p_experiment_obj, 'path') else None
-        # Suite2pResultsExperiment.__init__(self, trialsSuite2p = suite2p_experiment_obj.trials, s2pResultsPath=path,
+        # s2pResultsPath = suite2p_experiment_obj.s2pResultsPath if hasattr(suite2p_experiment_obj, 's2pResultsPath') else None
+        # Suite2pResultsExperiment.__init__(self, trialsSuite2p = suite2p_experiment_obj.trials, s2pResultsPath=s2pResultsPath,
         #                                   subtract_neuropil=suite2p_experiment_obj.subtract_neuropil)
 
     def __repr__(self):
         return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} frames x {self.n_units} s2p ROIs'
-
 
     def _get_suite2pResults(self):  # TODO complete code for getting suite2p results for trial
         """crop suite2p data for frames only for the present trial"""
@@ -301,11 +315,12 @@ class Suite2pResultsTrial(Suite2pResultsExperiment):
             self.cell_id = self.cell_id
             self.stat = self.stat[0]
 
-            self.raw = self.__raw[:, self.trial_frames[0]:self.trial_frames[1]]  # array of raw Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
-            self.spks = self.__spks[:, self.trial_frames[0]:self.trial_frames[1]]  # array of deconvolved spks values from suite2p output [num cells x length of imaging acquisition], one per plane
-            self.neuropil = self.__neuropil[:, self.trial_frames[0]:self.trial_frames[1]]  # array of neuropil Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
-
-
+            self.raw = self.__raw[:, self.trial_frames[0]:self.trial_frames[
+                1]]  # array of raw Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
+            self.spks = self.__spks[:, self.trial_frames[0]:self.trial_frames[
+                1]]  # array of deconvolved spks values from suite2p output [num cells x length of imaging acquisition], one per plane
+            self.neuropil = self.__neuropil[:, self.trial_frames[0]:self.trial_frames[
+                1]]  # array of neuropil Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
 
             self.__s2pResultExists = True
 

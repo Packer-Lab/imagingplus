@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 @dataclass
 class PrairieViewMetadata:
-    tiff_path_dir: str  # path to the directory containing the .tiff imaging output from PrairieView. the .xml PrairieView files should also be in the same directory.
+    tiff_path_dir: str  # s2pResultsPath to the directory containing the .tiff imaging output from PrairieView. the .xml PrairieView files should also be in the same directory.
     def __post_init__(self):
         self.n_frames: int = 0  # number of imaging frames in the current trial
         self.fps = None  # rate of imaging acquisition (frames per second)
@@ -32,7 +32,7 @@ class PrairieViewMetadata:
         Find the value, description and indices of a particular parameter from an xml file
 
         Inputs:
-            path        - path to xml file
+            s2pResultsPath        - s2pResultsPath to xml file
             key         - string corresponding to key in xml tree
         Outputs:
             value       - value of the key
@@ -79,10 +79,10 @@ class PrairieViewMetadata:
         print('\n\----- Parsing PV Metadata for Bruker microscope...')
 
 
-        tiff_path = self.tiff_path_dir  # starting path to search for the .xml PrairieView files
-        xml_path = []  # searching for xml path
+        tiff_path = self.tiff_path_dir  # starting s2pResultsPath to search for the .xml PrairieView files
+        xml_path = []  # searching for xml s2pResultsPath
 
-        try:  # look for xml file in path, or two paths up (achieved by decreasing count in while loop)
+        try:  # look for xml file in s2pResultsPath, or two paths up (achieved by decreasing count in while loop)
             count = 2
             while count != 0 and not xml_path:
                 count -= 1
@@ -94,7 +94,7 @@ class PrairieViewMetadata:
         except:
             raise Exception('ERROR: Could not find xml for this acquisition, check it exists')
 
-        xml_tree = ET.parse(xml_path)  # parse xml from a path
+        xml_tree = ET.parse(xml_path)  # parse xml from a s2pResultsPath
         root = xml_tree.getroot()  # make xml tree structure
 
         sequence = root.find('Sequence')

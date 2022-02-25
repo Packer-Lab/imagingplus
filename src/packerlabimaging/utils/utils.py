@@ -115,7 +115,7 @@ class Utils:
 
         # load the first tiff in expobj.Suite2p.trials to collect default metainformation about imaging setup parameters
         trial = expobj.Suite2p.trials[0]
-        trialobj = _io.import_obj(expobj.trialsInformation[trial]['analysis_object_information']['pkl path'])
+        trialobj = _io.import_obj(expobj.trialsInformation[trial]['analysis_object_information']['pkl s2pResultsPath'])
 
         # set imaging parameters using defaults or kwargs if provided
         fps = trialobj.fps if 'fs' not in [*kwargs] else kwargs['fs']
@@ -162,7 +162,7 @@ class Utils:
         expobj.Suite2p.ops = opsEnd
 
         expobj._s2pResultExists = True
-        expobj.s2pResultsPath = expobj._suite2p_save_path + '/plane0/'  ## need to further debug that the flow of the suite2p path makes sense
+        expobj.s2pResultsPath = expobj._suite2p_save_path + '/plane0/'  ## need to further debug that the flow of the suite2p s2pResultsPath makes sense
 
         expobj.save()
 
@@ -216,7 +216,7 @@ def moving_average(arr, n=4):
 # finding paths to files with a certain extension
 def path_finder(umbrella, *args, is_folder=False):
     '''
-    returns the path to the single item in the umbrella folder
+    returns the s2pResultsPath to the single item in the umbrella folder
     containing the string names in each arg
     is_folder = False if args is ls of files
     is_folder = True if  args is ls of folders
@@ -252,7 +252,7 @@ def path_finder(umbrella, *args, is_folder=False):
     print(paths)
     for i, arg in enumerate(args):
         if not found[i]:
-            raise ValueError('could not find path to {}'.format(arg))
+            raise ValueError('could not find s2pResultsPath to {}'.format(arg))
 
     return paths
 
@@ -282,7 +282,7 @@ def ZProfile(movie, area_center_coords: tuple = None, area_size: int = -1, plot_
 
     Plot a z-profile of a movie, averaged over space inside a square area
 
-    movie = can be np.array of the TIFF stack or a tiff path from which it is read in
+    movie = can be np.array of the TIFF stack or a tiff s2pResultsPath from which it is read in
     area_center_coords = coordinates of pixel at center of box (x,y)
     area_size = int, length and width of the square in pixels
     plot_frame = which movie frame to take as a reference to plot the area boundaries on
@@ -357,19 +357,19 @@ def SaveDownsampledTiff(tiff_path: str = None, stack: np.array = None, group_by:
                         plot_zprofile: bool = True):
     """
     Create and save a downsampled version of the original tiff file. Original tiff file can be given as a numpy array stack
-    or a str path to the tiff.
+    or a str s2pResultsPath to the tiff.
 
-    :param tiff_path: path to the tiff to downsample
+    :param tiff_path: s2pResultsPath to the tiff to downsample
     :param stack: numpy array stack of the tiff file already read in
     :param group_by: specified interval for grouped averaging of the TIFF
-    :param save_as: path to save the downsampled tiff to, if none provided it will save to the same directory as the provided tiff_path
+    :param save_as: s2pResultsPath to save the downsampled tiff to, if none provided it will save to the same directory as the provided tiff_path
     :param plot_zprofile: if True, plot the zaxis profile using the full TIFF stack provided.
     :return: numpy array containing the downsampled TIFF stack
     """
     print('downsampling of tiff stack...')
 
     if save_as is None:
-        assert tiff_path is not None, "please provide a save path to save_as"
+        assert tiff_path is not None, "please provide a save s2pResultsPath to save_as"
         save_as = tiff_path[:-4] + '_downsampled.tif'
 
     if stack is None:
@@ -443,7 +443,7 @@ def make_tiff_stack(sorted_paths: list, save_as: str):
     read in a bunch of tiffs and stack them together, and save the output as the save_as
 
     :param sorted_paths: ls of string paths for tiffs to stack
-    :param save_as: .tif file path to where the tif should be saved
+    :param save_as: .tif file s2pResultsPath to where the tif should be saved
     """
 
     num_tiffs = len(sorted_paths)
@@ -479,7 +479,7 @@ def convert_to_8bit(img, target_type_min=0, target_type_max=255):
 
 def _check_path_exists(path_arg: str, path: str):
     try:
-        assert os.path.exists(path), f"{path_arg} path not found: {path}"
+        assert os.path.exists(path), f"{path_arg} s2pResultsPath not found: {path}"
         return True
     except AssertionError:
         return False
@@ -497,7 +497,7 @@ def clean_lfp_signal(paq, input_array: str, chan_name: str = 'voltage', plot=Fal
     :param plot: to make plot of the fixed up LFP signal or not
     :param chan_name: channel name in Paq file that contains the LFP series
     :param paq: Paq file containing the LFP series
-    :param input_array: path to .mat file to read that contains the timevalues for signal to remove
+    :param input_array: s2pResultsPath to .mat file to read that contains the timevalues for signal to remove
     :return: cleaned up LFP signal
     '''
 

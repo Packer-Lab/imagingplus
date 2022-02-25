@@ -18,7 +18,7 @@ def test_ExperimentClass(experiment_fixture):
 #     "expID": 'RL109',
 #     'date': '2020-12-19',
 #     'comments': 'testing out analysis workflow',
-#     'trialsInformation': {},  # NOTE: this dictionary is populated in the code cells below.
+#     'TrialsInformation': {},  # NOTE: this dictionary is populated in the code cells below.
 #     # 'useSuite2p': True,
 #     # 'useSuite2p': False,
 #     's2pResultsPath': "/home/pshah/mnt/qnap/Analysis/2020-12-19/suite2p/alloptical-2p-1x-alltrials/plane0"
@@ -26,7 +26,7 @@ def test_ExperimentClass(experiment_fixture):
 #
 #
 #
-# # add information about each trial in experiment to trialsInformation field of the initialization_dict
+# # add information about each trial in experiment to TrialsInformation field of the initialization_dict
 # trials_list_spont = ['t-005', 't-006']
 # for idx, trial in enumerate(trials_list_spont):
 #     data_path_base = '/home/pshah/mnt/qnap/Data/2020-12-19'
@@ -34,11 +34,11 @@ def test_ExperimentClass(experiment_fixture):
 #     date = data_path_base[-10:]
 #
 #     ## everything below should autopopulate and run automatically
-#     paqs_loc = '%s/%s_%s_%s.Paq' % (data_path_base, date, animal_prep, trial[2:])  # path to the .Paq files for the selected trials
+#     paqs_loc = '%s/%s_%s_%s.Paq' % (data_path_base, date, animal_prep, trial[2:])  # s2pResultsPath to the .Paq files for the selected trials
 #     tiffs_loc = f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif'
 #
 #
-#     initialization_dict["trialsInformation"][trial] = {'trialType': 'TwoPhotonImagingTrial',
+#     initialization_dict["TrialsInformation"][trial] = {'trialType': 'TwoPhotonImagingTrial',
 #                                                        'tiff_path': f"{tiffs_loc}",
 #                                                        's2p_use': True,
 #                                                        'expGroup': "pre 4ap 2p spont imaging",
@@ -53,11 +53,11 @@ def test_ExperimentClass(experiment_fixture):
 #     date = data_path_base[-10:]
 #
 #     ## everything below should autopopulate and run automatically
-#     paqs_loc = '%s/%s_%s_%s.Paq' % (data_path_base, date, animal_prep, trial[2:])  # path to the .Paq files for the selected trials
+#     paqs_loc = '%s/%s_%s_%s.Paq' % (data_path_base, date, animal_prep, trial[2:])  # s2pResultsPath to the .Paq files for the selected trials
 #     tiffs_loc = f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif'
 #
 #
-#     initialization_dict["trialsInformation"][trial] = {'trialType': 'AllOpticalTrial',
+#     initialization_dict["TrialsInformation"][trial] = {'trialType': 'AllOpticalTrial',
 #                                                        'tiff_path': f"{tiffs_loc}",
 #                                                        's2p_use': True,
 #                                                        'expGroup': "pre 4ap 2p all optical",

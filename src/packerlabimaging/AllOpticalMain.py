@@ -35,13 +35,13 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
                  post_stim_response_window: float = 0.500, **kwargs):
 
         """
-        :param tiff_path: path to t-series .tiff
-        :param paq_path: path to .Paq file associated with current t-series
-        :param naparm_path: path to folder containing photostimulation setup built by NAPARM
-        :param analysis_save_path: path of where to save the experiment analysis object
+        :param tiff_path: s2pResultsPath to t-series .tiff
+        :param paq_path: s2pResultsPath to .Paq file associated with current t-series
+        :param naparm_path: s2pResultsPath to folder containing photostimulation setup built by NAPARM
+        :param analysis_save_path: s2pResultsPath of where to save the experiment analysis object
         :param metainfo: dictionary containing any metainfo information field needed for this experiment. At minimum it needs to include prep #, t-series # and date of data collection.
         :param microscope: name of microscope used to record imaging (options: "Bruker" (default), "Scientifica", "other")
-        :param suite2p_path: (optional) path to suite2p outputs folder associated with this t-series (plane0 file? or ops file? not sure yet)
+        :param suite2p_path: (optional) s2pResultsPath to suite2p outputs folder associated with this t-series (plane0 file? or ops file? not sure yet)
         :param make_downsampled_tiff: flag to run generation and saving of downsampled tiff of t-series (saves to the analysis save location)
         :param prestim_sec:
         :param poststim_sec:
@@ -112,11 +112,11 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
                                        paqOptions=paq_options, **kwargs)
 
         # 2) get stim timings from paq file
-        self.stim_start_frames = self._paqProcessingAllOptical(stim_channel=paq_options['stim_channel'], paq_path = paq_options['path'])
+        self.stim_start_frames = self._paqProcessingAllOptical(stim_channel=paq_options['stim_channel'], paq_path = paq_options['s2pResultsPath'])
 
         # 3) process 2p stim protocol
-        # set naparm path
-        self.__naparm_path = naparm_path if os.path.exists(naparm_path) else FileNotFoundError(f"path not found, naparm_path: {naparm_path}")
+        # set naparm s2pResultsPath
+        self.__naparm_path = naparm_path if os.path.exists(naparm_path) else FileNotFoundError(f"s2pResultsPath not found, naparm_path: {naparm_path}")
         self.Targets, self.stim_duration_frames = self._stimProcessing(protocol='naparm')
 
         # 4) determine bad frames in imaging data that correspond to photostim frames
@@ -500,10 +500,10 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             # # sta images
             # for file in os.listdir(stam_save_path):
             #     if all(s in file for s in ['AvgImage', self.photostim_r.tiff_path.split('/')[-1]]):
-            #         pr_sta_img = tf.imread(os.path.join(stam_save_path, file))
+            #         pr_sta_img = tf.imread(os.s2pResultsPath.join(stam_save_path, file))
             #         pr_sta_img = np.expand_dims(pr_sta_img, axis=0)
             #     elif all(s in file for s in ['AvgImage', self.photostim_s.tiff_path.split('/')[-1]]):
-            #         ps_sta_img = tf.imread(os.path.join(stam_save_path, file))
+            #         ps_sta_img = tf.imread(os.s2pResultsPath.join(stam_save_path, file))
             #         ps_sta_img = np.expand_dims(ps_sta_img, axis=0)
 
             # stack = np.append(stack, pr_sta_img, axis=0)
@@ -561,13 +561,13 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         """uses registered tiffs to collect raw traces from SLM target areas"""
 
         if reg_tif_folder is None:
-            if self.Suite2p.path:
-                reg_tif_folder = self.Suite2p.path + '/reg_tif/'
+            if self.Suite2p.s2pResultsPath:
+                reg_tif_folder = self.Suite2p.s2pResultsPath + '/reg_tif/'
                 print(f"\- trying to load registerred tiffs from: {reg_tif_folder}")
         else:
-            raise Exception(f"Must provide reg_tif_folder path for loading registered tiffs")
+            raise Exception(f"Must provide reg_tif_folder s2pResultsPath for loading registered tiffs")
         if not os.path.exists(reg_tif_folder):
-            raise Exception(f"no registered tiffs found at path: {reg_tif_folder}")
+            raise Exception(f"no registered tiffs found at s2pResultsPath: {reg_tif_folder}")
 
         print(
             f'\n\ncollecting raw Flu traces from SLM target coord. areas from registered TIFFs from: {reg_tif_folder}')
@@ -582,7 +582,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         targets_trace_full = np.zeros([len(self.Targets.target_coords_all), (end - start) * 2000], dtype='float32')
         counter = 0
         for i in range(start, end):
-            tif_path_save2 = self.Suite2p.path + '/reg_tif/' + reg_tif_list[i]
+            tif_path_save2 = self.Suite2p.s2pResultsPath + '/reg_tif/' + reg_tif_list[i]
             with tf.TiffFile(tif_path_save2, multifile=False) as input_tif:
                 print('|- reading tiff: %s' % tif_path_save2)
                 data = input_tif.asarray()
@@ -1323,7 +1323,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             if 0 in x:
                 tiffs_loc = '%s/*Ch3.tif' % self.tiff_path_dir
                 tiff_path = glob.glob(tiffs_loc)[0]
-                print('working on loading up %s tiff from: ' % self.metainfo['trial'], tiff_path)
+                print('working on loading up %s tiff from: ' % self.metainfo['trial_id'], tiff_path)
                 im_stack = tf.imread(tiff_path, key=range(self.imparams.n_frames))
                 print('Processing seizures from experiment tiff (wait for all seizure comparisons to be processed), \n '
                       'total tiff shape: ', im_stack.shape)
@@ -1341,10 +1341,10 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
                     self.stim_images[stim] = avg_sub
 
                 if save_img:
-                    # save in a subdirectory under the ANALYSIS folder path from whence t-series TIFF came from
+                    # save in a subdirectory under the ANALYSIS folder s2pResultsPath from whence t-series TIFF came from
                     save_path = self.analysis_save_dir + 'avg_stim_images'
                     save_path_stim = save_path + '/%s_%s_stim-%s.tif' % (
-                        self.metainfo['date'], self.metainfo['trial'], stim)
+                        self.metainfo['date'], self.metainfo['trial_id'], stim)
                     if os.path.exists(save_path):
                         print("saving stim_img tiff to... %s" % save_path_stim) if verbose else None
                         avg_sub8 = convert_to_8bit(avg_sub, 0, 255)
@@ -1377,24 +1377,24 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         """run STAmoviemaker for the self's trial"""
         qnap_path = os.path.expanduser('/home/pshah/mnt/qnap')
 
-        ## data path
+        ## data s2pResultsPath
         movie_path = self.tiff_path
         sync_path = self._paq_path
 
-        ## stamm save path
+        ## stamm save s2pResultsPath
         stam_save_path = os.path.join(qnap_path, 'Analysis', self.metainfo['date'], 'STA_Movies',
                                       '%s_%s_%s' % (self.metainfo['date'],
-                                                    self.metainfo['animal prep.'],
-                                                    self.metainfo['trial']))
+                                                    self.metainfo['exp_id'],
+                                                    self.metainfo['trial_id']))
         os.makedirs(stam_save_path, exist_ok=True)
 
         ##
         assert os.path.exists(stam_save_path)
 
         print('QNAP_path:', qnap_path,
-              '\ndata path:', movie_path,
-              '\nsync path:', sync_path,
-              '\nSTA movie save path:', stam_save_path)
+              '\ndata s2pResultsPath:', movie_path,
+              '\nsync s2pResultsPath:', sync_path,
+              '\nSTA movie save s2pResultsPath:', stam_save_path)
 
         # define STAmm parameters
         frameRate = int(self.imparams.fps)

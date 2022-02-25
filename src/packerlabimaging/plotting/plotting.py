@@ -335,7 +335,7 @@ def plotLfpSignal(trialobj: TwoPhotonImagingTrial, stim_span_color='powderblue',
     # return None
     # if not 'fig' in kwargs.keys():
     #     ax.set_title(
-    #         '%s - %s %s %s' % (title, trialobj.metainfo['exptype'], trialobj.metainfo['animal prep.'], trialobj.metainfo['trial']))
+    #         '%s - %s %s %s' % (title, trialobj.metainfo['exptype'], trialobj.metainfo['exp_id'], trialobj.metainfo['trial_id']))
     #
     # # options for showing plot or returning plot
     # if 'show' in kwargs.keys():
@@ -531,7 +531,7 @@ def plot_periphotostim_avg(arr: np.ndarray, trialobj: AllOpticalTrial, pre_stim_
             'stim_duration': photostimulation duration in secs
             'y_lims': tuple, y min and max of the plot
             'edgecolor': str, edgecolor of the individual traces behind the mean trace
-            'savepath': str, path to save plot to
+            'savepath': str, s2pResultsPath to save plot to
             'show': bool = to show the plot or not
     :return: ls containing some items about the traces
     """

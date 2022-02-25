@@ -1,0 +1,10 @@
+anndata
+tifffile
+numpy>=1.18.5
+seaborn
+matplotlib
+pandas
+scipy
+statsmodels
+scikit-image
+suite2p

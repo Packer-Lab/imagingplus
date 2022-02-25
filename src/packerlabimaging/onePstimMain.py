@@ -120,7 +120,7 @@ class OnePhotonStim(TwoPhotonImagingTrial):
 
     def collect_seizures_info(self, seizures_lfp_timing_matarray=None, discard_all=True):
         print('\ncollecting information about seizures...')
-        self.seizures_lfp_timing_matarray = seizures_lfp_timing_matarray  # path to the matlab array containing paired measurements of seizures onset and offsets
+        self.seizures_lfp_timing_matarray = seizures_lfp_timing_matarray  # s2pResultsPath to the matlab array containing paired measurements of seizures onset and offsets
 
         # retrieve seizure onset and offset times from the seizures info array input
         paq = paq2py(file_path=self._paq_path, plot=False)
