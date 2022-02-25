@@ -8,35 +8,39 @@
 
     <title>API reference &#8212; packerlabimaging 0.1-alpha documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Overview" href="overview.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="prev" title="Overview" href="overview.html" /> 
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="overview.html" title="Overview"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">packerlabimaging 0.1-alpha documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">API reference</a></li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          
-
           <div class="body" role="main">
             
   <section id="api-reference">
 <h1>API reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="packerlabimaging.Experiment">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">packerlabimaging.</span></span><span class="sig-name descname"><span class="pre">Experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysisSavePath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">microscope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expID</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trialsInformation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MutableMapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">packerlabimaging.ExperimentMain.TrialsInformation</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">useSuite2p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s2pResultsPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/ExperimentMain.html#Experiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.Experiment" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">packerlabimaging.</span></span><span class="sig-name descname"><span class="pre">Experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysisSavePath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">microscope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expID</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TrialsInformation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MutableMapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">packerlabimaging.ExperimentMain.TrialsInformation</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">useSuite2p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s2pResultsPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/ExperimentMain.html#Experiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.Experiment" title="Permalink to this definition">¶</a></dt>
 <dd><p>A class to initialize and store data of an imaging experiment. This class acts as a bucket to contain
 information about individual trial objects.</p>
 <dl class="py method">
@@ -57,7 +61,7 @@ trials_information</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="packerlabimaging.Experiment.pkl_path">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pkl_path</span></span><a class="headerlink" href="#packerlabimaging.Experiment.pkl_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>s2pResultsPath in Analysis folder to save pkl object</p>
+<dd><p>path in Analysis folder to save pkl object</p>
 </dd></dl>
 
 <dl class="py method">
@@ -89,7 +93,7 @@ s2pResultsPath</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="packerlabimaging.TwoPhotonImagingTrial">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">packerlabimaging.</span></span><span class="sig-name descname"><span class="pre">TwoPhotonImagingTrial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metainfo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">microscope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Bruker'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paqOptions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/TwoPhotonImagingMain.html#TwoPhotonImagingTrial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.TwoPhotonImagingTrial" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">packerlabimaging.</span></span><span class="sig-name descname"><span class="pre">TwoPhotonImagingTrial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metainfo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">microscope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Bruker'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paq_options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/TwoPhotonImagingMain.html#TwoPhotonImagingTrial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.TwoPhotonImagingTrial" title="Permalink to this definition">¶</a></dt>
 <dd><p>Just two photon imaging related functions - currently set up for data collected from Bruker microscopes and
 suite2p processed Ca2+ imaging data</p>
 <dl class="py method">
@@ -109,28 +113,16 @@ suite2p processed Ca2+ imaging data</p>
 <span class="sig-name descname"><span class="pre">meanRawFluTrace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/TwoPhotonImagingMain.html#TwoPhotonImagingTrial.meanRawFluTrace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.TwoPhotonImagingTrial.meanRawFluTrace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Collects the raw mean of FOV fluorescence trace across the t-series.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>plot</strong> – (optional) plot mean fluorescence trace</p></li>
-<li><p><strong>save</strong> – (optional) save data object after collecting mean fluorescence trace</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>mean fluorescence trace</p>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>mean fluorescence trace</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="packerlabimaging.TwoPhotonImagingTrial.paths">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">paths</span></span><a class="headerlink" href="#packerlabimaging.TwoPhotonImagingTrial.paths" title="Permalink to this definition">¶</a></dt>
-<dd><p>TODO returns a dictionary of all paths associated with trial</p>
-</dd></dl>
-
-<dl class="py property">
 <dt class="sig sig-object py" id="packerlabimaging.TwoPhotonImagingTrial.pkl_path">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pkl_path</span></span><a class="headerlink" href="#packerlabimaging.TwoPhotonImagingTrial.pkl_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>s2pResultsPath in Analysis folder to save pkl object</p>
+<dd><p>path in Analysis folder to save pkl object</p>
 </dd></dl>
 
 <dl class="py method">
@@ -144,41 +136,206 @@ suite2p processed Ca2+ imaging data</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="packerlabimaging.AllOpticalTrial">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">packerlabimaging.</span></span><span class="sig-name descname"><span class="pre">AllOpticalTrial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metainfo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">naparm_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">microscope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paq_options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prestim_sec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poststim_sec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_stim_response_window</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_stim_response_window</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/AllOpticalMain.html#AllOpticalTrial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.AllOpticalTrial" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class provides methods for All Optical experiments</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="packerlabimaging.AllOpticalTrial.STAProcessing">
+<span class="sig-name descname"><span class="pre">STAProcessing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/AllOpticalMain.html#AllOpticalTrial.STAProcessing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.AllOpticalTrial.STAProcessing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make stimulus triggered average (STA) traces and calculate the STA amplitude
+of response</p>
+<dl class="simple">
+<dt>Input:</dt><dd><p>plane - imaging plane n</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="packerlabimaging.AllOpticalTrial.avg_stim_images">
+<span class="sig-name descname"><span class="pre">avg_stim_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peri_frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stim_timings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_img</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_redo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/AllOpticalMain.html#AllOpticalTrial.avg_stim_images"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.AllOpticalTrial.avg_stim_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>Outputs (either by saving or plotting, or both) images from raw t-series TIFF for a trial around each individual
+stim timings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>peri_frames</strong> – </p></li>
+<li><p><strong>stim_timings</strong> – </p></li>
+<li><p><strong>save_img</strong> – </p></li>
+<li><p><strong>to_plot</strong> – </p></li>
+<li><p><strong>force_redo</strong> – </p></li>
+<li><p><strong>verbose</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="packerlabimaging.AllOpticalTrial.calculate_SLMTarget_SuccessStims">
+<span class="sig-name descname"><span class="pre">calculate_SLMTarget_SuccessStims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hits_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stims_idx_l</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_stims_targets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/AllOpticalMain.html#AllOpticalTrial.calculate_SLMTarget_SuccessStims"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.AllOpticalTrial.calculate_SLMTarget_SuccessStims" title="Permalink to this definition">¶</a></dt>
+<dd><p>uses outputs of calculate_SLMTarget_responses_dff to calculate overall successrate of the specified stims</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hits_df</strong> – pandas dataframe of targets x stims where 1 denotes successful stim response (0 is failure)</p></li>
+<li><p><strong>stims_idx_l</strong> – ls of stims to use for this function (useful when needing to filter out certain stims for in/out of sz)</p></li>
+<li><p><strong>exclude_stims_targets</strong> – dictionary of stims (keys) where the values for each stim contains the targets that should be excluded from counting in the analysis of Success/failure of trial</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>:return</dt><dd><p>reliability_slmtargets: dict; reliability (% of successful stims) for each SLM target
+traces_SLMtargets_successes_avg: np.array; photostims avg traces for each SLM target (successful stims only)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="packerlabimaging.AllOpticalTrial.collect_traces_from_targets">
+<span class="sig-name descname"><span class="pre">collect_traces_from_targets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curr_trial_frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reg_tif_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/AllOpticalMain.html#AllOpticalTrial.collect_traces_from_targets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.AllOpticalTrial.collect_traces_from_targets" title="Permalink to this definition">¶</a></dt>
+<dd><p>uses registered tiffs to collect raw traces from SLM target areas</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="packerlabimaging.AllOpticalTrial.get_SLMTarget_responses_dff">
+<span class="sig-name descname"><span class="pre">get_SLMTarget_responses_dff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">process</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stims_to_use</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/AllOpticalMain.html#AllOpticalTrial.get_SLMTarget_responses_dff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.AllOpticalTrial.get_SLMTarget_responses_dff" title="Permalink to this definition">¶</a></dt>
+<dd><p>calculations of dFF responses to photostimulation of SLM Targets. Includes calculating reliability of slm targets,
+saving success stim locations, and saving stim response magnitudes as pandas dataframe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>threshold</strong> – dFF threshold above which a response for a photostim trial is considered a success.</p></li>
+<li><p><strong>stims_to_use</strong> – ls of stims to retrieve photostim trial dFF responses</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="packerlabimaging.AllOpticalTrial.get_alltargets_stim_traces_norm">
+<span class="sig-name descname"><span class="pre">get_alltargets_stim_traces_norm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">process</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subselect_cells</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_stim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_stim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_sz</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/AllOpticalMain.html#AllOpticalTrial.get_alltargets_stim_traces_norm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.AllOpticalTrial.get_alltargets_stim_traces_norm" title="Permalink to this definition">¶</a></dt>
+<dd><p>primary function to measure the dFF and dF/setdF trace SNIPPETS for photostimulated targets.
+:param stims:
+:param targets_idx: integer for the index of target cell to process
+:param subselect_cells: ls of cells to subset from the overall set of traces (use in place of targets_idx if desired)
+:param pre_stim: number of frames to use as pre-stim
+:param post_stim: number of frames to use as post-stim
+:param filter_sz: whether to filter out stims that are occuring seizures
+:return: lists of individual targets dFF traces, and averaged targets dFF over all stims for each target</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="packerlabimaging.AllOpticalTrial.naparm_path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">naparm_path</span></span><a class="headerlink" href="#packerlabimaging.AllOpticalTrial.naparm_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>setting location of naparm files that specify the photostimulation experiment setup</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="packerlabimaging.AllOpticalTrial.paths">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">paths</span></span><a class="headerlink" href="#packerlabimaging.AllOpticalTrial.paths" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO returns a dictionary of all paths associated with trial</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="packerlabimaging.AllOpticalTrial.photostimProcessingAllCells">
+<span class="sig-name descname"><span class="pre">photostimProcessingAllCells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/AllOpticalMain.html#AllOpticalTrial.photostimProcessingAllCells"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.AllOpticalTrial.photostimProcessingAllCells" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take dfof trace for entire timeseries and break it up in to individual trials, calculate
+the mean amplitudes of response and statistical significance across all trials</p>
+<dl class="simple">
+<dt>Inputs:</dt><dd><p>plane             - imaging plane n</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="packerlabimaging.AllOpticalTrial.post_stim_frames">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">post_stim_frames</span></span><a class="headerlink" href="#packerlabimaging.AllOpticalTrial.post_stim_frames" title="Permalink to this definition">¶</a></dt>
+<dd><p>num frames for collecting Flu trace after each photostimulation trial (units: frames)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="packerlabimaging.AllOpticalTrial.post_stim_response_frames_window">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">post_stim_response_frames_window</span></span><a class="headerlink" href="#packerlabimaging.AllOpticalTrial.post_stim_response_frames_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>num frames for collecting Flu trace after each photostimulation trial (units: frames)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="packerlabimaging.AllOpticalTrial.post_stim_test_slice">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">post_stim_test_slice</span></span><a class="headerlink" href="#packerlabimaging.AllOpticalTrial.post_stim_test_slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>num of poststim frames used for quantification of photostim responses</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="packerlabimaging.AllOpticalTrial.pre_stim_frames">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pre_stim_frames</span></span><a class="headerlink" href="#packerlabimaging.AllOpticalTrial.pre_stim_frames" title="Permalink to this definition">¶</a></dt>
+<dd><p>num frames for collecting Flu trace after each photostimulation trial (units: frames)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="packerlabimaging.AllOpticalTrial.pre_stim_response_frames_window">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pre_stim_response_frames_window</span></span><a class="headerlink" href="#packerlabimaging.AllOpticalTrial.pre_stim_response_frames_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>num frames for measuring Flu trace before each photostimulation trial during photostim response measurement (units: frames)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="packerlabimaging.AllOpticalTrial.pre_stim_test_slice">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pre_stim_test_slice</span></span><a class="headerlink" href="#packerlabimaging.AllOpticalTrial.pre_stim_test_slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>num of prestim frames used for quantification of photostim responses</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="packerlabimaging.AllOpticalTrial.run_stamm_nogui">
+<span class="sig-name descname"><span class="pre">run_stamm_nogui</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">numDiffStims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startOnStim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">everyXStims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preSeconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.75</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postSeconds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.25</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/AllOpticalMain.html#AllOpticalTrial.run_stamm_nogui"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.AllOpticalTrial.run_stamm_nogui" title="Permalink to this definition">¶</a></dt>
+<dd><p>run STAmoviemaker for the self’s trial</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="packerlabimaging.AllOpticalTrial.s2pMaskStack">
+<span class="sig-name descname"><span class="pre">s2pMaskStack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pkl_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s2p_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_redo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/AllOpticalMain.html#AllOpticalTrial.s2pMaskStack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.AllOpticalTrial.s2pMaskStack" title="Permalink to this definition">¶</a></dt>
+<dd><p>makes a TIFF stack with the s2p mean image, and then suite2p ROI masks for all cells detected, target cells, and also SLM targets as well?</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="packerlabimaging.AllOpticalTrial.statisticalProcessingAllCells">
+<span class="sig-name descname"><span class="pre">statisticalProcessingAllCells</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/AllOpticalMain.html#AllOpticalTrial.statisticalProcessingAllCells"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.AllOpticalTrial.statisticalProcessingAllCells" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs statistical processing on photostim response arrays</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="packerlabimaging.AllOpticalTrial.timeVector">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">timeVector</span></span><a class="headerlink" href="#packerlabimaging.AllOpticalTrial.timeVector" title="Permalink to this definition">¶</a></dt>
+<dd><p>vector of frame times in milliseconds rather than frames</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
+            <div class="clearer"></div>
           </div>
-          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">packerlabimaging</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quick-start-guide.html">Quick start guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="overview.html" title="previous chapter">Overview</a></li>
-  </ul></li>
-</ul>
-</div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="overview.html"
+                          title="previous chapter">Overview</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/reference.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
@@ -189,32 +346,26 @@ suite2p processed Ca2+ imaging data</p>
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2022, Packer Lab.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="_sources/reference.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="overview.html" title="Overview"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">packerlabimaging 0.1-alpha documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">API reference</a></li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Packer Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
   </body>
 </html>

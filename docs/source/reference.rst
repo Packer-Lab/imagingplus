@@ -8,4 +8,6 @@ API reference
 .. autoclass:: packerlabimaging.TwoPhotonImagingTrial
     :members:
 
+.. autoclass:: packerlabimaging.AllOpticalTrial
+    :members:
 
