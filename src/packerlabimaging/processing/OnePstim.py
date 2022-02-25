@@ -18,11 +18,11 @@ class OnePstim(TwoPhotonImagingTrial):
     def __init__(self, data_path_base, date, animal_prep, trial, metainfo, analysis_save_path_base: str = None, paqInfoTrial: PaqInfoTrial = None):
         # TODO need to review __init__ code to fit into package pipeline
         paqs_loc = '%s%s_%s_%s.Paq' % (
-            data_path_base, date, animal_prep, trial[2:])  # s2pResultsPath to the .Paq files for the selected trials
+            data_path_base, date, animal_prep, trial[2:])  # path to the .Paq files for the selected trials
         tiffs_loc_dir = '%s/%s_%s' % (data_path_base, date, trial)
         tiffs_loc = '%s/%s_%s_Cycle00001_Ch3.tif' % (tiffs_loc_dir, date, trial)
         self.pkl_path = "/home/pshah/mnt/qnap/Analysis/%s/%s_%s/%s_%s.pkl" % (
-            date, date, trial, date, trial)  # specify s2pResultsPath in Analysis folder to save pkl object
+            date, date, trial, date, trial)  # specify path in Analysis folder to save pkl object
         new_tiffs = tiffs_loc[:-19]  # where new tiffs from rm_artifacts_tiffs will be saved
 
         # make the necessary Analysis saving subfolder as well
@@ -47,7 +47,7 @@ class OnePstim(TwoPhotonImagingTrial):
         self.paq_data = PaqData(paq_path=self.paq_path)
         self._1p_stims(plot=False, optoloopback_channel=paqInfoTrial['stim_channel'])
 
-        self._paqProcessingTwoPhotonImaging(paq_path=paqInfoTrial['s2pResultsPath'], frame_channel=paqInfoTrial['frame_channel'])
+        self._paqProcessingTwoPhotonImaging(paq_path=paqInfoTrial['paq_path'], frame_channel=paqInfoTrial['frame_channel'])
 
         # add all frames as bad frames incase want to include this trial in suite2p run
         self.bad_frames = PaqData.frames_discard(paq=PaqData.paq_read(paq_path=self.paq_path), input_array=None, total_frames=self.n_frames, discard_all=True)

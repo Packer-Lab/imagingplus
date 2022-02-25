@@ -531,7 +531,7 @@ def plot_periphotostim_avg(arr: np.ndarray, trialobj: AllOpticalTrial, pre_stim_
             'stim_duration': photostimulation duration in secs
             'y_lims': tuple, y min and max of the plot
             'edgecolor': str, edgecolor of the individual traces behind the mean trace
-            'savepath': str, s2pResultsPath to save plot to
+            'savepath': str, path to save plot to
             'show': bool = to show the plot or not
     :return: ls containing some items about the traces
     """

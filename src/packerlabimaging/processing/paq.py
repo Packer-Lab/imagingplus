@@ -17,7 +17,7 @@ def paq2py(file_path=None, plot=False):
     Parameters
     ==========
     file_path : str, optional
-        full s2pResultsPath to file to read in. if none is supplied a load file dialog
+        full path to file to read in. if none is supplied a load file dialog
         is opened, buggy on mac osx - Tk/matplotlib. Default: None.
     plot : bool, optional
         plot the data after reading? Default: False.
@@ -153,7 +153,7 @@ class PaqData:
         """
         Loads .Paq file and saves data from individual channels.
 
-        :param paq_path: s2pResultsPath to the .Paq file for this data object
+        :param paq_path: path to the .Paq file for this data object
         :param plot: (optional) whether to plot
         """
 
@@ -341,7 +341,7 @@ class PaqData:
         calculate which 2P imaging frames to discard (or use as bad frames input into suite2p) based on the bad frames
         identified by manually inspecting the Paq files in EphysViewer.m
         :param Paq: Paq file
-        :param input_array: .m file s2pResultsPath to read that contains the timevalues for signal to remove
+        :param input_array: .m file path to read that contains the timevalues for signal to remove
         :param total_frames: the number of frames in the TIFF file of the actual 2p imaging recording
         :param discard_all: bool; if True, then add all 2p imaging frames from this Paq file as bad frames to discard
         :return: array that contains the indices of bad frames (in format ready to input into suite2p processing)

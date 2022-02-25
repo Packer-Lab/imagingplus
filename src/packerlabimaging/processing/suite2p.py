@@ -19,12 +19,12 @@ class Suite2pResultsExperiment:
     """used to run and further process suite2p processed data, and analysis associated with suite2p processed data."""
 
     def __init__(self, trialsSuite2p: list, s2pResultsPath: Optional[str] = None, subtract_neuropil: bool = True):
-        self.reg_tiff_path = None
-        self.ops_end = None
-        self.s2pResultsPath = None
-        self._s2pResultExists = None
-        self.db = None
-        self.ops = None
+        # self.reg_tiff_path = None
+        # self.ops_end = None
+        # self.s2pResultsPath = None
+        # self.s2pResultExists = False
+        # self.db = None
+        # self.ops = None
         print(f"\- ADDING Suite2p Results to Experiment object ... ")
 
         ## initialize attr's
@@ -62,15 +62,16 @@ class Suite2pResultsExperiment:
             try:
                 neuropil_coeff = NEUROPIL_COEFF if subtract_neuropil else 0
                 self._retrieveSuite2pData(self.s2pResultsPath, neuropil_coeff=neuropil_coeff)
-            except:
-                raise ValueError(
+            except Exception:
+                raise Exception(
                     f'Something went wrong while trying to load suite2p processed data from: {s2pResultsPath}')
+            self.s2pResultExists = True
 
         # Attributes
         self.n_frames: int = 0  # total number of imaging frames in the Suite2p run
 
     def __repr__(self):
-        return 'Suite2p Results (Experiment level) Object'
+        return f'Suite2p Results (Experiment level) Object, containing trials: \n\t{self.trials}'
 
     def _retrieveSuite2pData(self, s2p_path: str = None, neuropil_coeff: float = 0.7):
         """processing of suite2p data from the current t-series
@@ -251,7 +252,7 @@ class Suite2pResultsExperiment:
         return mean_img
 
     # suite2p methods - refactored currently to _utils.Utils !!!!!
-    def s2pRun(self, ops, db):  # TODO gotta specify # of planes somewhere here
+    def s2pRun(self, ops, db):  # TODO need to test
         """
         run suite2p on the experiment object, using trials specified in current experiment object, using the attributes
         determined directly from the experiment object.
@@ -268,7 +269,7 @@ class Suite2pResultsExperiment:
         from suite2p import run_s2p
         self.ops_end = run_s2p(ops=ops, db=db)
 
-        self._s2pResultExists = True
+        self.s2pResultExists = True
         self.s2pResultsPath = self.ops_end['save_path']
 
 

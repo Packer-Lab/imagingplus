@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 import tifffile as tf
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from packerlabimaging.utils.utils import SaveDownsampledTiff, make_tiff_stack, normalize_dff, UnavailableOptionError
+from packerlabimaging.utils.utils import SaveDownsampledTiff, normalize_dff, UnavailableOptionError
 from packerlabimaging.processing.paq import import_paqdata
 from .processing import suite2p, anndata as ad
 from .utils.imagingMetadata import PrairieViewMetadata, ImagingMetadata
@@ -24,16 +24,16 @@ class TwoPhotonImagingTrial:
     """Just two photon imaging related functions - currently set up for data collected from Bruker microscopes and
     suite2p processed Ca2+ imaging data """
 
-    def __init__(self, metainfo: dict, analysis_save_path: str, microscope: str = 'Bruker', paqOptions: dict = None,
+    def __init__(self, metainfo: dict, analysis_save_path: str, microscope: str = 'Bruker', paq_options: dict = None,
                  **kwargs):
         """
         TODO update function docstring for approp args
-        :param tiff_path: s2pResultsPath to t-series .tiff
-        :param analysis_save_path: s2pResultsPath of where to save the experiment analysis object
+        :param tiff_path: path to t-series .tiff
+        :param analysis_save_path: path of where to save the experiment analysis object
         :param microscope: name of microscope used to record imaging (options: "Bruker" (default), "Scientifica", "other")
         :param metainfo: dictionary containing any metainfo information field needed for this experiment. At minimum it needs to include prep #, t-series # and date of data collection.
-        :param paq_path: (optional) s2pResultsPath to .Paq file associated with current t-series
-        :param suite2p_path: (optional) s2pResultsPath to suite2p outputs folder associated with this t-series (plane0 file? or ops file? not sure yet)
+        :param paq_path: (optional) path to .Paq file associated with current t-series
+        :param suite2p_path: (optional) path to suite2p outputs folder associated with this t-series (plane0 file? or ops file? not sure yet)
         :param make_downsampled_tiff: flag to run generation and saving of downsampled tiff of t-series (saves to the analysis save location)
         """
 
@@ -62,8 +62,8 @@ class TwoPhotonImagingTrial:
             self.tiff_path = metainfo['TrialsInformation']['tiff_path']
         else:
             raise FileNotFoundError(f"tiff_path does not exist: {metainfo['TrialsInformation']['tiff_path']}")
-        if 's2pResultsPath' in [*paqOptions]:
-            paq_path = paqOptions['s2pResultsPath']
+        if 'paq_path' in [*paq_options]:
+            paq_path = paq_options['paq_path']
             if os.path.exists(paq_path):
                 self._use_paq = True
             else:
@@ -71,7 +71,7 @@ class TwoPhotonImagingTrial:
         else:
             self._use_paq = False
 
-        # set and create analysis save s2pResultsPath directory
+        # set and create analysis save path directory
         self.analysis_save_dir = analysis_save_path
         self.__pkl_path = f"{self.analysis_save_dir}{metainfo['date']}_{metainfo['trial_id']}.pkl"
 
@@ -91,10 +91,10 @@ class TwoPhotonImagingTrial:
 
         # run Paq processing if paq_path is provided for trial
         if self._use_paq:
-            frame_channel = paqOptions['frame_channel'] if 'frame_channel' in [
-                *paqOptions] else KeyError(
+            frame_channel = paq_options['frame_channel'] if 'frame_channel' in [
+                *paq_options] else KeyError(
                 'No frame_channel specified for .paq processing')  # channel on Paq file to read for determining stims
-            self.Paq = self._paqProcessingTwoPhotonImaging(paq_path=paqOptions['s2pResultsPath'],
+            self.Paq = self._paqProcessingTwoPhotonImaging(paq_path=paq_options['paq_path'],
                                                            frame_channel=frame_channel)
 
         # collect mean FOV Trace
@@ -136,7 +136,13 @@ class TwoPhotonImagingTrial:
     @property
     def paths(self):
         """TODO returns a dictionary of all paths associated with trial"""
-        return None
+
+        paths_dict = {}
+        for attr in [*self.__dict__]:
+            if 'path' in attr:
+                paths_dict[attr] = self.__getattribute__(name=attr)
+
+        return paths_dict
 
     @property
     def fig_save_path(self):
@@ -145,12 +151,12 @@ class TwoPhotonImagingTrial:
 
     @fig_save_path.setter
     def fig_save_path(self, value: str):
-        "set new default fig save s2pResultsPath for data object"
+        """set new default fig save path for data object"""
         self.fig_save_path = value
 
     @property
     def date(self):
-        "date of the experiment datacollection"
+        """date of the experiment datacollection"""
         return self.__metainfo['date']
 
     @property
@@ -177,7 +183,7 @@ class TwoPhotonImagingTrial:
 
     @property
     def pkl_path(self):
-        "s2pResultsPath in Analysis folder to save pkl object"
+        "path in Analysis folder to save pkl object"
         return self.__pkl_path
 
     @pkl_path.setter
@@ -303,8 +309,6 @@ class TwoPhotonImagingTrial:
         """
         Collects the raw mean of FOV fluorescence trace across the t-series.
 
-        :param plot: (optional) plot mean fluorescence trace
-        :param save: (optional) save data object after collecting mean fluorescence trace
         :return: mean fluorescence trace
         """
         im_stack = self.importTrialTiff()
@@ -340,7 +344,7 @@ class TwoPhotonImagingTrial:
         #         pkl_path = self.pkl_path
         #     else:
         #         raise ValueError(
-        #             'pkl s2pResultsPath for saving was not found in data object attributes, please provide pkl_path to save to')
+        #             'pkl path for saving was not found in data object attributes, please provide pkl_path to save to')
         # else:
         #     self.pkl_path = pkl_path
         if pkl_path:
@@ -362,7 +366,7 @@ def _getPVStateShard(self, root, key):
     Find the value, description and indices of a particular parameter from an xml file
 
     Inputs:
-        s2pResultsPath        - s2pResultsPath to xml file
+        path        - path to xml file
         key         - string corresponding to key in xml tree
     Outputs:
         value       - value of the key
@@ -408,10 +412,10 @@ def _parsePVMetadata(self):
 
     print('\n\----- Parsing PV Metadata for Bruker microscope...')
 
-    tiff_path = self.tiff_path_dir  # starting s2pResultsPath
-    xml_path = []  # searching for xml s2pResultsPath
+    tiff_path = self.tiff_path_dir  # starting path
+    xml_path = []  # searching for xml path
 
-    try:  # look for xml file in s2pResultsPath, or two paths up (achieved by decreasing count in while loop)
+    try:  # look for xml file in path, or two paths up (achieved by decreasing count in while loop)
         count = 2
         while count != 0 and not xml_path:
             count -= 1
@@ -420,10 +424,10 @@ def _parsePVMetadata(self):
                     xml_path = os.path.join(tiff_path, file)
             tiff_path = os.path.dirname(tiff_path)  # re-assign tiff_path as next folder up
 
-    except:
+    except Exception:
         raise Exception('ERROR: Could not find xml for this acquisition, check it exists')
 
-    xml_tree = ET.parse(xml_path)  # parse xml from a s2pResultsPath
+    xml_tree = ET.parse(xml_path)  # parse xml from a path
     root = xml_tree.getroot()  # make xml tree structure
 
     sequence = root.find('Sequence')

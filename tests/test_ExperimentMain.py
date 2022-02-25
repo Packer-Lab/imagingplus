@@ -34,7 +34,7 @@ def test_ExperimentClass(experiment_fixture):
 #     date = data_path_base[-10:]
 #
 #     ## everything below should autopopulate and run automatically
-#     paqs_loc = '%s/%s_%s_%s.Paq' % (data_path_base, date, animal_prep, trial[2:])  # s2pResultsPath to the .Paq files for the selected trials
+#     paqs_loc = '%s/%s_%s_%s.Paq' % (data_path_base, date, animal_prep, trial[2:])  # path to the .Paq files for the selected trials
 #     tiffs_loc = f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif'
 #
 #
@@ -53,7 +53,7 @@ def test_ExperimentClass(experiment_fixture):
 #     date = data_path_base[-10:]
 #
 #     ## everything below should autopopulate and run automatically
-#     paqs_loc = '%s/%s_%s_%s.Paq' % (data_path_base, date, animal_prep, trial[2:])  # s2pResultsPath to the .Paq files for the selected trials
+#     paqs_loc = '%s/%s_%s_%s.Paq' % (data_path_base, date, animal_prep, trial[2:])  # path to the .Paq files for the selected trials
 #     tiffs_loc = f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif'
 #
 #

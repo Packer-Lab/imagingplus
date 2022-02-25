@@ -19,7 +19,7 @@ def ReadRawFile(movie_path=None, start=1, stop=np.Inf, num_frames=np.Inf, verbos
 	Input
 	-----
 	movie_path : string, optional
-		full s2pResultsPath to *.bin file, if none provided dialog box will open
+		full path to *.bin file, if none provided dialog box will open
 	start : int, optional
 		the first frame to begin reading from
 	stop : int, optional
@@ -41,7 +41,7 @@ def ReadRawFile(movie_path=None, start=1, stop=np.Inf, num_frames=np.Inf, verbos
 		movie_path = filedialog.askopenfilename(filetypes=(("BIN files", "*.bin*"), ("All files", "*.*") ))
 
 	if verbose:
-		print('File s2pResultsPath: ' + movie_path)
+		print('File path: ' + movie_path)
 
 	# begin timer
 	time_started = time.time()

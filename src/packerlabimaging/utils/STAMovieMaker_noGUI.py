@@ -77,7 +77,7 @@ class STAMovieMaker():
                 stim_trace = paq['data'][paq['chan_names'].index(sync_stim_channel)]
                 rate = paq['rate']
 
-            except:
+            except Exception:
                 print('Error. Channel names: ' + str(paq['chan_names']))
                 error = True
 

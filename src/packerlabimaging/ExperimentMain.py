@@ -53,7 +53,7 @@ NEUROPIL_COEFF = 0.7
 
 class PaqInfoTrial(TypedDict, total=False):
     frame_channel: str
-    path: str  # complete s2pResultsPath to .paq file for trial
+    paq_path: str  # complete path to .paq file for trial
     stim_channel: Optional[str]
 
 
@@ -61,38 +61,40 @@ class TrialsInformation(TypedDict, total=False):
     trialType: str
     tiff_path: str
     expGroup: str
-    paqInfoTrial: Optional[PaqInfoTrial]
-    s2p_use: Optional[str]
-    naparm_path: Optional[str]
-    analysis_object_information: Optional[TypedDict('analysis_object_information',
-                                                    {'series ID': str, 'repr': str, 'pkl s2pResultsPath': str})] = None
+    PaqInfoTrial: PaqInfoTrial
+    s2p_use: str
+    naparm_path: str
+    analysis_object_information: TypedDict('analysis_object_information',
+                                                    {'series ID': str, 'repr': str, 'pkl path': str})
 
 
 @dataclass
 class Experiment:
+    """A class to initialize and store data of an imaging experiment. This class acts as a bucket to contain
+    information about individual trial objects. """
     date: str
     comments: str
     dataPath: str
     analysisSavePath: str  # main dir where the experiment object and the trial objects will be saved to
     microscope: str
     expID: str
-    trialsInformation: MutableMapping[str, TrialsInformation]
+    TrialsInformation: MutableMapping[str, TrialsInformation]
     useSuite2p: bool = False
-    s2pResultsPath: Optional[str] = None  ## s2pResultsPath to the parent directory containing the ops.npy file
+    s2pResultsPath: Optional[str] = None  ## path to the parent directory containing the ops.npy file
 
     def __post_init__(self):
 
         trial_descr = f""
         for trial in self.trialIDs:
-            trial_descr += f"\n\t{trial}, {self.trialsInformation[trial]['trialType']}, {self.trialsInformation[trial]['expGroup']}"
+            trial_descr += f"\n\t{trial}, {self.TrialsInformation[trial]['trialType']}, {self.TrialsInformation[trial]['expGroup']}"
         print(f'***********************')
         print(f'CREATING new Experiment: (date: {self.date}, expID: {self.expID}), with trials: {trial_descr}')
         print(f'***********************\n\n')
 
         # need to check that the required keys are provided in TrialsInformation
         for i in ['trialType', 'tiff_path', 'expGroup']:
-            for trial in [*self.trialsInformation]:
-                assert i in [*self.trialsInformation[
+            for trial in [*self.TrialsInformation]:
+                assert i in [*self.TrialsInformation[
                     trial]], f"must provide {i} as a key in the TrialsInformation dictionary for trial: {trial}"
 
         # START PROCESSING FOR EXPERIMENT:
@@ -126,7 +128,7 @@ class Experiment:
         os.makedirs(self.analysisSavePath, exist_ok=True)
 
     def _get_trial_infor(self, trialID: str):
-        return f"\n\t{trialID}: {self.trialsInformation[trialID]['trialType']}, {self.trialsInformation[trialID]['expGroup']}"
+        return f"\n\t{trialID}: {self.TrialsInformation[trialID]['trialType']}, {self.TrialsInformation[trialID]['expGroup']}"
 
     def __repr__(self):
         return f"packerlabimaging.Experiment object (date: {self.date}, expID: {self.expID})"
@@ -134,9 +136,9 @@ class Experiment:
     def __str__(self):
         lastsaved = time.ctime(os.path.getmtime(self.pkl_path))
         __return_information = f"packerlabimaging Experiment object (last saved: {lastsaved}), date: {self.date}, expID: {self.expID}, microscope: {self.microscope}"
-        __return_information = __return_information + f"\nfile s2pResultsPath: {self.pkl_path}"
+        __return_information = __return_information + f"\nfile path: {self.pkl_path}"
         __return_information = __return_information + f"\n\ntrials in Experiment object:"
-        for trial in self.trialsInformation:
+        for trial in self.TrialsInformation:
             # print(f"\t{trial}: {self.TrialsInformation[trial]['trialType']} {self.TrialsInformation[trial]['expGroup']}")
             __return_information = __return_information + self._get_trial_infor(trialID=trial)
         return f"{__return_information}\n"
@@ -147,10 +149,10 @@ class Experiment:
 
         for trial in self.trialIDs:
             if trial not in self._trialsSuite2p:
-                assert 's2p_use' in [*self.trialsInformation[
+                assert 's2p_use' in [*self.TrialsInformation[
                     trial]], 'when trying to utilize suite2p , must provide value for `s2p_use` ' \
                              'in TrialsInformation[trial] for each trial to specify if to use trial for this suite2p associated with this experiment'
-                self._trialsSuite2p.append(trial) if self.trialsInformation[trial]['s2p_use'] else None
+                self._trialsSuite2p.append(trial) if self.TrialsInformation[trial]['s2p_use'] else None
 
         if self.s2pResultsPath:  # if s2pResultsPath provided then try to find and pre-load results from provided s2pResultsPath, raise error if cannot find results
             # search for suite2p results items in self.suite2pPath, and auto-assign s2pRunComplete --> True if found successfully
@@ -187,9 +189,9 @@ class Experiment:
 
         if trialID is not None and trialID not in self._trialsSuite2p:
             assert 's2p_use' in [
-                *self.trialsInformation[trialID]], 'when trying to utilize suite2p , must provide value for `s2p_use` ' \
+                *self.TrialsInformation[trialID]], 'when trying to utilize suite2p , must provide value for `s2p_use` ' \
                                                    'in TrialsInformation[trial] for each trial to specify if to use trial for this suite2p associated with this experiment'
-            self._trialsSuite2p.append(trialID) if self.trialsInformation[trialID]['s2p_use'] else None
+            self._trialsSuite2p.append(trialID) if self.TrialsInformation[trialID]['s2p_use'] else None
         try:
             if s2pResultsPath:  # if s2pResultsPath provided then try to find and pre-load results from provided s2pResultsPath, raise error if cannot find results
                 # search for suite2p results items in self.suite2pPath, and auto-assign s2pRunComplete --> True if found successfully
@@ -210,11 +212,12 @@ class Experiment:
                 self._s2pResultExists = False
                 self._suite2p_save_path = self.analysisSavePath + '/suite2p/'
                 self.Suite2p = Suite2pResultsExperiment(trialsSuite2p=self._trialsSuite2p)
-        except:
-            raise ValueError(f"something went wrong. could not update suit2p results s2pResultsPath.")
+        except Exception:
+            raise ValueError(f"something went wrong. could not update suite2p results s2pResultsPath.")
 
     def add_trial(self, trial_id: str, total_frames_stitched: int, trials_information: TrialsInformation = None):  # TODO need to figure out if there's a way around providing total_frames_stitched as arg! also add example of .add_trial() to tutorial!
         """
+        Create and add a trial object to the experiment.
 
         Parameters
         ----------
@@ -231,7 +234,7 @@ class Experiment:
         from .onePstimMain import OnePhotonStim
 
         print(f"\n\n\- ADDING trial: {trial_id}, expID: ({self.expID})")
-        __trialsInformation = trials_information if trials_information else self.trialsInformation[trial_id]
+        __trialsInformation = trials_information if trials_information else self.TrialsInformation[trial_id]
         _metainfo = {
             'exp_id': self.expID,
             'trial_id': trial_id,
@@ -241,33 +244,33 @@ class Experiment:
         }
 
         if _metainfo['TrialsInformation']['trialType'] == 'TwoPhotonImagingTrial':
-            if self.trialsInformation[trial_id]['s2p_use']:  # TODO could use switch statements in the 2p imaging trial class...
+            if self.TrialsInformation[trial_id]['s2p_use']:  # TODO could use switch statements in the 2p imaging trial class...
                 trial_obj = TwoPhotonImagingTrial(metainfo=_metainfo, analysis_save_path=self.analysisSavePath,
-                                                  paqOptions=_metainfo['TrialsInformation']['PaqInfoTrial'],
+                                                  paq_options=_metainfo['TrialsInformation']['PaqInfoTrial'],
                                                   microscope=self.microscope,
                                                   total_frames_stitched=total_frames_stitched,
                                                   suite2p_experiment_obj=self.Suite2p)
             else:
                 trial_obj = TwoPhotonImagingTrial(metainfo=_metainfo, analysis_save_path=self.analysisSavePath,
                                                   microscope=self.microscope,
-                                                  paqOptions=_metainfo['TrialsInformation']['PaqInfoTrial'])
+                                                  paq_options=_metainfo['TrialsInformation']['PaqInfoTrial'])
 
         elif _metainfo['TrialsInformation']['trialType'] == 'AllOpticalTrial':
-            if self.trialsInformation[trial_id]['s2p_use']:
+            if self.TrialsInformation[trial_id]['s2p_use']:
                 trial_obj = AllOpticalTrial(metainfo=_metainfo,
                                             naparm_path=_metainfo['TrialsInformation']['naparm_path'],
-                                            paq_options=_metainfo['TrialsInformation']['PaqInfoTrial'],
                                             analysis_save_path=self.analysisSavePath, microscope=self.microscope,
-                                            prestim_sec=1.0, poststim_sec=3.0, pre_stim_response_window=0.500,
+                                            paq_options=_metainfo['TrialsInformation']['PaqInfoTrial'], prestim_sec=1.0,
+                                            poststim_sec=3.0, pre_stim_response_window=0.500,
                                             post_stim_response_window=0.500,
                                             total_frames_stitched=total_frames_stitched,
                                             suite2p_experiment_obj=self.Suite2p)
             else:
                 trial_obj = AllOpticalTrial(metainfo=_metainfo,
                                             naparm_path=_metainfo['TrialsInformation']['naparm_path'],
-                                            paq_options=_metainfo['TrialsInformation']['PaqInfoTrial'],
                                             analysis_save_path=self.analysisSavePath, microscope=self.microscope,
-                                            prestim_sec=1.0, poststim_sec=3.0, pre_stim_response_window=0.500,
+                                            paq_options=_metainfo['TrialsInformation']['PaqInfoTrial'], prestim_sec=1.0,
+                                            poststim_sec=3.0, pre_stim_response_window=0.500,
                                             post_stim_response_window=0.500)
 
         elif _metainfo['TrialsInformation']['trialType'] == 'OnePhotonAllOpticalTrial':
@@ -279,9 +282,9 @@ class Experiment:
                 f"Compatible trialType options are: 'TwoPhotonImagingTrial', 'AllOpticalTrial', 'OnePhotonStim' ")
 
         # update self.TrialsInformation using the information from new trial_obj
-        self.trialsInformation[trial_id]['analysis_object_information'] = {'series ID': trial_obj.t_series_name,
+        self.TrialsInformation[trial_id]['analysis_object_information'] = {'series ID': trial_obj.t_series_name,
                                                                           'repr': trial_obj.__repr__(),
-                                                                          'pkl s2pResultsPath': trial_obj.pkl_path}
+                                                                          'pkl path': trial_obj.pkl_path}
 
         # initialize suite2p for trial objects
         if 's2p_use' in [*__trialsInformation] and __trialsInformation['s2p_use'] is True:
@@ -301,19 +304,19 @@ class Experiment:
 
     @property
     def trialIDs(self):
-        return [*self.trialsInformation]
+        return [*self.TrialsInformation]
 
     @property
     def tiff_path_dir(self):
         "retrieve the parent directory of the provided tiff_path"
-        __first_trial_in_experiment = [*self.trialsInformation][0]
-        __tiff_path_first_trial = self.trialsInformation[__first_trial_in_experiment]['tiff_path']
+        __first_trial_in_experiment = [*self.TrialsInformation][0]
+        __tiff_path_first_trial = self.TrialsInformation[__first_trial_in_experiment]['tiff_path']
         return __tiff_path_first_trial[:[(s.start(), s.end()) for s in re.finditer('/', __tiff_path_first_trial)][-1][
             0]]  # this is the directory where the Bruker xml files associated with the 2p imaging TIFF are located
 
     @property
     def pkl_path(self):
-        "s2pResultsPath in Analysis folder to save pkl object"
+        "path in Analysis folder to save pkl object"
         return self.__pkl_path
 
     @pkl_path.setter
@@ -340,7 +343,7 @@ class Experiment:
     def load_trial(self, trialID: str):
         "method for importing individual trial objects from Experiment instance using the trial id for a given trial"
         try:
-            trial_pkl_path = self.trialsInformation[trialID]['analysis_object_information']['pkl s2pResultsPath']
+            trial_pkl_path = self.TrialsInformation[trialID]['analysis_object_information']['pkl s2pResultsPath']
             trialobj = _io.import_obj(trial_pkl_path)
             return trialobj
         except KeyError:
