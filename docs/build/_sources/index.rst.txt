@@ -11,7 +11,9 @@ packerlabimaging
 
 This documentation contains detailed information about the code base of ``packerlabimaging``.
 There are instructions for installation and guides to get you started with utilizing the package.
-Please open an issue or pull request on the project's github page if you are encountering any problems with the package.
+
+
+Please open an issue or pull request on the project's `Github <https://github.com/Packer-Lab/packerlabimaging>`_ page if you are encountering any problems with the package.
 
 **Introduction**
 
