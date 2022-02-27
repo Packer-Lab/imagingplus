@@ -42,13 +42,28 @@
 <p>This documentation contains detailed information about the code base of the <code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code>.
 There are instructions for installation and guides to get you started with utilizing the package.
 Please open an issue or pull request on the project’s github page if encountering any problems with the package.</p>
+<p><strong>Introduction</strong></p>
+<p>packerlabimaging is a simple Python package for essential processing and analysis of 2photon imaging data collected in the Packer Lab.
+Especially, there is a fully implemented pipeline for data structuring, processing, analysis and plotting of 2photon Ca2+ imaging experiments, and experiments based around 2photon imaging such as all optical experiments (i.e. 2photon optogenetic stim or 1photon optogenetic stim, with combined 2photon Ca2+ imaging).</p>
+<aside class="sidebar">
+<p class="sidebar-title">Schematic of overall package flow</p>
+<figure class="align-default">
+<a class="reference internal image-reference" href="_images/OverallPackageFlowDiagram.png"><img alt="_images/OverallPackageFlowDiagram.png" src="_images/OverallPackageFlowDiagram.png" style="width: 600px;" /></a>
+</figure>
+</aside>
+<p>This package is designed to work best with imaging experiments performed using PackIO, a Bruker 2pPlus microscope and using Suite2p for Ca2+ imaging data processing for ROI detection.
+Ultimately, the goal of this package is to jump-start your own analysis of your awesome experiment.
+It should be completely usable and understandable for anyone with the correct data in hand and basic knowledge of Python. There are <a class="reference internal" href="Tutorials-reference.html#tutorials"><span class="std std-ref">Tutorials</span></a> to help along the way.
+We hope that it provides a useful structure to organize your experimental data, and some functionality to interact and process your data in an efficient manner.</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quick-start-guide.html">Quick start guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Tutorials-reference.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tutorials-reference.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data-structure-details.html">Data Structure details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="creating-plots.html">Making plots</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a></li>
 </ul>
 </div>

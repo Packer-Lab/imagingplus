@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Overview &#8212; packerlabimaging 0.1-alpha documentation</title>
+    <title>Data Analysis Flow and Organization &#8212; packerlabimaging 0.1-alpha documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -15,8 +15,8 @@
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API reference" href="reference.html" />
-    <link rel="prev" title="Quick Start Guide" href="quick-start-guide.html" /> 
+    <link rel="next" title="Data Structure Inside Trial objects" href="data-structure-details.html" />
+    <link rel="prev" title="Tutorials" href="Tutorials-reference.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -25,13 +25,13 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="reference.html" title="API reference"
+          <a href="data-structure-details.html" title="Data Structure Inside Trial objects"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="quick-start-guide.html" title="Quick Start Guide"
+          <a href="Tutorials-reference.html" title="Tutorials"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">packerlabimaging 0.1-alpha documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Overview</a></li> 
+        <li class="nav-item nav-item-this"><a href=""><strong>Data Analysis Flow and Organization</strong></a></li> 
       </ul>
     </div>  
 
@@ -40,29 +40,22 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="overview">
-<span id="id1"></span><h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
-<section id="data-analysis-structure-and-organization">
-<h2>Data Analysis Structure and Organization<a class="headerlink" href="#data-analysis-structure-and-organization" title="Permalink to this headline">¶</a></h2>
-<p>The data organization of the package follows object-oriented programming in Python.
-There are two general types of objects within packerlabimaging: the <em>Experiment</em> object and the <em>Trial</em> object.
-In general, it follows that a typical 2photon imaging and/or all optical experiment contains multiple imaging trials of varying durations and/or combined 2photon imaging + optogenetic stim.
-The primary entry point of the package is the Experiment object.
-Multiple individual Trial objects are collected in a single Experiment object.</p>
-<p>The definition of an “experiment” is purposefully loose to allow for accommodation across different experimental designs.
-On the other hand, a “trial” is strictly a single continuous time series of 2photon imaging data collection.
-Each trial may correspond to any of the implemented trial types. Currently, the implemented trial types are: 2-photon imaging only, all optical, one photon stim + 2p imaging.</p>
-<section id="experiment-class">
-<h3>Experiment class<a class="headerlink" href="#experiment-class" title="Permalink to this headline">¶</a></h3>
-<p>Each imaging experiment is associated with a super-class Experiment object. Each Experiment object has optional access to Suite2p processing associated with that Experiment.
-Given this structure, each Experiment is meant to be built from all individual imaging trials that are closely related to each other based on their imaging characteristics.
-Most presciently, all imaging trials that are run together in Suite2p can be part of a single Experiment.</p>
+  <section id="data-analysis-flow-and-organization">
+<span id="overview"></span><h1><strong>Data Analysis Flow and Organization</strong><a class="headerlink" href="#data-analysis-flow-and-organization" title="Permalink to this headline">¶</a></h1>
+<p>The structure of the package follows object-oriented programming principles. This design philosophy is used to enable modularity of data analysis and most importantly easy extensibility by the end-user towards their own data analysis needs for custom experiments.</p>
+<p>There are two primary types of objects within <code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code>: the <code class="docutils literal notranslate"><span class="pre">Experiment</span></code> class and the <code class="docutils literal notranslate"><span class="pre">Trial</span></code> object. The <code class="docutils literal notranslate"><span class="pre">Experiment</span></code> class is the primary entry-point into the <code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code> pipeline and is the super-class under which any number/types of individual <code class="docutils literal notranslate"><span class="pre">Trial</span></code> objects can be collected. In general, this follows a typical imaging experiment design which might contain an arbitrary number of imaging trials and an arbitrary mixture of trial types.</p>
+<p>The definition of an <em>“experiment”</em> is purposefully loose to allow accommodation across different experimental designs. However, abstractly, one <code class="docutils literal notranslate"><span class="pre">Experiment</span></code> object can be thought of as a collection of trials that are processed together in Suite2p. On the other hand, a <em>“trial”</em> is strictly a single time series of 2photon imaging data collection.</p>
+<p>The trials types that <code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code> is currently built for are: <code class="docutils literal notranslate"><span class="pre">TwoPhotonImagingTrial</span></code> (which represents 2photon imaging only trials) and <code class="docutils literal notranslate"><span class="pre">AllOpticalTrial</span></code> (which represents 2photon imaging + 2photon stimulation trials).</p>
+<section id="submodules-experiment">
+<h2>Submodules: Experiment<a class="headerlink" href="#submodules-experiment" title="Permalink to this headline">¶</a></h2>
+<p><strong>Experiment class</strong></p>
+<p>Each imaging experiment is associated with a super-class Experiment object. Each Experiment object has optional access to Suite2p processing associated with that Experiment. Given this structure, each Experiment is meant to be built from all individual imaging trials that are closely related to each other based on their imaging characteristics. Most presciently, all imaging trials that are run together in Suite2p can be part of a single Experiment.</p>
 </section>
-<section id="twophotonimagingtrial-class">
-<h3>TwoPhotonImagingTrial class<a class="headerlink" href="#twophotonimagingtrial-class" title="Permalink to this headline">¶</a></h3>
+<section id="submodules-trial-types">
+<h2>Submodules: Trial types<a class="headerlink" href="#submodules-trial-types" title="Permalink to this headline">¶</a></h2>
+<p><strong>TwoPhotonImagingTrial class</strong></p>
 <p><code class="docutils literal notranslate"><span class="pre">trialobj:</span> <span class="pre">TwoPhotonImagingTrial</span></code> - packerlabimaging —&gt; <code class="docutils literal notranslate"><span class="pre">TwoPhotonImagingTrial</span></code> trial class</p>
-<p>Attributes:
-* this class is the parent for all other trial classes</p>
+<p><em>Attributes:</em></p>
 <blockquote>
 <div><p><code class="docutils literal notranslate"><span class="pre">trialobj.imparams</span></code> - stores metadata retrieved from microscope regarding imaging collection</p>
 <p><code class="docutils literal notranslate"><span class="pre">trialobj.paq</span></code> - stores data from PackIO .paq files</p>
@@ -70,20 +63,53 @@ Most presciently, all imaging trials that are run together in Suite2p can be par
 <p><code class="docutils literal notranslate"><span class="pre">trialobj.lfp</span></code> - stores local field potential data (read in from .paq files)</p>
 <p><code class="docutils literal notranslate"><span class="pre">trialobj.data</span></code> - annotated data object (based on AnnData library) for centralized storage of raw and processed data related to the experiment. contains methods for further modifying the stored annotated data object.</p>
 </div></blockquote>
-</section>
-<section id="allopticaltrial-class">
-<h3>AllOpticalTrial class<a class="headerlink" href="#allopticaltrial-class" title="Permalink to this headline">¶</a></h3>
+<p><strong>AllOpticalTrial class</strong></p>
 <p><code class="docutils literal notranslate"><span class="pre">trialobj:</span> <span class="pre">AllOpticalTrial</span></code> - packerlabimaging —&gt; <code class="docutils literal notranslate"><span class="pre">TwoPhotonImagingTrial</span></code> —&gt; <code class="docutils literal notranslate"><span class="pre">AllOpticalTrial</span></code> trial class</p>
-<p>Attributes:</p>
+<p><em>Attributes:</em></p>
 <ul>
-<li><p>this class is a child of the <code class="docutils literal notranslate"><span class="pre">TwoPhotonImaging</span></code> Trial (i.e. inherits all attributes and methods of <code class="docutils literal notranslate"><span class="pre">TwoPhotonImagingTrial</span></code>)</p>
+<li><p>this class is a child of the <code class="docutils literal notranslate"><span class="pre">TwoPhotonImagingTrial</span></code> (i.e. inherits all attributes and methods of <code class="docutils literal notranslate"><span class="pre">TwoPhotonImagingTrial</span></code>)</p>
 <blockquote>
 <div><p><code class="docutils literal notranslate"><span class="pre">trialobj._2pstim</span></code> - stores data and methods related to processing of 2p stim protocols</p>
 <p><code class="docutils literal notranslate"><span class="pre">trialobj.data</span></code> - additional 2p stim related variables (e.g. <code class="docutils literal notranslate"><span class="pre">photostim_frame</span></code> and <code class="docutils literal notranslate"><span class="pre">stim_start_frame</span></code> ) to <code class="docutils literal notranslate"><span class="pre">.data</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">OnePstimTrial</span> <span class="pre">class</span></code></p>
 </div></blockquote>
 </li>
 </ul>
 </section>
+<section id="submodules-data-processing">
+<h2>Submodules: Data Processing<a class="headerlink" href="#submodules-data-processing" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">anndata.py</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">OnePstim.py</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">paq.py</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">stats.py</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">suite2p.py</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">TwoPstim.py</span></code></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_readTargetsImage</span></code></p></li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">_findTargetsAreas</span></code></dt><dd><ul>
+<li><p>Loads target coordinates, and organizes target coordinates per SLM groups</p></li>
+<li><p>creates target_areas - circle of pixels outward from the center of the target</p></li>
+<li><p>creates target_areas_exclude - expanded circle of pixels outward from the center of the target that includes the region for excluding nontarget cells</p></li>
+<li><p>creates images of targets // scaled somehow?? not totally sure - dont remember, has been commented out for a while now for myself - maybe check what Rob suggests adding here?</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="submodules-experiment-utils">
+<h2>Submodules: Experiment Utils<a class="headerlink" href="#submodules-experiment-utils" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">imagingMetadata.py</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">PrairieLink.py</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">STAMovieMaker_noGUI.py</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">ThorLink.py</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">utils.py</span></code></p>
+</section>
+<section id="next">
+<h2>Next<a class="headerlink" href="#next" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="data-structure-details.html#data-structure-details"><span class="std std-ref">Data Structure Inside Trial objects</span></a></p>
+<p><a class="reference internal" href="Tutorials-reference.html#tutorials"><span class="std std-ref">Tutorials</span></a></p>
 </section>
 </section>
 
@@ -97,13 +123,12 @@ Most presciently, all imaging trials that are run together in Suite2p can be par
   <div>
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
-<li><a class="reference internal" href="#">Overview</a><ul>
-<li><a class="reference internal" href="#data-analysis-structure-and-organization">Data Analysis Structure and Organization</a><ul>
-<li><a class="reference internal" href="#experiment-class">Experiment class</a></li>
-<li><a class="reference internal" href="#twophotonimagingtrial-class">TwoPhotonImagingTrial class</a></li>
-<li><a class="reference internal" href="#allopticaltrial-class">AllOpticalTrial class</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#"><strong>Data Analysis Flow and Organization</strong></a><ul>
+<li><a class="reference internal" href="#submodules-experiment">Submodules: Experiment</a></li>
+<li><a class="reference internal" href="#submodules-trial-types">Submodules: Trial types</a></li>
+<li><a class="reference internal" href="#submodules-data-processing">Submodules: Data Processing</a></li>
+<li><a class="reference internal" href="#submodules-experiment-utils">Submodules: Experiment Utils</a></li>
+<li><a class="reference internal" href="#next">Next</a></li>
 </ul>
 </li>
 </ul>
@@ -111,13 +136,13 @@ Most presciently, all imaging trials that are run together in Suite2p can be par
   </div>
   <div>
     <h4>Previous topic</h4>
-    <p class="topless"><a href="quick-start-guide.html"
-                          title="previous chapter">Quick Start Guide</a></p>
+    <p class="topless"><a href="Tutorials-reference.html"
+                          title="previous chapter">Tutorials</a></p>
   </div>
   <div>
     <h4>Next topic</h4>
-    <p class="topless"><a href="reference.html"
-                          title="next chapter">API reference</a></p>
+    <p class="topless"><a href="data-structure-details.html"
+                          title="next chapter">Data Structure Inside Trial objects</a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -147,13 +172,13 @@ Most presciently, all imaging trials that are run together in Suite2p can be par
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="reference.html" title="API reference"
+          <a href="data-structure-details.html" title="Data Structure Inside Trial objects"
              >next</a> |</li>
         <li class="right" >
-          <a href="quick-start-guide.html" title="Quick Start Guide"
+          <a href="Tutorials-reference.html" title="Tutorials"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">packerlabimaging 0.1-alpha documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Overview</a></li> 
+        <li class="nav-item nav-item-this"><a href=""><strong>Data Analysis Flow and Organization</strong></a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
