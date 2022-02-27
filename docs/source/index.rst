@@ -9,9 +9,9 @@ packerlabimaging
 **Welcome to packerlabimaging's documentation!**
 
 
-This documentation contains detailed information about the code base of the ``packerlabimaging``.
+This documentation contains detailed information about the code base of ``packerlabimaging``.
 There are instructions for installation and guides to get you started with utilizing the package.
-Please open an issue or pull request on the project's github page if encountering any problems with the package.
+Please open an issue or pull request on the project's github page if you are encountering any problems with the package.
 
 **Introduction**
 
@@ -34,7 +34,7 @@ We hope that it provides a useful structure to organize your experimental data, 
 
 .. toctree::
    :maxdepth: 1
-   :caption: Contents:
+   :caption: Table of Contents:
 
    Installation <installation.rst>
    Quick start guide <quick-start-guide.rst>
