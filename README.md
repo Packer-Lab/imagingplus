@@ -30,6 +30,8 @@ Instead, you can access the documentation by opening the `index.html` file found
 
 {packerlabimaging-git-repo local copy} > docs > build > index.html
 
+Opening the `index.html` will open the documentation as an HTML file in your web-browser.
+
 
 ## **Plotting of data/analysis**
 
