@@ -26,9 +26,9 @@ We hope that it provides a useful structure to organize your experimental data, 
 ## Documentation
 
 The documentation for `packerlabimaging` is not currently hosted online. 
-Instead, you can access the documentation by opening the `index.html` file found in the following file path of the downloaded git repo:
+Instead, you can access the documentation by opening the `index.html` file found from the following file path of the downloaded git repo on your local computer:
 
-packerlabimaging-git-repo > docs > build > index.html
+{packerlabimaging-git-repo local copy} > docs > build > index.html
 
 
 ## **Plotting of data/analysis**
