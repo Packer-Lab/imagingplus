@@ -28,7 +28,7 @@ sns.set_style('white')
 # %% UTILITY FUNCS
 
 # wrapper for piping plots in and out of figures
-from packerlabimaging.utils.utils import ObjectClassError
+from packerlabimaging.utils.classes import ObjectClassError
 
 
 def plotting_decorator(figsize=(3, 3), nrows=1, ncols=1, apply_image_frame_options=False, apply_heatmap_options=False):

@@ -4,6 +4,7 @@ import glob
 import os
 import signal
 import time
+from typing import TypedDict
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -11,9 +12,10 @@ import pandas as pd
 import scipy.stats as stats
 import tifffile as tf
 
-from packerlabimaging.utils.utils import convert_to_8bit, normalize_dff, UnavailableOptionError
-from .TwoPhotonImagingMain import TwoPhotonImagingTrial
+from packerlabimaging.utils.utils import convert_to_8bit, normalize_dff
+from .TwoPhotonImagingMain import TwoPhotonImagingTrial, TwoPhotonImagingMetainfo
 from .processing.TwoPstim import Targets
+from .utils.classes import PaqInfoTrial, UnavailableOptionError
 # %%
 from .processing.anndata import AnnotatedData
 
@@ -28,44 +30,24 @@ def getTargetImage():  # TODO write this function and probably add to the Target
 
 
 class AllOpticalTrial(TwoPhotonImagingTrial):
-    """This class provides methods for All Optical experiments"""
+    """All Optical Experimental Data Analysis Workflow."""
 
-    def __init__(self, metainfo: dict, naparm_path: str, analysis_save_path: str, microscope: str,
-                 paq_options: dict = None,
-                 prestim_sec: float = 1.0, poststim_sec: float = 3.0, pre_stim_response_window: float = 0.500,
+    def __init__(self, metainfo: TwoPhotonImagingMetainfo, naparm_path: str, analysis_save_path: str, microscope: str,
+                 paq_options: PaqInfoTrial = None, prestim_sec: float = 1.0, poststim_sec: float = 3.0,
+                 pre_stim_response_window: float = 0.500,
                  post_stim_response_window: float = 0.500, **kwargs):
 
         """
-        :param tiff_path: path to t-series .tiff
-        :param paq_path: path to .Paq file associated with current t-series
+        :param metainfo: TypedDict containing meta-information field needed for this experiment. Please see TwoPhotonImagingMetainfo for type hints on accepted keys.
+        :param paq_options: TypedDict containing meta-information about .paq file associated with current trial
         :param naparm_path: path to folder containing photostimulation setup built by NAPARM
         :param analysis_save_path: path of where to save the experiment analysis object
-        :param metainfo: dictionary containing any metainfo information field needed for this experiment. At minimum it needs to include prep #, t-series # and date of data collection.
-        :param microscope: name of microscope used to record imaging (options: "Bruker" (default), "Scientifica", "other")
-        :param suite2p_path: (optional) path to suite2p outputs folder associated with this t-series (plane0 file? or ops file? not sure yet)
-        :param make_downsampled_tiff: flag to run generation and saving of downsampled tiff of t-series (saves to the analysis save location)
-        :param prestim_sec:
-        :param poststim_sec:
-        :param pre_stim_response_window:
-        :param post_stim_response_window:
-        :kwargs (optional):
+        :param microscope: name of microscope used to record imaging (options: "Bruker" (default), "other")
+        :param prestim_sec: pre-photostimulation timeperiod for collecting photostimulation timed signals
+        :param poststim_sec: post-photostimulation timeperiod for collecting photostimulation timed signals
+        :param pre_stim_response_window: pre-photostimulation time window for measurement of photostimulation evoked responses
+        :param post_stim_response_window: post-photostimulation time window for measurement of photostimulation evoked responses
 
-        Parameters
-        ----------
-        metainfo
-        naparm_path
-        analysis_save_path
-        microscope
-        paq_options
-        prestim_sec
-        poststim_sec
-        pre_stim_response_window
-        post_stim_response_window
-        kwargs
-
-        Returns
-        -------
-        object
         """
 
         # Initialize Attributes:
@@ -93,7 +75,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         # attr's for statistical analysis of photostim trials responses
         self.photostimResponsesData = None  # anndata object for collecting photostim responses and associated metadata for experiment and cells
 
-        ######## TODO update comment descriptions
+        # TODO update comment descriptions
         self.all_trials = []  # all trials for each cell, dff detrended
         self.all_amplitudes = []  # all amplitudes of response between dff test periods
 
@@ -110,26 +92,25 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.sta_sig_nomulti = []  # as above, no multiple comparisons correction
         ########
 
-        #### initializing data processing, data analysis and/or results associated attr's
+        # initializing data processing, data analysis and/or results associated attr's
         self.n_trials = None  # number of photostimulation trials TODO change to assigning from array: cells x Flu frames x # of photostim trials
 
-        ## PHOTOSTIM SLM TARGETS
+        # PHOTOSTIM SLM TARGETS
         # TODO add attr's related to numpy array's and pandas dataframes for photostim trials - SLM targets
         self.responses_SLMtargets = []  # dF/prestimF responses for all SLM targets for each photostim trial
         self.responses_SLMtargets_tracedFF = []  # poststim dFF - prestim dFF responses for all SLM targets for each photostim trial
 
-        ## ALL CELLS (from suite2p ROIs)
+        # ALL CELLS (from suite2p ROIs)
         # TODO add attr's related to numpy array's and pandas dataframes for photostim trials - suite2p ROIs
 
-        #### FUNCTIONS TO RUN AFTER init's of ALL ATTR'S
+        # FUNCTIONS TO RUN AFTER init's of ALL ATTR'S
 
         # 1) initialize object as TwoPhotonImagingTrial
         TwoPhotonImagingTrial.__init__(self, metainfo=metainfo, analysis_save_path=analysis_save_path,
                                        microscope=microscope, paq_options=paq_options, **kwargs)
 
         # 2) get stim timings from paq file
-        self.stim_start_frames = self._paqProcessingAllOptical(stim_channel=paq_options['stim_channel'],
-                                                               paq_path=paq_options['paq_path'])
+        self.stim_start_frames = self._paqProcessingAllOptical(stim_channel=paq_options['stim_channel'])
 
         # 3) process 2p stim protocol
         # set naparm path
@@ -143,8 +124,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         # 5) collect Flu traces from SLM targets
         self.raw_SLMTargets, self.dFF_SLMTargets, self.meanFluImg_registered = self.collect_traces_from_targets(
             curr_trial_frames=self.Suite2p.trial_frames, save=True)
-        self.targets_dff, self.targets_dff_avg, self.targets_dfstdF, self.targets_dfstdF_avg, \
-        self.targets_raw, self.targets_raw_avg = self.get_alltargets_stim_traces_norm(process='trace dFF')
+        self.targets_dff, self.targets_dff_avg, self.targets_dfstdF, self.targets_dfstdF_avg, self.targets_raw, self.targets_raw_avg = self.get_alltargets_stim_traces_norm(process='trace dFF')
 
         # 6) Collect Flu traces from Suite2p ROIs:
         #   create:
@@ -163,7 +143,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         # save final object
         self.save()
-        print(f'\----- CREATED AllOpticalTrial data object for {metainfo["t series id"]}')
+        print(f'\----- CREATED AllOpticalTrial data object for {metainfo["t_series_id"]}')
 
     def __str__(self):
         if self.pkl_path:
@@ -175,11 +155,6 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
     def __repr__(self):
         return f"TwoPhotonImagingTrial.alloptical experimental trial object"
-
-    @property
-    def paths(self):
-        """TODO returns a dictionary of all paths associated with trial"""
-        return None
 
     @property
     def naparm_path(self):
@@ -216,14 +191,18 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         time_vector = np.linspace(-self.prestim_sec, self.poststim_sec, self.imparams.n_frames)
         return time_vector
 
-    ### ALLOPTICAL EXPERIMENT PHOTOSTIM PROTOCOL PROCESSING
+    # ALLOPTICAL EXPERIMENT PHOTOSTIM PROTOCOL PROCESSING ##############################################################
 
-    def _paqProcessingAllOptical(self, stim_channel: str, paq_path: str):
-        paqdata, _, _ = self.Paq.paq_read(paq_path=paq_path)
+    def _paqProcessingAllOptical(self, stim_channel: str):
+        """
+        Process .paq file with relation to all optical processing. In particular, this returns frame numbers timed to
+        individual photostimulation trial synced to the specified stim_channel.
+
+        """
+        paqdata, _, _ = self.Paq.paq_read()
         stim_start_frames, stim_start_times = self.Paq.paq_alloptical_stims(paq_data=paqdata,
                                                                             frame_clock=self.Paq.frame_clock,
                                                                             stim_channel=stim_channel)
-
         return stim_start_frames
 
     def _stimProcessing(self, protocol: str = 'naparm'):
@@ -287,7 +266,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.save()
         print('\t|- Number of targeted cells: ', self.n_targeted_cells)
 
-        ##### IDENTIFYING S2P ROIs THAT ARE WITHIN THE EXCLUSION ZONES OF THE SLM TARGETS
+        # IDENTIFYING S2P ROIs THAT ARE WITHIN THE EXCLUSION ZONES OF THE SLM TARGETS
         # make all target area coords in to a binary mask
         targ_img = np.zeros([self.imparams.frame_x, self.imparams.frame_y], dtype='uint16')
         target_areas_exclude = np.array(self.Targets.target_areas_exclude)
@@ -367,7 +346,12 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
     #### TODO review attr's and write docs from the following functions: // start
     # used for creating tiffs that remove artifacts from alloptical experiments with photostim artifacts
     def rm_artifacts_tiffs(self, tiffs_loc, new_tiffs):
-        ### make a new tiff file (not for suite2p) with the first photostim frame whitened, and save new tiff
+        """
+        TODO docstring
+        :param tiffs_loc:
+        :param new_tiffs:
+        """
+        # make a new tiff file (not for suite2p) with the first photostim frame whitened, and save new tiff
         print('\n-----making processed photostim .tiff from:')
         tiff_path = tiffs_loc
         print(tiff_path)
@@ -434,6 +418,13 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         del im_stack
 
     def s2pMasks(self, s2p_path, cell_ids):
+        """
+        Returns arrays that adds targets images to suite2p images.
+
+        :param s2p_path:
+        :param cell_ids:
+        :return:
+        """
         os.chdir(s2p_path)
         stat = np.load('stat.npy', allow_pickle=True)
         ops = np.load('ops.npy', allow_pickle=True).item()
@@ -469,10 +460,17 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         #         xpix = stat[n]['xpix']
         #         targets_s2p_img_2[ypix, xpix] = 3000
 
-        return mask_img, targets_s2p_img,  # targets_s2p_img_1, targets_s2p_img_2
+        return mask_img, targets_s2p_img
 
     def s2pMaskStack(self, pkl_list, s2p_path, parent_folder, force_redo: bool = False):
-        """makes a TIFF stack with the s2p mean image, and then suite2p ROI masks for all cells detected, target cells, and also SLM targets as well?"""
+        """makes a TIFF stack with the s2p mean image, and then suite2p ROI masks for all cells detected,
+        target cells, and also SLM targets as well?
+
+        :param pkl_list:
+        :param s2p_path:
+        :param parent_folder:
+        :param force_redo:
+        """
 
         for pkl in pkl_list:
             print('Retrieving s2p masks for:', pkl, end='\r')
@@ -551,13 +549,13 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             print('\ns2p ROI + photostim targets masks saved in TIFF to: ', save_path)
 
     def STAProcessing(self, plane):
-        '''
+        """
         Make stimulus triggered average (STA) traces and calculate the STA amplitude
         of response
 
         Input:
             plane - imaging plane n
-        '''
+        """
         # make stas, [plane x cell x frame]
         stas = np.mean(self.all_trials[plane], axis=2)
         self.stas.append(stas)
@@ -575,7 +573,13 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
     ### ALLOPTICAL ANALYSIS - FOCUS ON SLM TARGETS RELATED METHODS
     def collect_traces_from_targets(self, curr_trial_frames: list, reg_tif_folder: str = None, save: bool = True):
-        """uses registered tiffs to collect raw traces from SLM target areas"""
+        """uses registered tiffs to collect raw traces from SLM target areas
+
+        :param curr_trial_frames:
+        :param reg_tif_folder:
+        :param save:
+        :return:
+        """
 
         if reg_tif_folder is None:
             if self.Suite2p.s2pResultsPath:
@@ -630,9 +634,10 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         return raw_SLMTargets, dFF_SLMTargets, meanFluImg_registered
 
     def get_alltargets_stim_traces_norm(self, process: str, targets_idx: int = None, subselect_cells: list = None,
-                                        pre_stim=15, post_stim=200, filter_sz: bool = False, stims: list = None):
+                                        pre_stim=15, post_stim=200, stims: list = None):
         """
         primary function to measure the dFF and dF/setdF trace SNIPPETS for photostimulated targets.
+
         :param stims:
         :param targets_idx: integer for the index of target cell to process
         :param subselect_cells: ls of cells to subset from the overall set of traces (use in place of targets_idx if desired)
@@ -972,7 +977,12 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         return trial_array
 
     def collectPhotostimResponses(self, photostimFluArray):
+        """
+        TODO docstring
 
+        :param photostimFluArray:
+        :return:
+        """
         # create parameters, slices, and subsets for making pre-stim and post-stim arrays to use in stats comparison
         # test_period = self.pre_stim_response_window / 1000  # sec
         # self.test_frames = int(self.imparams.fps * test_period)  # test period for stats
@@ -1035,13 +1045,13 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         #     raise Warning("could not create anndata. anndata creation only available if .photostimResponseAmplitudes have been collected (run .photostimProcessingAllCells())')")
 
     def photostimProcessingAllCells(self, plane: int = 0):  # NOTE: not setup for multi-plane imaging processing yet...
-        '''
+        """
         Take dfof trace for entire timeseries and break it up in to individual trials, calculate
         the mean amplitudes of response and statistical significance across all trials
 
         Inputs:
             plane             - imaging plane n
-        '''
+        """
         print('\n----------------------------------------------------------------')
         print('running trial Processing for all cells ')
         print('----------------------------------------------------------------')
@@ -1097,7 +1107,11 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.prob_response.append(np.sum(num_respond, axis=1) / n_trials)
 
     def cellStaProcessing(self, test='t_test'):
+        """
+        TODO docstring
 
+        :param test:
+        """
         if self.stim_start_frames:
 
             # this is the key parameter for the sta, how many frames before and after the stim onset do you want to use
@@ -1214,7 +1228,11 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             self.singleTrialSignificance()
 
     def staSignificance(self, test):
+        """
+        TODO docstring
 
+        :param test:
+        """
         self.sta_sig = []
 
         for plane in range(self.imparams.n_planes):
@@ -1247,7 +1265,9 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             self.sta_sig.append(sig_units)
 
     def singleTrialSignificance(self):
-
+        """
+        TODO docstring
+        """
         self.single_sig = []  # single trial significance value for each trial for each cell in each plane
 
         for plane in range(self.imparams.n_planes):
@@ -1276,6 +1296,12 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
     # other useful functions for all-optical analysis
     def whiten_photostim_frame(self, tiff_path, save_as=''):
+        """
+        TODO docstring
+
+        :param tiff_path:
+        :param save_as:
+        """
         im_stack = tf.imread(tiff_path, key=range(self.imparams.n_frames))
 
         frames_to_whiten = []
@@ -1386,7 +1412,15 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             print('skipping remaking of avg stim images')
 
     def run_stamm_nogui(self, numDiffStims, startOnStim, everyXStims, preSeconds=0.75, postSeconds=1.25):
-        """run STAmoviemaker for the self's trial"""
+        """
+        run STAmoviemaker for current trial
+
+        :param numDiffStims:
+        :param startOnStim:
+        :param everyXStims:
+        :param preSeconds:
+        :param postSeconds:
+        """
         qnap_path = os.path.expanduser('/home/pshah/mnt/qnap')
 
         # data path

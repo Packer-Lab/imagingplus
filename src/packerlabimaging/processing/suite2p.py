@@ -4,11 +4,9 @@ from typing import Dict, Any, Optional, List
 
 import numpy as np
 import suite2p
-import tifffile as tf
 import matplotlib.pyplot as plt
 
-from packerlabimaging.ExperimentMain import TrialsInformation
-from packerlabimaging.utils.utils import make_tiff_stack, s2p_loader, normalize_dff, Utils
+from packerlabimaging.utils.utils import make_tiff_stack, s2p_loader
 
 # TEMP VARIABLES FOR DEVELOPMENT USAGES
 N_PLANES = 1

@@ -9,7 +9,7 @@ from matplotlib import pyplot as plt
 from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
 from .paq import PaqData
 from packerlabimaging.utils.utils import threshold_detect
-from packerlabimaging.ExperimentMain import PaqInfoTrial
+from packerlabimaging.utils.classes import PaqInfoTrial
 
 class OnePstim(TwoPhotonImagingTrial):
 

@@ -1,6 +1,8 @@
 import bisect
 import io
 import time
+from typing import TypedDict
+
 import numpy as np
 import pandas as pd
 import tifffile as tf
@@ -18,153 +20,130 @@ from suite2p.run_s2p import run_s2p
 from packerlabimaging import Experiment
 from packerlabimaging.utils import _io
 
-
 pd.options.display.max_rows = 100
 pd.options.display.max_columns = 10
 
 
-class ObjectClassError(Exception):
-    """handles exceptions caused by calling function on invalid class type."""
+# default ops dict for suite2p
+default_ops = {
+    'batch_size': 2000,  # reduce if running out of RAM
+    'fast_disk': os.path.expanduser('/mnt/sandbox/pshah/suite2p_tmp'),
+    # used to store temporary binary file, defaults to save_path0 (set as a string NOT a list)
+    # 'save_path0': '/media/jamesrowland/DATA/plab/suite_2p', # stores results, defaults to first item in data_path
+    'delete_bin': True,  # whether to delete binary file after processing
+    # main settings
+    'nplanes': 1,  # each tiff has these many planes in sequence
+    'nchannels': 1,  # each tiff has these many channels per plane
+    'functional_chan': 1,  # this channel is used to extract functional ROIs (1-based)
+    'diameter': 12,
+    # this is the main parameter for cell detection, 2-dimensional if Y and X are different (e.g. [6 12])
+    'tau': 1.26,  # this is the main parameter for deconvolution (1.25-1.5 for gcamp6s)
+    'fs': 30,  # sampling rate (total across planes)
+    # output settings
+    'save_mat': True,  # whether to save output as matlab files
+    'combined': True,  # combine multiple planes into a single result /single canvas for GUI
+    # parallel settings
+    'num_workers': 50,  # 0 to select num_cores, -1 to disable parallelism, N to enforce value
+    'num_workers_roi': 0,  # 0 to select number of planes, -1 to disable parallelism, N to enforce value
+    # registration settings
+    'do_registration': True,  # whether to register data
+    'nimg_init': 200,  # subsampled frames for finding reference image
+    'maxregshift': 0.1,  # max allowed registration shift, as a fraction of frame max(width and height)
+    'align_by_chan': 1,  # when multi-channel, you can align by non-functional channel (1-based)
+    'reg_tif': True,  # whether to save registered tiffs
+    'subpixel': 10,  # precision of subpixel registration (1/subpixel steps)
+    # cell detection settings
+    'connected': True,  # whether or not to keep ROIs fully connected (set to 0 for dendrites)
+    'navg_frames_svd': 5000,  # max number of binned frames for the SVD
+    'nsvd_for_roi': 1000,  # max number of SVD components to keep for ROI detection
+    'max_iterations': 20,  # maximum number of iterations to do cell detection
+    'ratio_neuropil': 6.,  # ratio between neuropil basis size and cell radius
+    'ratio_neuropil_to_cell': 3,  # minimum ratio between neuropil radius and cell radius
+    'tile_factor': 1.,  # use finer (>1) or coarser (<1) tiles for neuropil estimation during cell detection
+    'threshold_scaling': 1.,  # adjust the automatically determined threshold by this scalar multiplier
+    'max_overlap': 0.75,  # cells with more overlap than this get removed during triage, before refinement
+    'inner_neuropil_radius': 2,  # number of pixels to keep between ROI and neuropil donut
+    'outer_neuropil_radius': np.inf,  # maximum neuropil radius
+    'min_neuropil_pixels': 350,  # minimum number of pixels in the neuropil
+    # deconvolution settings
+    'baseline': 'maximin',  # baselining mode
+    'win_baseline': 60.,  # window for maximin
+    'sig_baseline': 10.,  # smoothing constant for gaussian filter
+    'prctile_baseline': 8.,  # optional (whether to use a percentile baseline)
+    'neucoeff': .7,  # neuropil coefficient
+}
 
-    def __init__(self, function, valid_class, invalid_class):
-        super().__init__(f'Invalid class ({invalid_class}) being used. <{function}> only available for {valid_class}.')
 
+# suite2p methods
+def s2pRun(expobj: Experiment, user_batch_size=2000, trialsSuite2P: list = None,
+           **kwargs):  ## TODO gotta specify # of planes somewhere here
+    """run suite2p for an Experiment object, using trials specified in current experiment object, using the attributes
+    determined directly from the experiment object.
 
-class IncompatibleFunctionError(Exception):
-    """handles exceptions caused by incompatible functions"""
+    :param expobj: a packerlabimaging.main.Experiment object
+    :param user_batch_size: batch size for suite2p registration stage - adjust if running into MemmoryError while running suite2p
+    :param trialsSuite2P: list of trialIDs from experiment to use in running suite2p
+    """
 
-    def __init__(self, function):
-        super().__init__(f'Incompatible function call. <{function}>')
+    expobj.Suite2p.trials = trialsSuite2P if trialsSuite2P else expobj.Suite2p.trials
+    expobj._trialsSuite2p = trialsSuite2P if trialsSuite2P else expobj._trialsSuite2p
 
+    tiffs_paths_to_use_s2p = []
+    for trial in expobj.Suite2p.trials:
+        tiffs_paths_to_use_s2p.append(expobj.TrialsInformation[trial]['tiff_path'])
 
-class UnavailableOptionError(Exception):
-    """handles exceptions caused by unavailable options"""
+    # load the first tiff in expobj.Suite2p.trials to collect default metainformation about imaging setup parameters
+    trial = expobj.Suite2p.trials[0]
+    trialobj = _io.import_obj(expobj.TrialsInformation[trial]['analysis_object_information']['pkl path'])
 
-    def __init__(self, option):
-        super().__init__(f'Unavailable option for object. <{option}>')
+    # set imaging parameters using defaults or kwargs if provided
+    fps = trialobj.fps if 'fs' not in [*kwargs] else kwargs['fs']
+    n_planes = trialobj.n_planes if 'n_planes' not in [*kwargs] else kwargs['n_planes']
+    pix_sz_x = trialobj.pix_sz_x if 'pix_sz_x' not in [*kwargs] else kwargs['pix_sz_x']
+    pix_sz_y = trialobj.pix_sz_y if 'pix_sz_y' not in [*kwargs] else kwargs['pix_sz_y']
+    frame_x = trialobj.frame_x if 'frame_x' not in [*kwargs] else kwargs['frame_x']
+    frame_y = trialobj.frame_y if 'frame_y' not in [*kwargs] else kwargs['frame_y']
+    n_channels = kwargs['n_channels'] if 'n_channels' in [
+        *kwargs] else 1  # default is 1 channel imaging in .tiffs for suite2p
 
+    # setup ops dictionary
+    ops = expobj.Suite2p.ops
 
-class Utils:
-    # default ops dict for suite2p
-    default_ops = {
-        'batch_size': 2000,  # reduce if running out of RAM
-        'fast_disk': os.path.expanduser('/mnt/sandbox/pshah/suite2p_tmp'),
-        # used to store temporary binary file, defaults to save_path0 (set as a string NOT a list)
-        # 'save_path0': '/media/jamesrowland/DATA/plab/suite_2p', # stores results, defaults to first item in data_path
-        'delete_bin': True,  # whether to delete binary file after processing
-        # main settings
-        'nplanes': 1,  # each tiff has these many planes in sequence
-        'nchannels': 1,  # each tiff has these many channels per plane
-        'functional_chan': 1,  # this channel is used to extract functional ROIs (1-based)
-        'diameter': 12,
-        # this is the main parameter for cell detection, 2-dimensional if Y and X are different (e.g. [6 12])
-        'tau': 1.26,  # this is the main parameter for deconvolution (1.25-1.5 for gcamp6s)
-        'fs': 30,  # sampling rate (total across planes)
-        # output settings
-        'save_mat': True,  # whether to save output as matlab files
-        'combined': True,  # combine multiple planes into a single result /single canvas for GUI
-        # parallel settings
-        'num_workers': 50,  # 0 to select num_cores, -1 to disable parallelism, N to enforce value
-        'num_workers_roi': 0,  # 0 to select number of planes, -1 to disable parallelism, N to enforce value
-        # registration settings
-        'do_registration': True,  # whether to register data
-        'nimg_init': 200,  # subsampled frames for finding reference image
-        'maxregshift': 0.1,  # max allowed registration shift, as a fraction of frame max(width and height)
-        'align_by_chan': 1,  # when multi-channel, you can align by non-functional channel (1-based)
-        'reg_tif': True,  # whether to save registered tiffs
-        'subpixel': 10,  # precision of subpixel registration (1/subpixel steps)
-        # cell detection settings
-        'connected': True,  # whether or not to keep ROIs fully connected (set to 0 for dendrites)
-        'navg_frames_svd': 5000,  # max number of binned frames for the SVD
-        'nsvd_for_roi': 1000,  # max number of SVD components to keep for ROI detection
-        'max_iterations': 20,  # maximum number of iterations to do cell detection
-        'ratio_neuropil': 6.,  # ratio between neuropil basis size and cell radius
-        'ratio_neuropil_to_cell': 3,  # minimum ratio between neuropil radius and cell radius
-        'tile_factor': 1.,  # use finer (>1) or coarser (<1) tiles for neuropil estimation during cell detection
-        'threshold_scaling': 1.,  # adjust the automatically determined threshold by this scalar multiplier
-        'max_overlap': 0.75,  # cells with more overlap than this get removed during triage, before refinement
-        'inner_neuropil_radius': 2,  # number of pixels to keep between ROI and neuropil donut
-        'outer_neuropil_radius': np.inf,  # maximum neuropil radius
-        'min_neuropil_pixels': 350,  # minimum number of pixels in the neuropil
-        # deconvolution settings
-        'baseline': 'maximin',  # baselining mode
-        'win_baseline': 60.,  # window for maximin
-        'sig_baseline': 10.,  # smoothing constant for gaussian filter
-        'prctile_baseline': 8.,  # optional (whether to use a percentile baseline)
-        'neucoeff': .7,  # neuropil coefficient
-    }
+    ops['fs'] = fps / n_planes
+    diameter_x = 13 / pix_sz_x
+    diameter_y = 13 / pix_sz_y
+    ops['diameter'] = int(diameter_x), int(diameter_y) if diameter_y != diameter_x else diameter_x
+    expobj.Suite2p.user_batch_size = user_batch_size
+    ops['batch_size'] = expobj.Suite2p.user_batch_size
+    batch_size = expobj.Suite2p.user_batch_size * (262144 / (
+            frame_x * frame_y))  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
 
-    ## suite2p methods
-    @staticmethod
-    def s2pRun(expobj: Experiment, user_batch_size=2000, trialsSuite2P: list = None,
-               **kwargs):  ## TODO gotta specify # of planes somewhere here
-        """run suite2p for an Experiment object, using trials specified in current experiment object, using the attributes
-        determined directly from the experiment object.
+    # set other ops parameters if provided in kwargs:
+    for key in [*kwargs]:
+        if key in [*ops]:
+            ops[key] = kwargs[key]
 
-        :param expobj: a packerlabimaging.main.Experiment object
-        :param user_batch_size: batch size for suite2p registration stage - adjust if running into MemmoryError while running suite2p
-        :param trialsSuite2P: list of trialIDs from experiment to use in running suite2p
-        """
+    # setup db dict
+    db = {'fs': float(ops['fs']), 'diameter': ops['diameter'], 'batch_size': int(batch_size),
+          'nimg_init': int(batch_size), 'nplanes': n_planes, 'nchannels': n_channels,
+          'tiff_list': tiffs_paths_to_use_s2p, 'data_path': expobj.dataPath,
+          'save_folder': expobj._suite2p_save_path}
 
-        expobj.Suite2p.trials = trialsSuite2P if trialsSuite2P else expobj.Suite2p.trials
-        expobj._trialsSuite2p = trialsSuite2P if trialsSuite2P else expobj._trialsSuite2p
+    print(f'db: \n\t{db}')
 
-        tiffs_paths_to_use_s2p = []
-        for trial in expobj.Suite2p.trials:
-            tiffs_paths_to_use_s2p.append(expobj.TrialsInformation[trial]['tiff_path'])
+    t1 = time.time()
+    opsEnd = run_s2p(ops=ops, db=db)
+    t2 = time.time()
+    print('Total time to run suite2p was {}'.format(t2 - t1))
 
-        # load the first tiff in expobj.Suite2p.trials to collect default metainformation about imaging setup parameters
-        trial = expobj.Suite2p.trials[0]
-        trialobj = _io.import_obj(expobj.TrialsInformation[trial]['analysis_object_information']['pkl path'])
+    # update expobj.Suite2p.ops and db
+    expobj.Suite2p.db = db
+    expobj.Suite2p.ops = opsEnd
 
-        # set imaging parameters using defaults or kwargs if provided
-        fps = trialobj.fps if 'fs' not in [*kwargs] else kwargs['fs']
-        n_planes = trialobj.n_planes if 'n_planes' not in [*kwargs] else kwargs['n_planes']
-        pix_sz_x = trialobj.pix_sz_x if 'pix_sz_x' not in [*kwargs] else kwargs['pix_sz_x']
-        pix_sz_y = trialobj.pix_sz_y if 'pix_sz_y' not in [*kwargs] else kwargs['pix_sz_y']
-        frame_x = trialobj.frame_x if 'frame_x' not in [*kwargs] else kwargs['frame_x']
-        frame_y = trialobj.frame_y if 'frame_y' not in [*kwargs] else kwargs['frame_y']
-        n_channels = kwargs['n_channels'] if 'n_channels' in [
-            *kwargs] else 1  # default is 1 channel imaging in .tiffs for suite2p
+    expobj._s2pResultExists = True
+    expobj.s2pResultsPath = expobj._suite2p_save_path + '/plane0/'  ## need to further debug that the flow of the suite2p s2pResultsPath makes sense
 
-        # setup ops dictionary
-        ops = expobj.Suite2p.ops
-
-        ops['fs'] = fps / n_planes
-        diameter_x = 13 / pix_sz_x
-        diameter_y = 13 / pix_sz_y
-        ops['diameter'] = int(diameter_x), int(diameter_y) if diameter_y != diameter_x else diameter_x
-        expobj.Suite2p.user_batch_size = user_batch_size
-        ops['batch_size'] = expobj.Suite2p.user_batch_size
-        batch_size = expobj.Suite2p.user_batch_size * (262144 / (
-                    frame_x * frame_y))  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
-
-        # set other ops parameters if provided in kwargs:
-        for key in [*kwargs]:
-            if key in [*Utils.ops]:
-                ops[key] = kwargs[key]
-
-        # setup db dict
-        db = {'fs': float(ops['fs']), 'diameter': ops['diameter'], 'batch_size': int(batch_size),
-              'nimg_init': int(batch_size), 'nplanes': n_planes, 'nchannels': n_channels,
-              'tiff_list': tiffs_paths_to_use_s2p, 'data_path': expobj.dataPath,
-              'save_folder': expobj._suite2p_save_path}
-
-        print(f'db: \n\t{db}')
-
-        t1 = time.time()
-        opsEnd = run_s2p(ops=ops, db=db)
-        t2 = time.time()
-        print('Total time to run suite2p was {}'.format(t2 - t1))
-
-        # update expobj.Suite2p.ops and db
-        expobj.Suite2p.db = db
-        expobj.Suite2p.ops = opsEnd
-
-        expobj._s2pResultExists = True
-        expobj.s2pResultsPath = expobj._suite2p_save_path + '/plane0/'  ## need to further debug that the flow of the suite2p s2pResultsPath makes sense
-
-        expobj.save()
+    expobj.save()
 
 
 def normalize_dff(arr, threshold_pct=20, threshold_val=None):

@@ -14,7 +14,7 @@ from packerlabimaging.AllOpticalMain import AllOpticalTrial
 from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
 from packerlabimaging.plotting._utils import plotting_decorator, make_random_color_array, _add_scalebar, \
     image_frame_options, dataplot_frame_options, dataplot_ax_options, plot_coordinates, heatmap_options, image_frame_ops
-from packerlabimaging.utils.utils import ObjectClassError
+from packerlabimaging.utils.classes import ObjectClassError
 
 
 # DATA ANALYSIS PLOTTING FUNCS
@@ -680,3 +680,8 @@ def plot_SLMtargets_Locs(trialobj: AllOpticalTrial, targets_coords: Union[list, 
 # alloptical trial
 
 
+def plot_s2pMasks():
+    """ Creates some images of SLM targets to suite2p.
+
+    """
+    pass

@@ -45,7 +45,7 @@ import packerlabimaging as pkg
 #         'exp_id': initialization_dict['expID'],
 #         'trial_id': trials_list_alloptical[0],
 #         'date': initialization_dict['date'],
-#         't series id': f"{initialization_dict['expID']} {trial}",
+#         't_series_id': f"{initialization_dict['expID']} {trial}",
 #         'TrialsInformation': initialization_dict["TrialsInformation"][trial]
 #     }
 #

@@ -2,7 +2,7 @@ import os
 import time
 import datetime
 import re
-from typing import Optional
+from typing import Optional, TypedDict
 
 import pickle
 
@@ -14,27 +14,35 @@ import xml.etree.ElementTree as ET
 import tifffile as tf
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from packerlabimaging.utils.utils import SaveDownsampledTiff, normalize_dff, UnavailableOptionError
+from packerlabimaging.utils.utils import SaveDownsampledTiff, normalize_dff
+from packerlabimaging.utils.classes import UnavailableOptionError, TrialsInformation
 from packerlabimaging.processing.paq import import_paqdata
 from .processing import suite2p, anndata as ad
 from .utils.imagingMetadata import PrairieViewMetadata, ImagingMetadata
 
 
+class TwoPhotonImagingMetainfo(TypedDict, total=False):
+    data: str
+    trial_id: str
+    exp_id: str
+    t_series_id: str
+    TrialsInformation: TrialsInformation
+
+
 class TwoPhotonImagingTrial:
-    """Just two photon imaging related functions - currently set up for data collected from Bruker microscopes and
-    suite2p processed Ca2+ imaging data """
+    """Two Photon Imaging Experiment Data Analysis Workflow."""
 
     def __init__(self, metainfo: dict, analysis_save_path: str, microscope: str = 'Bruker', paq_options: dict = None,
                  **kwargs):
         """
         TODO update function docstring for approp args
-        :param tiff_path: path to t-series .tiff
+        :param metainfo: TypedDict containing meta-information field needed for this experiment. Please see TwoPhotonImagingMetainfo for type hints on accepted keys.
+        :param paq_options: TypedDict containing meta-information about .paq file associated with current trial
         :param analysis_save_path: path of where to save the experiment analysis object
-        :param microscope: name of microscope used to record imaging (options: "Bruker" (default), "Scientifica", "other")
-        :param metainfo: dictionary containing any metainfo information field needed for this experiment. At minimum it needs to include prep #, t-series # and date of data collection.
-        :param paq_path: (optional) path to .Paq file associated with current t-series
-        :param suite2p_path: (optional) path to suite2p outputs folder associated with this t-series (plane0 file? or ops file? not sure yet)
-        :param make_downsampled_tiff: flag to run generation and saving of downsampled tiff of t-series (saves to the analysis save location)
+        :param microscope: name of microscope used to record imaging (options: "Bruker" (default), "other")
+        :param imagingMicroscopeMetadata: provide ImagingMetadata object (see ImagingMetadata class).
+        :param suite2p_experiment_obj: provide Suite2p Experiment Object as variable in order to process Suite2p data for current trial
+        :param total_frames_stitched: provide frame number on which current trial starts in Suite2p Experiment Object
         """
 
         # Initialize Attributes:
@@ -52,12 +60,12 @@ class TwoPhotonImagingTrial:
         # self.zoom: float = 0.0 # zoom level on Bruker microscope
         # self.last_good_frame = None  # indicates when the last good frame was during the t-series recording, if nothing was wrong the value is 0, otherwise it is >0 and that indicates that PV is not sure what happened after the frame listed, but it could be corrupt data
 
-        if 'date' in [*metainfo] and 'trial_id' in [*metainfo] and 'exp_id' in [*metainfo] and 't series id' in [
+        if 'date' in [*metainfo] and 'trial_id' in [*metainfo] and 'exp_id' in [*metainfo] and 't_series_id' in [
             *metainfo] and 'TrialsInformation' in [*metainfo]:
             self.__metainfo = metainfo
         else:
             raise ValueError(
-                "dev error: metainfo argument must contain the minimum fields: 'date', 'trial_id', 'exp_id', 't series id', 'trialInformation dict")
+                "dev error: metainfo argument must contain the minimum fields: 'date', 'trial_id', 'exp_id', 't_series_id', 'trialInformation dict")
         if os.path.exists(metainfo['TrialsInformation']['tiff_path']):
             self.tiff_path = metainfo['TrialsInformation']['tiff_path']
         else:
@@ -86,9 +94,6 @@ class TwoPhotonImagingTrial:
         else:
             Warning(f"NO imaging microscope parameters set. ")
 
-        # self._parsePVMetadata() if 'Bruker' in microscope else Warning(f'retrieving data-collection metainformation from '
-        #                                                                f'{microscope} microscope has not been implemented yet')
-
         # run Paq processing if paq_path is provided for trial
         if self._use_paq:
             frame_channel = paq_options['frame_channel'] if 'frame_channel' in [
@@ -101,7 +106,8 @@ class TwoPhotonImagingTrial:
         self.meanFluImg, self.meanFovFluTrace = self.meanRawFluTrace()
 
         # if provided, add Suite2p results for trial
-        for i in ['suite2p_experiment_obj', 'total_frames_stitched']:
+        for i in ['suite2p_experiment_obj',
+                  'total_frames_stitched']:  # TODO need to test this, whats the use of this for loop if you also have a if statement checking the same things?
             assert i in [*kwargs], f'{i} required in Suite2pResultsTrial call'
             assert kwargs[i] is not None, f'{i} Suite2pResultsTrial call is None'
         if 'suite2p_experiment_obj' in [*kwargs] and 'total_frames_stitched' in [*kwargs]:
@@ -121,7 +127,7 @@ class TwoPhotonImagingTrial:
 
         # SAVE Trial OBJECT
         self.save()
-        print(f'\----- CREATING TwoPhotonImagingTrial for trial: {metainfo["trial_id"]},  {metainfo["t series id"]}')
+        print(f'\----- CREATING TwoPhotonImagingTrial for trial: {metainfo["trial_id"]},  {metainfo["t_series_id"]}')
 
     def __str__(self):
         if self.pkl_path:
@@ -135,6 +141,7 @@ class TwoPhotonImagingTrial:
 
     @property
     def fig_save_path(self):
+        """create path for saving figures"""
         today_date = datetime.today().strftime('%Y-%m-%d')
         return self.analysis_save_dir + f'Results_fig/{today_date}/'
 
@@ -150,16 +157,18 @@ class TwoPhotonImagingTrial:
 
     @property
     def expID(self):
+        """experiment ID of current trial object"""
         return self.__metainfo['exp_id']
 
     @property
     def trialID(self):
+        """trial ID of current trial object"""
         return self.__metainfo['trial_id']
 
     @property
     def t_series_name(self):
-        if 't series id' in self.__metainfo.keys():
-            return f"{self.__metainfo['t series id']}"
+        if 't_series_id' in self.__metainfo.keys():
+            return f"{self.__metainfo['t_series_id']}"
         elif "exp_id" in self.__metainfo.keys() and "trial_id" in self.__metainfo.keys():
             return f'{self.__metainfo["exp_id"]} {self.__metainfo["trial_id"]}'
         else:
@@ -216,7 +225,7 @@ class TwoPhotonImagingTrial:
 
         return paq_data_obj
 
-    def stitch_s2p_reg_tiff(self):
+    def stitch_s2p_reg_tiff(self): ## TODO refactoring in new code from the Suite2p class script?
         assert self.Suite2p._s2pResultExists, UnavailableOptionError('stitch_s2p_reg_tiff')
 
         tif_path_save2 = self.analysis_save_dir + f'reg_tiff_{self.t_series_name}_r.tif'
@@ -230,12 +239,10 @@ class TwoPhotonImagingTrial:
                     print('cropping registered tiff')
                     data = input_tif.asarray()
                     print('shape of stitched tiff: ', data.shape)
-                reg_tif_crop = data[self.Suite2p.trial_frames[0] - start * s2p_run_batch: frame_range[1] - (
-                        self.Suite2p.trial_frames - start * s2p_run_batch)]
+                reg_tif_crop = data[self.Suite2p.trial_frames[0] - start * self.Suite2p.s2p_run_batch: self.Suite2p.trial_frames[1] - (
+                        self.Suite2p.trial_frames - start * self.Suite2p.s2p_run_batch)]
                 print('saving cropped tiff ', reg_tif_crop.shape)
                 tif.write(reg_tif_crop)
-
-
 
     def create_anndata(self):
         """
@@ -287,7 +294,12 @@ class TwoPhotonImagingTrial:
         if self.Suite2p._s2pResultExists:
             self.dFF = normalize_dff(self.Suite2p.raw)
 
-    def importTrialTiff(self):
+    def importTrialTiff(self) -> np.ndarray:
+        """
+        Import current trial's microscope imaging tiff in full.
+
+        :return: imaging tiff as numpy array
+        """
         print(f"\n\- loading raw TIFF file from: {self.tiff_path}", end='\r')
         im_stack = tf.imread(self.tiff_path, key=range(self.imparams.n_frames))
         print('|- Loaded experiment tiff of shape: ', im_stack.shape)
@@ -309,9 +321,10 @@ class TwoPhotonImagingTrial:
         return mean_flu_img, mean_fov_flutrace
 
     def makeDownsampledTiff(self):
+        """Import current trial tiff, create downsampled tiff and save in default analysis directory."""
+
         stack = self.importTrialTiff()
-        SaveDownsampledTiff(stack=stack,
-                            save_as=f"{self.analysis_save_dir}/{self.date}_{self.trialID}_downsampled.tif")
+        SaveDownsampledTiff(stack=stack, save_as=f"{self.analysis_save_dir}/{self.date}_{self.trialID}_downsampled.tif")
 
     def plotSingleImageFrame(self, frame_num: int = 0, title: str = None):
         """
@@ -327,15 +340,11 @@ class TwoPhotonImagingTrial:
         return stack
 
     def save_pkl(self, pkl_path: str = None):
-        ## commented out after setting pkl_path as a @property
-        # if pkl_path is None:
-        #     if hasattr(self, 'pkl_path'):
-        #         pkl_path = self.pkl_path
-        #     else:
-        #         raise ValueError(
-        #             'pkl path for saving was not found in data object attributes, please provide pkl_path to save to')
-        # else:
-        #     self.pkl_path = pkl_path
+        """
+        Alias method for saving current object to pickle file.
+
+        :param pkl_path: (optional) provide path to save object to pickle file.
+        """
         if pkl_path:
             print(f'saving new trial object to: {pkl_path}')
             self.pkl_path = pkl_path
@@ -345,6 +354,9 @@ class TwoPhotonImagingTrial:
         print("\n\t -- data object saved to %s -- " % self.pkl_path)
 
     def save(self):
+        """
+        Alias method for saving current object as pickle file.
+        """
         self.save_pkl()
 
 

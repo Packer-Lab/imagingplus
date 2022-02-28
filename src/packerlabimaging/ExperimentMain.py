@@ -13,7 +13,8 @@ from the microscope during data collection, and any user generated files associa
 
 from __future__ import absolute_import
 from dataclasses import dataclass
-from typing import TypedDict, Optional, MutableMapping
+from typing import Optional, MutableMapping
+from .utils.classes import TrialsInformation
 
 import os
 import time
@@ -27,7 +28,7 @@ from suite2p.run_s2p import run_s2p
 
 from .utils import _io
 
-## UTILITIES
+# UTILITIES
 
 # dictionary of terms, phrases, etc. that are used in the processing and analysis of imaging data
 terms_dictionary = {
@@ -51,21 +52,6 @@ NEUROPIL_COEFF = 0.7
 
 # CLASS DEFINITIONS
 
-class PaqInfoTrial(TypedDict, total=False):
-    frame_channel: str
-    paq_path: str  # complete path to .paq file for trial
-    stim_channel: Optional[str]
-
-
-class TrialsInformation(TypedDict, total=False):
-    trialType: str
-    tiff_path: str
-    expGroup: str
-    PaqInfoTrial: PaqInfoTrial
-    s2p_use: str
-    naparm_path: str
-    analysis_object_information: TypedDict('analysis_object_information',
-                                                    {'series ID': str, 'repr': str, 'pkl path': str})
 
 
 @dataclass
@@ -239,7 +225,7 @@ class Experiment:
             'exp_id': self.expID,
             'trial_id': trial_id,
             'date': self.date,
-            't series id': f"{self.expID} {trial_id}",
+            't_series_id': f"{self.expID} {trial_id}",  # TODO consider removing occurrence especially since its redundant as a property in twophoton imaging
             'TrialsInformation': __trialsInformation
         }
 
@@ -382,8 +368,8 @@ class WideFieldImaging:
 
     @property
     def t_series_name(self):
-        if 't series id' in [*self.metainfo]:
-            return f"{self.metainfo['t series id']}"
+        if 't_series_id' in [*self.metainfo]:
+            return f"{self.metainfo['t_series_id']}"
         elif "exp_id" in [*self.metainfo] and "trial_id" in [*self.metainfo]:
             return f'{self.metainfo["exp_id"]} {self.metainfo["trial_id"]}'
         else:

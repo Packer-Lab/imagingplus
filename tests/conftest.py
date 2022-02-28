@@ -44,7 +44,7 @@ def twophoton_imaging_trial_fixture():
             'exp_id': initialization_dict['expID'],
             'trial_id': trial,
             'date': initialization_dict['date'],
-            't series id': f"{initialization_dict['expID']} {trial}",
+            't_series_id': f"{initialization_dict['expID']} {trial}",
             'TrialsInformation': initialization_dict["TrialsInformation"][trial]
         }
         initialization_dict['metainfo'] = _metainfo
@@ -98,7 +98,7 @@ def alloptical_trial_fixture():
             'exp_id': initialization_dict['expID'],
             'trial_id': trial,
             'date': initialization_dict['date'],
-            't series id': f"{initialization_dict['expID']} {trial}",
+            't_series_id': f"{initialization_dict['expID']} {trial}",
             'TrialsInformation': initialization_dict["TrialsInformation"][trial]
         }
 

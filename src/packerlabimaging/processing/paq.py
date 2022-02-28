@@ -1,3 +1,4 @@
+import os.path
 from dataclasses import dataclass
 from typing import List
 
@@ -9,6 +10,7 @@ import matplotlib.pyplot as plt
 from scipy import io
 
 from packerlabimaging.utils.utils import threshold_detect
+
 
 def paq2py(file_path=None, plot=False):
     """
@@ -94,7 +96,7 @@ def paq2py(file_path=None, plot=False):
         # import matplotlib
         # matplotlib.use('QT4Agg')
         import matplotlib.pylab as plt
-        f, axes = plt.subplots(num_chans, 1, sharex=True, figsize=(15, num_chans*5), frameon=False)
+        f, axes = plt.subplots(num_chans, 1, sharex=True, figsize=(15, num_chans * 5), frameon=False)
         for idx, ax in enumerate(axes):
             ax.plot(data[idx])
             ax.set_xlim([0, num_datapoints - 1])
@@ -128,13 +130,16 @@ def paq2py(file_path=None, plot=False):
             "rate": rate,
             "num_datapoints": num_datapoints}, df
 
+
 def import_paqdata(paq_path):
     paqdata, paq_rate, paq_channels = PaqData.paq_read(paq_path=paq_path, plot=False)
     paq_data_obj = PaqData(paq_path=paq_path, paq_channels=paq_channels, paq_rate=paq_rate)
     return paq_data_obj, paqdata
 
+
 @dataclass
 class PaqData:
+    """access and storage of data from .paq files."""
     paq_path: str
     paq_channels: List[str]
     paq_rate: float
@@ -148,14 +153,17 @@ class PaqData:
                 information += f"\n\t{i}: {[*self.__dict__[i]]}"
         return f"packerlabimaging.processing.Paq.PaqData: {information}"
 
-    @staticmethod
-    def paq_read(paq_path: str, plot: bool = False):
+    def paq_read(self, paq_path: str, plot: bool = False):
         """
         Loads .Paq file and saves data from individual channels.
 
         :param paq_path: path to the .Paq file for this data object
         :param plot: (optional) whether to plot
         """
+
+        paq_path = paq_path if not self.paq_path else self.paq_path
+
+        assert os.path.exists(paq_path), f'File path not found {paq_path}'
 
         print(f'\tloading Paq data from: {paq_path}')
         paq, _ = paq2py(paq_path, plot=plot)
@@ -167,7 +175,10 @@ class PaqData:
 
     def storePaqChannel(self, chan_name):
         """add a specific channel's (`chan_name`) data from the .Paq file as attribute of the same name for
-        PaqData object."""
+        PaqData object.
+
+        :param chan_name: name of paq channel to add.
+        """
 
         paq_data, _, paq_channels = self.paq_read(paq_path=self.paq_path)
         chan_name_idx = paq_channels.index(chan_name)
@@ -177,9 +188,16 @@ class PaqData:
     ## refactor these methods to their respective Trial code locations
     @staticmethod
     def paq_frame_times(paq_data, frame_channel: str):
+        """
+        Retrieve two-photon imaging frame times from .paq signal found in frame_channel.
+
+        :param paq_data: data loaded from .paq file (use .paq_read method)
+        :param frame_channel: channel to retrieve frame clock times from
+        :return: numpy array of frame clock times
+        """
         if frame_channel not in paq_data['chan_names']:
             raise KeyError(f'{frame_channel} not found in .Paq channels. Specify channel containing frame signals.')
-        
+
         # find frame times
         clock_idx = paq_data['chan_names'].index(frame_channel)
         clock_voltage = paq_data['data'][clock_idx, :]
@@ -205,26 +223,32 @@ class PaqData:
             idx = diff.index(max(diff))
             frame_start_time_actual = frame_start_times[idx]
             frame_end_time_actual = frame_end_times[idx]
-            __frame_clock_actual = [frame for frame in __frame_clock if
-                                         frame_start_time_actual <= frame <= frame_end_time_actual]
+            frame_clock_actual = [frame for frame in __frame_clock if
+                                  frame_start_time_actual <= frame <= frame_end_time_actual]
         else:
             frame_start_time_actual = frame_start_times[0]
             frame_end_time_actual = frame_end_times[0]
-            __frame_clock_actual = __frame_clock
-        
-        return __frame_clock_actual 
+            frame_clock_actual = __frame_clock
+
+        return frame_clock_actual
 
     @staticmethod
     def sparse_paq(paq_data, frame_clock):
+        """
+        Returns dictionary of numpy array keyed on channels from paq_data timed to 2photon imaging frame_clock.
+
+        :param paq_data:
+        :param frame_clock:
+        :return:
+        """
         # read in and save sparse version of all Paq channels (only save data from timepoints at frame clock times)
         sparse_paq_data = {}
         for idx, chan in enumerate(paq_data['chan_names']):
             sparse_paq_data[chan] = paq_data['data'][idx, frame_clock]
         return sparse_paq_data
 
-
     @staticmethod
-    def paq_alloptical_stims(paq_data, frame_clock: List[int],  stim_channel: str, plot: bool = False):
+    def paq_alloptical_stims(paq_data, frame_clock: List[int], stim_channel: str, plot: bool = False):
         if stim_channel not in paq_data['chan_names']:
             raise KeyError(f'{stim_channel} not found in .Paq channels. Specify channel containing frame signals.')
 
@@ -232,7 +256,6 @@ class PaqData:
         stim_idx = paq_data['chan_names'].index(stim_channel)
         stim_volts = paq_data['data'][stim_idx, :]
         stim_times = threshold_detect(stim_volts, 1)
-        # self.stim_times = stim_times
         stim_start_times = stim_times
         print(f'# of stims found on {stim_channel}: {len(stim_start_times)}')
 
@@ -259,7 +282,8 @@ class PaqData:
     def _1p_stims(self, paq_data, plot: bool = False, optoloopback_channel: str = 'opto_loopback'):
         "find 1p stim times"
         if optoloopback_channel not in paq_data['chan_names']:
-            raise KeyError(f'{optoloopback_channel} not found in .Paq channels. Specify channel containing 1p stim TTL loopback signals.')
+            raise KeyError(
+                f'{optoloopback_channel} not found in .Paq channels. Specify channel containing 1p stim TTL loopback signals.')
 
         opto_loopback_chan = paq_data['chan_names'].index('opto_loopback')
         stim_volts = paq_data['data'][opto_loopback_chan, :]
@@ -285,7 +309,6 @@ class PaqData:
             plt.suptitle('1p stims from Paq, with detected 1p stim instances as scatter')
             plt.xlim([stim_times[0] - 2e3, stim_times[-1] + 2e3])
             plt.show()
-        
 
         # find all stim frames
         self.stim_frames = []
@@ -304,9 +327,11 @@ class PaqData:
 
         print(f"\nStim duration of 1photon stim: {self.stim_duration_frames} frames")
 
-
     def _shutter_times(self, paq_data, shutter_channel: str = 'shutter_loopback'):
-        "find shutter loopback frames from .Paq data"
+        """find shutter loopback frames from .Paq data
+        :param paq_data:
+        :param shutter_channel:
+        """
 
         if shutter_channel not in paq_data['chan_names']:
             raise KeyError(f'{shutter_channel} not found in .Paq channels. Specify channel containing shutter signals.')
@@ -340,7 +365,7 @@ class PaqData:
         '''
         calculate which 2P imaging frames to discard (or use as bad frames input into suite2p) based on the bad frames
         identified by manually inspecting the Paq files in EphysViewer.m
-        :param Paq: Paq file
+
         :param input_array: .m file path to read that contains the timevalues for signal to remove
         :param total_frames: the number of frames in the TIFF file of the actual 2p imaging recording
         :param discard_all: bool; if True, then add all 2p imaging frames from this Paq file as bad frames to discard

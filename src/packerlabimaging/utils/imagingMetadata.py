@@ -3,32 +3,54 @@ import os
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 
+
 @dataclass
-class PrairieViewMetadata:
-    tiff_path_dir: str  # path to the directory containing the .tiff imaging output from PrairieView. the .xml PrairieView files should also be in the same directory.
+class ImagingMetadata:
+    """Class containing metadata about imaging microscope"""
+    microscope: str  # given name of microscope (use 'Bruker' to process Metadata from PrairieView)
+    n_frames: int  # number of imaging frames in the current trial
+    fps: str  # rate of imaging acquisition (frames per second)
+    frame_x: int  # num of pixels in the x direction of a single frame
+    frame_y: int  # num of pixels in the y direction of a single frame
+    n_planes: int  # num of FOV planes in imaging acquisition
+    pix_sz_x: float  # size of a single imaging pixel in x direction (microns)
+    pix_sz_y: float  # size of a single imaging pixel in y direction (microns)
+
+
+@dataclass
+class PrairieViewMetadata(ImagingMetadata):
+    tiff_path_dir: str  # path to the directory containing the .tiff imaging output from PrairieView. the .xml
+
+    # PrairieView files should also be in the same directory.
+
     def __post_init__(self):
-        self.n_frames: int = 0  # number of imaging frames in the current trial
-        self.fps = None  # rate of imaging acquisition (frames per second)
-        self.frame_x = None  # num of pixels in the x direction of a single frame
-        self.frame_y = None  # num of pixels in the y direction of a single frame
-        self.n_planes = None  # num of FOV planes in imaging acquisition
-        self.pix_sz_x = None  # size of a single imaging pixel in x direction (microns)
-        self.pix_sz_y = None  # size of a single imaging pixel in y direction (microns)
+        assert self.microscope == 'Bruker', 'invalid use of PrairieViewMetadata on nonBruker system.'
+        # self.n_frames: int = 0  # number of imaging frames in the current trial
+        # self.fps = None  # rate of imaging acquisition (frames per second)
+        # self.frame_x = None  # num of pixels in the x direction of a single frame
+        # self.frame_y = None  # num of pixels in the y direction of a single frame
+        # self.n_planes = None  # num of FOV planes in imaging acquisition
+        # self.pix_sz_x = None  # size of a single imaging pixel in x direction (microns)
+        # self.pix_sz_y = None  # size of a single imaging pixel in y direction (microns)
         self.scan_x = None  # TODO ROB - not sure what the comment for this is
         self.scan_y = None  # TODO ROB - not sure what the comment for this is
-        self.zoom: float = 0.0 # zoom level on Bruker microscope
-        self.last_good_frame = None  # indicates when the last good frame was during the t-series recording, if nothing was wrong the value is 0, otherwise it is >0 and that indicates that PV is not sure what happened after the frame listed, but it could be corrupt data
+        self.zoom: float = 0.0  # zoom level on Bruker microscope
+        self.last_good_frame = None  # indicates when the last good frame was during the t-series recording,
+        # if nothing was wrong the value is 0, otherwise it is >0 and that indicates that PV is not sure what
+        # happened after the frame listed, but it could be corrupt data
 
         self._parsePVMetadata()
 
     def __repr__(self):
-        return(f'PrairieViewMetadata from: {self.tiff_path_dir}\n\tn planes: {self.n_planes} \n\tn frames: {self.n_frames} '
-               f'\n\tfps: {self.fps} \n\tframe size (px): {self.frame_x} x {self.frame_y}  \n\tzoom: {self.zoom} \n\t pixel size (um): {self.pix_sz_x}, {self.pix_sz_y} '
-               f'\n\tscan centre (V):', self.scan_x, self.scan_y)
+        return (
+            f'PrairieViewMetadata from: {self.tiff_path_dir}\n\tn planes: {self.n_planes} \n\tn frames: {self.n_frames}'
+            f'\n\tfps: {self.fps} \n\tframe size (px): {self.frame_x} x {self.frame_y}  \n\tzoom: {self.zoom} \n\t '
+            f'pixel size (um): {self.pix_sz_x}, {self.pix_sz_y} '
+            f'\n\tscan centre (V):', self.scan_x, self.scan_y)
 
     @staticmethod
     def _getPVStateShard(root, key):
-        '''
+        """
         Find the value, description and indices of a particular parameter from an xml file
 
         Inputs:
@@ -38,7 +60,7 @@ class PrairieViewMetadata:
             value       - value of the key
             description - unused
             index       - index that the key was found at
-        '''
+        """
         value = []
         description = []
         index = []
@@ -71,13 +93,12 @@ class PrairieViewMetadata:
         return value, description, index
 
     def _parsePVMetadata(self):
-        '''
+        """
         Parse all of the relevant acquisition metadata from the PrairieView xml file for this recording
 
-        '''
+        """
 
         print('\n\----- Parsing PV Metadata for Bruker microscope...')
-
 
         tiff_path = self.tiff_path_dir  # starting path to search for the .xml PrairieView files
         xml_path = []  # searching for xml path
@@ -136,7 +157,6 @@ class PrairieViewMetadata:
         extra_params = root.find('Sequence/Frame/ExtraParameters')
         last_good_frame = extra_params.get('lastGoodFrame')
 
-
         self.fps = fps / n_planes
         self.frame_x = frame_x
         self.frame_y = frame_y
@@ -149,7 +169,6 @@ class PrairieViewMetadata:
         self.n_frames = int(n_frames)
         self.last_good_frame = last_good_frame
 
-
         print('\tn planes:', self.n_planes,
               '\n\tn frames:', self.n_frames,
               '\n\tfps:', self.fps,
@@ -158,7 +177,6 @@ class PrairieViewMetadata:
               '\n\tpixel size (um):', self.pix_sz_x, self.pix_sz_y,
               '\n\tscan centre (V):', self.scan_x, self.scan_y
               )
-
 
         # return {
         # "fps": fps / n_planes,
@@ -173,13 +191,3 @@ class PrairieViewMetadata:
         # "n_frames": int(n_frames),
         # "last_good_frame": last_good_frame
         # }
-
-@dataclass
-class ImagingMetadata:
-    n_frames: int  # number of imaging frames in the current trial
-    fps: str    # rate of imaging acquisition (frames per second)
-    frame_x: int  # num of pixels in the x direction of a single frame
-    frame_y: int  # num of pixels in the y direction of a single frame
-    n_planes: int  # num of FOV planes in imaging acquisition
-    pix_sz_x: float  # size of a single imaging pixel in x direction (microns)
-    pix_sz_y: float  # size of a single imaging pixel in y direction (microns)
