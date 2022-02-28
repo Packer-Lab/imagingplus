@@ -7,7 +7,15 @@ Plotting of data/analysis
 
 All of these pre-built plots are demo'ed in the :ref:`tutorials` page.
 
-**Available plotting functions:**
+Available plotting functions:
++++++++++++++++++++++++++++++
+
+.. automodule:: packerlabimaging.plotting.plotting
+    :members:
+
+
+All plotting functions:
++++++++++++++++++++++++
 
 1) ``plot_SLMtargets_Locs()``
 
@@ -32,3 +40,4 @@ All of these pre-built plots are demo'ed in the :ref:`tutorials` page.
 11) ``plot_periphotostim_avg2()``
 
 12) ``plot_periphotostim_avg()``
+

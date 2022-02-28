@@ -43,7 +43,7 @@ We hope that it provides a useful structure to organize your experimental data, 
    Overview <overview.rst>
    Tutorials <Tutorials-reference.rst>
    Data Structure details <data-structure-details.rst>
-   Making plots <creating-plots.rst>
+   Making plots <making-plots.rst>
    API Reference <reference.rst>
 
 

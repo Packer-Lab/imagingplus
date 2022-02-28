@@ -37,7 +37,7 @@ class TrialsInformation(TypedDict, total=False):
     tiff_path: str
     expGroup: str
     PaqInfoTrial: PaqInfoTrial
-    s2p_use: str
+    s2p_use: bool
     naparm_path: str
     analysis_object_information: TypedDict("analysis_object_information",
                                            {'series ID': str, 'repr': str, 'pkl path': str})

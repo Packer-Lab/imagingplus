@@ -13,7 +13,7 @@ We hope that it provides a useful structure to organize your experimental data, 
 ## Installation instructions
 
 1. Clone this github repository using `git clone https://github.com/Packer-Lab/packerlabimaging.git` in the terminal. 
-2. Install the conda environment provided in this repository (`plitest.yml`) using `conda env create -f myenv.yml` from the terminal. Note: The package is installable as a stand-alone python package. You can install the package into an existing conda environment, or you may choose to skip using conda environment all together. 
+2. Install the conda environment provided in this repository (`plitest.yml`) using `conda env create -f plitest.yml` from the terminal. Note: The package is installable as a stand-alone python package. You can install the package into an existing conda environment, or you may choose to skip using conda environment all together. 
 3. Activate the conda environment `conda activate plitest`.
 4. `cd` to the parent directory of where this repo was downloaded to.
 5. From this parent directly, run `pip install -e packerlabimaging` from terminal to install this package `packerlabimaging`.
@@ -32,68 +32,3 @@ Instead, you can access the documentation by opening the `index.html` file found
 
 Opening the `index.html` file will open the documentation as an HTML file in your web-browser.
 
-
-## **Plotting of data/analysis**
-
-### functions
-
-1) `plot_SLMtargets_Locs()`
-
-2) `plot_cells_loc()`
-
-3) `s2pRoiImage()`
-
-4) `plot_flu_trace()`
-
-5) `plotMeanRawFluTrace()`
-
-6) `plot_s2p_raw()`
-
-7) `plotLfpSignal()`
-
-8) `plot_SLMtargets_Locs()`
-
-9) `plot_photostim_traces()`
-
-10) `plot_photostim_traces_overlap()`
-
-11) `plot_periphotostim_avg2()`
-
-12) `plot_periphotostim_avg()`
-
-
-
-## TODO items:
-
-**Major code base related tasks:**
-
-- [x]  need to debug `_findTargetsAreas` and `targetCoordinates`(already ipr)
-- [x]  add 2pstim module - for NAPARM related funcs and methods
-    - [x]  update 2p stim related attr’s to use the naparm submodule
-- [x]  refactor out stats testing
-- [x]  add new class for `STAMovieMaker_nogui` - or add as method for `AllOpticalTrial`?
-- [x]  adding plotting module
-- [x]  add onePstim module
-    - [ ]  need to edit `__init__` to fit into the package pipeline
-- [x]  consider making anndata extension funcs as staticmethods, so they are more easily (?potentially) accessible widely - no need...
-- [x]  finalize plotting sub-module
-    - [x]  plotROIlocations test/debug
-- [x]  update Two-photon processing and Alloptical processing tutorials with processing steps (e.g. dFF normalization, calculating photostim responses, sig diff testing), and also plots
-    - all optical first pass through should be done to review with Adam?
-    - twophoton first pass through also pretty solid
-
-**Major packaging related tasks:**
-
-- [ ]  Interactive plotting using mpl_point_clicker
-- [ ]  Add instructions to the README.md for installation of the package
-- [ ]  figure out how to release an alpha version of the package
-    - [ ]  add documentation for installation of package
-- [ ]  writing out documentation for user-facing functions/methods
-- [ ]  implementing tests
-- [ ]  figuring out how to cache during running tests??
-
-**Less important tasks/considerations:**
-
-- [ ]  try out making trial objs children of Experiments
-    - allows loading of trial objects from: `expobj.t-001`
-    - [ ]  need to remove requirement for providing `suite2p_experiment_obj`, and `total_frames_stitched`  args for `TwoPhotonImagingTrial` (probably part of making trial objs children of Experiment)

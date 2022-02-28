@@ -67,7 +67,7 @@ class TwoPhotonImagingTrial:
             raise ValueError(
                 "dev error: metainfo argument must contain the minimum fields: 'date', 'trial_id', 'exp_id', 't_series_id', 'trialInformation dict")
         if os.path.exists(metainfo['TrialsInformation']['tiff_path']):
-            self.tiff_path = metainfo['TrialsInformation']['tiff_path']
+            self.tiff_path = metainfo['TrialsInformation']['tiff_path']  #: path to the tiff for current trial
         else:
             raise FileNotFoundError(f"tiff_path does not exist: {metainfo['TrialsInformation']['tiff_path']}")
         if 'paq_path' in [*paq_options]:
@@ -80,15 +80,15 @@ class TwoPhotonImagingTrial:
             self._use_paq = False
 
         # set and create analysis save path directory
-        self.analysis_save_dir = analysis_save_path
-        self.__pkl_path = f"{self.analysis_save_dir}{metainfo['date']}_{metainfo['trial_id']}.pkl"
+        self.save_dir = analysis_save_path  #: path to the directory to save outputs from analysis
+        self.__pkl_path = f"{self.save_dir}{metainfo['date']}_{metainfo['trial_id']}.pkl"
 
         self.save_pkl(pkl_path=self.pkl_path)  # save experiment object to pkl_path
 
         # get imaging setup parameters
         if 'Bruker' in microscope:
             self.imparams = self._getImagingParameters(
-                microscope='Bruker')  # CURRENTLY USING REFACTORED PV METADATA CODE
+                microscope='Bruker')  #: Imaging Microscope Metadata submodule for trial
         elif 'imagingMicroscopeMetadata' in [*kwargs]:
             self.imparams = self._getImagingParameters(metadata=kwargs['imagingMicroscopeMetadata'])
         else:
@@ -100,10 +100,10 @@ class TwoPhotonImagingTrial:
                 *paq_options] else KeyError(
                 'No frame_channel specified for .paq processing')  # channel on Paq file to read for determining stims
             self.Paq = self._paqProcessingTwoPhotonImaging(paq_path=paq_options['paq_path'],
-                                                           frame_channel=frame_channel)
+                                                           frame_channel=frame_channel)  #: Paq data submodule for trial
 
         # collect mean FOV Trace
-        self.meanFluImg, self.meanFovFluTrace = self.meanRawFluTrace()
+        self.meanFluImg, self.meanFovFluTrace = self.meanRawFluTrace()  #: mean image and mean FOV fluorescence trace
 
         # if provided, add Suite2p results for trial
         for i in ['suite2p_experiment_obj',
@@ -113,6 +113,7 @@ class TwoPhotonImagingTrial:
         if 'suite2p_experiment_obj' in [*kwargs] and 'total_frames_stitched' in [*kwargs]:
             from packerlabimaging.processing.suite2p import Suite2pResultsExperiment
             s2p_expobj: Suite2pResultsExperiment = kwargs['suite2p_experiment_obj']
+            #: Suite2p results submodule for trial
             self.Suite2p = suite2p.Suite2pResultsTrial(trialsSuite2p=s2p_expobj.trials,
                                                        s2pResultsPath=s2p_expobj.s2pResultsPath,
                                                        subtract_neuropil=s2p_expobj.subtract_neuropil,
@@ -120,10 +121,10 @@ class TwoPhotonImagingTrial:
                                                            'total_frames_stitched'] + self.imparams.n_frames))  # use trial obj's current trial frames
 
         # normalize dFF for raw Flu
-        self.dfof()
+        self.dFF = self.dfof()  #: dFF normalized Suite2p data for trial
 
         # create annotated data object
-        self.data = self.create_anndata()
+        self.data = self.create_anndata()  #: anndata storage submodule
 
         # SAVE Trial OBJECT
         self.save()
@@ -143,7 +144,7 @@ class TwoPhotonImagingTrial:
     def fig_save_path(self):
         """create path for saving figures"""
         today_date = datetime.today().strftime('%Y-%m-%d')
-        return self.analysis_save_dir + f'Results_fig/{today_date}/'
+        return self.save_dir + f'Results_fig/{today_date}/'
 
     @fig_save_path.setter
     def fig_save_path(self, value: str):
@@ -228,7 +229,7 @@ class TwoPhotonImagingTrial:
     def stitch_s2p_reg_tiff(self): ## TODO refactoring in new code from the Suite2p class script?
         assert self.Suite2p._s2pResultExists, UnavailableOptionError('stitch_s2p_reg_tiff')
 
-        tif_path_save2 = self.analysis_save_dir + f'reg_tiff_{self.t_series_name}_r.tif'
+        tif_path_save2 = self.save_dir + f'reg_tiff_{self.t_series_name}_r.tif'
 
         start = self.Suite2p.trial_frames[0] // 2000  # 2000 because that is the batch size for suite2p run
         end = self.Suite2p.trial_frames[1] // 2000 + 1
@@ -291,8 +292,10 @@ class TwoPhotonImagingTrial:
                 'did not create anndata. anndata creation only available if experiments were processed with suite2p and .Paq file(s) provided for temporal synchronization')
 
     def dfof(self):
+        """(delta F)/F normalization of raw Suite2p data of trial."""
         if self.Suite2p._s2pResultExists:
-            self.dFF = normalize_dff(self.Suite2p.raw)
+            dFF = normalize_dff(self.Suite2p.raw)
+            return dFF
 
     def importTrialTiff(self) -> np.ndarray:
         """
@@ -324,7 +327,7 @@ class TwoPhotonImagingTrial:
         """Import current trial tiff, create downsampled tiff and save in default analysis directory."""
 
         stack = self.importTrialTiff()
-        SaveDownsampledTiff(stack=stack, save_as=f"{self.analysis_save_dir}/{self.date}_{self.trialID}_downsampled.tif")
+        SaveDownsampledTiff(stack=stack, save_as=f"{self.save_dir}/{self.date}_{self.trialID}_downsampled.tif")
 
     def plotSingleImageFrame(self, frame_num: int = 0, title: str = None):
         """
@@ -358,6 +361,8 @@ class TwoPhotonImagingTrial:
         Alias method for saving current object as pickle file.
         """
         self.save_pkl()
+
+
 
 
 ## archived or refactored away class methods or other functions

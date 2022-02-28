@@ -159,25 +159,20 @@ class Experiment:
             self._suite2p_save_path = self.analysisSavePath + '/suite2p/'
             self.Suite2p = Suite2pResultsExperiment(trialsSuite2p=self._trialsSuite2p)
 
-    def update_suite2p(self, trialID: str = None, s2pResultsPath: str = None):
+    def update_suite2p(self, trialID: str = None, s2pResultsPath: str = None):  # TODO need to review structure and usage of this func
         """
+        Add trial to suite2p trial list, and/or update an existing instance of the Suite2p submodule in Experiment.
 
-        Parameters
-        ----------
-        trialID
-        s2pResultsPath
-
-        Returns
-        -------
-        object
+        :param trialID: trial name to add to suite2p list
+        :param s2pResultsPath: path to output of suite2p to use to update .Suite2p submodule
         """
         from .processing.suite2p import Suite2pResultsExperiment
 
+        assert self.Suite2p is not None, 'No existing Suite2p sub-module found in Experiment.'
+
         if trialID is not None and trialID not in self._trialsSuite2p:
-            assert 's2p_use' in [
-                *self.TrialsInformation[trialID]], 'when trying to utilize suite2p , must provide value for `s2p_use` ' \
-                                                   'in TrialsInformation[trial] for each trial to specify if to use trial for this suite2p associated with this experiment'
-            self._trialsSuite2p.append(trialID) if self.TrialsInformation[trialID]['s2p_use'] else None
+            self._trialsSuite2p.append(trialID)
+            self.TrialsInformation[trialID]['s2p_use'] = True
         try:
             if s2pResultsPath:  # if s2pResultsPath provided then try to find and pre-load results from provided s2pResultsPath, raise error if cannot find results
                 # search for suite2p results items in self.suite2pPath, and auto-assign s2pRunComplete --> True if found successfully
@@ -199,20 +194,16 @@ class Experiment:
                 self._suite2p_save_path = self.analysisSavePath + '/suite2p/'
                 self.Suite2p = Suite2pResultsExperiment(trialsSuite2p=self._trialsSuite2p)
         except Exception:
-            raise ValueError(f"something went wrong. could not update suite2p results s2pResultsPath.")
+            raise ValueError(f"something went wrong. could not update suite2p from: {s2pResultsPath}.")
 
     def add_trial(self, trial_id: str, total_frames_stitched: int, trials_information: TrialsInformation = None):  # TODO need to figure out if there's a way around providing total_frames_stitched as arg! also add example of .add_trial() to tutorial!
         """
-        Create and add a trial object to the experiment.
+        Create and add trial object to the experiment. Return trial object.
 
-        Parameters
-        ----------
-        trial_id
-        total_frames_stitched
-        trials_information
-
-        Returns
-        -------
+        :param trial_id:
+        :param total_frames_stitched:
+        :param trials_information:
+        :return: trial object
 
         """
         from .TwoPhotonImagingMain import TwoPhotonImagingTrial

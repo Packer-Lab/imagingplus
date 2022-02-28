@@ -15,6 +15,6 @@ from .ExperimentMain import Experiment, define_term
 from .TwoPhotonImagingMain import TwoPhotonImagingTrial
 from .AllOpticalMain import AllOpticalTrial
 from .onePstimMain import OnePhotonStim
-import packerlabimaging.plotting.plotting as plotting
+from .plotting import plotting
 
 print(f"\nimported packerlabimaging successfully\n\tversion: {__version__}\n")

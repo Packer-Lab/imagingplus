@@ -7,27 +7,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>packerlabimaging.AllOpticalMain &#8212; packerlabimaging 0.1-alpha documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinxdoc.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-   
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">packerlabimaging 0.1-alpha documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">packerlabimaging.AllOpticalMain</a></li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          
-
           <div class="body" role="main">
             
   <h1>Source code for packerlabimaging.AllOpticalMain</h1><div class="highlight"><pre>
@@ -37,6 +39,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">signal</span>
 <span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TypedDict</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -44,9 +47,10 @@
 <span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">stats</span>
 <span class="kn">import</span> <span class="nn">tifffile</span> <span class="k">as</span> <span class="nn">tf</span>
 
-<span class="kn">from</span> <span class="nn">packerlabimaging.utils.utils</span> <span class="kn">import</span> <span class="n">convert_to_8bit</span><span class="p">,</span> <span class="n">normalize_dff</span><span class="p">,</span> <span class="n">UnavailableOptionError</span>
-<span class="kn">from</span> <span class="nn">.TwoPhotonImagingMain</span> <span class="kn">import</span> <span class="n">TwoPhotonImagingTrial</span>
+<span class="kn">from</span> <span class="nn">packerlabimaging.utils.utils</span> <span class="kn">import</span> <span class="n">convert_to_8bit</span><span class="p">,</span> <span class="n">normalize_dff</span>
+<span class="kn">from</span> <span class="nn">.TwoPhotonImagingMain</span> <span class="kn">import</span> <span class="n">TwoPhotonImagingTrial</span><span class="p">,</span> <span class="n">TwoPhotonImagingMetainfo</span>
 <span class="kn">from</span> <span class="nn">.processing.TwoPstim</span> <span class="kn">import</span> <span class="n">Targets</span>
+<span class="kn">from</span> <span class="nn">.utils.classes</span> <span class="kn">import</span> <span class="n">PaqInfoTrial</span><span class="p">,</span> <span class="n">UnavailableOptionError</span>
 <span class="c1"># %%</span>
 <span class="kn">from</span> <span class="nn">.processing.anndata</span> <span class="kn">import</span> <span class="n">AnnotatedData</span>
 
@@ -61,44 +65,24 @@
 
 
 <div class="viewcode-block" id="AllOpticalTrial"><a class="viewcode-back" href="../../reference.html#packerlabimaging.AllOpticalTrial">[docs]</a><span class="k">class</span> <span class="nc">AllOpticalTrial</span><span class="p">(</span><span class="n">TwoPhotonImagingTrial</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;This class provides methods for All Optical experiments&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;All Optical Experimental Data Analysis Workflow.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metainfo</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">naparm_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">analysis_save_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">microscope</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                 <span class="n">paq_options</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">prestim_sec</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">poststim_sec</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3.0</span><span class="p">,</span> <span class="n">pre_stim_response_window</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.500</span><span class="p">,</span>
+<div class="viewcode-block" id="AllOpticalTrial.__init__"><a class="viewcode-back" href="../../reference.html#packerlabimaging.AllOpticalTrial.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metainfo</span><span class="p">:</span> <span class="n">TwoPhotonImagingMetainfo</span><span class="p">,</span> <span class="n">naparm_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">analysis_save_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">microscope</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">paq_options</span><span class="p">:</span> <span class="n">PaqInfoTrial</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">prestim_sec</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">poststim_sec</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3.0</span><span class="p">,</span>
+                 <span class="n">pre_stim_response_window</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.500</span><span class="p">,</span>
                  <span class="n">post_stim_response_window</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.500</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :param tiff_path: path to t-series .tiff</span>
-<span class="sd">        :param paq_path: path to .Paq file associated with current t-series</span>
+<span class="sd">        :param metainfo: TypedDict containing meta-information field needed for this experiment. Please see TwoPhotonImagingMetainfo for type hints on accepted keys.</span>
+<span class="sd">        :param paq_options: TypedDict containing meta-information about .paq file associated with current trial</span>
 <span class="sd">        :param naparm_path: path to folder containing photostimulation setup built by NAPARM</span>
 <span class="sd">        :param analysis_save_path: path of where to save the experiment analysis object</span>
-<span class="sd">        :param metainfo: dictionary containing any metainfo information field needed for this experiment. At minimum it needs to include prep #, t-series # and date of data collection.</span>
-<span class="sd">        :param microscope: name of microscope used to record imaging (options: &quot;Bruker&quot; (default), &quot;Scientifica&quot;, &quot;other&quot;)</span>
-<span class="sd">        :param suite2p_path: (optional) path to suite2p outputs folder associated with this t-series (plane0 file? or ops file? not sure yet)</span>
-<span class="sd">        :param make_downsampled_tiff: flag to run generation and saving of downsampled tiff of t-series (saves to the analysis save location)</span>
-<span class="sd">        :param prestim_sec:</span>
-<span class="sd">        :param poststim_sec:</span>
-<span class="sd">        :param pre_stim_response_window:</span>
-<span class="sd">        :param post_stim_response_window:</span>
-<span class="sd">        :kwargs (optional):</span>
+<span class="sd">        :param microscope: name of microscope used to record imaging (options: &quot;Bruker&quot; (default), &quot;other&quot;)</span>
+<span class="sd">        :param prestim_sec: pre-photostimulation timeperiod for collecting photostimulation timed signals</span>
+<span class="sd">        :param poststim_sec: post-photostimulation timeperiod for collecting photostimulation timed signals</span>
+<span class="sd">        :param pre_stim_response_window: pre-photostimulation time window for measurement of photostimulation evoked responses</span>
+<span class="sd">        :param post_stim_response_window: post-photostimulation time window for measurement of photostimulation evoked responses</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        metainfo</span>
-<span class="sd">        naparm_path</span>
-<span class="sd">        analysis_save_path</span>
-<span class="sd">        microscope</span>
-<span class="sd">        paq_options</span>
-<span class="sd">        prestim_sec</span>
-<span class="sd">        poststim_sec</span>
-<span class="sd">        pre_stim_response_window</span>
-<span class="sd">        post_stim_response_window</span>
-<span class="sd">        kwargs</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Initialize Attributes:</span>
@@ -126,7 +110,7 @@
         <span class="c1"># attr&#39;s for statistical analysis of photostim trials responses</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">photostimResponsesData</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># anndata object for collecting photostim responses and associated metadata for experiment and cells</span>
 
-        <span class="c1">######## TODO update comment descriptions</span>
+        <span class="c1"># TODO update comment descriptions</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_trials</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># all trials for each cell, dff detrended</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_amplitudes</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># all amplitudes of response between dff test periods</span>
 
@@ -143,26 +127,25 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sta_sig_nomulti</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># as above, no multiple comparisons correction</span>
         <span class="c1">########</span>
 
-        <span class="c1">#### initializing data processing, data analysis and/or results associated attr&#39;s</span>
+        <span class="c1"># initializing data processing, data analysis and/or results associated attr&#39;s</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_trials</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># number of photostimulation trials TODO change to assigning from array: cells x Flu frames x # of photostim trials</span>
 
-        <span class="c1">## PHOTOSTIM SLM TARGETS</span>
+        <span class="c1"># PHOTOSTIM SLM TARGETS</span>
         <span class="c1"># TODO add attr&#39;s related to numpy array&#39;s and pandas dataframes for photostim trials - SLM targets</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">responses_SLMtargets</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># dF/prestimF responses for all SLM targets for each photostim trial</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">responses_SLMtargets_tracedFF</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># poststim dFF - prestim dFF responses for all SLM targets for each photostim trial</span>
 
-        <span class="c1">## ALL CELLS (from suite2p ROIs)</span>
+        <span class="c1"># ALL CELLS (from suite2p ROIs)</span>
         <span class="c1"># TODO add attr&#39;s related to numpy array&#39;s and pandas dataframes for photostim trials - suite2p ROIs</span>
 
-        <span class="c1">#### FUNCTIONS TO RUN AFTER init&#39;s of ALL ATTR&#39;S</span>
+        <span class="c1"># FUNCTIONS TO RUN AFTER init&#39;s of ALL ATTR&#39;S</span>
 
         <span class="c1"># 1) initialize object as TwoPhotonImagingTrial</span>
         <span class="n">TwoPhotonImagingTrial</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metainfo</span><span class="o">=</span><span class="n">metainfo</span><span class="p">,</span> <span class="n">analysis_save_path</span><span class="o">=</span><span class="n">analysis_save_path</span><span class="p">,</span>
                                        <span class="n">microscope</span><span class="o">=</span><span class="n">microscope</span><span class="p">,</span> <span class="n">paq_options</span><span class="o">=</span><span class="n">paq_options</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="c1"># 2) get stim timings from paq file</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stim_start_frames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paqProcessingAllOptical</span><span class="p">(</span><span class="n">stim_channel</span><span class="o">=</span><span class="n">paq_options</span><span class="p">[</span><span class="s1">&#39;stim_channel&#39;</span><span class="p">],</span>
-                                                               <span class="n">paq_path</span><span class="o">=</span><span class="n">paq_options</span><span class="p">[</span><span class="s1">&#39;paq_path&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stim_start_frames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paqProcessingAllOptical</span><span class="p">(</span><span class="n">stim_channel</span><span class="o">=</span><span class="n">paq_options</span><span class="p">[</span><span class="s1">&#39;stim_channel&#39;</span><span class="p">])</span>
 
         <span class="c1"># 3) process 2p stim protocol</span>
         <span class="c1"># set naparm path</span>
@@ -176,8 +159,7 @@
         <span class="c1"># 5) collect Flu traces from SLM targets</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">raw_SLMTargets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dFF_SLMTargets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">meanFluImg_registered</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_traces_from_targets</span><span class="p">(</span>
             <span class="n">curr_trial_frames</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">targets_dff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets_dff_avg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets_dfstdF</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets_dfstdF_avg</span><span class="p">,</span> \
-        <span class="bp">self</span><span class="o">.</span><span class="n">targets_raw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets_raw_avg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_alltargets_stim_traces_norm</span><span class="p">(</span><span class="n">process</span><span class="o">=</span><span class="s1">&#39;trace dFF&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">targets_dff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets_dff_avg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets_dfstdF</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets_dfstdF_avg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets_raw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets_raw_avg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_alltargets_stim_traces_norm</span><span class="p">(</span><span class="n">process</span><span class="o">=</span><span class="s1">&#39;trace dFF&#39;</span><span class="p">)</span>
 
         <span class="c1"># 6) Collect Flu traces from Suite2p ROIs:</span>
         <span class="c1">#   create:</span>
@@ -196,7 +178,7 @@
 
         <span class="c1"># save final object</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;\----- CREATED AllOpticalTrial data object for </span><span class="si">{</span><span class="n">metainfo</span><span class="p">[</span><span class="s2">&quot;t series id&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;\----- CREATED AllOpticalTrial data object for </span><span class="si">{</span><span class="n">metainfo</span><span class="p">[</span><span class="s2">&quot;t_series_id&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pkl_path</span><span class="p">:</span>
@@ -208,11 +190,6 @@
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;TwoPhotonImagingTrial.alloptical experimental trial object&quot;</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">paths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;TODO returns a dictionary of all paths associated with trial&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">naparm_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -249,14 +226,18 @@
         <span class="n">time_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">prestim_sec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">poststim_sec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">n_frames</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">time_vector</span>
 
-    <span class="c1">### ALLOPTICAL EXPERIMENT PHOTOSTIM PROTOCOL PROCESSING</span>
+    <span class="c1"># ALLOPTICAL EXPERIMENT PHOTOSTIM PROTOCOL PROCESSING ##############################################################</span>
 
-    <span class="k">def</span> <span class="nf">_paqProcessingAllOptical</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stim_channel</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">paq_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">paqdata</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">paq_read</span><span class="p">(</span><span class="n">paq_path</span><span class="o">=</span><span class="n">paq_path</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_paqProcessingAllOptical</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stim_channel</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process .paq file with relation to all optical processing. In particular, this returns frame numbers timed to</span>
+<span class="sd">        individual photostimulation trial synced to the specified stim_channel.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">paqdata</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">paq_read</span><span class="p">()</span>
         <span class="n">stim_start_frames</span><span class="p">,</span> <span class="n">stim_start_times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">paq_alloptical_stims</span><span class="p">(</span><span class="n">paq_data</span><span class="o">=</span><span class="n">paqdata</span><span class="p">,</span>
                                                                             <span class="n">frame_clock</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">frame_clock</span><span class="p">,</span>
                                                                             <span class="n">stim_channel</span><span class="o">=</span><span class="n">stim_channel</span><span class="p">)</span>
-
         <span class="k">return</span> <span class="n">stim_start_frames</span>
 
     <span class="k">def</span> <span class="nf">_stimProcessing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;naparm&#39;</span><span class="p">):</span>
@@ -320,7 +301,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">|- Number of targeted cells: &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_targeted_cells</span><span class="p">)</span>
 
-        <span class="c1">##### IDENTIFYING S2P ROIs THAT ARE WITHIN THE EXCLUSION ZONES OF THE SLM TARGETS</span>
+        <span class="c1"># IDENTIFYING S2P ROIs THAT ARE WITHIN THE EXCLUSION ZONES OF THE SLM TARGETS</span>
         <span class="c1"># make all target area coords in to a binary mask</span>
         <span class="n">targ_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">frame_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">frame_y</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;uint16&#39;</span><span class="p">)</span>
         <span class="n">target_areas_exclude</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Targets</span><span class="o">.</span><span class="n">target_areas_exclude</span><span class="p">)</span>
@@ -399,8 +380,13 @@
 
     <span class="c1">#### TODO review attr&#39;s and write docs from the following functions: // start</span>
     <span class="c1"># used for creating tiffs that remove artifacts from alloptical experiments with photostim artifacts</span>
-    <span class="k">def</span> <span class="nf">rm_artifacts_tiffs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tiffs_loc</span><span class="p">,</span> <span class="n">new_tiffs</span><span class="p">):</span>
-        <span class="c1">### make a new tiff file (not for suite2p) with the first photostim frame whitened, and save new tiff</span>
+<div class="viewcode-block" id="AllOpticalTrial.rm_artifacts_tiffs"><a class="viewcode-back" href="../../reference.html#packerlabimaging.AllOpticalTrial.rm_artifacts_tiffs">[docs]</a>    <span class="k">def</span> <span class="nf">rm_artifacts_tiffs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tiffs_loc</span><span class="p">,</span> <span class="n">new_tiffs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TODO docstring</span>
+<span class="sd">        :param tiffs_loc:</span>
+<span class="sd">        :param new_tiffs:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># make a new tiff file (not for suite2p) with the first photostim frame whitened, and save new tiff</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">-----making processed photostim .tiff from:&#39;</span><span class="p">)</span>
         <span class="n">tiff_path</span> <span class="o">=</span> <span class="n">tiffs_loc</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">tiff_path</span><span class="p">)</span>
@@ -464,9 +450,16 @@
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;done saving to: &#39;</span><span class="p">,</span> <span class="n">save_path</span><span class="p">)</span>
 
         <span class="k">del</span> <span class="n">im_stack_2</span>
-        <span class="k">del</span> <span class="n">im_stack</span>
+        <span class="k">del</span> <span class="n">im_stack</span></div>
 
-    <span class="k">def</span> <span class="nf">s2pMasks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s2p_path</span><span class="p">,</span> <span class="n">cell_ids</span><span class="p">):</span>
+<div class="viewcode-block" id="AllOpticalTrial.s2pMasks"><a class="viewcode-back" href="../../reference.html#packerlabimaging.AllOpticalTrial.s2pMasks">[docs]</a>    <span class="k">def</span> <span class="nf">s2pMasks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s2p_path</span><span class="p">,</span> <span class="n">cell_ids</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns arrays that adds targets images to suite2p images.</span>
+
+<span class="sd">        :param s2p_path:</span>
+<span class="sd">        :param cell_ids:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">s2p_path</span><span class="p">)</span>
         <span class="n">stat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;stat.npy&#39;</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">ops</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;ops.npy&#39;</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
@@ -502,10 +495,17 @@
         <span class="c1">#         xpix = stat[n][&#39;xpix&#39;]</span>
         <span class="c1">#         targets_s2p_img_2[ypix, xpix] = 3000</span>
 
-        <span class="k">return</span> <span class="n">mask_img</span><span class="p">,</span> <span class="n">targets_s2p_img</span><span class="p">,</span>  <span class="c1"># targets_s2p_img_1, targets_s2p_img_2</span>
+        <span class="k">return</span> <span class="n">mask_img</span><span class="p">,</span> <span class="n">targets_s2p_img</span></div>
 
 <div class="viewcode-block" id="AllOpticalTrial.s2pMaskStack"><a class="viewcode-back" href="../../reference.html#packerlabimaging.AllOpticalTrial.s2pMaskStack">[docs]</a>    <span class="k">def</span> <span class="nf">s2pMaskStack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkl_list</span><span class="p">,</span> <span class="n">s2p_path</span><span class="p">,</span> <span class="n">parent_folder</span><span class="p">,</span> <span class="n">force_redo</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;makes a TIFF stack with the s2p mean image, and then suite2p ROI masks for all cells detected, target cells, and also SLM targets as well?&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;makes a TIFF stack with the s2p mean image, and then suite2p ROI masks for all cells detected,</span>
+<span class="sd">        target cells, and also SLM targets as well?</span>
+
+<span class="sd">        :param pkl_list:</span>
+<span class="sd">        :param s2p_path:</span>
+<span class="sd">        :param parent_folder:</span>
+<span class="sd">        :param force_redo:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">for</span> <span class="n">pkl</span> <span class="ow">in</span> <span class="n">pkl_list</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Retrieving s2p masks for:&#39;</span><span class="p">,</span> <span class="n">pkl</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -584,13 +584,13 @@
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">s2p ROI + photostim targets masks saved in TIFF to: &#39;</span><span class="p">,</span> <span class="n">save_path</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AllOpticalTrial.STAProcessing"><a class="viewcode-back" href="../../reference.html#packerlabimaging.AllOpticalTrial.STAProcessing">[docs]</a>    <span class="k">def</span> <span class="nf">STAProcessing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make stimulus triggered average (STA) traces and calculate the STA amplitude</span>
 <span class="sd">        of response</span>
 
 <span class="sd">        Input:</span>
 <span class="sd">            plane - imaging plane n</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># make stas, [plane x cell x frame]</span>
         <span class="n">stas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_trials</span><span class="p">[</span><span class="n">plane</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stas</span><span class="p">)</span>
@@ -608,7 +608,13 @@
 
     <span class="c1">### ALLOPTICAL ANALYSIS - FOCUS ON SLM TARGETS RELATED METHODS</span>
 <div class="viewcode-block" id="AllOpticalTrial.collect_traces_from_targets"><a class="viewcode-back" href="../../reference.html#packerlabimaging.AllOpticalTrial.collect_traces_from_targets">[docs]</a>    <span class="k">def</span> <span class="nf">collect_traces_from_targets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">curr_trial_frames</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">reg_tif_folder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">save</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;uses registered tiffs to collect raw traces from SLM target areas&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;uses registered tiffs to collect raw traces from SLM target areas</span>
+
+<span class="sd">        :param curr_trial_frames:</span>
+<span class="sd">        :param reg_tif_folder:</span>
+<span class="sd">        :param save:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">reg_tif_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">s2pResultsPath</span><span class="p">:</span>
@@ -663,9 +669,10 @@
         <span class="k">return</span> <span class="n">raw_SLMTargets</span><span class="p">,</span> <span class="n">dFF_SLMTargets</span><span class="p">,</span> <span class="n">meanFluImg_registered</span></div>
 
 <div class="viewcode-block" id="AllOpticalTrial.get_alltargets_stim_traces_norm"><a class="viewcode-back" href="../../reference.html#packerlabimaging.AllOpticalTrial.get_alltargets_stim_traces_norm">[docs]</a>    <span class="k">def</span> <span class="nf">get_alltargets_stim_traces_norm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">process</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">targets_idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">subselect_cells</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                                        <span class="n">pre_stim</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">post_stim</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">filter_sz</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">stims</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+                                        <span class="n">pre_stim</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">post_stim</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">stims</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        primary function to measure the dFF and dF/setdF trace SNIPPETS for photostimulated targets.</span>
+
 <span class="sd">        :param stims:</span>
 <span class="sd">        :param targets_idx: integer for the index of target cell to process</span>
 <span class="sd">        :param subselect_cells: ls of cells to subset from the overall set of traces (use in place of targets_idx if desired)</span>
@@ -1004,8 +1011,13 @@
 
         <span class="k">return</span> <span class="n">trial_array</span>
 
-    <span class="k">def</span> <span class="nf">collectPhotostimResponses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">photostimFluArray</span><span class="p">):</span>
+<div class="viewcode-block" id="AllOpticalTrial.collectPhotostimResponses"><a class="viewcode-back" href="../../reference.html#packerlabimaging.AllOpticalTrial.collectPhotostimResponses">[docs]</a>    <span class="k">def</span> <span class="nf">collectPhotostimResponses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">photostimFluArray</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TODO docstring</span>
 
+<span class="sd">        :param photostimFluArray:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># create parameters, slices, and subsets for making pre-stim and post-stim arrays to use in stats comparison</span>
         <span class="c1"># test_period = self.pre_stim_response_window / 1000  # sec</span>
         <span class="c1"># self.test_frames = int(self.imparams.fps * test_period)  # test period for stats</span>
@@ -1023,7 +1035,7 @@
 
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">n_units</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stim_start_frames</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">all_amplitudes</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">df</span>
+        <span class="k">return</span> <span class="n">df</span></div>
 
     <span class="k">def</span> <span class="nf">_allCellsPhotostimResponsesAnndata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">photostimResponseAmplitudes</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>  <span class="c1"># NOT TESTED!</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1068,13 +1080,13 @@
         <span class="c1">#     raise Warning(&quot;could not create anndata. anndata creation only available if .photostimResponseAmplitudes have been collected (run .photostimProcessingAllCells())&#39;)&quot;)</span>
 
 <div class="viewcode-block" id="AllOpticalTrial.photostimProcessingAllCells"><a class="viewcode-back" href="../../reference.html#packerlabimaging.AllOpticalTrial.photostimProcessingAllCells">[docs]</a>    <span class="k">def</span> <span class="nf">photostimProcessingAllCells</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>  <span class="c1"># NOTE: not setup for multi-plane imaging processing yet...</span>
-        <span class="sd">&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Take dfof trace for entire timeseries and break it up in to individual trials, calculate</span>
 <span class="sd">        the mean amplitudes of response and statistical significance across all trials</span>
 
 <span class="sd">        Inputs:</span>
 <span class="sd">            plane             - imaging plane n</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">----------------------------------------------------------------&#39;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;running trial Processing for all cells &#39;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;----------------------------------------------------------------&#39;</span><span class="p">)</span>
@@ -1129,8 +1141,12 @@
         <span class="c1"># calculate the proportion of all trials that each cell responded on</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prob_response</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">num_respond</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_trials</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">cellStaProcessing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="s1">&#39;t_test&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="AllOpticalTrial.cellStaProcessing"><a class="viewcode-back" href="../../reference.html#packerlabimaging.AllOpticalTrial.cellStaProcessing">[docs]</a>    <span class="k">def</span> <span class="nf">cellStaProcessing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="s1">&#39;t_test&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TODO docstring</span>
 
+<span class="sd">        :param test:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim_start_frames</span><span class="p">:</span>
 
             <span class="c1"># this is the key parameter for the sta, how many frames before and after the stim onset do you want to use</span>
@@ -1244,10 +1260,14 @@
             <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">])</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">staSignificance</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">singleTrialSignificance</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">singleTrialSignificance</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="nf">staSignificance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">):</span>
+<div class="viewcode-block" id="AllOpticalTrial.staSignificance"><a class="viewcode-back" href="../../reference.html#packerlabimaging.AllOpticalTrial.staSignificance">[docs]</a>    <span class="k">def</span> <span class="nf">staSignificance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TODO docstring</span>
 
+<span class="sd">        :param test:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sta_sig</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">n_planes</span><span class="p">):</span>
@@ -1277,10 +1297,12 @@
                     <span class="c1"># print(&#39;stimulation has significantly changed fluoresence of s2p unit {}, its P value is {}&#39;.format(unit_index, p))</span>
                     <span class="n">sig_units</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">unit_index</span><span class="p">)</span>  <span class="c1"># significant units</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">sta_sig</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sig_units</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sta_sig</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sig_units</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">singleTrialSignificance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
+<div class="viewcode-block" id="AllOpticalTrial.singleTrialSignificance"><a class="viewcode-back" href="../../reference.html#packerlabimaging.AllOpticalTrial.singleTrialSignificance">[docs]</a>    <span class="k">def</span> <span class="nf">singleTrialSignificance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TODO docstring</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">single_sig</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># single trial significance value for each trial for each cell in each plane</span>
 
         <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">n_planes</span><span class="p">):</span>
@@ -1303,12 +1325,18 @@
 
                 <span class="n">single_sigs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">single_sig</span><span class="p">)</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">single_sig</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">single_sigs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">single_sig</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">single_sigs</span><span class="p">)</span></div>
 
     <span class="c1">## NOT REVIEWED FOR USAGE YET</span>
 
     <span class="c1"># other useful functions for all-optical analysis</span>
-    <span class="k">def</span> <span class="nf">whiten_photostim_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tiff_path</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="AllOpticalTrial.whiten_photostim_frame"><a class="viewcode-back" href="../../reference.html#packerlabimaging.AllOpticalTrial.whiten_photostim_frame">[docs]</a>    <span class="k">def</span> <span class="nf">whiten_photostim_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tiff_path</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TODO docstring</span>
+
+<span class="sd">        :param tiff_path:</span>
+<span class="sd">        :param save_as:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">im_stack</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">tiff_path</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">n_frames</span><span class="p">))</span>
 
         <span class="n">frames_to_whiten</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1331,7 +1359,7 @@
 
         <span class="n">im_stack_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">im_stack</span><span class="p">,</span> <span class="n">frames_to_remove</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-        <span class="n">tf</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">save_as</span><span class="p">,</span> <span class="n">im_stack_1</span><span class="p">,</span> <span class="n">photometric</span><span class="o">=</span><span class="s1">&#39;minisblack&#39;</span><span class="p">)</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">save_as</span><span class="p">,</span> <span class="n">im_stack_1</span><span class="p">,</span> <span class="n">photometric</span><span class="o">=</span><span class="s1">&#39;minisblack&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AllOpticalTrial.avg_stim_images"><a class="viewcode-back" href="../../reference.html#packerlabimaging.AllOpticalTrial.avg_stim_images">[docs]</a>    <span class="k">def</span> <span class="nf">avg_stim_images</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">peri_frames</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">stim_timings</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">save_img</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">to_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                         <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">force_redo</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -1387,7 +1415,7 @@
 
                 <span class="k">if</span> <span class="n">save_img</span><span class="p">:</span>
                     <span class="c1"># save in a subdirectory under the ANALYSIS folder path from whence t-series TIFF came from</span>
-                    <span class="n">save_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysis_save_dir</span> <span class="o">+</span> <span class="s1">&#39;avg_stim_images&#39;</span>
+                    <span class="n">save_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span> <span class="o">+</span> <span class="s1">&#39;avg_stim_images&#39;</span>
                     <span class="n">save_path_stim</span> <span class="o">=</span> <span class="n">save_path</span> <span class="o">+</span> <span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">_stim-</span><span class="si">%s</span><span class="s1">.tif&#39;</span> <span class="o">%</span> <span class="p">(</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">metainfo</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">metainfo</span><span class="p">[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">],</span> <span class="n">stim</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">save_path</span><span class="p">):</span>
@@ -1419,7 +1447,15 @@
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;skipping remaking of avg stim images&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AllOpticalTrial.run_stamm_nogui"><a class="viewcode-back" href="../../reference.html#packerlabimaging.AllOpticalTrial.run_stamm_nogui">[docs]</a>    <span class="k">def</span> <span class="nf">run_stamm_nogui</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numDiffStims</span><span class="p">,</span> <span class="n">startOnStim</span><span class="p">,</span> <span class="n">everyXStims</span><span class="p">,</span> <span class="n">preSeconds</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">postSeconds</span><span class="o">=</span><span class="mf">1.25</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;run STAmoviemaker for the self&#39;s trial&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        run STAmoviemaker for current trial</span>
+
+<span class="sd">        :param numDiffStims:</span>
+<span class="sd">        :param startOnStim:</span>
+<span class="sd">        :param everyXStims:</span>
+<span class="sd">        :param preSeconds:</span>
+<span class="sd">        :param postSeconds:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">qnap_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;/home/pshah/mnt/qnap&#39;</span><span class="p">)</span>
 
         <span class="c1"># data path</span>
@@ -1523,39 +1559,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sta_euclid_dist</span> <span class="o">=</span> <span class="n">dist</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
-          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../index.html">packerlabimaging</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../quick-start-guide.html">Quick start guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../reference.html">API Reference</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
@@ -1566,29 +1575,24 @@
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2022, Packer Lab.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">packerlabimaging 0.1-alpha documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">packerlabimaging.AllOpticalMain</a></li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Packer Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
   </body>
 </html>
