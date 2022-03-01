@@ -15,10 +15,10 @@ We hope that it provides a useful structure to organize your experimental data, 
 Recommended tools:
 - python >=3.9
 - conda - environments for python package management
-  - Run `conda create -n <insert-name> python=3.9` to create a new conda environment with Python 3.9
+  - Run `conda create -n <insert-name> python=3.9` to create a new conda environment with python 3.9
   - Note: `packerlabimaging` should install and run proper within existing conda environments as well. 
 - Jupyter - for creating python based notebooks
-- VS Code or PyCharm - for Python development
+- VS Code or PyCharm - IDE for python code development
 
 ## Installation instructions
 
