@@ -7,10 +7,11 @@ from the microscope during data collection, and any user generated files associa
 """
 
 import warnings
+
 warnings.filterwarnings("ignore")
 
 from ._version import __version__
-from packerlabimaging.utils._io import import_obj
+from .utils.io import import_obj
 from .ExperimentMain import Experiment, define_term
 from .TwoPhotonImagingMain import TwoPhotonImagingTrial
 from .AllOpticalMain import AllOpticalTrial

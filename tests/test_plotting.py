@@ -1,6 +1,6 @@
 from packerlabimaging.AllOpticalMain import AllOpticalTrial
 
-from packerlabimaging.utils._io import import_obj
+from packerlabimaging.utils.io import import_obj
 
 from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
 

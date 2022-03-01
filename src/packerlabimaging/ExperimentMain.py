@@ -26,7 +26,7 @@ from suite2p.run_s2p import run_s2p
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
 
-from .utils import _io
+from .utils import io
 
 # UTILITIES
 

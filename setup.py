@@ -4,8 +4,6 @@ from setuptools import setup, find_packages
 
 TESTS_REQUIRE = Path(f"{os.getcwd()}/requirements_dev.txt").read_text().splitlines()
 
-
-
 setup(
     name='packerlabimaging',
     version='0.1',

@@ -10,6 +10,16 @@ data processing for ROI detection. Ultimately, the goal of this package is to ju
 It should be completely usable and understandable for anyone with the correct data in hand and basic knowledge of Python. There are tutorials to help along the way.  
 We hope that it provides a useful structure to organize your experimental data, and some functionality to interact and process your data in an efficient manner. 
 
+## Getting started
+
+Recommended tools:
+- python >=3.9
+- conda - environments for python package management
+  - Run `conda create -n <insert-name> python=3.9` to create a new conda environment with Python 3.9
+  - Note: `packerlabimaging` should install and run proper within existing conda environments as well. 
+- Jupyter - for creating python based notebooks
+- VS Code or PyCharm - for Python development
+
 ## Installation instructions
 
 1. Clone this github repository using `git clone https://github.com/Packer-Lab/packerlabimaging.git` in the terminal. 

@@ -1,5 +1,5 @@
 import pytest
-from packerlabimaging.utils._io import import_obj
+from packerlabimaging.utils.io import import_obj
 
 SUITE2P_FRAMES_SPONT_t005t006 = [0, 14880]
 SUITE2P_FRAMES_t013 = 103525

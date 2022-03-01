@@ -18,7 +18,7 @@ from statsmodels import stats
 from suite2p.run_s2p import run_s2p
 
 from packerlabimaging import Experiment
-from packerlabimaging.utils import _io
+from packerlabimaging.utils import io
 
 pd.options.display.max_rows = 100
 pd.options.display.max_columns = 10
