@@ -42,7 +42,7 @@ Note: The package is installable as a stand-alone python package. You can instal
 The documentation for `packerlabimaging` is not currently hosted online. 
 Instead, you can access the documentation by opening the `index.html` file found from the following file path of the downloaded git repo on your local computer:
 
-<mark>{packerlabimaging-git-repo local copy} > docs > build > index.html</mark>
+```{packerlabimaging-git-repo local copy} > docs > build > index.html```
 
 Opening the `index.html` file will open the documentation as an HTML file in your web-browser.
 
