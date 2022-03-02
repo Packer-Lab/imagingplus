@@ -16,7 +16,7 @@ Recommended tools:
 - python >=3.9
 - conda - environments for python package management
   - Run `conda create -n <insert-name> python=3.9` to create a new conda environment with python 3.9
-  - Note: `packerlabimaging` should install and run proper within existing conda environments as well. 
+  - Note: `packerlabimaging` should install and function normally within existing conda environments as well. 
 - Jupyter - for creating python based notebooks
 - VS Code or PyCharm - IDE for python code development
 
