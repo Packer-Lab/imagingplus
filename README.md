@@ -8,6 +8,8 @@ Especially, there is a fully implemented pipeline for data structuring, processi
 This package is designed to work best with imaging experiments performed using PackIO, a Bruker 2pPlus microscope and using Suite2p for Ca2+ imaging 
 data processing for ROI detection. Ultimately, the goal of this package is to jump-start your own analysis of your awesome experiment. 
 It should be completely usable and understandable for anyone with the correct data in hand and basic knowledge of Python. There are tutorials to help along the way.  
+
+
 We hope that it provides a useful structure to organize your experimental data, and some functionality to interact and process your data in an efficient manner. 
 
 ## Getting started
@@ -40,7 +42,7 @@ Note: The package is installable as a stand-alone python package. You can instal
 The documentation for `packerlabimaging` is not currently hosted online. 
 Instead, you can access the documentation by opening the `index.html` file found from the following file path of the downloaded git repo on your local computer:
 
-{packerlabimaging-git-repo local copy} > docs > build > index.html
+=={packerlabimaging-git-repo local copy} > docs > build > index.html==
 
 Opening the `index.html` file will open the documentation as an HTML file in your web-browser.
 
