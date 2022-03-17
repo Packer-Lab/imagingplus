@@ -16,7 +16,7 @@ import tifffile as tf
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
 from packerlabimaging.utils.utils import SaveDownsampledTiff, normalize_dff
 from packerlabimaging.utils.classes import UnavailableOptionError, TrialsInformation
-from packerlabimaging.processing.paq import import_paqdata
+from packerlabimaging.processing.paq import PaqData
 from .processing import suite2p, anndata as ad
 from .utils.imagingMetadata import PrairieViewMetadata, ImagingMetadata
 
@@ -81,6 +81,7 @@ class TwoPhotonImagingTrial:
 
         # set and create analysis save path directory
         self.save_dir = analysis_save_path  #: path to the directory to save outputs from analysis
+        os.makedirs(self.save_dir, exist_ok=True)
         self.__pkl_path = f"{self.save_dir}{metainfo['date']}_{metainfo['trial_id']}.pkl"
 
         self.save_pkl(pkl_path=self.pkl_path)  # save experiment object to pkl_path
@@ -218,7 +219,7 @@ class TwoPhotonImagingTrial:
 
     def _paqProcessingTwoPhotonImaging(self, paq_path, frame_channel):
         print(f"\n\- PROCESSING PAQDATA ... ")
-        paq_data_obj, paqdata = import_paqdata(paq_path=paq_path)
+        paq_data_obj, paqdata = PaqData.import_paqdata(paq_path=paq_path)
         assert frame_channel in paq_data_obj.paq_channels, print(f"{frame_channel} not found in channels in .paq data.")
         paq_data_obj.frame_times_channame = frame_channel
         paq_data_obj.frame_clock = paq_data_obj.paq_frame_times(paq_data=paqdata, frame_channel=frame_channel)
@@ -349,8 +350,13 @@ class TwoPhotonImagingTrial:
         :param pkl_path: (optional) provide path to save object to pickle file.
         """
         if pkl_path:
-            print(f'saving new trial object to: {pkl_path}')
-            self.pkl_path = pkl_path
+            parent = os.path.relpath(os.path.join(pkl_path, os.pardir))
+            if os.path.exists(parent):
+                print(f'saving new trial object to: {pkl_path}')
+                self.pkl_path = pkl_path
+            else:
+                raise FileNotFoundError(f"Parent directory path: `{parent}` was not found for saving .pkl")
+
 
         with open(self.pkl_path, 'wb') as f:
             pickle.dump(self, f)

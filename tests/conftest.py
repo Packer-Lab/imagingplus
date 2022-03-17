@@ -4,6 +4,42 @@ from packerlabimaging.utils.io import import_obj
 SUITE2P_FRAMES_SPONT_t005t006 = [0, 14880]
 SUITE2P_FRAMES_t013 = 103525
 
+@pytest.fixture(scope="session")
+def twophoton_imaging_trial_fixture_noPreDoneSuite2p():
+
+    initialization_dict = {
+        'dataPath': '/home/pshah/mnt/qnap/Data/2020-12-19',
+        'analysisSavePath': '/home/pshah/Documents/code/packerlabimaging/tests/',
+        'microscope': "Bruker",
+        "expID": 'RL109',
+        'date': '2020-12-19',
+        'comments': 'testing out analysis workflow',
+        'TrialsInformation': {},  # NOTE: this dictionary is populated in the code cells below.
+        'useSuite2p': True,
+        's2pResultsPath': None
+    }
+
+    # add information about each trial in experiment to TrialsInformation field of the initialization_dict
+    trials_list_spont = ['t-005', 't-006']
+    for idx, trial in enumerate(trials_list_spont):
+        data_path_base = '/home/pshah/mnt/qnap/Data/2020-12-19'
+        animal_prep = initialization_dict['expID']
+        date = data_path_base[-10:]
+
+        # create dictionary containing necessary information for initialization
+        initialization_dict["TrialsInformation"][trial] = {'trialType': 'TwoPhotonImagingTrial',
+                                                           'tiff_path': f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif',
+                                                           's2p_use': True,
+                                                           'expGroup': "pre 4ap 2p spont imaging",
+                                                           'PaqInfoTrial': {
+                                                               'frame_channel': 'frame_clock',
+                                                               'paq_path': f'{data_path_base}/{date}_{animal_prep}_{trial[2:]}.paq'
+                                                               # path to the .paq files for the selected trials
+                                                           }
+                                                           }
+
+    return initialization_dict
+
 
 @pytest.fixture(scope="session")
 def twophoton_imaging_trial_fixture():
@@ -157,3 +193,4 @@ def existing_trialobj_alloptical_fixture():
     expobj = import_obj(pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
     trialobj = expobj.load_trial(trialID='t-013')
     return trialobj
+

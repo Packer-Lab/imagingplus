@@ -20,7 +20,7 @@ class Suite2pResultsExperiment:
         # self.reg_tiff_path = None
         # self.ops_end = None
         # self.s2pResultsPath = None
-        # self.s2pResultExists = False
+        # self.__s2pResultExists = False
         # self.db = None
         # self.ops = None
         print(f"\- ADDING Suite2p Results to Experiment object ... ")
@@ -55,6 +55,7 @@ class Suite2pResultsExperiment:
         if s2pResultsPath is None:
             # initialize needed variables and attr's for future calling of s2pRun
             self.s2pResultsPath = None
+            self.__s2pResultExists = False
         else:
             self.s2pResultsPath = s2pResultsPath
             try:
@@ -63,10 +64,19 @@ class Suite2pResultsExperiment:
             except Exception:
                 raise Exception(
                     f'Something went wrong while trying to load suite2p processed data from: {s2pResultsPath}')
-            self.s2pResultExists = True
+            self.__s2pResultExists = True
 
         # Attributes
         self.n_frames: int = 0  # total number of imaging frames in the Suite2p run
+
+    @property
+    def _s2pResultExists(self):
+        return self.__s2pResultExists
+
+    @_s2pResultExists.setter
+    def _s2pResultExists(self, val):
+        self._s2pResultExists = val
+
 
     def __repr__(self):
         return f'Suite2p Results (Experiment level) Object, containing trials: \n\t{self.trials}'
@@ -267,7 +277,7 @@ class Suite2pResultsExperiment:
         from suite2p import run_s2p
         self.ops_end = run_s2p(ops=ops, db=db)
 
-        self.s2pResultExists = True
+        self._s2pResultExists = True
         self.s2pResultsPath = self.ops_end['save_path']
 
 
@@ -277,7 +287,7 @@ class Suite2pResultsTrial(Suite2pResultsExperiment):
     def __init__(self, trialsSuite2p: list, trial_frames: tuple, s2pResultsPath: Optional[str] = None,
                  subtract_neuropil: bool = True):
 
-        super().__init__(trialsSuite2p, s2pResultsPath, subtract_neuropil)
+        super().__init__(trialsSuite2p, s2pResultsPath, subtract_neuropil)  # - TODO it really is confusing to be passing in all trials for a s2p results obj that should be restricted to just one trial
 
         print(f"\n\----- ADDING Suite2pResultsTrial ... ")
 
@@ -321,7 +331,7 @@ class Suite2pResultsTrial(Suite2pResultsExperiment):
             self.neuropil = self.__neuropil[:, self.trial_frames[0]:self.trial_frames[
                 1]]  # array of neuropil Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
 
-            self.__s2pResultExists = True
+            self._s2pResultExists = True
 
         else:
             for plane in range(self.n_planes):
@@ -330,11 +340,8 @@ class Suite2pResultsTrial(Suite2pResultsExperiment):
                 self.neuropil.append(self.neuropil[plane][:, self.trial_frames[0]:self.trial_frames[1]])
 
                 # self.dfof.append(normalize_dff(self.raw[plane]))  # calculate df/f based on relevant frames
-                self.__s2pResultExists = True
+                self._s2pResultExists = True
 
-    @property
-    def _s2pResultExists(self):
-        return self.__s2pResultExists
 
     # @property
     # def stat(self):

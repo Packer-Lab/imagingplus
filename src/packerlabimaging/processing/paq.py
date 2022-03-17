@@ -131,18 +131,29 @@ def paq2py(file_path=None, plot=False):
             "num_datapoints": num_datapoints}, df
 
 
-def import_paqdata(paq_path):
-    paqdata, paq_rate, paq_channels = PaqData.paq_read(paq_path=paq_path, plot=False)
-    paq_data_obj = PaqData(paq_path=paq_path, paq_channels=paq_channels, paq_rate=paq_rate)
-    return paq_data_obj, paqdata
-
 
 @dataclass
 class PaqData:
     """access and storage of data from .paq files."""
+
     paq_path: str
-    paq_channels: List[str]
-    paq_rate: float
+    paq_channels: List[str] = None
+    paq_rate: float = None
+
+    # todo change this to alternative constructor - cls method under PaqData
+    @classmethod
+    def import_paqdata(cls, paq_path):
+        """
+        Alternative constructor for PaqData.
+
+        :param paq_path: path to .paq file
+        :return: PaqData object, as well as raw data from .paq file
+        """
+        paqData_obj = cls(paq_path=paq_path)
+        paqdata, paq_rate, paq_channels = paqData_obj.paq_read(paq_path=paq_path, plot=False)
+        paqData_obj.paq_channels = paq_channels
+        paqData_obj.paq_rate = paq_rate
+        return paqData_obj, paqdata
 
     def __repr__(self):
         information = ""
@@ -153,16 +164,14 @@ class PaqData:
                 information += f"\n\t{i}: {[*self.__dict__[i]]}"
         return f"packerlabimaging.processing.Paq.PaqData: {information}"
 
-    def paq_read(self, paq_path: str, plot: bool = False):
+    @staticmethod
+    def paq_read(paq_path: str, plot: bool = False):
         """
         Loads .Paq file and saves data from individual channels.
 
         :param paq_path: path to the .Paq file for this data object
         :param plot: (optional) whether to plot
         """
-
-        paq_path = paq_path if not self.paq_path else self.paq_path
-
         assert os.path.exists(paq_path), f'File path not found {paq_path}'
 
         print(f'\tloading Paq data from: {paq_path}')

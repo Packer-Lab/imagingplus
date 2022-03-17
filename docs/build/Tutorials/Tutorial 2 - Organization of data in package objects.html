@@ -1,0 +1,1619 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Tutorial 2 - Data organization inside packerlabimaging &#8212; packerlabimaging 0.1-alpha documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Data Structure Inside Trial objects" href="../data-structure-details.html" />
+    <link rel="prev" title="Tutorial 1 - Initializing an Experiment" href="Tutorial%201%20-%20Initializing%20an%20Experiment.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../data-structure-details.html" title="Data Structure Inside Trial objects"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Tutorial%201%20-%20Initializing%20an%20Experiment.html" title="Tutorial 1 - Initializing an Experiment"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">packerlabimaging 0.1-alpha documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Tutorials-reference.html" accesskey="U">Tutorials</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tutorial 2 - Data organization inside packerlabimaging</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt .copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+</style>
+<section id="Tutorial-2---Data-organization-inside-packerlabimaging">
+<h1>Tutorial 2 - Data organization inside packerlabimaging<a class="headerlink" href="#Tutorial-2---Data-organization-inside-packerlabimaging" title="Permalink to this headline">¶</a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython</span> <span class="kn">import</span> <span class="n">display</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">packerlabimaging</span> <span class="k">as</span> <span class="nn">pkg</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Warning: cellpose did not import
+No module named &#39;cellpose&#39;
+cannot use anatomical mode, but otherwise suite2p will run normally
+
+imported packerlabimaging
+        version: under...alpha...development
+
+</pre></div></div>
+</div>
+<p><em>This notebook demonstrates the basics of how data is organized inside of a trial object.</em></p>
+<section id="Importing-data-analysis-objects">
+<h2>Importing data analysis objects<a class="headerlink" href="#Importing-data-analysis-objects" title="Permalink to this headline">¶</a></h2>
+<p>The first step to begin using the data analysis objects is to import the previously created objects. In general, it is advised to import th high-level <code class="docutils literal notranslate"><span class="pre">Experiment</span></code> object first, and then use the <code class="docutils literal notranslate"><span class="pre">.load_trial</span></code> method to load an individual <code class="docutils literal notranslate"><span class="pre">-Trial</span></code> object.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># import experiment obj and TwoPhotonImagingTrial object</span>
+<span class="n">expobj</span> <span class="o">=</span> <span class="n">pkg</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="s1">&#39;/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">expobj</span><span class="p">)</span>
+<span class="n">trialobj</span> <span class="o">=</span> <span class="n">expobj</span><span class="o">.</span><span class="n">load_trial</span><span class="p">(</span><span class="n">trialID</span><span class="o">=</span><span class="s1">&#39;t-013&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+|- Loaded packerlabimaging.Experiment object (date: 2020-12-19, expID: RL109)kl ...
+packerlabimaging Experiment object (last saved: Tue Feb  8 00:12:08 2022), date: 2020-12-19, expID: RL109, microscope: Bruker
+file path: /home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl
+
+trials in Experiment object:
+        t-005: TwoPhotonImagingTrial, pre 4ap 2p spont imaging
+        t-006: TwoPhotonImagingTrial, pre 4ap 2p spont imaging
+        t-013: AllOpticalTrial, pre 4ap 2p all optical
+
+|- Loaded (RL109 t-013) TwoPhotonImagingTrial.alloptical experimental trial object, last saved: Tue Feb  8 00:12:01 2022
+</pre></div></div>
+</div>
+</section>
+<section id="paq-data">
+<h2>paq data<a class="headerlink" href="#paq-data" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">paq</span></code> sub-module is used to retrieve and store data from the .paq file for each trial. It can be accessed by <code class="docutils literal notranslate"><span class="pre">trialobj.paq</span></code>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># show all attributes saved in `trialobj.paq`</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">paq</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+packerlabimaging.processing.paq.paqData:
+        frame_times: [  139577   140252   140925 ... 11142935 11143607 11144280]
+        frame_times_channame: frame_clock
+        paq_path: /home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_RL109_013.paq
+        paq_channels: [&#39;frame_clock&#39;, &#39;x_galvo_uncaging&#39;, &#39;slm2packio&#39;, &#39;markpoints2packio&#39;, &#39;packio2slm&#39;, &#39;packio2markpoints&#39;, &#39;pycontrol_rsync&#39;, &#39;voltage&#39;]
+        paq_rate: 20000
+        voltage: [0.0551814  0.053866   0.05616795 ... 3.4617312  3.4610734  3.4614022 ]
+</pre></div></div>
+</div>
+<p>We can see that the ‘frame_clock’ paq channel was used as the primary channel for retrieving imaging frame timestamps synchronized to the paq clock. There are a number of other channels associated with this .paq file (however their data is not saved in this object to save space). Data from any of the other channels can stored directly to the <code class="docutils literal notranslate"><span class="pre">.paq</span></code> object using the <code class="docutils literal notranslate"><span class="pre">.storePaqChannel()</span></code> object method. In this case, the ‘voltage’ paq channel was stored in its entirety under <code class="docutils literal notranslate"><span class="pre">.paq.voltage</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Suite2p-data">
+<h2>Suite2p data<a class="headerlink" href="#Suite2p-data" title="Permalink to this headline">¶</a></h2>
+<p>Suite2p is the primary Ca2+ imaging library that is integrated into the analysis pipeline. The dedicated <code class="docutils literal notranslate"><span class="pre">suite2p</span></code> submodule handles accessing suite2p functionality, as well as the data imported from Suite2p processing. Suite2p related data and methods are accessed using <code class="docutils literal notranslate"><span class="pre">trialobj.Suite2p</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Annotated-Data">
+<h2>Annotated Data<a class="headerlink" href="#Annotated-Data" title="Permalink to this headline">¶</a></h2>
+<p>The AnnData library is the primary protocol that is used to store imaging data in an efficient, multi-functional format. It is created using the <code class="docutils literal notranslate"><span class="pre">anndata</span></code> sub-module and can be accessed using <code class="docutils literal notranslate"><span class="pre">trialobj.data</span></code>. By default, <code class="docutils literal notranslate"><span class="pre">trialobj.data</span></code> is a data array generated from Suite2p processed data. For all guidance on AnnData objects, visit: <a class="reference external" href="https://anndata.readthedocs.io/en/latest/index.html">https://anndata.readthedocs.io/en/latest/index.html</a>.</p>
+<p>The AnnData object is built around the raw Flu matrix of each <code class="docutils literal notranslate"><span class="pre">trialobj</span></code> . In keeping with AnnData conventions, the data structure is organized in <em>n</em> observations (obs) x <em>m</em> variables (var), where observations are suite2p ROIs and variables are imaging frame timepoints.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s2">&quot;/home/pshah/Documents/code/packerlabimaging/files/packerlabimaging-anndata-integration-01.jpg&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/Tutorials_Tutorial_2_-_Organization_of_data_in_package_objects_17_0.jpg" src="../_images/Tutorials_Tutorial_2_-_Organization_of_data_in_package_objects_17_0.jpg" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span>  <span class="c1"># this is the anndata object for this trial</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+AnnData object with n_obs × n_vars = 640 × 16368
+    obs: &#39;original_index&#39;, &#39;footprint&#39;, &#39;mrs&#39;, &#39;mrs0&#39;, &#39;compact&#39;, &#39;med&#39;, &#39;npix&#39;, &#39;radius&#39;, &#39;aspect_ratio&#39;, &#39;npix_norm&#39;, &#39;skew&#39;, &#39;std&#39;
+    var: &#39;frame_clock&#39;, &#39;x_galvo_uncaging&#39;, &#39;slm2packio&#39;, &#39;markpoints2packio&#39;, &#39;packio2slm&#39;, &#39;packio2markpoints&#39;, &#39;pycontrol_rsync&#39;, &#39;voltage&#39;, &#39;photostim&#39;
+    obsm: &#39;ypix&#39;, &#39;xpix&#39;
+    layers: &#39;dFF&#39;
+</pre></div></div>
+</div>
+<section id="storage-of-Flu-data">
+<h3>storage of Flu data<a class="headerlink" href="#storage-of-Flu-data" title="Permalink to this headline">¶</a></h3>
+<p>The raw data is stored in <code class="docutils literal notranslate"><span class="pre">.X</span></code></p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">X</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;shape: &#39;</span><span class="p">,</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[[192.45299   242.91817   107.09003   ... 207.51477   334.1156
+  365.0477   ]
+ [ 66.31345   259.14606   203.12158   ... 101.82039   114.88985
+   -9.639214 ]
+ [169.24162   379.78748    74.28577   ... 246.50652   262.48956
+   37.629868 ]
+ ...
+ [110.732574  132.53998   227.20924   ... 247.80368   176.27718
+   66.34219  ]
+ [ 62.887573   53.21826     3.9203873 ...  38.31378   106.62804
+   77.784836 ]
+ [ 93.47685    98.41176   112.59836   ...  22.503403   86.3116
+  112.58064  ]]
+shape:  (640, 16368)
+</pre></div></div>
+</div>
+<p>Processed data is added to <code class="docutils literal notranslate"><span class="pre">trialobj.data</span></code> as a unique <code class="docutils literal notranslate"><span class="pre">layers</span></code> key.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">layers</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Layers with keys: dFF
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="s1">&#39;dFF&#39;</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;shape: &#39;</span><span class="p">,</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="s1">&#39;dFF&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[[ 5.98681450e+01  1.01788902e+02 -1.10417347e+01 ...  7.23797684e+01
+   1.77545395e+02  2.03240280e+02]
+ [ 5.94472656e+01  5.23103271e+02  3.88395325e+02 ...  1.44821854e+02
+   1.76246674e+02 -1.23176994e+02]
+ [ 2.83476105e+02  7.60541382e+02  6.83203888e+01 ...  4.58546722e+02
+   4.94761932e+02 -1.47363739e+01]
+ ...
+ [ 1.48959662e+06  1.78293462e+06  3.05635900e+06 ...  3.33338075e+06
+   2.37125675e+06  8.92488500e+05]
+ [ 2.31955856e+02  1.80915817e+02 -7.93059998e+01 ...  1.02241608e+02
+   4.62842560e+02  3.10591949e+02]
+ [ 2.52069653e+03  2.64849194e+03  3.01587134e+03 ...  6.82752991e+02
+   2.33514380e+03  3.01541260e+03]]
+shape:  (640, 16368)
+</pre></div></div>
+</div>
+<p>The rest of the AnnData data object is built according to the dimensions of the original Flu data input.</p>
+</section>
+<section id="observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">
+<h3>observations (Suite2p ROIs metadata and associated processing info)<a class="headerlink" href="#observations-(Suite2p-ROIs-metadata-and-associated-processing-info)" title="Permalink to this headline">¶</a></h3>
+<p>For instance, the metadata for each suite2p ROI stored in Suite2p’s stat.npy output is added to <code class="docutils literal notranslate"><span class="pre">trialobject.data</span></code> under <code class="docutils literal notranslate"><span class="pre">obs</span></code> and <code class="docutils literal notranslate"><span class="pre">obsm</span></code> (1D and &gt;1-D observations annotations, respectively).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">obs</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>original_index</th>
+      <th>footprint</th>
+      <th>mrs</th>
+      <th>mrs0</th>
+      <th>compact</th>
+      <th>med</th>
+      <th>npix</th>
+      <th>radius</th>
+      <th>aspect_ratio</th>
+      <th>npix_norm</th>
+      <th>skew</th>
+      <th>std</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>1.0</td>
+      <td>0.909815</td>
+      <td>2.604203</td>
+      <td>1.00197</td>
+      <td>[105.0, 459.0]</td>
+      <td>48</td>
+      <td>3.565604</td>
+      <td>1.051397</td>
+      <td>0.649175</td>
+      <td>3.016955</td>
+      <td>353.675049</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>1.0</td>
+      <td>0.912076</td>
+      <td>2.543516</td>
+      <td>1.028426</td>
+      <td>[48.5, 119.0]</td>
+      <td>46</td>
+      <td>3.538468</td>
+      <td>1.074428</td>
+      <td>0.622126</td>
+      <td>3.784652</td>
+      <td>422.922577</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>1.0</td>
+      <td>1.088559</td>
+      <td>3.09209</td>
+      <td>1.009662</td>
+      <td>[22.0, 204.0]</td>
+      <td>68</td>
+      <td>4.124215</td>
+      <td>1.027475</td>
+      <td>0.919665</td>
+      <td>3.603348</td>
+      <td>342.368134</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>1.0</td>
+      <td>1.561322</td>
+      <td>3.716985</td>
+      <td>1.204697</td>
+      <td>[53.0, 355.0]</td>
+      <td>98</td>
+      <td>8.133019</td>
+      <td>1.348522</td>
+      <td>1.325399</td>
+      <td>3.187822</td>
+      <td>357.666168</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>1.0</td>
+      <td>0.869808</td>
+      <td>2.404379</td>
+      <td>1.037521</td>
+      <td>[158.0, 383.0]</td>
+      <td>41</td>
+      <td>3.62042</td>
+      <td>1.139261</td>
+      <td>0.554504</td>
+      <td>2.59998</td>
+      <td>263.609039</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>635</th>
+      <td>1253</td>
+      <td>1.0</td>
+      <td>0.823022</td>
+      <td>2.249863</td>
+      <td>1.049136</td>
+      <td>[54.0, 298.0]</td>
+      <td>36</td>
+      <td>3.534257</td>
+      <td>1.135812</td>
+      <td>0.486881</td>
+      <td>2.103236</td>
+      <td>86.4552</td>
+    </tr>
+    <tr>
+      <th>636</th>
+      <td>1254</td>
+      <td>1.0</td>
+      <td>1.283198</td>
+      <td>3.05027</td>
+      <td>1.206512</td>
+      <td>[424.0, 310.0]</td>
+      <td>66</td>
+      <td>5.933419</td>
+      <td>1.173457</td>
+      <td>0.892616</td>
+      <td>1.223336</td>
+      <td>75.52874</td>
+    </tr>
+    <tr>
+      <th>637</th>
+      <td>1255</td>
+      <td>1.0</td>
+      <td>1.045195</td>
+      <td>2.818991</td>
+      <td>1.063358</td>
+      <td>[370.0, 453.0]</td>
+      <td>56</td>
+      <td>4.735501</td>
+      <td>1.186981</td>
+      <td>0.757371</td>
+      <td>0.866438</td>
+      <td>94.208916</td>
+    </tr>
+    <tr>
+      <th>638</th>
+      <td>1256</td>
+      <td>1.0</td>
+      <td>1.528247</td>
+      <td>3.944389</td>
+      <td>1.111195</td>
+      <td>[489.0, 235.0]</td>
+      <td>110</td>
+      <td>6.981186</td>
+      <td>1.184853</td>
+      <td>1.487693</td>
+      <td>1.714282</td>
+      <td>52.609936</td>
+    </tr>
+    <tr>
+      <th>639</th>
+      <td>1257</td>
+      <td>1.0</td>
+      <td>1.133697</td>
+      <td>2.84187</td>
+      <td>1.144113</td>
+      <td>[436.0, 321.0]</td>
+      <td>57</td>
+      <td>5.392178</td>
+      <td>1.235332</td>
+      <td>0.770895</td>
+      <td>1.103987</td>
+      <td>74.589386</td>
+    </tr>
+  </tbody>
+</table>
+<p>640 rows × 12 columns</p>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">obsm</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+AxisArrays with keys: ypix, xpix
+</pre></div></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">.obsm</span></code> includes the ypix and xpix outputs for each suite2p ROI which represent the pixel locations of the ROI mask.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ypix:&#39;</span><span class="p">,</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;ypix&#39;</span><span class="p">][:</span><span class="mi">5</span><span class="p">],</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">xpix: </span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;xpix&#39;</span><span class="p">][:</span><span class="mi">5</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ypix: [array([102, 102, 102, 102, 102, 103, 103, 103, 103, 103, 103, 103, 104,
+        104, 104, 104, 104, 104, 104, 104, 105, 105, 105, 105, 105, 105,
+        105, 105, 106, 106, 106, 106, 106, 106, 106, 106, 107, 107, 107,
+        107, 107, 107, 107, 108, 108, 108, 108, 108])
+ array([46, 46, 46, 46, 46, 46, 47, 47, 47, 47, 47, 47, 47, 47, 47, 48, 48,
+        48, 48, 48, 48, 48, 48, 49, 49, 49, 49, 49, 49, 49, 49, 50, 50, 50,
+        50, 50, 50, 50, 51, 51, 51, 51, 51, 52, 52, 52])
+ array([18, 18, 18, 18, 19, 19, 19, 19, 19, 19, 19, 19, 20, 20, 20, 20, 20,
+        20, 20, 20, 20, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 22, 22, 22,
+        22, 22, 22, 22, 22, 22, 22, 23, 23, 23, 23, 23, 23, 23, 23, 24, 24,
+        24, 24, 24, 24, 24, 24, 25, 25, 25, 25, 25, 25, 25, 26, 26, 26, 26])
+ array([43, 44, 45, 46, 46, 47, 47, 47, 48, 48, 48, 48, 48, 49, 49, 49, 49,
+        49, 49, 50, 50, 50, 50, 50, 50, 50, 51, 51, 51, 51, 51, 51, 51, 52,
+        52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 53, 53, 53, 53, 53, 53,
+        53, 53, 53, 53, 53, 53, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 55,
+        55, 55, 55, 55, 55, 55, 55, 55, 56, 56, 56, 56, 56, 56, 56, 56, 57,
+        57, 57, 57, 57, 57, 57, 58, 58, 58, 58, 58, 59, 59])
+ array([156, 156, 156, 156, 156, 157, 157, 157, 157, 157, 157, 157, 157,
+        158, 158, 158, 158, 158, 158, 158, 158, 159, 159, 159, 159, 159,
+        159, 159, 159, 160, 160, 160, 160, 160, 160, 160, 161, 161, 161,
+        161, 161])                                                      ]
+
+xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455,
+        456, 457, 458, 459, 460, 461, 462, 455, 456, 457, 458, 459, 460,
+        461, 462, 455, 456, 457, 458, 459, 460, 461, 462, 456, 457, 458,
+        459, 460, 461, 462, 457, 458, 459, 460, 461])
+ array([116, 117, 118, 119, 120, 121, 114, 115, 116, 117, 118, 119, 120,
+        121, 122, 115, 116, 117, 118, 119, 120, 121, 122, 115, 116, 117,
+        118, 119, 120, 121, 122, 116, 117, 118, 119, 120, 121, 122, 117,
+        118, 119, 120, 121, 118, 119, 120])
+ array([202, 203, 204, 205, 200, 201, 202, 203, 204, 205, 206, 207, 200,
+        201, 202, 203, 204, 205, 206, 207, 208, 200, 201, 202, 203, 204,
+        205, 206, 207, 208, 209, 199, 200, 201, 202, 203, 204, 205, 206,
+        207, 208, 200, 201, 202, 203, 204, 205, 206, 207, 200, 201, 202,
+        203, 204, 205, 206, 207, 201, 202, 203, 204, 205, 206, 207, 202,
+        203, 204, 205])
+ array([352, 352, 352, 352, 353, 352, 353, 354, 351, 352, 353, 354, 355,
+        350, 351, 352, 353, 354, 355, 350, 351, 352, 353, 354, 355, 356,
+        349, 350, 351, 352, 353, 354, 355, 349, 350, 351, 352, 353, 354,
+        355, 357, 358, 359, 360, 361, 350, 351, 352, 353, 354, 355, 356,
+        357, 358, 359, 360, 361, 352, 353, 354, 355, 356, 357, 358, 359,
+        360, 361, 354, 355, 356, 357, 358, 359, 360, 361, 362, 354, 355,
+        356, 357, 358, 359, 360, 361, 355, 356, 357, 358, 359, 360, 361,
+        357, 358, 359, 360, 361, 358, 359])
+ array([382, 383, 384, 385, 386, 380, 381, 382, 383, 384, 385, 386, 387,
+        380, 381, 382, 383, 384, 385, 386, 387, 380, 381, 382, 383, 384,
+        385, 386, 387, 380, 381, 382, 383, 384, 385, 386, 381, 382, 383,
+        384, 385])                                                      ]
+</pre></div></div>
+</div>
+</section>
+<section id="variables-(temporal-synchronization-of-paq-channels-and-imaging)">
+<h3>variables (temporal synchronization of paq channels and imaging)<a class="headerlink" href="#variables-(temporal-synchronization-of-paq-channels-and-imaging)" title="Permalink to this headline">¶</a></h3>
+<p>And the temporal synchronization data of the experiment collected in .paq output is added to the variables annotations under <code class="docutils literal notranslate"><span class="pre">var</span></code>. These variables are timed to the imaging frame clock timings. The total # of variables is the number of imaging frames in the original Flu data input.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">var</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>frame_clock</th>
+      <th>x_galvo_uncaging</th>
+      <th>slm2packio</th>
+      <th>markpoints2packio</th>
+      <th>packio2slm</th>
+      <th>packio2markpoints</th>
+      <th>pycontrol_rsync</th>
+      <th>voltage</th>
+      <th>photostim</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>4.972792</td>
+      <td>-1.16518</td>
+      <td>3.329534</td>
+      <td>0.007827</td>
+      <td>0.000264</td>
+      <td>0.000592</td>
+      <td>0.017035</td>
+      <td>-0.116807</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>4.974765</td>
+      <td>-1.164851</td>
+      <td>3.325917</td>
+      <td>0.007827</td>
+      <td>-0.000394</td>
+      <td>-0.000394</td>
+      <td>0.019666</td>
+      <td>-0.19606</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>4.971806</td>
+      <td>-1.16518</td>
+      <td>3.337755</td>
+      <td>0.008156</td>
+      <td>-0.000065</td>
+      <td>0.000592</td>
+      <td>0.02131</td>
+      <td>-0.210858</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>4.970819</td>
+      <td>-1.164851</td>
+      <td>3.331507</td>
+      <td>0.007827</td>
+      <td>0.000592</td>
+      <td>0.000264</td>
+      <td>0.02131</td>
+      <td>-0.204939</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4.975094</td>
+      <td>-1.166166</td>
+      <td>3.340715</td>
+      <td>0.006841</td>
+      <td>0.000264</td>
+      <td>0.00125</td>
+      <td>0.021639</td>
+      <td>-0.234206</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>16363</th>
+      <td>4.974436</td>
+      <td>-1.165837</td>
+      <td>3.337426</td>
+      <td>0.006841</td>
+      <td>-0.000065</td>
+      <td>0.002565</td>
+      <td>0.021639</td>
+      <td>2.423554</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>16364</th>
+      <td>4.975751</td>
+      <td>-1.164851</td>
+      <td>3.334138</td>
+      <td>0.012102</td>
+      <td>-0.000065</td>
+      <td>-0.000065</td>
+      <td>0.017035</td>
+      <td>2.473211</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>16365</th>
+      <td>4.960953</td>
+      <td>-1.164851</td>
+      <td>3.337097</td>
+      <td>0.008485</td>
+      <td>0.000264</td>
+      <td>0.000921</td>
+      <td>0.019994</td>
+      <td>2.473211</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>16366</th>
+      <td>4.971477</td>
+      <td>-1.167153</td>
+      <td>3.31934</td>
+      <td>0.006183</td>
+      <td>-0.000065</td>
+      <td>-0.000065</td>
+      <td>0.005525</td>
+      <td>2.466963</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>16367</th>
+      <td>4.975751</td>
+      <td>-1.164851</td>
+      <td>3.329863</td>
+      <td>0.009471</td>
+      <td>0.000264</td>
+      <td>0.000592</td>
+      <td>0.017693</td>
+      <td>2.453151</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+<p>16368 rows × 9 columns</p>
+</div></div>
+</div>
+</section>
+<section id="Creating-or-Modifying-AnnData-arrays-of-trialobj">
+<h3>Creating or Modifying AnnData arrays of trialobj<a class="headerlink" href="#Creating-or-Modifying-AnnData-arrays-of-trialobj" title="Permalink to this headline">¶</a></h3>
+<p>There are a number of helper functions to create anndata arrays or modify existing anndata arrays.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># creating new anndata object. This is identical to the base AnnData library.</span>
+<span class="c1"># the example below is from the Getting Started Tutorial for AnnData:</span>
+
+<span class="c1"># any given anndata object is created from constituent data arrays.</span>
+
+
+<span class="c1"># 1) Primary data matrix</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">n_rois</span><span class="p">,</span> <span class="n">n_frames</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10000</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="n">n_rois</span><span class="p">,</span> <span class="n">n_frames</span><span class="p">))</span>  <span class="c1"># create random data matrix</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">n_frames</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_rois</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">))</span>
+<span class="n">df</span>  <span class="c1"># show the dataframe</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>0</th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>...</th>
+      <th>9995</th>
+      <th>9996</th>
+      <th>9997</th>
+      <th>9998</th>
+      <th>9999</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.007100</td>
+      <td>0.331746</td>
+      <td>0.954718</td>
+      <td>0.311193</td>
+      <td>0.342229</td>
+      <td>...</td>
+      <td>0.036089</td>
+      <td>0.515803</td>
+      <td>0.881094</td>
+      <td>0.484803</td>
+      <td>0.332016</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.078150</td>
+      <td>0.785294</td>
+      <td>0.845034</td>
+      <td>0.564981</td>
+      <td>0.053330</td>
+      <td>...</td>
+      <td>0.354211</td>
+      <td>0.703916</td>
+      <td>0.896111</td>
+      <td>0.836012</td>
+      <td>0.489882</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.817575</td>
+      <td>0.742934</td>
+      <td>0.334427</td>
+      <td>0.999174</td>
+      <td>0.215008</td>
+      <td>...</td>
+      <td>0.031412</td>
+      <td>0.694898</td>
+      <td>0.961636</td>
+      <td>0.234338</td>
+      <td>0.671856</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.074314</td>
+      <td>0.960333</td>
+      <td>0.302282</td>
+      <td>0.312936</td>
+      <td>0.373407</td>
+      <td>...</td>
+      <td>0.854256</td>
+      <td>0.382607</td>
+      <td>0.879831</td>
+      <td>0.280990</td>
+      <td>0.212398</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.591134</td>
+      <td>0.475524</td>
+      <td>0.263621</td>
+      <td>0.964541</td>
+      <td>0.415296</td>
+      <td>...</td>
+      <td>0.940733</td>
+      <td>0.712458</td>
+      <td>0.364609</td>
+      <td>0.118514</td>
+      <td>0.709443</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0.152702</td>
+      <td>0.149395</td>
+      <td>0.169253</td>
+      <td>0.610581</td>
+      <td>0.878745</td>
+      <td>...</td>
+      <td>0.575089</td>
+      <td>0.028993</td>
+      <td>0.785949</td>
+      <td>0.768086</td>
+      <td>0.768378</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>0.968979</td>
+      <td>0.720071</td>
+      <td>0.573805</td>
+      <td>0.066508</td>
+      <td>0.668841</td>
+      <td>...</td>
+      <td>0.828199</td>
+      <td>0.660924</td>
+      <td>0.422817</td>
+      <td>0.892732</td>
+      <td>0.080562</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>0.699672</td>
+      <td>0.009906</td>
+      <td>0.624961</td>
+      <td>0.663044</td>
+      <td>0.314822</td>
+      <td>...</td>
+      <td>0.142305</td>
+      <td>0.339057</td>
+      <td>0.758372</td>
+      <td>0.381791</td>
+      <td>0.423501</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>0.637722</td>
+      <td>0.049601</td>
+      <td>0.434557</td>
+      <td>0.799958</td>
+      <td>0.565807</td>
+      <td>...</td>
+      <td>0.490102</td>
+      <td>0.458182</td>
+      <td>0.376269</td>
+      <td>0.637587</td>
+      <td>0.850117</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>0.929012</td>
+      <td>0.251330</td>
+      <td>0.160211</td>
+      <td>0.227208</td>
+      <td>0.236852</td>
+      <td>...</td>
+      <td>0.412546</td>
+      <td>0.101983</td>
+      <td>0.135045</td>
+      <td>0.167816</td>
+      <td>0.321940</td>
+    </tr>
+  </tbody>
+</table>
+<p>10 rows × 10000 columns</p>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#2) Observations matrix</span>
+
+<span class="n">obs_meta</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s1">&#39;cell_type&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="s1">&#39;int&#39;</span><span class="p">],</span> <span class="n">n_rois</span><span class="p">),</span>
+<span class="p">},</span>
+    <span class="n">index</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_rois</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span>    <span class="c1"># these are the same IDs of observations as above!</span>
+<span class="p">)</span>
+<span class="n">obs_meta</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>cell_type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>int</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>exc</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>exc</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>exc</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>int</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>int</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>int</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>exc</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>exc</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>exc</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#3) Variables matrix</span>
+
+
+<span class="n">var_meta</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s1">&#39;exp_group&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s1">&#39;A&#39;</span><span class="p">,</span><span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">],</span> <span class="n">n_frames</span><span class="p">),</span>
+<span class="p">},</span>
+    <span class="n">index</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_frames</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span>    <span class="c1"># these are the same IDs of observations as above!</span>
+<span class="p">)</span>
+<span class="n">var_meta</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>exp_group</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>A</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>C</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>A</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>C</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>B</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>9995</th>
+      <td>B</td>
+    </tr>
+    <tr>
+      <th>9996</th>
+      <td>C</td>
+    </tr>
+    <tr>
+      <th>9997</th>
+      <td>C</td>
+    </tr>
+    <tr>
+      <th>9998</th>
+      <td>C</td>
+    </tr>
+    <tr>
+      <th>9999</th>
+      <td>A</td>
+    </tr>
+  </tbody>
+</table>
+<p>10000 rows × 1 columns</p>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#4) Creating a new anndata attribute for the trialobj</span>
+
+<span class="kn">import</span> <span class="nn">packerlabimaging.processing.anndata</span> <span class="k">as</span> <span class="nn">ad</span>  <span class="c1"># from the processing module, import anndata submodule</span>
+
+<span class="n">trialobj</span><span class="o">.</span><span class="n">new_anndata</span> <span class="o">=</span> <span class="n">ad</span><span class="o">.</span><span class="n">AnnotatedData</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">df</span><span class="p">,</span><span class="n">obs</span><span class="o">=</span><span class="n">obs_meta</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="n">var_meta</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">new_anndata</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Annotated Data of n_obs (# ROIs) × n_vars (# Frames) = 10 × 10000
+available attributes:
+        .X (primary datamatrix)
+        .obs (ROIs metadata):
+                |- &#39;cell_type&#39;
+        .var (frames metadata):
+                |- &#39;exp_group&#39;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># adding an &#39;obs&#39; to existing anndata object</span>
+
+<span class="n">new_obs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s1">&#39;cell_loc_x&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="n">n_rois</span><span class="p">),</span>
+    <span class="s1">&#39;cell_loc_y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="n">n_rois</span><span class="p">),</span>
+<span class="p">},</span>
+    <span class="n">index</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_rois</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span>    <span class="c1"># these are the same IDs of observations as above!</span>
+<span class="p">)</span>
+
+<span class="n">cell_loc_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="n">n_rois</span><span class="p">)</span>
+<span class="n">cell_loc_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="n">n_rois</span><span class="p">)</span>
+
+
+<span class="n">trialobj</span><span class="o">.</span><span class="n">new_anndata</span><span class="o">.</span><span class="n">add_obs</span><span class="p">(</span><span class="n">obs_name</span><span class="o">=</span><span class="s1">&#39;cell_loc_x&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">cell_loc_x</span><span class="p">)</span>
+<span class="n">trialobj</span><span class="o">.</span><span class="n">new_anndata</span><span class="o">.</span><span class="n">add_obs</span><span class="p">(</span><span class="n">obs_name</span><span class="o">=</span><span class="s1">&#39;cell_loc_y&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">cell_loc_y</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">new_anndata</span><span class="p">)</span>
+<br/><br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Annotated Data of n_obs (# ROIs) × n_vars (# Frames) = 10 × 10000
+available attributes:
+        .X (primary datamatrix)
+        .obs (ROIs metadata):
+                |- &#39;cell_type&#39;, &#39;cell_loc_x&#39;, &#39;cell_loc_y&#39;
+        .var (frames metadata):
+                |- &#39;exp_group&#39;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># deleting an &#39;obs&#39; to existing anndata object</span>
+<span class="c1"># uses the pop method</span>
+
+<span class="n">trialobj</span><span class="o">.</span><span class="n">new_anndata</span><span class="o">.</span><span class="n">del_obs</span><span class="p">(</span><span class="s1">&#39;cell_type&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">new_anndata</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Annotated Data of n_obs (# ROIs) × n_vars (# Frames) = 10 × 10000
+available attributes:
+        .X (primary datamatrix)
+        .obs (ROIs metadata):
+                |- &#39;cell_loc_x&#39;, &#39;cell_loc_y&#39;
+        .var (frames metadata):
+                |- &#39;exp_group&#39;
+</pre></div></div>
+</div>
+<p><em>Note: adding and deleting an ‘var’ to existing anndata object can be done in the exact same manner as demonstrated above for ‘obs’ using .add_var() and .del_var() methods on an anndata object.</em></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Tutorial 2 - Data organization inside packerlabimaging</a><ul>
+<li><a class="reference internal" href="#Importing-data-analysis-objects">Importing data analysis objects</a></li>
+<li><a class="reference internal" href="#paq-data">paq data</a></li>
+<li><a class="reference internal" href="#Suite2p-data">Suite2p data</a></li>
+<li><a class="reference internal" href="#Annotated-Data">Annotated Data</a><ul>
+<li><a class="reference internal" href="#storage-of-Flu-data">storage of Flu data</a></li>
+<li><a class="reference internal" href="#observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">observations (Suite2p ROIs metadata and associated processing info)</a></li>
+<li><a class="reference internal" href="#variables-(temporal-synchronization-of-paq-channels-and-imaging)">variables (temporal synchronization of paq channels and imaging)</a></li>
+<li><a class="reference internal" href="#Creating-or-Modifying-AnnData-arrays-of-trialobj">Creating or Modifying AnnData arrays of trialobj</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="Tutorial%201%20-%20Initializing%20an%20Experiment.html"
+                          title="previous chapter">Tutorial 1 - Initializing an Experiment</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="../data-structure-details.html"
+                          title="next chapter">Data Structure Inside Trial objects</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Tutorials/Tutorial 2 - Organization of data in package objects.ipynb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../data-structure-details.html" title="Data Structure Inside Trial objects"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Tutorial%201%20-%20Initializing%20an%20Experiment.html" title="Tutorial 1 - Initializing an Experiment"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">packerlabimaging 0.1-alpha documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Tutorials-reference.html" >Tutorials</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tutorial 2 - Data organization inside packerlabimaging</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Packer Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

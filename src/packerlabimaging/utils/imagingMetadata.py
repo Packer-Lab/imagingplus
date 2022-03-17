@@ -3,6 +3,7 @@ import os
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 
+# need to implement alternative class constructor using cls.method
 
 @dataclass
 class ImagingMetadata:
@@ -18,9 +19,9 @@ class ImagingMetadata:
 
 
 @dataclass
-class PrairieViewMetadata(ImagingMetadata):
+class PrairieViewMetadata:
     tiff_path_dir: str  # path to the directory containing the .tiff imaging output from PrairieView. the .xml
-
+    microscope: str = 'Bruker'
     # PrairieView files should also be in the same directory.
 
     def __post_init__(self):
@@ -88,10 +89,11 @@ class PrairieViewMetadata(ImagingMetadata):
                 break
 
         if not value:  # if no value found at all, raise exception
-            raise Exception('ERROR: no element or subelement with that key')
+            raise Exception(f'ERROR: no element or subelement with the key {key} under root: {root}')
 
         return value, description, index
 
+    # noinspection PyTypeChecker,PyUnboundLocalVariable
     def _parsePVMetadata(self):
         """
         Parse all of the relevant acquisition metadata from the PrairieView xml file for this recording
@@ -100,9 +102,10 @@ class PrairieViewMetadata(ImagingMetadata):
 
         print('\n\----- Parsing PV Metadata for Bruker microscope...')
 
+
         tiff_path = self.tiff_path_dir  # starting path to search for the .xml PrairieView files
         xml_path = []  # searching for xml path
-
+        print(f'\t searching for xml path in tiff path directory at: {tiff_path} ... ')
         try:  # look for xml file in path, or two paths up (achieved by decreasing count in while loop)
             count = 2
             while count != 0 and not xml_path:
@@ -113,7 +116,7 @@ class PrairieViewMetadata(ImagingMetadata):
                 tiff_path = os.path.dirname(tiff_path)  # re-assign tiff_path as next folder up
 
         except Exception:
-            raise Exception('ERROR: Could not find xml for this acquisition, check it exists')
+            raise Exception(f'ERROR: Could not find xml for this acquisition at: {tiff_path}')
 
         xml_tree = ET.parse(xml_path)  # parse xml from a path
         root = xml_tree.getroot()  # make xml tree structure
@@ -128,7 +131,10 @@ class PrairieViewMetadata(ImagingMetadata):
 
         frame_branch = root.findall('Sequence/Frame')[-1]
         #         frame_period = float(self._getPVStateShard(root,'framePeriod')[0])
-        frame_period = float(self._getPVStateShard(frame_branch, 'framePeriod')[0])
+        try:
+            frame_period = float(self._getPVStateShard(frame_branch, 'framePeriod')[0])
+        except Exception:
+            frame_period = float(self._getPVStateShard(root, 'framePeriod')[0])
         fps = 1 / frame_period
 
         frame_x = int(self._getPVStateShard(root, 'pixelsPerLine')[0])
@@ -191,3 +197,15 @@ class PrairieViewMetadata(ImagingMetadata):
         # "n_frames": int(n_frames),
         # "last_good_frame": last_good_frame
         # }
+
+
+def PrairieViewMetadata_test():
+    # TODO run tests for suite2p trial creation without predone results path
+    testdir = '/home/pshah/mnt/qnap/Data/2021-01-28/2021-01-28_PS14_t-002'
+    # testdir = '/home/pshah/mnt/qnap/Data/2021-01-27/2021-01-27_t-002'
+    pvdata = PrairieViewMetadata(tiff_path_dir=testdir)
+
+
+PrairieViewMetadata_test()
+
+

@@ -13,8 +13,8 @@ from the microscope during data collection, and any user generated files associa
 
 from __future__ import absolute_import
 from dataclasses import dataclass
-from typing import Optional, MutableMapping
-from .utils.classes import TrialsInformation
+from typing import Optional, MutableMapping, Union
+from .utils.classes import TrialsInformation, PaqInfoTrial
 
 import os
 import time
@@ -64,7 +64,7 @@ class Experiment:
     analysisSavePath: str  # main dir where the experiment object and the trial objects will be saved to
     microscope: str
     expID: str
-    TrialsInformation: MutableMapping[str, TrialsInformation]
+    TrialsInformation: MutableMapping[str, Union[TrialsInformation, PaqInfoTrial]]
     useSuite2p: bool = False
     s2pResultsPath: Optional[str] = None  ## path to the parent directory containing the ops.npy file
 
