@@ -5,7 +5,11 @@ Plotting of data/analysis
 
 ``packerlabimaging`` provides a number of convenience plotting functions to create the most commonly made plots for 2photon imaging analysis.
 
-All of these pre-built plots are demo'ed in the :ref:`tutorials` page.
+All of these pre-built plots are demo'ed at `Tutorial - making plots`_.
+
+
+.. _Tutorial - making plots: Tutorials/Tutorial-3-Making-useful-plots.ipynb
+
 
 Available plotting functions:
 +++++++++++++++++++++++++++++
