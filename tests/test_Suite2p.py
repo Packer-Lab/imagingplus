@@ -1,6 +1,8 @@
-from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
+import numpy as np
 
-from packerlabimaging import Experiment
+from conftest import existing_expobj_nopredones2p_fixture
+
+from packerlabimaging import Experiment, TwoPhotonImagingTrial
 
 from packerlabimaging.processing import suite2p
 from packerlabimaging.processing.suite2p import Suite2pResultsExperiment, Suite2pResultsTrial
@@ -11,7 +13,7 @@ def test_Suite2pResultsExperiment(existing_expobj_fixture):
     trialSuite2p = existing_expobj_fixture[1]
     s2pResultsPath = existing_expobj_fixture[2]
 
-    expobj.Suite2p = suite2p.Suite2pResultsExperiment(trialsSuite2p=trialSuite2p,
+    expobj.Suite2p = suite2p.Suite2pResultsExperiment(trialsTiffsSuite2p=trialSuite2p,
                                                       s2pResultsPath=s2pResultsPath)
 
 
@@ -24,7 +26,8 @@ def test_Suite2pResultsTrial(existing_trialobj_twophotonimaging_fixture, existin
     for n_obj in [trialobj, trialobj_, alloptical_trialobj]:
         from packerlabimaging.processing.suite2p import Suite2pResultsExperiment
         s2p_expobj: Suite2pResultsExperiment = expobj.Suite2p
-        n_obj.Suite2p = suite2p.Suite2pResultsTrial(trialsSuite2p=s2p_expobj.trials, s2pResultsPath=s2p_expobj.s2pResultsPath,
+        n_obj.Suite2p = suite2p.Suite2pResultsTrial(trialsTiffsSuite2p=s2p_expobj.tiff_paths_to_use_s2p,
+                                                    s2pResultsPath=s2p_expobj.s2pResultsPath,
                                                     subtract_neuropil=s2p_expobj.subtract_neuropil,
                                                     trial_frames=n_obj.Suite2p.trial_frames)  # use trial obj's current trial frames
 
@@ -33,24 +36,70 @@ def test_Suite2pResultsTrial(existing_trialobj_twophotonimaging_fixture, existin
 def test_Suite2pExp():
     # TODO run test for suite2p without predone results path
     _trialsSuite2p = ['t-005', 't-006']
-    # trialIDs = [*twophoton_imaging_trial_fixture_noPreDoneSuite2p['TrialsInformation']]
-    # for trial in trialIDs:
-    #         assert 's2p_use' in [*twophoton_imaging_trial_fixture_noPreDoneSuite2p.TrialsInformation[trial]], 'when trying to utilize suite2p , must provide value for `s2p_use` ' \
-    #                      'in TrialsInformation[trial] for each trial to specify if to use trial for this suite2p associated with this experiment'
-    #         _trialsSuite2p.append(trial) if twophoton_imaging_trial_fixture_noPreDoneSuite2p['TrialsInformation'][trial]['s2p_use'] else None
 
-    Suite2p = Suite2pResultsExperiment(trialsSuite2p=_trialsSuite2p)
-
-
+    Suite2p = Suite2pResultsExperiment(trialsTiffsSuite2p=_trialsSuite2p)
 # test_Suite2pExp()
 
 
 def test_Suite2pTrial():
     # TODO run tests for suite2p trial creation without predone results path
     trialsSuite2p: list = ['t-005', 't-006']
+
     trial_frames: tuple
-    s2ptrial = Suite2pResultsTrial(trialsSuite2p=trialsSuite2p, trial_frames=(0, 1000))
+    s2ptrial = Suite2pResultsTrial(trialsTiffsSuite2p=trialsSuite2p, trial_frames=(0, 1000))
     assert s2ptrial._s2pResultExists == False  # - doesnt seem to be setting to False as expected during the super() call!
 
 # test_Suite2pTrial()
+
+def test_add_bad_frames():
+    expobj: Experiment = existing_expobj_nopredones2p_fixture()
+
+    expobj.Suite2p.bad_frames = []
+    for trial in expobj.trialIDs:
+        if 'post' in expobj.TrialsInformation[trial]['expGroup']:
+            trialobj: TwoPhotonImagingTrial = expobj.load_trial(trialID=trial)
+            print(len(expobj.Suite2p.bad_frames))
+
+            expobj.Suite2p.add_bad_frames(
+                frames=np.arange(trialobj.Suite2p.trial_frames[0], trialobj.Suite2p.trial_frames[1]),
+                bad_frames_npy_loc=expobj.dataPath)
+    assert len(expobj.Suite2p.bad_frames) > 0
+    expobj.save()
+
+
+def test_update_ops():
+    expobj: Experiment = existing_expobj_nopredones2p_fixture()
+
+    # TODO
+    expobj.Suite2p.update_ops()
+
+
+
+def test_s2pRun():
+    expobj: Experiment = existing_expobj_nopredones2p_fixture()
+    expobj.Suite2p.s2pRun(expobj=expobj)
+    if len(expobj.Suite2p.bad_frames) == 0: test_add_bad_frames()
+
+    # TODO run suite2p - but probably want to select only a subset of trials to run for testing!
+    # expobj.Suite2p.s2pRun(expobj=expobj)
+
+
+# ## creating test for Suite2p.s2pRun():
+# # TODO need to add custom bad_frames creation function
+# expobj: Experiment = existing_expobj_nopredones2p_fixture()
+#
+# expobj.Suite2p.bad_frames = []
+# for trial in expobj.trialIDs:
+#     if 'post' in expobj.TrialsInformation[trial]['expGroup']:
+#         trialobj: TwoPhotonImagingTrial = expobj.load_trial(trialID=trial)
+#         print(len(expobj.Suite2p.bad_frames))
+#
+#         expobj.Suite2p.add_bad_frames(frames=np.arange(trialobj.Suite2p.trial_frames[0], trialobj.Suite2p.trial_frames[1]), bad_frames_npy_loc = expobj.dataPath)
+#
+# expobj.save()
+#
+# expobj.Suite2p.s2pRun(expobj=expobj)
+
+
+
 

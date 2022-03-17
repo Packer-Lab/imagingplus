@@ -1,3 +1,5 @@
+# TODO need to update this file to remove duplicates that have been refactored...
+
 import bisect
 import io
 import time
@@ -17,61 +19,61 @@ from scipy import signal
 from statsmodels import stats
 from suite2p.run_s2p import run_s2p
 
-from packerlabimaging import Experiment
+from packerlabimaging import Experiment, import_obj
 from packerlabimaging.utils import io
 
 pd.options.display.max_rows = 100
 pd.options.display.max_columns = 10
 
-
-# default ops dict for suite2p
-default_ops = {
-    'batch_size': 2000,  # reduce if running out of RAM
-    'fast_disk': os.path.expanduser('/mnt/sandbox/pshah/suite2p_tmp'),
-    # used to store temporary binary file, defaults to save_path0 (set as a string NOT a list)
-    # 'save_path0': '/media/jamesrowland/DATA/plab/suite_2p', # stores results, defaults to first item in data_path
-    'delete_bin': True,  # whether to delete binary file after processing
-    # main settings
-    'nplanes': 1,  # each tiff has these many planes in sequence
-    'nchannels': 1,  # each tiff has these many channels per plane
-    'functional_chan': 1,  # this channel is used to extract functional ROIs (1-based)
-    'diameter': 12,
-    # this is the main parameter for cell detection, 2-dimensional if Y and X are different (e.g. [6 12])
-    'tau': 1.26,  # this is the main parameter for deconvolution (1.25-1.5 for gcamp6s)
-    'fs': 30,  # sampling rate (total across planes)
-    # output settings
-    'save_mat': True,  # whether to save output as matlab files
-    'combined': True,  # combine multiple planes into a single result /single canvas for GUI
-    # parallel settings
-    'num_workers': 50,  # 0 to select num_cores, -1 to disable parallelism, N to enforce value
-    'num_workers_roi': 0,  # 0 to select number of planes, -1 to disable parallelism, N to enforce value
-    # registration settings
-    'do_registration': True,  # whether to register data
-    'nimg_init': 200,  # subsampled frames for finding reference image
-    'maxregshift': 0.1,  # max allowed registration shift, as a fraction of frame max(width and height)
-    'align_by_chan': 1,  # when multi-channel, you can align by non-functional channel (1-based)
-    'reg_tif': True,  # whether to save registered tiffs
-    'subpixel': 10,  # precision of subpixel registration (1/subpixel steps)
-    # cell detection settings
-    'connected': True,  # whether or not to keep ROIs fully connected (set to 0 for dendrites)
-    'navg_frames_svd': 5000,  # max number of binned frames for the SVD
-    'nsvd_for_roi': 1000,  # max number of SVD components to keep for ROI detection
-    'max_iterations': 20,  # maximum number of iterations to do cell detection
-    'ratio_neuropil': 6.,  # ratio between neuropil basis size and cell radius
-    'ratio_neuropil_to_cell': 3,  # minimum ratio between neuropil radius and cell radius
-    'tile_factor': 1.,  # use finer (>1) or coarser (<1) tiles for neuropil estimation during cell detection
-    'threshold_scaling': 1.,  # adjust the automatically determined threshold by this scalar multiplier
-    'max_overlap': 0.75,  # cells with more overlap than this get removed during triage, before refinement
-    'inner_neuropil_radius': 2,  # number of pixels to keep between ROI and neuropil donut
-    'outer_neuropil_radius': np.inf,  # maximum neuropil radius
-    'min_neuropil_pixels': 350,  # minimum number of pixels in the neuropil
-    # deconvolution settings
-    'baseline': 'maximin',  # baselining mode
-    'win_baseline': 60.,  # window for maximin
-    'sig_baseline': 10.,  # smoothing constant for gaussian filter
-    'prctile_baseline': 8.,  # optional (whether to use a percentile baseline)
-    'neucoeff': .7,  # neuropil coefficient
-}
+# refactored default_ops to class var under suite2p exp
+# # default ops dict for suite2p
+# default_ops = {
+#     'batch_size': 2000,  # reduce if running out of RAM
+#     'fast_disk': os.path.expanduser('/mnt/sandbox/pshah/suite2p_tmp'),
+#     # used to store temporary binary file, defaults to save_path0 (set as a string NOT a list)
+#     # 'save_path0': '/media/jamesrowland/DATA/plab/suite_2p', # stores results, defaults to first item in data_path
+#     'delete_bin': True,  # whether to delete binary file after processing
+#     # main settings
+#     'nplanes': 1,  # each tiff has these many planes in sequence
+#     'nchannels': 1,  # each tiff has these many channels per plane
+#     'functional_chan': 1,  # this channel is used to extract functional ROIs (1-based)
+#     'diameter': 12,
+#     # this is the main parameter for cell detection, 2-dimensional if Y and X are different (e.g. [6 12])
+#     'tau': 1.26,  # this is the main parameter for deconvolution (1.25-1.5 for gcamp6s)
+#     'fs': 30,  # sampling rate (total across planes)
+#     # output settings
+#     'save_mat': True,  # whether to save output as matlab files
+#     'combined': True,  # combine multiple planes into a single result /single canvas for GUI
+#     # parallel settings
+#     'num_workers': 50,  # 0 to select num_cores, -1 to disable parallelism, N to enforce value
+#     'num_workers_roi': 0,  # 0 to select number of planes, -1 to disable parallelism, N to enforce value
+#     # registration settings
+#     'do_registration': True,  # whether to register data
+#     'nimg_init': 200,  # subsampled frames for finding reference image
+#     'maxregshift': 0.1,  # max allowed registration shift, as a fraction of frame max(width and height)
+#     'align_by_chan': 1,  # when multi-channel, you can align by non-functional channel (1-based)
+#     'reg_tif': True,  # whether to save registered tiffs
+#     'subpixel': 10,  # precision of subpixel registration (1/subpixel steps)
+#     # cell detection settings
+#     'connected': True,  # whether or not to keep ROIs fully connected (set to 0 for dendrites)
+#     'navg_frames_svd': 5000,  # max number of binned frames for the SVD
+#     'nsvd_for_roi': 1000,  # max number of SVD components to keep for ROI detection
+#     'max_iterations': 20,  # maximum number of iterations to do cell detection
+#     'ratio_neuropil': 6.,  # ratio between neuropil basis size and cell radius
+#     'ratio_neuropil_to_cell': 3,  # minimum ratio between neuropil radius and cell radius
+#     'tile_factor': 1.,  # use finer (>1) or coarser (<1) tiles for neuropil estimation during cell detection
+#     'threshold_scaling': 1.,  # adjust the automatically determined threshold by this scalar multiplier
+#     'max_overlap': 0.75,  # cells with more overlap than this get removed during triage, before refinement
+#     'inner_neuropil_radius': 2,  # number of pixels to keep between ROI and neuropil donut
+#     'outer_neuropil_radius': np.inf,  # maximum neuropil radius
+#     'min_neuropil_pixels': 350,  # minimum number of pixels in the neuropil
+#     # deconvolution settings
+#     'baseline': 'maximin',  # baselining mode
+#     'win_baseline': 60.,  # window for maximin
+#     'sig_baseline': 10.,  # smoothing constant for gaussian filter
+#     'prctile_baseline': 8.,  # optional (whether to use a percentile baseline)
+#     'neucoeff': .7,  # neuropil coefficient
+# }
 
 
 # suite2p methods
@@ -86,7 +88,7 @@ def s2pRun(expobj: Experiment, user_batch_size=2000, trialsSuite2P: list = None,
     """
 
     expobj.Suite2p.trials = trialsSuite2P if trialsSuite2P else expobj.Suite2p.trials
-    expobj._trialsSuite2p = trialsSuite2P if trialsSuite2P else expobj._trialsSuite2p
+    expobj._trialsTiffsSuite2p = trialsSuite2P if trialsSuite2P else expobj._trialsTiffsSuite2p
 
     tiffs_paths_to_use_s2p = []
     for trial in expobj.Suite2p.trials:
@@ -94,17 +96,17 @@ def s2pRun(expobj: Experiment, user_batch_size=2000, trialsSuite2P: list = None,
 
     # load the first tiff in expobj.Suite2p.trials to collect default metainformation about imaging setup parameters
     trial = expobj.Suite2p.trials[0]
-    trialobj = _io.import_obj(expobj.TrialsInformation[trial]['analysis_object_information']['pkl path'])
+    from packerlabimaging import TwoPhotonImagingTrial
+    trialobj: TwoPhotonImagingTrial = import_obj(expobj.TrialsInformation[trial]['analysis_object_information']['pkl path'])
 
     # set imaging parameters using defaults or kwargs if provided
-    fps = trialobj.fps if 'fs' not in [*kwargs] else kwargs['fs']
-    n_planes = trialobj.n_planes if 'n_planes' not in [*kwargs] else kwargs['n_planes']
-    pix_sz_x = trialobj.pix_sz_x if 'pix_sz_x' not in [*kwargs] else kwargs['pix_sz_x']
-    pix_sz_y = trialobj.pix_sz_y if 'pix_sz_y' not in [*kwargs] else kwargs['pix_sz_y']
-    frame_x = trialobj.frame_x if 'frame_x' not in [*kwargs] else kwargs['frame_x']
-    frame_y = trialobj.frame_y if 'frame_y' not in [*kwargs] else kwargs['frame_y']
-    n_channels = kwargs['n_channels'] if 'n_channels' in [
-        *kwargs] else 1  # default is 1 channel imaging in .tiffs for suite2p
+    fps = trialobj.imparams.fps if 'fs' not in [*kwargs] else kwargs['fs']
+    n_planes = trialobj.imparams.n_planes if 'n_planes' not in [*kwargs] else kwargs['n_planes']
+    pix_sz_x = trialobj.imparams.pix_sz_x if 'pix_sz_x' not in [*kwargs] else kwargs['pix_sz_x']
+    pix_sz_y = trialobj.imparams.pix_sz_y if 'pix_sz_y' not in [*kwargs] else kwargs['pix_sz_y']
+    frame_x = trialobj.imparams.frame_x if 'frame_x' not in [*kwargs] else kwargs['frame_x']
+    frame_y = trialobj.imparams.frame_y if 'frame_y' not in [*kwargs] else kwargs['frame_y']
+    n_channels = kwargs['n_channels'] if 'n_channels' in [*kwargs] else 1  # default is 1 channel imaging in .tiffs for suite2p
 
     # setup ops dictionary
     ops = expobj.Suite2p.ops

@@ -1,10 +1,12 @@
 import os
+import time
 from pathlib import Path
 from typing import Dict, Any, Optional, List
 
 import numpy as np
 import suite2p
 import matplotlib.pyplot as plt
+from suite2p import run_s2p
 
 from packerlabimaging.utils.utils import make_tiff_stack, s2p_loader
 
@@ -16,13 +18,76 @@ NEUROPIL_COEFF = 0.7
 class Suite2pResultsExperiment:
     """used to run and further process suite2p processed data, and analysis associated with suite2p processed data."""
 
-    def __init__(self, trialsSuite2p: list, s2pResultsPath: Optional[str] = None, subtract_neuropil: bool = True):
+    # default ops dict for suite2p
+    ops = {
+        'batch_size': 2000,  # reduce if running out of RAM
+        'fast_disk': os.path.expanduser('/mnt/sandbox/pshah/suite2p_tmp'),
+        # used to store temporary binary file, defaults to save_path0 (set as a string NOT a list)
+        # 'save_path0': '/media/jamesrowland/DATA/plab/suite_2p', # stores results, defaults to first item in data_path
+        'delete_bin': True,  # whether to delete binary file after processing
+        # main settings
+        'nplanes': 1,  # each tiff has these many planes in sequence
+        'nchannels': 1,  # each tiff has these many channels per plane
+        'functional_chan': 1,  # this channel is used to extract functional ROIs (1-based)
+        'diameter': 12,
+        # this is the main parameter for cell detection, 2-dimensional if Y and X are different (e.g. [6 12])
+        'tau': 1.26,  # this is the main parameter for deconvolution (1.25-1.5 for gcamp6s)
+        'fs': 30,  # sampling rate (total across planes)
+        # output settings
+        'save_mat': True,  # whether to save output as matlab files
+        'combined': True,  # combine multiple planes into a single result /single canvas for GUI
+        # parallel settings
+        'num_workers': 50,  # 0 to select num_cores, -1 to disable parallelism, N to enforce value
+        'num_workers_roi': 50,  # 0 to select number of planes, -1 to disable parallelism, N to enforce value
+        # registration settings
+        'do_registration': True,  # whether to register data
+        'nimg_init': 200,  # subsampled frames for finding reference image
+        'maxregshift': 0.1,  # max allowed registration shift, as a fraction of frame max(width and height)
+        'align_by_chan': 1,  # when multi-channel, you can align by non-functional channel (1-based)
+        'reg_tif': True,  # whether to save registered tiffs
+        'subpixel': 10,  # precision of subpixel registration (1/subpixel steps)
+        # cell detection settings
+        'connected': True,  # whether or not to keep ROIs fully connected (set to 0 for dendrites)
+        'navg_frames_svd': 5000,  # max number of binned frames for the SVD
+        'nsvd_for_roi': 1000,  # max number of SVD components to keep for ROI detection
+        'max_iterations': 20,  # maximum number of iterations to do cell detection
+        'ratio_neuropil': 6.,  # ratio between neuropil basis size and cell radius
+        'ratio_neuropil_to_cell': 3,  # minimum ratio between neuropil radius and cell radius
+        'tile_factor': 1.,  # use finer (>1) or coarser (<1) tiles for neuropil estimation during cell detection
+        'threshold_scaling': 1.,  # adjust the automatically determined threshold by this scalar multiplier
+        'max_overlap': 0.75,  # cells with more overlap than this get removed during triage, before refinement
+        'inner_neuropil_radius': 2,  # number of pixels to keep between ROI and neuropil donut
+        'outer_neuropil_radius': np.inf,  # maximum neuropil radius
+        'min_neuropil_pixels': 350,  # minimum number of pixels in the neuropil
+        # deconvolution settings
+        'baseline': 'maximin',  # baselining mode
+        'win_baseline': 60.,  # window for maximin
+        'sig_baseline': 10.,  # smoothing constant for gaussian filter
+        'prctile_baseline': 8.,  # optional (whether to use a percentile baseline)
+        'neucoeff': .7,  # neuropil coefficient
+    }
+
+    @classmethod
+    def update_ops(cls, new_ops_entries: dict):
+        for key in new_ops_entries:
+            cls.ops[key] = new_ops_entries[key]
+
+    def __init__(self, trialsTiffsSuite2p: dict, s2pResultsPath: Optional[str] = None, subtract_neuropil: bool = True,
+                 ):
+        """
+
+        :param trialsTiffsSuite2p:
+        :param dataPath:
+        :param s2pResultsPath:
+        :param subtract_neuropil:
+        """
         # self.reg_tiff_path = None
         # self.ops_end = None
         # self.s2pResultsPath = None
         # self.__s2pResultExists = False
-        # self.db = None
         # self.ops = None
+        self.bad_frames: list = []  #: list of frames to discard during Suite2p ROI detection procedure
+        self.db: dict = None
         print(f"\- ADDING Suite2p Results to Experiment object ... ")
 
         ## initialize attr's
@@ -46,7 +111,8 @@ class Suite2pResultsExperiment:
         self.yoff = []  # motion correction info
 
         # set trials to run together in suite2p for Experiment
-        self.trials = trialsSuite2p
+        self.trials = [*trialsTiffsSuite2p]
+        self.tiff_paths_to_use_s2p: dict = trialsTiffsSuite2p
         self.subtract_neuropil = subtract_neuropil
         assert len(
             self.trials) > 0, "no trials found to run suite2p, option available to provide list of trial IDs in " \
@@ -79,8 +145,12 @@ class Suite2pResultsExperiment:
 
 
     def __repr__(self):
-        return f'Suite2p Results (Experiment level) Object, containing trials: \n\t{self.trials}'
+        if self._s2pResultExists:
+            return f'Suite2p Results (Experiment level) Object, containing trials: \n\t{self.trials}'
+        else:
+            return f'Suite2p Results (Experiment level) Object, containing trials: \n\t{self.trials}. No Suite2p results loaded.'
 
+    # noinspection PyTypeChecker
     def _retrieveSuite2pData(self, s2p_path: str = None, neuropil_coeff: float = 0.7):
         """processing of suite2p data from the current t-series
         :param s2p_path: s2pResultsPath to the directory containing suite2p outputs
@@ -101,7 +171,7 @@ class Suite2pResultsExperiment:
             self.neuropil.append(neuropil)  # neuropil value of each suite2p ROI
             self.stat.append(stat)  # stat dictionary for each suite2p ROI
 
-            self.ops = np.load(os.path.join(s2p_path, 'ops.npy'), allow_pickle=True).item()
+            self.ops: dict = np.load(os.path.join(s2p_path, 'ops.npy'), allow_pickle=True).item()
             self.mean_img.append(self.ops['meanImg'])
             self.mean_imgE.append(self.ops['meanImgE'])  # enhanced mean image from suite2p
             self.xoff = self.ops['xoff']  # motion correction info
@@ -151,7 +221,7 @@ class Suite2pResultsExperiment:
             self.cell_y = self.cell_y[0]
 
         # read in other files
-        self.output_op = np.load(Path(self.s2pResultsPath).joinpath('ops.npy'), allow_pickle=True).item()
+        self.output_op: dict = np.load(Path(self.s2pResultsPath).joinpath('ops.npy'), allow_pickle=True).item()
         stats_file = Path(self.s2pResultsPath).joinpath('stat.npy')
         self.iscell = np.load(Path(self.s2pResultsPath).joinpath('iscell.npy'), allow_pickle=True)[:, 0].astype(bool)
         self.stats = np.load(stats_file, allow_pickle=True)
@@ -259,35 +329,180 @@ class Suite2pResultsExperiment:
 
         return mean_img
 
-    # suite2p methods - refactored currently to _utils.Utils !!!!!
-    def s2pRun(self, ops, db):  # TODO need to test
+    @classmethod
+    def subSuite2p(cls, trialsTiffs, dataPath, s2pResultsPath, subtract_neuropil=True):
         """
-        run suite2p on the experiment object, using trials specified in current experiment object, using the attributes
-        determined directly from the experiment object.
+        Alternative constructor for Suite2pResultsExperiment class.
+        """
+        return cls(trialsTiffsSuite2p=trialsTiffs, s2pResultsPath=s2pResultsPath, subtract_neuropil=subtract_neuropil)
 
-        :param ops:
-        :param db:
+    def add_bad_frames(self, frames, bad_frames_npy_loc) -> None:
+        """
+        Add frames to bad_frames.npy file that will be used by Suite2p to ignore these frames during ROI detection.
         """
 
-        self.ops = ops
-        self.db = db
+        self.bad_frames.extend(frames)
+        self.bad_frames = list(np.unique(self.bad_frames))
 
-        print(f'Starting Suite2p run for : \n\t{db}')
+        if len(self.bad_frames) > 0:
+            print('\- Appending a total of ', len(frames), 'to bad_frames.npy', f"\n\t total bad_frames: {len(self.bad_frames)}")
+            np.save('%s/bad_frames.npy' % bad_frames_npy_loc,
+                    self.bad_frames)  # save to npy file and remember to move npy file to tiff folder before running with suite2p
 
-        from suite2p import run_s2p
-        self.ops_end = run_s2p(ops=ops, db=db)
 
-        self._s2pResultExists = True
-        self.s2pResultsPath = self.ops_end['save_path']
+    def setupForSuite2p(self, trialsSuite2P: list, TrialsInformation: dict, **kwargs):
+        """
 
+        :param trialsSuite2P: list of trials to use for Suite2p setup
+        :param TrialsInformation: dictionary mapping trial ID to tiff_path to use for Suite2p processing of that trial
+        :param kwargs:
+        """
+        if trialsSuite2P != self.trials:
+
+            trialsTiffs = {}
+            for trial in trialsSuite2P:
+                trialsTiffs[trial] = TrialsInformation[trial]['tiff_path']
+
+            Suite2p_obj = self.subSuite2p(trialsTiffs=trialsSuite2P, s2pResultsPath=self.s2pResultsPath, subtract_neuropil=self.subtract_neuropil)
+        else:
+            Suite2p_obj = self
+        # self.trials = trialsSuite2P if trialsSuite2P else self.trials
+
+
+
+        for trial in Suite2p_obj.trials:
+            Suite2p_obj.tiff_paths_to_use_s2p[trial] = TrialsInformation[trial]['tiff_path']
+
+        # load the first tiff in Suite2p_obj.trials to collect default metainformation about imaging setup parameters
+        trial = Suite2p_obj.trials[0]
+        from packerlabimaging import import_obj
+        trialobj = import_obj(TrialsInformation[trial]['analysis_object_information']['pkl path'])
+
+        # set imaging parameters using defaults or kwargs if provided
+        fps = trialobj.fps if 'fs' not in [*kwargs] else kwargs['fs']
+        n_planes = trialobj.n_planes if 'n_planes' not in [*kwargs] else kwargs['n_planes']
+        pix_sz_x = trialobj.pix_sz_x if 'pix_sz_x' not in [*kwargs] else kwargs['pix_sz_x']
+        pix_sz_y = trialobj.pix_sz_y if 'pix_sz_y' not in [*kwargs] else kwargs['pix_sz_y']
+        frame_x = trialobj.frame_x if 'frame_x' not in [*kwargs] else kwargs['frame_x']
+        frame_y = trialobj.frame_y if 'frame_y' not in [*kwargs] else kwargs['frame_y']
+        n_channels = kwargs['n_channels'] if 'n_channels' in [
+            *kwargs] else 1  # default is 1 channel imaging in .tiffs for suite2p
+
+        # setup ops dictionary
+        Suite2p_obj.ops['fs'] = fps / n_planes
+        diameter_x = 13 / pix_sz_x
+        diameter_y = 13 / pix_sz_y
+        Suite2p_obj.ops['diameter'] = int(diameter_x), int(diameter_y) if diameter_y != diameter_x else diameter_x
+
+        # set other ops parameters if provided in kwargs:
+        for key in [*kwargs]:
+            if key in [*Suite2p_obj.ops]:
+                Suite2p_obj.ops[key] = kwargs[key]
+
+        # calculate batch size to use in Suite2p run
+        batch_size = Suite2p_obj.ops['batch_size'] * (262144 / (
+                frame_x * frame_y))  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
+
+        # setup db dict
+        Suite2p_obj.db = {'fs': float(Suite2p_obj.ops['fs']), 'diameter': Suite2p_obj.ops['diameter'], 'batch_size': int(batch_size),
+              'nimg_init': int(Suite2p_obj.ops['batch_size']), 'nplanes': n_planes, 'nchannels': n_channels,
+              'tiff_list': list(Suite2p_obj.tiff_paths_to_use_s2p.values()), 'data_path': Suite2p_obj.dataPath,  # TODO need to figure out how to more appropriately bring in the dataPath here
+              'save_folder': Suite2p_obj.s2pResultsPath}
+
+
+    # # suite2p methods
+    # def s2pRun(self, user_batch_size=2000, trialsSuite2P: list = None,
+    #            **kwargs):  ## TODO gotta specify # of planes somewhere here
+    #     """run suite2p for an Experiment object, using trials specified in current experiment object, using the attributes
+    #     determined directly from the experiment object.
+    #
+    #     :param self: a packerlabimaging.main.Experiment object
+    #     :param user_batch_size: batch size for suite2p registration stage - adjust if running into MemmoryError while running suite2p
+    #     :param trialsSuite2P: list of trialIDs from experiment to use in running suite2p
+    #     """
+    #
+    #     print(f'db: \n\t{self.db}')
+    #
+    #
+    #     self.trials = trialsSuite2P if trialsSuite2P else self.trials
+    #     #
+    #     tiffs_paths_to_use_s2p = []
+    #     for trial in self.trials:
+    #         tiffs_paths_to_use_s2p.append(self.TrialsInformation[trial]['tiff_path'])
+    #     #
+    #     # # load the first tiff in self.trials to collect default metainformation about imaging setup parameters
+    #     # trial = self.trials[0]
+    #     # from packerlabimaging import import_obj
+    #     # trialobj = import_obj(self.TrialsInformation[trial]['analysis_object_information']['pkl path'])
+    #     #
+    #     # # set imaging parameters using defaults or kwargs if provided
+    #     # fps = trialobj.fps if 'fs' not in [*kwargs] else kwargs['fs']
+    #     # n_planes = trialobj.n_planes if 'n_planes' not in [*kwargs] else kwargs['n_planes']
+    #     # pix_sz_x = trialobj.pix_sz_x if 'pix_sz_x' not in [*kwargs] else kwargs['pix_sz_x']
+    #     # pix_sz_y = trialobj.pix_sz_y if 'pix_sz_y' not in [*kwargs] else kwargs['pix_sz_y']
+    #     # frame_x = trialobj.frame_x if 'frame_x' not in [*kwargs] else kwargs['frame_x']
+    #     # frame_y = trialobj.frame_y if 'frame_y' not in [*kwargs] else kwargs['frame_y']
+    #     # n_channels = kwargs['n_channels'] if 'n_channels' in [
+    #     #     *kwargs] else 1  # default is 1 channel imaging in .tiffs for suite2p
+    #     #
+    #     # # setup ops dictionary
+    #     # ops = self.ops
+    #     #
+    #     # ops['fs'] = fps / n_planes
+    #     # diameter_x = 13 / pix_sz_x
+    #     # diameter_y = 13 / pix_sz_y
+    #     # ops['diameter'] = int(diameter_x), int(diameter_y) if diameter_y != diameter_x else diameter_x
+    #     # self.user_batch_size = user_batch_size
+    #     # ops['batch_size'] = self.user_batch_size
+    #     # batch_size = self.user_batch_size * (262144 / (
+    #     #         frame_x * frame_y))  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
+    #     #
+    #     # # set other ops parameters if provided in kwargs:
+    #     # for key in [*kwargs]:
+    #     #     if key in [*ops]:
+    #     #         ops[key] = kwargs[key]
+    #     #
+    #     # # setup db dict
+    #     # db = {'fs': float(ops['fs']), 'diameter': ops['diameter'], 'batch_size': int(batch_size),
+    #     #       'nimg_init': int(batch_size), 'nplanes': n_planes, 'nchannels': n_channels,
+    #     #       'tiff_list': tiffs_paths_to_use_s2p, 'data_path': self.dataPath,
+    #     #       'save_folder': self.s2pResultsPath}
+    #     #
+    #     # print(f'db: \n\t{db}')
+    #
+    #
+    #     t1 = time.time()
+    #     opsEnd = run_s2p(ops=self.ops, db=self.db)
+    #     t2 = time.time()
+    #     print('Total time to run suite2p was {}'.format(t2 - t1))
+    #
+    #     # update self.ops
+    #     self.ops = opsEnd
+    #
+    #     self._s2pResultExists = True
+    #     self.s2pResultsPath = self.s2pResultsPath + '/plane0/'  ## need to further debug that the flow of the suite2p s2pResultsPath makes sense
+
+    @staticmethod
+    def s2pRun(expobj, user_batch_size=2000, trialsSuite2P: list = None):
+        from packerlabimaging.utils.utils import s2pRun
+        s2pRun(expobj, user_batch_size=user_batch_size, trialsSuite2P=trialsSuite2P)
 
 class Suite2pResultsTrial(Suite2pResultsExperiment):
     """used to collect suite2p processed data for one trial - out of overall experiment."""
 
-    def __init__(self, trialsSuite2p: list, trial_frames: tuple, s2pResultsPath: Optional[str] = None,
+    def __init__(self, trialsTiffsSuite2p: dict, trial_frames: tuple, s2pResultsPath: Optional[str] = None,
                  subtract_neuropil: bool = True):
+        """
+        For accessing and storing of Suite2p results from a specific trial.
 
-        super().__init__(trialsSuite2p, s2pResultsPath, subtract_neuropil)  # - TODO it really is confusing to be passing in all trials for a s2p results obj that should be restricted to just one trial
+        :param trialsTiffsSuite2p:
+        :param dataPath:
+        :param trial_frames:
+        :param s2pResultsPath:
+        :param subtract_neuropil:
+        """
+        super().__init__(trialsTiffsSuite2p, s2pResultsPath,
+                         subtract_neuropil)  # - TODO it really is confusing to be passing in all trials for a s2p results obj that should be restricted to just one trial
 
         print(f"\n\----- ADDING Suite2pResultsTrial ... ")
 
@@ -309,7 +524,11 @@ class Suite2pResultsTrial(Suite2pResultsExperiment):
         #                                   subtract_neuropil=suite2p_experiment_obj.subtract_neuropil)
 
     def __repr__(self):
-        return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} frames x {self.n_units} s2p ROIs'
+        if self._s2pResultExists:
+            return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} frames x {self.n_units} s2p ROIs'
+        else:
+            return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} frames. No Suite2p Results loaded.'
+
 
     def _get_suite2pResults(self):  # TODO complete code for getting suite2p results for trial
         """crop suite2p data for frames only for the present trial"""

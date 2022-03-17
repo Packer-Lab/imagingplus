@@ -66,10 +66,18 @@ class TwoPhotonImagingTrial:
         else:
             raise ValueError(
                 "dev error: metainfo argument must contain the minimum fields: 'date', 'trial_id', 'exp_id', 't_series_id', 'trialInformation dict")
+
         if os.path.exists(metainfo['TrialsInformation']['tiff_path']):
             self.tiff_path = metainfo['TrialsInformation']['tiff_path']  #: path to the tiff for current trial
         else:
             raise FileNotFoundError(f"tiff_path does not exist: {metainfo['TrialsInformation']['tiff_path']}")
+
+
+        if os.path.exists(metainfo['TrialsInformation']['tiff_path']):
+            self.tiff_path = metainfo['TrialsInformation']['tiff_path']  #: path to the tiff for current trial
+        else:
+            raise FileNotFoundError(f"tiff_path does not exist: {metainfo['TrialsInformation']['tiff_path']}")
+
         if 'paq_path' in [*paq_options]:
             paq_path = paq_options['paq_path']
             if os.path.exists(paq_path):
@@ -78,6 +86,7 @@ class TwoPhotonImagingTrial:
                 raise FileNotFoundError(f"paq_path does not exist: {paq_path}")
         else:
             self._use_paq = False
+
 
         # set and create analysis save path directory
         self.save_dir = analysis_save_path  #: path to the directory to save outputs from analysis
@@ -115,7 +124,7 @@ class TwoPhotonImagingTrial:
             from packerlabimaging.processing.suite2p import Suite2pResultsExperiment
             s2p_expobj: Suite2pResultsExperiment = kwargs['suite2p_experiment_obj']
             #: Suite2p results submodule for trial
-            self.Suite2p = suite2p.Suite2pResultsTrial(trialsSuite2p=s2p_expobj.trials,
+            self.Suite2p = suite2p.Suite2pResultsTrial(trialsTiffsSuite2p=s2p_expobj.tiff_paths_to_use_s2p,
                                                        s2pResultsPath=s2p_expobj.s2pResultsPath,
                                                        subtract_neuropil=s2p_expobj.subtract_neuropil,
                                                        trial_frames=(kwargs['total_frames_stitched'], kwargs[

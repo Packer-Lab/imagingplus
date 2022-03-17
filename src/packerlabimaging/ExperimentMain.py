@@ -86,8 +86,9 @@ class Experiment:
         # START PROCESSING FOR EXPERIMENT:
 
         # 1) start suite2p:
-        self._trialsSuite2p = []
-        if self.useSuite2p or self.s2pResultsPath: self._add_suite2p_experiment()
+        if self.useSuite2p or self.s2pResultsPath:
+            self._trialsTiffsSuite2p: dict = {}  #: dict containing mapping of trial ID and tiff path for trials to be used for Suite2p
+            self._add_suite2p_experiment()
 
         # 2) create individual trial objects
         self._runExpTrialsProcessing()
@@ -134,11 +135,11 @@ class Experiment:
         from .processing.suite2p import Suite2pResultsExperiment
 
         for trial in self.trialIDs:
-            if trial not in self._trialsSuite2p:
+            if trial not in self._trialsTiffsSuite2p:
                 assert 's2p_use' in [*self.TrialsInformation[
                     trial]], 'when trying to utilize suite2p , must provide value for `s2p_use` ' \
                              'in TrialsInformation[trial] for each trial to specify if to use trial for this suite2p associated with this experiment'
-                self._trialsSuite2p.append(trial) if self.TrialsInformation[trial]['s2p_use'] else None
+                self._trialsTiffsSuite2p[trial] = self.TrialsInformation[trial]['tiff_path'] if self.TrialsInformation[trial]['s2p_use'] else None
 
         if self.s2pResultsPath:  # if s2pResultsPath provided then try to find and pre-load results from provided s2pResultsPath, raise error if cannot find results
             # search for suite2p results items in self.suite2pPath, and auto-assign s2pRunComplete --> True if found successfully
@@ -149,15 +150,18 @@ class Experiment:
                     self._s2pResultExists = True
                     break
             if self._s2pResultExists:
-                self.Suite2p = suite2p.Suite2pResultsExperiment(s2pResultsPath=self.s2pResultsPath,
-                                                                trialsSuite2p=self._trialsSuite2p)
+                self.Suite2p = suite2p.Suite2pResultsExperiment(trialsTiffsSuite2p=self._trialsTiffsSuite2p,
+                                                                # dataPath=self.dataPath,
+                                                                s2pResultsPath=self.s2pResultsPath)
             else:
                 raise ValueError(
                     f"suite2p results could not be found. `suite2pPath` provided was: {self.s2pResultsPath}")
         elif self.useSuite2p:  # no s2pResultsPath provided, so initialize without pre-loading any results
             self._s2pResultExists = False
             self._suite2p_save_path = self.analysisSavePath + '/suite2p/'
-            self.Suite2p = Suite2pResultsExperiment(trialsSuite2p=self._trialsSuite2p)
+            self.Suite2p = Suite2pResultsExperiment(trialsTiffsSuite2p=self._trialsTiffsSuite2p,
+                                                    # dataPath=self.dataPath
+                                                    )
 
     def update_suite2p(self, trialID: str = None, s2pResultsPath: str = None):  # TODO need to review structure and usage of this func
         """
@@ -170,8 +174,8 @@ class Experiment:
 
         assert self.Suite2p is not None, 'No existing Suite2p sub-module found in Experiment.'
 
-        if trialID is not None and trialID not in self._trialsSuite2p:
-            self._trialsSuite2p.append(trialID)
+        if trialID is not None and trialID not in [*self._trialsTiffsSuite2p]:
+            self._trialsTiffsSuite2p[trialID] = self.TrialsInformation[trialID]['tiff_path']
             self.TrialsInformation[trialID]['s2p_use'] = True
         try:
             if s2pResultsPath:  # if s2pResultsPath provided then try to find and pre-load results from provided s2pResultsPath, raise error if cannot find results
@@ -183,8 +187,9 @@ class Experiment:
                         _s2pResultExists = True
                         break
                 if _s2pResultExists:
-                    self.Suite2p = Suite2pResultsExperiment(s2pResultsPath=s2pResultsPath,
-                                                            trialsSuite2p=self._trialsSuite2p)
+                    self.Suite2p = Suite2pResultsExperiment(trialsTiffsSuite2p=self._trialsTiffsSuite2p,
+                                                            # dataPath=self.dataPath,
+                                                            s2pResultsPath=s2pResultsPath)
                     self.s2pResultsPath = s2pResultsPath
                 else:
                     raise ValueError(
@@ -192,7 +197,9 @@ class Experiment:
             elif self.useSuite2p:  # no s2pResultsPath provided, so initialize without pre-loading any results
                 self._s2pResultExists = False
                 self._suite2p_save_path = self.analysisSavePath + '/suite2p/'
-                self.Suite2p = Suite2pResultsExperiment(trialsSuite2p=self._trialsSuite2p)
+                self.Suite2p = Suite2pResultsExperiment(trialsTiffsSuite2p=self._trialsTiffsSuite2p,
+                                                        # dataPath=self.dataPath
+                                                        )
         except Exception:
             raise ValueError(f"something went wrong. could not update suite2p from: {s2pResultsPath}.")
 
@@ -312,7 +319,7 @@ class Experiment:
 
         with open(self.pkl_path, 'wb') as f:
             pickle.dump(self, f)
-        print("\t -- Experiment analysis object saved to %s -- " % self.pkl_path)
+        print(f"\n\t|- Experiment analysis object saved to {self.pkl_path} -- ")
 
     def save(self):
         self.save_pkl()
@@ -321,7 +328,8 @@ class Experiment:
         "method for importing individual trial objects from Experiment instance using the trial id for a given trial"
         try:
             trial_pkl_path = self.TrialsInformation[trialID]['analysis_object_information']['pkl path']
-            trialobj = _io.import_obj(trial_pkl_path)
+            from packerlabimaging import import_obj
+            trialobj = import_obj(trial_pkl_path)
             return trialobj
         except KeyError:
             raise KeyError("trial_id not found in Experiment instance.")

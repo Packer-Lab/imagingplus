@@ -5,37 +5,62 @@ SUITE2P_FRAMES_SPONT_t005t006 = [0, 14880]
 SUITE2P_FRAMES_t013 = 103525
 
 @pytest.fixture(scope="session")
-def twophoton_imaging_trial_fixture_noPreDoneSuite2p():
+def twophoton_imaging_trial_noPreDoneSuite2p_fixture():
+    prep = 'PS12'
+    date = '2021-01-25'
 
     initialization_dict = {
-        'dataPath': '/home/pshah/mnt/qnap/Data/2020-12-19',
-        'analysisSavePath': '/home/pshah/Documents/code/packerlabimaging/tests/',
+        'dataPath': f'/home/pshah/mnt/qnap/Data/{date}',
+        # todo this seems very vauge, maybe add very specific documentation about what this is supposed to be, or just say tiff path?
+        'analysisSavePath': f'/home/pshah/mnt/qnap/Analysis/{date}/{prep}/',
         'microscope': "Bruker",
-        "expID": 'RL109',
-        'date': '2020-12-19',
-        'comments': 'testing out analysis workflow',
+        "expID": prep,
+        'date': date,
+        'comments': f'{prep} - interneuron gcamp imaging + LFP pre- and post-4ap',
         'TrialsInformation': {},  # NOTE: this dictionary is populated in the code cells below.
         'useSuite2p': True,
-        's2pResultsPath': None
+        's2pResultsPath': None  # todo unclear what to put here when suite2p hasn't been done yet...
     }
 
-    # add information about each trial in experiment to TrialsInformation field of the initialization_dict
-    trials_list_spont = ['t-005', 't-006']
-    for idx, trial in enumerate(trials_list_spont):
-        data_path_base = '/home/pshah/mnt/qnap/Data/2020-12-19'
+    # add information about each trial in experiment to trialsInformation field of the initialization_dict
+    trials_list_pre4ap = ['t-001', 't-002', 't-003']
+    # todo - add functionality to add longer detailed comments for each trial (e.g. t-001: 30 mins spont, t-002: 30 mins spont + LFP, etc.) (other than expGroup)
+
+    for idx, trial in enumerate(trials_list_pre4ap):
+        data_path_base = f'/home/pshah/mnt/qnap/Data/{date}'  # same as above, unclear what this is supposed to be.. (need more clear argument name)
         animal_prep = initialization_dict['expID']
         date = data_path_base[-10:]
 
-        # create dictionary containing necessary information for initialization
+        ## everything below should autopopulate
+        paqs_loc = f'{data_path_base}/{date}_{animal_prep}_{trial[2:]}.paq'  # path to the .paq files for the selected trials
+        tiffs_loc = f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif'
+
         initialization_dict["TrialsInformation"][trial] = {'trialType': 'TwoPhotonImagingTrial',
-                                                           'tiff_path': f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif',
+                                                           # need some way of explaining the possible arguments accepted in trialType
+                                                           'tiff_path': f"{tiffs_loc}",
                                                            's2p_use': True,
-                                                           'expGroup': "pre 4ap 2p spont imaging",
-                                                           'PaqInfoTrial': {
-                                                               'frame_channel': 'frame_clock',
-                                                               'paq_path': f'{data_path_base}/{date}_{animal_prep}_{trial[2:]}.paq'
-                                                               # path to the .paq files for the selected trials
+                                                           'expGroup': "pre 4ap 2p imaging",
+                                                           'PaqInfoTrial': {'paq_path': paqs_loc,
+                                                                            'frame_channel': 'frame_clock'}
                                                            }
+
+    trials_list_post4ap = ['t-006', 't-007', 't-008', 't-009']
+    for idx, trial in enumerate(trials_list_post4ap):
+        data_path_base = f'/home/pshah/mnt/qnap/Data/{date}'  # same as above, unclear what this is supposed to be.. (need more clear argument name)
+        animal_prep = initialization_dict['expID']
+        date = data_path_base[-10:]
+
+        ## everything below should autopopulate
+        paqs_loc = f'{data_path_base}/{date}_{animal_prep}_{trial[2:]}.paq'  # path to the .paq files for the selected trials
+        tiffs_loc = f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif'
+
+        initialization_dict["TrialsInformation"][trial] = {'trialType': 'TwoPhotonImagingTrial',
+                                                           # need some way of explaining the possible arguments accepted in trialType
+                                                           'tiff_path': f"{tiffs_loc}",
+                                                           's2p_use': True,
+                                                           'expGroup': "post 4ap 2p imaging",
+                                                           'PaqInfoTrial': {'paq_path': paqs_loc,
+                                                                            'frame_channel': 'frame_clock'}
                                                            }
 
     return initialization_dict
@@ -193,4 +218,10 @@ def existing_trialobj_alloptical_fixture():
     expobj = import_obj(pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
     trialobj = expobj.load_trial(trialID='t-013')
     return trialobj
+
+
+# @pytest.fixture(scope="session")
+def existing_expobj_nopredones2p_fixture():
+    expobj = import_obj(pkl_path='/home/pshah/mnt/qnap/Analysis/2021-01-25/PS12/PS12_analysis.pkl')
+    return expobj
 

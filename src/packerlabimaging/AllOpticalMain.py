@@ -334,12 +334,17 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         print('\t|- # of Photostim frames:', len(self.photostim_frames), 'frames')
         print('\t|- Minus photostim. frames total:', self.imparams.n_frames - len(photostim_frames), 'frames')
 
-        if len(self.photostim_frames) > 0:
-            print(
-                # f'***Saving a total of {len(self.photostim_frames)} photostim frames to bad_frames.npy at: {self.tiff_path_dir}/bad_frames.npy')
-                f'***Saving a total of {len(photostim_frames)} photostim frames to bad_frames.npy at: {BADFRAMESLOC}/bad_frames.npy')  # TODO replace BADFRAMESLOC with self.tiff_path_dir
-            np.save(f'{self.tiff_path_dir}/bad_frames.npy',
-                    photostim_frames)  # save to npy file and remember to move npy file to tiff folder before running with suite2p
+        # if using Suite2p then add photostim frames to bad_frames.npy for current Experiment
+        if self.Suite2p:
+            if len(self.photostim_frames) > 0:
+                bad_frames = self.Suite2p.bad_frames
+                bad_frames.extend(self.photostim_frames)
+                bad_frames = list(np.unique(bad_frames))
+                print(
+                    f'***Added a total of {len(self.photostim_frames)} photostim frames to bad_frames.npy at: {self.tiff_path_dir}/bad_frames.npy \n\t total bad_frames: {len(bad_frames)}')
+                    # f'***Saving a total of {len(photostim_frames)} photostim frames to bad_frames.npy at: {BADFRAMESLOC}/bad_frames.npy')  # TODO replace BADFRAMESLOC with self.tiff_path_dir
+                np.save(f'{self.tiff_path_dir}/bad_frames.npy',
+                        bad_frames)  # save to npy file and remember to move npy file to tiff folder before running with suite2p
 
         return photostim_frames
 

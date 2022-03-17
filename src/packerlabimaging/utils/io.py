@@ -19,6 +19,6 @@ def import_obj(pkl_path):
             obj = pickle.load(f)
         except pickle.UnpicklingError:
             raise pickle.UnpicklingError(f"\n** FAILED IMPORT from {pkl_path}\n")
-        print(f'|- Loaded {obj.__repr__()}')
+        print(f'\n|- Loaded {obj.__repr__()}')
 
     return obj

@@ -199,13 +199,3 @@ class PrairieViewMetadata:
         # }
 
 
-def PrairieViewMetadata_test():
-    # TODO run tests for suite2p trial creation without predone results path
-    testdir = '/home/pshah/mnt/qnap/Data/2021-01-28/2021-01-28_PS14_t-002'
-    # testdir = '/home/pshah/mnt/qnap/Data/2021-01-27/2021-01-27_t-002'
-    pvdata = PrairieViewMetadata(tiff_path_dir=testdir)
-
-
-PrairieViewMetadata_test()
-
-
