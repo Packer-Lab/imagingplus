@@ -1,6 +1,8 @@
 import anndata as ad
 from typing import Optional, Literal
 
+import pandas as pd
+
 
 class AnnotatedData(ad.AnnData):
     """Creates annotated data (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial."""
@@ -13,6 +15,7 @@ class AnnotatedData(ad.AnnData):
         ad.AnnData.__init__(self, **adata_dict)
         self.data_label = data_label if data_label else None
 
+        print(f"Created AnnData object: \n\t{self.__repr__()}")
 
     def __str__(self):
         "extensive information about the AnnotatedData data structure"
@@ -81,7 +84,7 @@ class AnnotatedData(ad.AnnData):
         self.obs[obs_name] = values
 
     def del_obs(self, obs_name: str): # TODO
-        "removes a key from observations from an anndata object, of the key obs_name"
+        """removes a key from observations from an anndata object, of the key obs_name"""
         _ = self.obs.pop(obs_name)
 
 
@@ -91,7 +94,7 @@ class AnnotatedData(ad.AnnData):
         self.var[var_name] = values
 
     def del_var(self, obs_name: str): # TODO
-        "removes a key from variables from an anndata object, of the key var_name"
+        """removes a key from variables from an anndata object, of the key var_name"""
         _ = self.var.pop(obs_name)
 
 
@@ -102,3 +105,116 @@ class AnnotatedData(ad.AnnData):
         """
         adata = ad.concat([self, additional_adata], axis=axis)
         return adata
+
+    def convert_to_df(self) -> pd.DataFrame:
+        """
+        convert anndata object into a long-form pandas dataframe. primary purpose is to allow access to pandas and seaborn functionality more directly.
+
+        - overall seems to be working well. just need to test with a dataset with >1 obs and var keys(), and to test with the whole larger dataset.
+        :return: long-form pandas dataframe
+
+        """
+
+        print(f"\n\- converting anndata data matrix to long-form pandas dataframe ... [in progress]")
+
+        cols = [self.obs_keys()[0], self.var_keys()[0]]
+        cols.extend(self.obs_keys()[1:])
+        cols.extend(self.var_keys()[1:])
+        cols.extend([self.data_label]) if self.data_label is not None or not '' else cols.extend('data_values')
+
+        df = pd.DataFrame(columns=cols)
+        index = 0
+        for idi in range(self.n_obs):
+            for idj in range(self.n_vars):
+                dict_ = {}
+                for col in self.obs_keys():
+                    dict_[str(col)] = self.obs[col][idi]
+
+                for col in self.var_keys():
+                    dict_[str(col)] = self.var[col][idj]
+
+                dict_[cols[-1]] = self.X[idi, idj]
+                df = pd.concat([df, pd.DataFrame(dict_, index=[index])])
+                index += 1
+
+        print(f"\n|- converting anndata data matrix to long-form pandas dataframe ... [finished]")
+
+        return df
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

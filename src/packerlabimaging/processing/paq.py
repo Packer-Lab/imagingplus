@@ -140,20 +140,34 @@ class PaqData:
     paq_channels: List[str] = None
     paq_rate: float = None
 
-    # todo change this to alternative constructor - cls method under PaqData
+    # def __post_init__(self):
+    #     _, paq_rate, paq_channels = self.paq_read(paq_path=self.paq_path, plot=False)
+    #     self.paq_channels = paq_channels
+    #     self.paq_rate = paq_rate
+
     @classmethod
-    def import_paqdata(cls, paq_path):
+    def import_paqdata(cls, paq_path, plot=False):
         """
-        Alternative constructor for PaqData.
+        Alternative constructor for PaqData. This is the preferred method for loading in paqdata.
 
         :param paq_path: path to .paq file
-        :return: PaqData object, as well as raw data from .paq file
+        :param plot: whether to plot output of reading .paq file
+        :return: PaqData object, and raw data from .paq file in numpy array
+
+        todo add example in docstring
         """
         paqData_obj = cls(paq_path=paq_path)
-        paqdata, paq_rate, paq_channels = paqData_obj.paq_read(paq_path=paq_path, plot=False)
+
+        paq_data, paq_rate, paq_channels = paqData_obj.paq_read(paq_path=paq_path, plot=plot)
         paqData_obj.paq_channels = paq_channels
         paqData_obj.paq_rate = paq_rate
-        return paqData_obj, paqdata
+
+        for chan_name in paqData_obj.paq_channels:
+            chan_name_idx = paq_channels.index(chan_name)
+            print(f"\t|- adding '{chan_name}' channel data as attribute")
+            setattr(paqData_obj, chan_name, paq_data['data'][chan_name_idx])
+
+        return paqData_obj, paq_data
 
     def __repr__(self):
         information = ""
@@ -183,7 +197,7 @@ class PaqData:
         return paq, paq_rate, paq_channels
 
     def storePaqChannel(self, chan_name):
-        """add a specific channel's (`chan_name`) data from the .Paq file as attribute of the same name for
+        """add a specific channel's (`chan_name`) data from the .paq file as attribute of the same name for
         PaqData object.
 
         :param chan_name: name of paq channel to add.
@@ -194,9 +208,26 @@ class PaqData:
         print(f"\t|- adding '{chan_name}' channel data as attribute")
         setattr(self, chan_name, paq_data['data'][chan_name_idx])
 
+    def cropPaqData(self, begin: int, end: int, channels: List[str] = 'all'):
+        """
+        Crops saved paq data channels to the .paq clock timestamps of begin and end.
+
+        :param begin: paq clock time to begin cropping at
+        :param end: paq clock time to end cropping at
+        :param channels: channels to crop paq data.
+        """
+
+        channels = self.paq_channels if channels == 'all' else channels
+        for channel in channels:
+            print(f"\- cropping {channel} to {begin} and {end} paq clock times.")
+            data = getattr(self, channel)
+            assert len(data) >= (end - begin), f'{channel} paq data is not long enough to crop between the provided clock times.'
+            cropdata = data[begin: end]
+            setattr(self, channel, cropdata)
+
+
     ## refactor these methods to their respective Trial code locations
-    @staticmethod
-    def paq_frame_times(paq_data, frame_channel: str):
+    def paq_frame_times(self, frame_channel: str):
         """
         Retrieve two-photon imaging frame times from .paq signal found in frame_channel.
 
@@ -204,12 +235,14 @@ class PaqData:
         :param frame_channel: channel to retrieve frame clock times from
         :return: numpy array of frame clock times
         """
-        if frame_channel not in paq_data['chan_names']:
+        # if frame_channel not in paq_data['chan_names']:
+        if frame_channel not in self.paq_channels:
             raise KeyError(f'{frame_channel} not found in .Paq channels. Specify channel containing frame signals.')
 
         # find frame times
-        clock_idx = paq_data['chan_names'].index(frame_channel)
-        clock_voltage = paq_data['data'][clock_idx, :]
+        # clock_idx = paq_data['chan_names'].index(frame_channel)
+        # clock_voltage = paq_data['data'][clock_idx, :]
+        clock_voltage = getattr(self, frame_channel)
 
         __frame_clock = threshold_detect(clock_voltage, 1)
         __frame_clock = __frame_clock
@@ -241,10 +274,9 @@ class PaqData:
 
         return frame_clock_actual
 
-    @staticmethod
-    def sparse_paq(paq_data, frame_clock):
+    def get_sparse_paq(self, frame_clock):
         """
-        Returns dictionary of numpy array keyed on channels from paq_data timed to 2photon imaging frame_clock.
+        Returns dictionary of numpy array keyed on channels from paq_data timed to 2photon imaging frame_times.
 
         :param paq_data:
         :param frame_clock:
@@ -252,8 +284,9 @@ class PaqData:
         """
         # read in and save sparse version of all Paq channels (only save data from timepoints at frame clock times)
         sparse_paq_data = {}
-        for idx, chan in enumerate(paq_data['chan_names']):
-            sparse_paq_data[chan] = paq_data['data'][idx, frame_clock]
+        for idx, chan in enumerate(self.paq_channels):
+            data = getattr(self, chan)
+            sparse_paq_data[chan] = data[frame_clock]
         return sparse_paq_data
 
     @staticmethod

@@ -214,8 +214,8 @@ class TwoPhotonImagingTrial:
 
     @property
     def frame_clock(self):
-        if hasattr(self.Paq, 'frame_clock'):
-            return self.Paq.frame_clock
+        if hasattr(self.Paq, 'frame_times'):
+            return self.Paq.frame_times
         else:
             raise ValueError('Frame clock timings couldnt be retrieved from .Paq submodule.')
 
@@ -227,12 +227,21 @@ class TwoPhotonImagingTrial:
             return -1
 
     def _paqProcessingTwoPhotonImaging(self, paq_path, frame_channel):
-        print(f"\n\- PROCESSING PAQDATA ... ")
+        """
+        Add and further process paq data for current trial.
+        :param paq_path: path to .paq file
+        :param frame_channel: channel to use for measuring frame times from .paq data
+
+        :return: PAQ data object
+        """
+
+        print(f"\n\- ADDING PAQ MODULE ... ")
         paq_data_obj, paqdata = PaqData.import_paqdata(paq_path=paq_path)
+        print(f"\n\- PROCESSING PAQDATA ... ")
         assert frame_channel in paq_data_obj.paq_channels, print(f"{frame_channel} not found in channels in .paq data.")
         paq_data_obj.frame_times_channame = frame_channel
-        paq_data_obj.frame_clock = paq_data_obj.paq_frame_times(paq_data=paqdata, frame_channel=frame_channel)
-        paq_data_obj.sparse_paq_data = paq_data_obj.sparse_paq(paq_data=paqdata, frame_clock=paq_data_obj.frame_clock)
+        paq_data_obj.frame_times = paq_data_obj.paq_frame_times(frame_channel=frame_channel)
+        paq_data_obj.sparse_paq_data = paq_data_obj.get_sparse_paq(frame_clock=paq_data_obj.frame_times)
 
         return paq_data_obj
 
@@ -283,7 +292,7 @@ class TwoPhotonImagingTrial:
             # build dataframe for var annot's from Paq file
             var_meta = pd.DataFrame(index=[self.Paq.frame_times_channame], columns=range(self.imparams.n_frames))
             for fr_idx in range(self.imparams.n_frames):
-                var_meta.loc[self.Paq.frame_times_channame, fr_idx] = self.Paq.frame_clock[fr_idx]
+                var_meta.loc[self.Paq.frame_times_channame, fr_idx] = self.Paq.frame_times[fr_idx]
 
             # BUILD LAYERS TO ADD TO anndata OBJECT
             layers = {'dFF': self.dFF

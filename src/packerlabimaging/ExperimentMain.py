@@ -144,10 +144,10 @@ class Experiment:
         if self.s2pResultsPath:  # if s2pResultsPath provided then try to find and pre-load results from provided s2pResultsPath, raise error if cannot find results
             # search for suite2p results items in self.suite2pPath, and auto-assign s2pRunComplete --> True if found successfully
             __suite2p_path_files = os.listdir(self.s2pResultsPath)
-            self._s2pResultExists = False
+            self.__s2pResultExists = False
             for filepath in __suite2p_path_files:
                 if 'ops.npy' in filepath:
-                    self._s2pResultExists = True
+                    self.__s2pResultExists = True
                     break
             if self._s2pResultExists:
                 self.Suite2p = suite2p.Suite2pResultsExperiment(trialsTiffsSuite2p=self._trialsTiffsSuite2p,
@@ -157,7 +157,7 @@ class Experiment:
                 raise ValueError(
                     f"suite2p results could not be found. `suite2pPath` provided was: {self.s2pResultsPath}")
         elif self.useSuite2p:  # no s2pResultsPath provided, so initialize without pre-loading any results
-            self._s2pResultExists = False
+            self.__s2pResultExists = False
             self._suite2p_save_path = self.analysisSavePath + '/suite2p/'
             self.Suite2p = Suite2pResultsExperiment(trialsTiffsSuite2p=self._trialsTiffsSuite2p,
                                                     # dataPath=self.dataPath
@@ -333,6 +333,10 @@ class Experiment:
             return trialobj
         except KeyError:
             raise KeyError("trial_id not found in Experiment instance.")
+
+    @property
+    def suite2p_save_path(self):
+        return self._suite2p_save_path
 
 
 class WideFieldImaging:

@@ -3,7 +3,7 @@
 import bisect
 import io
 import time
-from typing import TypedDict
+from typing import TypedDict, Union
 
 import numpy as np
 import pandas as pd
@@ -77,73 +77,71 @@ pd.options.display.max_columns = 10
 
 
 # suite2p methods
-def s2pRun(expobj: Experiment, user_batch_size=2000, trialsSuite2P: list = None,
-           **kwargs):  ## TODO gotta specify # of planes somewhere here
+def s2pRun(expobj: Experiment, trialsSuite2P: Union[list, str] = 'all'):  ## TODO gotta specify # of planes somewhere here
     """run suite2p for an Experiment object, using trials specified in current experiment object, using the attributes
     determined directly from the experiment object.
 
     :param expobj: a packerlabimaging.main.Experiment object
-    :param user_batch_size: batch size for suite2p registration stage - adjust if running into MemmoryError while running suite2p
     :param trialsSuite2P: list of trialIDs from experiment to use in running suite2p
     """
 
-    expobj.Suite2p.trials = trialsSuite2P if trialsSuite2P else expobj.Suite2p.trials
-    expobj._trialsTiffsSuite2p = trialsSuite2P if trialsSuite2P else expobj._trialsTiffsSuite2p
+    expobj.Suite2p.trials = trialsSuite2P if trialsSuite2P != 'all' else expobj.Suite2p.trials
+    # expobj._trialsTiffsSuite2p = trialsSuite2P if trialsSuite2P else expobj._trialsTiffsSuite2p
 
     tiffs_paths_to_use_s2p = []
     for trial in expobj.Suite2p.trials:
         tiffs_paths_to_use_s2p.append(expobj.TrialsInformation[trial]['tiff_path'])
 
-    # load the first tiff in expobj.Suite2p.trials to collect default metainformation about imaging setup parameters
-    trial = expobj.Suite2p.trials[0]
-    from packerlabimaging import TwoPhotonImagingTrial
-    trialobj: TwoPhotonImagingTrial = import_obj(expobj.TrialsInformation[trial]['analysis_object_information']['pkl path'])
+    expobj.Suite2p.tiffs_paths_to_use_s2p = tiffs_paths_to_use_s2p
 
-    # set imaging parameters using defaults or kwargs if provided
-    fps = trialobj.imparams.fps if 'fs' not in [*kwargs] else kwargs['fs']
-    n_planes = trialobj.imparams.n_planes if 'n_planes' not in [*kwargs] else kwargs['n_planes']
-    pix_sz_x = trialobj.imparams.pix_sz_x if 'pix_sz_x' not in [*kwargs] else kwargs['pix_sz_x']
-    pix_sz_y = trialobj.imparams.pix_sz_y if 'pix_sz_y' not in [*kwargs] else kwargs['pix_sz_y']
-    frame_x = trialobj.imparams.frame_x if 'frame_x' not in [*kwargs] else kwargs['frame_x']
-    frame_y = trialobj.imparams.frame_y if 'frame_y' not in [*kwargs] else kwargs['frame_y']
-    n_channels = kwargs['n_channels'] if 'n_channels' in [*kwargs] else 1  # default is 1 channel imaging in .tiffs for suite2p
+    # # load the first tiff in expobj.Suite2p.trials to collect default metainformation about imaging setup parameters
+    # trial = expobj.Suite2p.trials[0]
+    # from packerlabimaging import TwoPhotonImagingTrial
+    # trialobj: TwoPhotonImagingTrial = import_obj(expobj.TrialsInformation[trial]['analysis_object_information']['pkl path'])
 
-    # setup ops dictionary
-    ops = expobj.Suite2p.ops
+    # # set imaging parameters using defaults or kwargs if provided
+    # frame_x = trialobj.imparams.frame_x if 'frame_x' not in [*kwargs] else kwargs['frame_x']
+    # frame_y = trialobj.imparams.frame_y if 'frame_y' not in [*kwargs] else kwargs['frame_y']
 
-    ops['fs'] = fps / n_planes
-    diameter_x = 13 / pix_sz_x
-    diameter_y = 13 / pix_sz_y
-    ops['diameter'] = int(diameter_x), int(diameter_y) if diameter_y != diameter_x else diameter_x
-    expobj.Suite2p.user_batch_size = user_batch_size
-    ops['batch_size'] = expobj.Suite2p.user_batch_size
-    batch_size = expobj.Suite2p.user_batch_size * (262144 / (
-            frame_x * frame_y))  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
+    # # setup ops dictionary
+    # # expobj.Suite2p.ops['fs'] = fps / n_planes
+    # batch_size = expobj.Suite2p.ops['batch_size'] * (262144 / (
+    #         frame_x * frame_y))  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
 
-    # set other ops parameters if provided in kwargs:
-    for key in [*kwargs]:
-        if key in [*ops]:
-            ops[key] = kwargs[key]
+    # # set other ops parameters if provided in kwargs:
+    # for key in [*kwargs]:
+    #     if key in [*expobj.Suite2p.ops]:
+    #         expobj.Suite2p.ops[key] = kwargs[key]
+
 
     # setup db dict
-    db = {'fs': float(ops['fs']), 'diameter': ops['diameter'], 'batch_size': int(batch_size),
-          'nimg_init': int(batch_size), 'nplanes': n_planes, 'nchannels': n_channels,
-          'tiff_list': tiffs_paths_to_use_s2p, 'data_path': expobj.dataPath,
-          'save_folder': expobj._suite2p_save_path}
+    expobj.Suite2p.ops['batch_size'] = int(expobj.Suite2p.ops['batch_size'])
+    db = {'fs': float(expobj.Suite2p.ops['fs']), 'diameter': expobj.Suite2p.ops['diameter'], 'batch_size': expobj.Suite2p.ops['batch_size'],
+          'nimg_init': expobj.Suite2p.ops['batch_size'], 'nplanes': expobj.Suite2p.ops['nplanes'], 'nchannels': expobj.Suite2p.ops['nchannels'],
+          'tiff_list': list(tiffs_paths_to_use_s2p), 'data_path': expobj.dataPath, 'save_folder': expobj._suite2p_save_path
+          }
 
-    print(f'db: \n\t{db}')
+    # db = {'fs': float(expobj.Suite2p.ops['fs']), 'diameter': expobj.Suite2p.ops['diameter'], 'batch_size': int(batch_size),
+    #       'nimg_init': int(batch_size), 'nplanes': n_planes, 'nchannels': n_channels,
+    #       'tiff_list': tiffs_paths_to_use_s2p, 'data_path': expobj.dataPath,
+    #       'save_folder': expobj._suite2p_save_path}
+
+    expobj.Suite2p.db = db
+    expobj.save()
+
+    print('RUNNING Suite2p:')
+    print(f'\- db: ') #\n\t{expobj.Suite2p.db}\n\n')
 
     t1 = time.time()
-    opsEnd = run_s2p(ops=ops, db=db)
+    opsEnd = run_s2p(ops=expobj.Suite2p.ops, db=expobj.Suite2p.db)
     t2 = time.time()
     print('Total time to run suite2p was {}'.format(t2 - t1))
 
     # update expobj.Suite2p.ops and db
-    expobj.Suite2p.db = db
     expobj.Suite2p.ops = opsEnd
 
-    expobj._s2pResultExists = True
-    expobj.s2pResultsPath = expobj._suite2p_save_path + '/plane0/'  ## need to further debug that the flow of the suite2p s2pResultsPath makes sense
+    expobj.__s2pResultExists = True
+    expobj.s2pResultsPath = expobj.suite2p_save_path + '/plane0/'  ## need to further debug that the flow of the suite2p s2pResultsPath makes sense
 
     expobj.save()
 
@@ -758,16 +756,16 @@ def stim_start_frame_mat(stim_times, frames_ms, fs=5, debug_print=False):
 
 def stim_start_frame(paq=None, stim_chan_name=None, frame_clock=None,
                      stim_times=None):
-    '''Returns the frames from a frame_clock that a stim occured on.
+    '''Returns the frames from a frame_times that a stim occured on.
        Either give Paq and stim_chan_name as arugments if using
        unprocessed Paq.
-       Or predigitised frame_clock and stim_times in reference frame
+       Or predigitised frame_times and stim_times in reference frame
        of that clock
 
     '''
 
     if frame_clock is None:
-        frame_clock = paq_data(paq, 'frame_clock', threshold_ttl=True)
+        frame_clock = paq_data(paq, 'frame_times', threshold_ttl=True)
         stim_times = paq_data(paq, stim_chan_name, threshold_ttl=True)
 
     stim_times = [stim for stim in stim_times if stim < np.nanmax(frame_clock)]
@@ -795,7 +793,7 @@ def tseries_finder(tseries_lens, frame_clock, paq_rate=20000):
         tseries lens
         tseries_lens -- ls of the number of frames each tseries you want
                         to find contains
-        frame_clock  -- thresholded times each frame recorded in paqio occured
+        frame_times  -- thresholded times each frame recorded in paqio occured
         paq_rate     -- input sampling rate of paqio
 
         '''
@@ -1008,11 +1006,11 @@ def test_responsive(flu, frame_clock, stim_times, pre_frames=10,
 
         Inputs:
         flu -- fluoresence matrix [n_cells x n_frames] likely dfof from suite2p
-        frame_clock -- timing of the frames, must be digitised and in same
+        frame_times -- timing of the frames, must be digitised and in same
                        reference frame as stim_times
         stim_times -- times that stims to test responsiveness on occured,
                       must be digitised and in same reference frame
-                      as frame_clock
+                      as frame_times
         pre_frames -- the number of frames before the stimulus occured to
                       baseline with
         post_frames -- the number of frames after stimulus to test differnece

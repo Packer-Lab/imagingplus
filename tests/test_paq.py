@@ -1,3 +1,4 @@
+from packerlabimaging.plotting.plotting import plot__paq_channel
 from packerlabimaging.processing.paq import PaqData
 
 from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
@@ -12,3 +13,10 @@ def test_paq_func(existing_trialobj_twophotonimaging_fixture):
     trialobj.Paq.storePaqChannel(chan_name='voltage')
 
 # test_paq_func(existing_trialobj_twophotonimaging_fixture)
+
+
+def test_plot__paq_channel(existing_trialobj_twophotonimaging_fixture):
+    trialobj: TwoPhotonImagingTrial = existing_trialobj_twophotonimaging_fixture
+    plot__paq_channel(trialobj.Paq, channel='voltage', x_axis='Time (secs)', x_tick_secs=120)
+
+

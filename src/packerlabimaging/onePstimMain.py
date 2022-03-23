@@ -54,30 +54,30 @@ class OnePhotonStim(TwoPhotonImagingTrial):
         #     else:
         #         raise Exception('need to write code for using the shutter loopback')
 
-        # find frame_clock times
-        clock_idx = paq['chan_names'].index('frame_clock')
+        # find frame_times times
+        clock_idx = paq['chan_names'].index('frame_times')
         clock_voltage = paq['data'][clock_idx, :]
 
         frame_clock = pj.threshold_detect(clock_voltage, 1)
-        self.frame_clock = frame_clock
+        self.frame_times = frame_clock
 
-        # find start and stop frame_clock times -- there might be multiple 2p imaging starts/stops in the Paq trial (hence multiple frame start and end times)
-        self.frame_start_times = [self.frame_clock[0]]  # initialize ls
+        # find start and stop frame_times times -- there might be multiple 2p imaging starts/stops in the Paq trial (hence multiple frame start and end times)
+        self.frame_start_times = [self.frame_times[0]]  # initialize ls
         self.frame_end_times = []
         i = len(self.frame_start_times)
-        for idx in range(1, len(self.frame_clock) - 1):
-            if (self.frame_clock[idx + 1] - self.frame_clock[idx]) > 2e3:
+        for idx in range(1, len(self.frame_times) - 1):
+            if (self.frame_times[idx + 1] - self.frame_times[idx]) > 2e3:
                 i += 1
-                self.frame_end_times.append(self.frame_clock[idx])
-                self.frame_start_times.append(self.frame_clock[idx + 1])
-        self.frame_end_times.append(self.frame_clock[-1])
+                self.frame_end_times.append(self.frame_times[idx])
+                self.frame_start_times.append(self.frame_times[idx + 1])
+        self.frame_end_times.append(self.frame_times[-1])
 
-        # for frame in self.frame_clock[1:]:
+        # for frame in self.frame_times[1:]:
         #     if (frame - self.frame_start_times[i - 1]) > 2e3:
         #         i += 1
         #         self.frame_start_times.append(frame)
-        #         self.frame_end_times.append(self.frame_clock[np.where(self.frame_clock == frame)[0] - 1][0])
-        # self.frame_end_times.append(self.frame_clock[-1])
+        #         self.frame_end_times.append(self.frame_times[np.where(self.frame_times == frame)[0] - 1][0])
+        # self.frame_end_times.append(self.frame_times[-1])
 
         # handling cases where 2p imaging clock has been started/stopped >1 in the Paq trial
         if len(self.frame_start_times) > 1:
@@ -86,18 +86,18 @@ class OnePhotonStim(TwoPhotonImagingTrial):
             idx = diff.index(max(diff))
             self.frame_start_time_actual = self.frame_start_times[idx]
             self.frame_end_time_actual = self.frame_end_times[idx]
-            self.frame_clock_actual = [frame for frame in self.frame_clock if
+            self.frame_times_actual = [frame for frame in self.frame_times if
                                        self.frame_start_time_actual <= frame <= self.frame_end_time_actual]
         else:
             self.frame_start_time_actual = self.frame_start_times[0]
             self.frame_end_time_actual = self.frame_end_times[0]
-            self.frame_clock_actual = self.frame_clock
+            self.frame_times_actual = self.frame_times
 
         f, ax = plt.subplots(figsize=(20, 2))
         # plt.figure(figsize=(50, 2))
         ax.plot(clock_voltage)
         ax.plot(frame_clock, np.ones(len(frame_clock)), '.', color='orange')
-        ax.plot(self.frame_clock_actual, np.ones(len(self.frame_clock_actual)), '.', color='red')
+        ax.plot(self.frame_times_actual, np.ones(len(self.frame_times_actual)), '.', color='red')
         ax.set_title('frame clock from Paq, with detected frame clock instances as scatter')
         ax.set_xlim([1e6, 1.2e6])
         f.tight_layout(pad=2)

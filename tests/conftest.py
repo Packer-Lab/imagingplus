@@ -1,3 +1,5 @@
+import numpy as np
+import pandas as pd
 import pytest
 from packerlabimaging.utils.io import import_obj
 
@@ -41,7 +43,7 @@ def twophoton_imaging_trial_noPreDoneSuite2p_fixture():
                                                            's2p_use': True,
                                                            'expGroup': "pre 4ap 2p imaging",
                                                            'PaqInfoTrial': {'paq_path': paqs_loc,
-                                                                            'frame_channel': 'frame_clock'}
+                                                                            'frame_channel': 'frame_times'}
                                                            }
 
     trials_list_post4ap = ['t-006', 't-007', 't-008', 't-009']
@@ -60,7 +62,7 @@ def twophoton_imaging_trial_noPreDoneSuite2p_fixture():
                                                            's2p_use': True,
                                                            'expGroup': "post 4ap 2p imaging",
                                                            'PaqInfoTrial': {'paq_path': paqs_loc,
-                                                                            'frame_channel': 'frame_clock'}
+                                                                            'frame_channel': 'frame_times'}
                                                            }
 
     return initialization_dict
@@ -96,7 +98,7 @@ def twophoton_imaging_trial_fixture():
                                                            's2p_use': True,
                                                            'expGroup': "pre 4ap 2p spont imaging",
                                                            'PaqInfoTrial': {
-                                                               'frame_channel': 'frame_clock',
+                                                               'frame_channel': 'frame_times',
                                                                'paq_path': f'{data_path_base}/{date}_{animal_prep}_{trial[2:]}.paq'
                                                                # path to the .paq files for the selected trials
                                                            }
@@ -147,7 +149,7 @@ def alloptical_trial_fixture():
                                                            'tiff_path': f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif',
                                                            's2p_use': True,
                                                            'expGroup': "pre 4ap 2p all optical",
-                                                           'PaqInfoTrial': {'frame_channel': 'frame_clock',
+                                                           'PaqInfoTrial': {'frame_channel': 'frame_times',
                                                                             'paq_path': f'{data_path_base}/{date}_{animal_prep}_{trial[2:]}.paq',
                                                                             # path to the .paq files for the selected trials
                                                                             'stim_channel': 'markpoints2packio'
@@ -224,4 +226,118 @@ def existing_trialobj_alloptical_fixture():
 def existing_expobj_nopredones2p_fixture():
     expobj = import_obj(pkl_path='/home/pshah/mnt/qnap/Analysis/2021-01-25/PS12/PS12_analysis.pkl')
     return expobj
+
+
+def anndata_trial_data():
+    import pandas as pd
+    import numpy as np
+
+    # number of observations
+    n_obs = 1000
+    # say we measure the time of observing the data points
+    # add them to a dataframe for storing some annotation
+    obs = pd.DataFrame()
+    obs['group'] = np.random.choice(['day 1', 'day 2', 'day 4', 'day 8'], n_obs)
+    obs['group2'] = np.random.choice(['day 3', 'day 5', 'day 7'], n_obs)
+    # set the names of variables/features to the following
+    # ['A', 'B', 'C', ..., 'AA', 'BB', 'CC', ..., 'AAA', ...]
+    from string import ascii_uppercase
+    var_names = [i * letter for i in range(1, 10) for letter in ascii_uppercase]
+    # number of variables
+    n_vars = len(var_names)
+    var_group = {'var_group_1': np.random.choice(['group A', 'group B', 'group C', 'group D'], n_vars),
+                 'var_group_2': np.random.choice(['group A', 'group B', 'group C', 'group D'], n_vars)}
+    # dataframe for annotating the variables
+    var = pd.DataFrame(var_group, index=var_names)
+    # the data matrix of shape n_obs x n_vars
+    # X = np.arange(n_obs * n_vars).reshape(n_obs, n_vars)
+    X = np.random.random(n_obs * n_vars).reshape(n_obs, n_vars)
+
+    return X, var, obs
+
+@pytest.fixture(scope='session')
+def existing_anndata():
+    expobj = import_obj(
+        pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
+    trialobj = expobj.load_trial(trialID=expobj.trialIDs[0])
+
+    print(trialobj.data)  # this is the anndata object for this trial
+
+    var_meta = pd.DataFrame({
+        'exp_group': np.random.choice(['A', 'B', 'C'], trialobj.n_frames),
+    },
+        index=np.arange(trialobj.n_frames, dtype=int).astype(str),  # these are the same IDs of observations as above!
+    )
+    # var_meta
+
+    trialobj.data.add_var(var_name='exp_group', values=list(var_meta['exp_group']))
+
+    print(trialobj.data)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

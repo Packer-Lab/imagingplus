@@ -86,7 +86,7 @@ def plotting_decorator(figsize=(3, 3), nrows=1, ncols=1, apply_image_frame_optio
                 kwargs['fig'], kwargs['ax'] = plt.subplots(figsize=figsize_)
 
 
-            print(f'\- executing plotting_func')
+            print(f'\- executing plotting function: {plotting_func.__name__}')
             res = plotting_func(**kwargs)  # these kwargs are the original kwargs defined at the respective plotting_func call + any additional kwargs defined in inner()
 
             kwargs['ax'].set_title(kwargs['title'], wrap=True) if 'title' in [*kwargs] else None
@@ -273,6 +273,11 @@ def dataplot_ax_options(ax, data_length: int, **kwargs):
     """
     :param
         **kwargs:
+            x_axis: x axis label, if specify Time or time in x_axis then convert x_axis to time domain
+            collection_hz: data collection rate (in Hz)
+            x_tick_secs: interval (in secs) for plotting x ticks when converting x axis to time domain
+            xlims: set xlimits for plot
+            ylims: set ylimits for plot
 
     """
     if ax:
@@ -282,12 +287,11 @@ def dataplot_ax_options(ax, data_length: int, **kwargs):
         # change x-axis to time (secs) if time is requested
         if 'x_axis' in [*kwargs]:
             x_axis = kwargs['x_axis']
-            if ('time' in x_axis or 'Time' in x_axis) and 'trialobj' in [*kwargs]:
-                trialobj = kwargs['trialobj']
-
+            if ('time' in x_axis or 'Time' in x_axis) and 'collection_hz' in [*kwargs]:
+                x_tick_secs = 30 if 'x_tick_secs' not in [*kwargs] else kwargs['x_tick_secs']
                 # change x axis ticks to every 30 seconds
-                labels = list(range(0, int(data_length // trialobj.imparams.fps), 30))
-                ax.set_xticks(ticks=[(label * trialobj.imparams.fps) for label in labels])
+                labels = list(range(0, int(data_length // kwargs['collection_hz']), x_tick_secs))
+                ax.set_xticks(ticks=[(label * kwargs['collection_hz']) for label in labels])
 
                 ax.set_xticklabels(labels)
                 ax.set_xlabel('Time (secs)')

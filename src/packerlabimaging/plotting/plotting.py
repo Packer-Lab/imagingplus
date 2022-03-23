@@ -14,6 +14,7 @@ from packerlabimaging.AllOpticalMain import AllOpticalTrial
 from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
 from packerlabimaging.plotting._utils import plotting_decorator, make_random_color_array, _add_scalebar, \
     image_frame_options, dataplot_frame_options, dataplot_ax_options, plot_coordinates, heatmap_options, image_frame_ops
+from packerlabimaging.processing.paq import PaqData
 from packerlabimaging.utils.classes import ObjectClassError
 
 
@@ -157,6 +158,40 @@ def plot_flu_trace(trialobj: TwoPhotonImagingTrial, cell, to_plot='raw', **kwarg
 
     dataplot_ax_options(ax=ax, data_length=len(data_to_plot), **kwargs)
     mpl.pyplot.rcdefaults()
+
+
+@plotting_decorator()
+def plot__paq_channel(paqData: PaqData, channel: str, **kwargs):
+    """
+    Plot the stored signal from the specified channel from a PaqData submodule.
+
+    :param paqData: .Paq submodule data
+    :param channel:
+    :param kwargs:
+        x_axis: str, x axis label, if 'time' or "Time" found in x_axis label, will convert x axis to time domain.
+        x_tick_secs: int, interval to plot x axis ticks
+        ax: matplotlib axis object to use for plotting.
+    """
+    assert channel in paqData.paq_channels, f'{channel} not found in .Paq module data.'
+
+    # set any kwargs provided
+    ax = kwargs['ax']
+    kwargs.pop('ax')
+    x_axis = 'Time (secs)' if 'x_axis' not in [*kwargs] else kwargs['x_axis']
+    x_tick_secs = 120 if 'x_tick_secs' not in [*kwargs] else kwargs['x_tick_secs']
+    data = getattr(paqData, channel)
+
+    # make plot
+    ax.plot(data)
+    ax.set_title(f"{channel}")
+    from packerlabimaging.plotting._utils import dataplot_ax_options
+    dataplot_ax_options(ax=ax, data_length=len(data), x_axis=x_axis, collection_hz=paqData.paq_rate,
+                        x_tick_secs=x_tick_secs)
+    plt.grid(True)
+
+
+
+
 
 
 # plots the raw trace for the Flu mean of the FOV (similar to the ZProject in Fiji)

@@ -201,7 +201,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         """
         paqdata, _, _ = self.Paq.paq_read()
         stim_start_frames, stim_start_times = self.Paq.paq_alloptical_stims(paq_data=paqdata,
-                                                                            frame_clock=self.Paq.frame_clock,
+                                                                            frame_clock=self.Paq.frame_times,
                                                                             stim_channel=stim_channel)
         return stim_start_frames
 
@@ -1452,7 +1452,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         arg_dict = {'moviePath': movie_path,  # hard-code this
                     'savePath': stam_save_path,
-                    'syncFrameChannel': 'frame_clock',
+                    'syncFrameChannel': 'frame_times',
                     'syncStimChannel': 'packio2markpoints',
                     'syncStartSec': 0,
                     'syncStopSec': 0,
