@@ -1,4 +1,4 @@
-from packerlabimaging.utils.imagingMetadata import PrairieViewMetadata
+from packerlabimaging.processing.imagingMetadata import PrairieViewMetadata
 
 
 def test_PrairieViewMetadata():

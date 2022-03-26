@@ -179,15 +179,18 @@ def plot__paq_channel(paqData: PaqData, channel: str, **kwargs):
     kwargs.pop('ax')
     x_axis = 'Time (secs)' if 'x_axis' not in [*kwargs] else kwargs['x_axis']
     x_tick_secs = 120 if 'x_tick_secs' not in [*kwargs] else kwargs['x_tick_secs']
+    lw = 0.5 if 'lw' not in [*kwargs] else kwargs['lw']
+    color = 'black' if 'color' not in [*kwargs] else kwargs['color']
+
+    # collect data to plot
     data = getattr(paqData, channel)
 
     # make plot
-    ax.plot(data)
+    ax.plot(data, lw=lw, color=color)
     ax.set_title(f"{channel}")
     from packerlabimaging.plotting._utils import dataplot_ax_options
-    dataplot_ax_options(ax=ax, data_length=len(data), x_axis=x_axis, collection_hz=paqData.paq_rate,
-                        x_tick_secs=x_tick_secs)
-    plt.grid(True)
+    dataplot_ax_options(ax=ax, data_length=len(data), collection_hz=paqData.paq_rate, **kwargs)
+    # ax.grid(True)
 
 
 
@@ -226,7 +229,7 @@ def plotMeanFovFluTrace(trialobj: TwoPhotonImagingTrial, **kwargs):
         ax.set_xlabel('frame #s')
         ax.set_ylabel('Flu (a.u.)')
 
-        dataplot_ax_options(ax=ax, data_length=len(data_to_plot), **kwargs)
+        dataplot_ax_options(ax=ax, data_length=len(data_to_plot), collection_hz=trialobj.imparams.fps, **kwargs)
 
 
 @plotting_decorator(figsize=(10, 6))

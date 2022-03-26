@@ -8,11 +8,124 @@ import suite2p
 import matplotlib.pyplot as plt
 from suite2p import run_s2p
 
-from packerlabimaging.utils.utils import make_tiff_stack, s2p_loader
+from packerlabimaging.utils.utils import make_tiff_stack
 
 # TEMP VARIABLES FOR DEVELOPMENT USAGES
 N_PLANES = 1
 NEUROPIL_COEFF = 0.7
+
+
+# suite2p methods
+def s2pRun(expobj, trialsSuite2P: Union[list, str] = 'all'):  ## TODO gotta specify # of planes somewhere here
+    """run suite2p for an Experiment object, using trials specified in current experiment object, using the attributes
+    determined directly from the experiment object.
+
+    :param expobj: a packerlabimaging.main.Experiment object
+    :param trialsSuite2P: list of trialIDs from experiment to use in running suite2p
+    """
+
+    expobj.Suite2p.trials = trialsSuite2P if trialsSuite2P != 'all' else expobj.Suite2p.trials
+    # expobj._trialsTiffsSuite2p = trialsSuite2P if trialsSuite2P else expobj._trialsTiffsSuite2p
+
+    tiffs_paths_to_use_s2p = []
+    for trial in expobj.Suite2p.trials:
+        tiffs_paths_to_use_s2p.append(expobj.TrialsInformation[trial]['tiff_path'])
+
+    expobj.Suite2p.tiffs_paths_to_use_s2p = tiffs_paths_to_use_s2p
+
+    # # load the first tiff in expobj.Suite2p.trials to collect default metainformation about imaging setup parameters
+    # trial = expobj.Suite2p.trials[0]
+    # from packerlabimaging import TwoPhotonImagingTrial
+    # trialobj: TwoPhotonImagingTrial = import_obj(expobj.TrialsInformation[trial]['analysis_object_information']['pkl path'])
+
+    # # set imaging parameters using defaults or kwargs if provided
+    # frame_x = trialobj.imparams.frame_x if 'frame_x' not in [*kwargs] else kwargs['frame_x']
+    # frame_y = trialobj.imparams.frame_y if 'frame_y' not in [*kwargs] else kwargs['frame_y']
+
+    # # setup ops dictionary
+    # # expobj.Suite2p.ops['fs'] = fps / n_planes
+    # batch_size = expobj.Suite2p.ops['batch_size'] * (262144 / (
+    #         frame_x * frame_y))  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
+
+    # # set other ops parameters if provided in kwargs:
+    # for key in [*kwargs]:
+    #     if key in [*expobj.Suite2p.ops]:
+    #         expobj.Suite2p.ops[key] = kwargs[key]
+
+
+    # setup db dict
+    expobj.Suite2p.ops['batch_size'] = int(expobj.Suite2p.ops['batch_size'])
+    db = {'fs': float(expobj.Suite2p.ops['fs']), 'diameter': expobj.Suite2p.ops['diameter'], 'batch_size': expobj.Suite2p.ops['batch_size'],
+          'nimg_init': expobj.Suite2p.ops['batch_size'], 'nplanes': expobj.Suite2p.ops['nplanes'], 'nchannels': expobj.Suite2p.ops['nchannels'],
+          'tiff_list': list(tiffs_paths_to_use_s2p), 'data_path': expobj.dataPath, 'save_folder': expobj._suite2p_save_path
+          }
+
+    # db = {'fs': float(expobj.Suite2p.ops['fs']), 'diameter': expobj.Suite2p.ops['diameter'], 'batch_size': int(batch_size),
+    #       'nimg_init': int(batch_size), 'nplanes': n_planes, 'nchannels': n_channels,
+    #       'tiff_list': tiffs_paths_to_use_s2p, 'data_path': expobj.dataPath,
+    #       'save_folder': expobj._suite2p_save_path}
+
+    expobj.Suite2p.db = db
+    expobj.save()
+
+    print('RUNNING Suite2p:')
+    print(f'\- db: ') #\n\t{expobj.Suite2p.db}\n\n')
+
+    t1 = time.time()
+    opsEnd = run_s2p(ops=expobj.Suite2p.ops, db=expobj.Suite2p.db)
+    t2 = time.time()
+    print('Total time to run suite2p was {}'.format(t2 - t1))
+
+    # update expobj.Suite2p.ops and db
+    expobj.Suite2p.ops = opsEnd
+
+    expobj.__s2pResultExists = True
+    expobj.s2pResultsPath = expobj.suite2p_save_path + '/plane0/'  ## need to further debug that the flow of the suite2p s2pResultsPath makes sense
+
+    expobj.save()
+
+def s2p_loader(s2p_path, subtract_neuropil=True, neuropil_coeff=0.7):
+    found_stat = False
+
+    for root, dirs, files in os.walk(s2p_path):
+
+        for file in files:
+
+            if file == 'F.npy':
+                all_cells = np.load(os.path.join(root, file), allow_pickle=True)
+            elif file == 'Fneu.npy':
+                neuropil = np.load(os.path.join(root, file), allow_pickle=True)
+            elif file == 'iscell.npy':
+                is_cells = np.load(os.path.join(root, file),
+                                   allow_pickle=True)[:, 0]
+                is_cells = np.ndarray.astype(is_cells, 'bool')
+                print('Loading {} traces labelled as cells'
+                      .format(sum(is_cells)))
+            elif file == 'spks.npy':
+                spks = np.load(os.path.join(root, file), allow_pickle=True)
+            elif file == 'stat.npy':
+                stat = np.load(os.path.join(root, file), allow_pickle=True)
+                found_stat = True
+
+    if not found_stat:
+        raise FileNotFoundError('Could not find stat, '
+                                'this is likely not a suit2p folder, path: ', s2p_path)
+    for i, s in enumerate(stat):
+        s['original_index'] = i
+
+    all_cells = all_cells[is_cells, :]
+    neuropil = neuropil[is_cells, :]
+    spks = spks[is_cells, :]
+    stat = stat[is_cells]
+
+    if not subtract_neuropil:
+        return all_cells, spks, stat, neuropil
+
+    else:
+        print('Subtracting neuropil with a coefficient of {}'
+              .format(neuropil_coeff))
+        neuropil_corrected = all_cells - neuropil * neuropil_coeff
+        return neuropil_corrected, spks, stat, neuropil
 
 
 class Suite2pResultsExperiment:
@@ -88,7 +201,7 @@ class Suite2pResultsExperiment:
         # self.__s2pResultExists = False
         # self.ops = None
         self.bad_frames: list = []  #: list of frames to discard during Suite2p ROI detection procedure
-        print(f"\- ADDING Suite2p Results to Experiment object ... ")
+        print(f"\- ADDING Suite2p Results to Experiment object ... ", end='\r')
 
         ## initialize attr's
         # TODO add attr comments
@@ -111,8 +224,17 @@ class Suite2pResultsExperiment:
         self.yoff = []  # motion correction info
 
         # set trials to run together in suite2p for Experiment
-        self.trials = [*trialsTiffsSuite2p]
-        self.tiff_paths_to_use_s2p: dict = trialsTiffsSuite2p
+        self.trials = []
+        tiff_paths_to_use_s2p: dict = trialsTiffsSuite2p
+        for trial, path in tiff_paths_to_use_s2p.items():
+            if path is not None:
+                if os.path.exists(path):
+                    self.trials.append(trial)
+            else:
+                tiff_paths_to_use_s2p.pop(trial)
+
+        # self.trials = [*trialsTiffsSuite2p]
+        self.tiff_paths_to_use_s2p: dict = tiff_paths_to_use_s2p
         self.subtract_neuropil = subtract_neuropil
         assert len(
             self.trials) > 0, "no trials found to run suite2p, option available to provide list of trial IDs in " \
@@ -139,6 +261,9 @@ class Suite2pResultsExperiment:
 
         # Attributes
         self.n_frames: int = 0  # total number of imaging frames in the Suite2p run
+
+        # finish
+        print(f"|- ADDED Suite2p Results to Experiment object. ")
 
     @property
     def _s2pResultExists(self):
@@ -489,7 +614,6 @@ class Suite2pResultsExperiment:
 
     @staticmethod
     def s2pRun(expobj, trialsSuite2P: Union[list, str] = 'all'):
-        from packerlabimaging.utils.utils import s2pRun
         s2pRun(expobj, trialsSuite2P=trialsSuite2P)
 
 class Suite2pResultsTrial(Suite2pResultsExperiment):

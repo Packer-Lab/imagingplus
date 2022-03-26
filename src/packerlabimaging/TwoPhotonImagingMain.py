@@ -91,7 +91,7 @@ class TwoPhotonImagingTrial:
         # set and create analysis save path directory
         self.save_dir = analysis_save_path  #: path to the directory to save outputs from analysis
         os.makedirs(self.save_dir, exist_ok=True)
-        self.__pkl_path = f"{self.save_dir}{metainfo['date']}_{metainfo['trial_id']}.pkl"
+        self._pkl_path = f"{self.save_dir}{metainfo['date']}_{metainfo['trial_id']}.pkl"
 
         self.save_pkl(pkl_path=self.pkl_path)  # save experiment object to pkl_path
 
@@ -115,11 +115,7 @@ class TwoPhotonImagingTrial:
         # collect mean FOV Trace
         self.meanFluImg, self.meanFovFluTrace = self.meanRawFluTrace()  #: mean image and mean FOV fluorescence trace
 
-        # if provided, add Suite2p results for trial
-        for i in ['suite2p_experiment_obj',
-                  'total_frames_stitched']:  # TODO need to test this, whats the use of this for loop if you also have a if statement checking the same things?
-            assert i in [*kwargs], f'{i} required in Suite2pResultsTrial call'
-            assert kwargs[i] is not None, f'{i} Suite2pResultsTrial call is None'
+        # if provided Suite2p information provided, add Suite2p results for trial; + run further processing.
         if 'suite2p_experiment_obj' in [*kwargs] and 'total_frames_stitched' in [*kwargs]:
             from packerlabimaging.processing.suite2p import Suite2pResultsExperiment
             s2p_expobj: Suite2pResultsExperiment = kwargs['suite2p_experiment_obj']
@@ -130,11 +126,11 @@ class TwoPhotonImagingTrial:
                                                        trial_frames=(kwargs['total_frames_stitched'], kwargs[
                                                            'total_frames_stitched'] + self.imparams.n_frames))  # use trial obj's current trial frames
 
-        # normalize dFF for raw Flu
-        self.dFF = self.dfof()  #: dFF normalized Suite2p data for trial
+            # normalize dFF for raw Flu
+            self.dFF = self.dfof()  #: dFF normalized Suite2p data for trial
 
-        # create annotated data object
-        self.data = self.create_anndata()  #: anndata storage submodule
+            # create annotated data object
+            self.data = self.create_anndata()  #: anndata storage submodule
 
         # SAVE Trial OBJECT
         self.save()
@@ -193,11 +189,11 @@ class TwoPhotonImagingTrial:
     @property
     def pkl_path(self):
         """path in Analysis folder to save pkl object"""
-        return self.__pkl_path
+        return self._pkl_path
 
     @pkl_path.setter
     def pkl_path(self, path: str):
-        self.__pkl_path = path
+        self._pkl_path = path
 
     def _getImagingParameters(self, metadata: Optional[dict] = None, microscope: Optional[str] = 'Bruker'):
         """retrieves imaging metadata parameters. If using Bruker microscope and PrairieView, then _prairieview module is used to collect this data.
@@ -361,6 +357,39 @@ class TwoPhotonImagingTrial:
         plt.show()
         return stack
 
+    @staticmethod
+    def normalize_dff(arr, threshold_pct=20, threshold_val=None):
+        """normalize given array (cells x time) to the mean of the fluorescence values below given threshold. Threshold
+        will refer to the that lower percentile of the given trace."""
+
+        if arr.ndim == 1:
+            if threshold_val is None:
+                a = np.percentile(arr, threshold_pct)
+                mean_ = arr[arr < a].mean()
+            else:
+                mean_ = threshold_val
+            # mean_ = abs(arr[arr < a].mean())
+            new_array = ((arr - mean_) / mean_) * 100
+            if np.isnan(new_array).any() == True:
+                Warning('Cell (unknown) contains nan, normalization factor: %s ' % mean_)
+
+        else:
+            new_array = np.empty_like(arr)
+            for i in range(len(arr)):
+                if threshold_val is None:
+                    a = np.percentile(arr[i], threshold_pct)
+                else:
+                    a = threshold_val
+                mean_ = np.mean(arr[i][arr[i] < a])
+                new_array[i] = ((arr[i] - mean_) / abs(mean_)) * 100
+
+                if np.isnan(new_array[i]).any() == True:
+                    print('Warning:')
+                    print('Cell %d: contains nan' % (i + 1))
+                    print('      Mean of the sub-threshold for this cell: %s' % mean_)
+
+        return new_array
+
     def save_pkl(self, pkl_path: str = None):
         """
         Alias method for saving current object to pickle file.
@@ -389,133 +418,3 @@ class TwoPhotonImagingTrial:
 
 
 
-## archived or refactored away class methods or other functions
-## REFACTORED PV CODE TO PV MODULE.
-def _getPVStateShard(self, root, key):
-    '''
-    Find the value, description and indices of a particular parameter from an xml file
-
-    Inputs:
-        path        - path to xml file
-        key         - string corresponding to key in xml tree
-    Outputs:
-        value       - value of the key
-        description - unused
-        index       - index that the key was found at
-    '''
-    value = []
-    description = []
-    index = []
-
-    pv_state_shard = root.find('PVStateShard')  # find pv state shard element in root
-
-    for elem in pv_state_shard:  # for each element in pv state shard, find the value for the specified key
-        if elem.get('key') == key:
-            if len(elem) == 0:  # if the element has only one subelement
-                value = elem.get('value')
-                break
-
-            else:  # if the element has many subelements (i.e. lots of entries for that key)
-                for subelem in elem:
-                    value.append(subelem.get('value'))
-                    description.append(subelem.get('description'))
-                    index.append(subelem.get('index'))
-        else:
-            for subelem in elem:  # if key not in element, try subelements
-                if subelem.get('key') == key:
-                    value = elem.get('value')
-                    break
-
-        if value:  # if found key in subelement, break the loop
-            break
-
-    if not value:  # if no value found at all, raise exception
-        raise Exception('ERROR: no element or subelement with that key')
-
-    return value, description, index
-
-
-def _parsePVMetadata(self):
-    '''
-    Parse all of the relevant acquisition metadata from the PrairieView xml file for this recording
-    '''
-
-    print('\n\----- Parsing PV Metadata for Bruker microscope...')
-
-    tiff_path = self.tiff_path_dir  # starting path
-    xml_path = []  # searching for xml path
-
-    try:  # look for xml file in path, or two paths up (achieved by decreasing count in while loop)
-        count = 2
-        while count != 0 and not xml_path:
-            count -= 1
-            for file in os.listdir(tiff_path):
-                if file.endswith('.xml'):
-                    xml_path = os.path.join(tiff_path, file)
-            tiff_path = os.path.dirname(tiff_path)  # re-assign tiff_path as next folder up
-
-    except Exception:
-        raise Exception('ERROR: Could not find xml for this acquisition, check it exists')
-
-    xml_tree = ET.parse(xml_path)  # parse xml from a path
-    root = xml_tree.getroot()  # make xml tree structure
-
-    sequence = root.find('Sequence')
-    acq_type = sequence.get('type')
-
-    if 'ZSeries' in acq_type:
-        n_planes = len(sequence.findall('Frame'))
-    else:
-        n_planes = 1
-
-    frame_branch = root.findall('Sequence/Frame')[-1]
-    #         frame_period = float(self._getPVStateShard(root,'framePeriod')[0])
-    frame_period = float(self._getPVStateShard(frame_branch, 'framePeriod')[0])
-    fps = 1 / frame_period
-
-    frame_x = int(self._getPVStateShard(root, 'pixelsPerLine')[0])
-    frame_y = int(self._getPVStateShard(root, 'linesPerFrame')[0])
-    zoom = float(self._getPVStateShard(root, 'opticalZoom')[0])
-
-    scan_volts, _, index = self._getPVStateShard(root, 'currentScanCenter')
-    for scan_volts, index in zip(scan_volts, index):
-        if index == 'XAxis':
-            scan_x = float(scan_volts)
-        if index == 'YAxis':
-            scan_y = float(scan_volts)
-
-    pixel_size, _, index = self._getPVStateShard(root, 'micronsPerPixel')
-    for pixel_size, index in zip(pixel_size, index):
-        if index == 'XAxis':
-            pix_sz_x = float(pixel_size)
-        if index == 'YAxis':
-            pix_sz_y = float(pixel_size)
-
-    if n_planes == 1:
-        n_frames = root.findall('Sequence/Frame')[-1].get('index')  # use suite2p output instead later
-    else:
-        n_frames = root.findall('Sequence')[-1].get('cycle')
-
-    extra_params = root.find('Sequence/Frame/ExtraParameters')
-    last_good_frame = extra_params.get('lastGoodFrame')
-
-    self.fps = fps / n_planes
-    self.frame_x = frame_x
-    self.frame_y = frame_y
-    self.n_planes = n_planes
-    self.pix_sz_x = pix_sz_x
-    self.pix_sz_y = pix_sz_y
-    self.scan_x = scan_x
-    self.scan_y = scan_y
-    self.zoom = zoom
-    self.n_frames = int(n_frames)
-    self.last_good_frame = last_good_frame
-
-    print('\tn planes:', self.n_planes,
-          '\n\tn frames:', self.n_frames,
-          '\n\tfps:', self.fps,
-          '\n\tframe size (px):', self.frame_x, 'x', self.frame_y,
-          '\n\tzoom:', self.zoom,
-          '\n\tpixel size (um):', self.pix_sz_x, self.pix_sz_y,
-          '\n\tscan centre (V):', self.scan_x, self.scan_y
-          )

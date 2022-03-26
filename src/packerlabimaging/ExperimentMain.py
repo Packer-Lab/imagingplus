@@ -105,13 +105,13 @@ class Experiment:
 
     def _get_save_location(self):
         if self.analysisSavePath[-4:] == '.pkl':
-            self.__pkl_path = self.analysisSavePath
+            self._pkl_path = self.analysisSavePath
             self.analysisSavePath = self.analysisSavePath[
                                     :[(s.start(), s.end()) for s in re.finditer('/', self.analysisSavePath)][-1][0]]
         else:
             self.analysisSavePath = self.analysisSavePath + '/' if self.analysisSavePath[
                                                                        -1] != '/' else self.analysisSavePath
-            self.__pkl_path = f"{self.analysisSavePath}{self.expID}_analysis.pkl"
+            self._pkl_path = f"{self.analysisSavePath}{self.expID}_analysis.pkl"
         os.makedirs(self.analysisSavePath, exist_ok=True)
 
     def _get_trial_infor(self, trialID: str):
@@ -139,15 +139,15 @@ class Experiment:
                 assert 's2p_use' in [*self.TrialsInformation[
                     trial]], 'when trying to utilize suite2p , must provide value for `s2p_use` ' \
                              'in TrialsInformation[trial] for each trial to specify if to use trial for this suite2p associated with this experiment'
-                self._trialsTiffsSuite2p[trial] = self.TrialsInformation[trial]['tiff_path'] if self.TrialsInformation[trial]['s2p_use'] else None
+                if self.TrialsInformation[trial]['s2p_use']: self._trialsTiffsSuite2p[trial] = self.TrialsInformation[trial]['tiff_path']
 
         if self.s2pResultsPath:  # if s2pResultsPath provided then try to find and pre-load results from provided s2pResultsPath, raise error if cannot find results
             # search for suite2p results items in self.suite2pPath, and auto-assign s2pRunComplete --> True if found successfully
             __suite2p_path_files = os.listdir(self.s2pResultsPath)
-            self.__s2pResultExists = False
+            self._s2pResultExists = False
             for filepath in __suite2p_path_files:
                 if 'ops.npy' in filepath:
-                    self.__s2pResultExists = True
+                    self._s2pResultExists = True
                     break
             if self._s2pResultExists:
                 self.Suite2p = suite2p.Suite2pResultsExperiment(trialsTiffsSuite2p=self._trialsTiffsSuite2p,
@@ -157,7 +157,7 @@ class Experiment:
                 raise ValueError(
                     f"suite2p results could not be found. `suite2pPath` provided was: {self.s2pResultsPath}")
         elif self.useSuite2p:  # no s2pResultsPath provided, so initialize without pre-loading any results
-            self.__s2pResultExists = False
+            self._s2pResultExists = False
             self._suite2p_save_path = self.analysisSavePath + '/suite2p/'
             self.Suite2p = Suite2pResultsExperiment(trialsTiffsSuite2p=self._trialsTiffsSuite2p,
                                                     # dataPath=self.dataPath
@@ -301,11 +301,11 @@ class Experiment:
     @property
     def pkl_path(self):
         "path in Analysis folder to save pkl object"
-        return self.__pkl_path
+        return self._pkl_path
 
     @pkl_path.setter
     def pkl_path(self, path: str):
-        self.__pkl_path = path
+        self._pkl_path = path
 
     def save_pkl(self, pkl_path: str = None):
         """

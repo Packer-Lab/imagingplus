@@ -1,6 +1,11 @@
 import os
 import pickle
 
+import pandas as pd
+
+pd.options.display.max_rows = 100
+pd.options.display.max_columns = 10
+
 # import .pkl'd objects
 def import_obj(pkl_path):
     """
