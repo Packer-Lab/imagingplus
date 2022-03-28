@@ -45,6 +45,7 @@ Table of Contents
    Quick start guide <quick-start-guide.rst>
    Overview <overview.rst>
    Tutorials <Tutorials-reference.rst>
+   Main Modules <main-modules.rst>
    Data Structure details <data-structure-details.rst>
    Making plots <making-plots.rst>
    API Reference <reference.rst>
