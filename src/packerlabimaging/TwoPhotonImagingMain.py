@@ -9,16 +9,17 @@ import pickle
 
 import numpy as np
 import pandas as pd
+
 import matplotlib.pyplot as plt
 
 import tifffile as tf
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from packerlabimaging.utils.utils import SaveDownsampledTiff
+from packerlabimaging.processing.imagingMetadata import PrairieViewMetadata, ImagingMetadata
+from packerlabimaging.utils.utils import SaveDownsampledTiff, plotSingleImageFrame
 from packerlabimaging.utils.classes import UnavailableOptionError, PaqInfoTrial
 from packerlabimaging.processing.paq import PaqData
-from .processing import suite2p, anndata as ad
-from .processing.imagingMetadata import PrairieViewMetadata, ImagingMetadata
+from packerlabimaging.processing import anndata as ad
 
 
 class TwoPhotonImagingMetainfo(TypedDict, total=False):
@@ -30,20 +31,14 @@ class TwoPhotonImagingMetainfo(TypedDict, total=False):
     expGroup: str
     PaqInfoTrial: PaqInfoTrial
 
-@dataclass
+
 class TwoPhotonImagingTrial:
     """Two Photon Imaging Experiment Data Analysis Workflow."""
-    date: str
-    trial_id: str
-    exp_id: str
-    microscope: str
-    tiff_path: str  #: path to the tiff for current trial
-    expGroup: str
-    save_dir: str  #: path to the directory to save current trial object
-    PaqInfoTrial: PaqInfoTrial = None
-    imagingMicroscopeMetadata: ImagingMetadata = None
 
-    def __post_init__(self):
+    def __init__(self, date: str = None, trial_id: str = None, exp_id: str = None, microscope: str = None, tiff_path: str  = None,
+                 expGroup: str = None, save_dir: str = None, PaqInfoTrial: PaqInfoTrial = None, imagingMicroscopeMetadata: ImagingMetadata = None):
+
+    # def __post_init__(self):
         """
         TODO update function docstring for approp args
         :param metainfo: TypedDict containing meta-information field needed for this experiment. Please see TwoPhotonImagingMetainfo for type hints on accepted keys.
@@ -57,28 +52,30 @@ class TwoPhotonImagingTrial:
 
         # Initialize Attributes:
 
+        self._metainfo = {'date': date,
+                           'trial_id': trial_id,
+                           'exp_id': exp_id,
+                           'microscope': microscope,
+                           'expGroup': expGroup}
+
         print(f'\----- CREATING TwoPhotonImagingTrial for trial: \n\t{self.trialID}')
 
-        self.__metainfo = {'date': self.date,
-                           'trial_id': self.trial_id,
-                           'exp_id': self.exp_id,
-                           'microscope': self.microscope}
-
-        if not os.path.exists(self.tiff_path):
-            self.__metainfo['tiff_path'] = self.tiff_path
+        if os.path.exists(tiff_path):
+            self._metainfo['tiff_path'] = tiff_path
         else:
-            raise FileNotFoundError(f"tiff_path does not exist: {self.tiff_path}")
+            raise FileNotFoundError(f"tiff_path does not exist: {tiff_path}")
 
         # set, create analysis save path directory and create pkl object
+        self.save_dir = save_dir
         os.makedirs(self.save_dir, exist_ok=True)
-        self._pkl_path = f"{self.save_dir}{self.date}_{self.trial_id}.pkl"
+        self._pkl_path = f"{self.save_dir}{self.date}_{self.trialID}.pkl"
         self.save_pkl(pkl_path=self.pkl_path)  # save experiment object to pkl_path
 
         # get imaging setup parameters
         if 'Bruker' in self.microscope:
             self.imparams = PrairieViewMetadata(tiff_path_dir=self.tiff_path_dir)
-        elif self.imagingMicroscopeMetadata:
-            self.imparams = self.imagingMicroscopeMetadata
+        elif imagingMicroscopeMetadata:
+            self.imparams = imagingMicroscopeMetadata
         else:
             Warning(f"NO imaging microscope parameters set. follow imagingMetadata to create a custom imagingMicroscopeMetadata class.")
 
@@ -90,9 +87,9 @@ class TwoPhotonImagingTrial:
             else:
                 raise FileNotFoundError(f"paq_path does not exist: {paq_path}")
 
-            frame_channel = self.PaqInfoTrial['frame_channel'] if 'frame_channel' in [*self.PaqInfoTrial] else KeyError(
+            frame_channel = PaqInfoTrial['frame_channel'] if 'frame_channel' in [*PaqInfoTrial] else KeyError(
                 'No frame_channel specified for .paq processing')  # channel on Paq file to read for determining stims
-            self.Paq = self._paqProcessingTwoPhotonImaging(paq_path=self.PaqInfoTrial['paq_path'],
+            self.Paq = self._paqProcessingTwoPhotonImaging(paq_path=PaqInfoTrial['paq_path'],
                                                            frame_channel=frame_channel)  #: Paq data submodule for trial
 
         # collect mean FOV Trace
@@ -113,46 +110,46 @@ class TwoPhotonImagingTrial:
     def __repr__(self):
         return repr(f"TwoPhotonImagingTrial experimental data object")
 
-    @property
-    def fig_save_path(self):
-        """create path for saving figures"""
-        today_date = datetime.today().strftime('%Y-%m-%d')
-        return self.save_dir + f'Results_fig/{today_date}/'
-
-    @fig_save_path.setter
-    def fig_save_path(self, value: str):
-        """set new default fig save path for data object"""
-        self.fig_save_path = value
+    # @property
+    # def fig_save_path(self):
+    #     """path for saving figures"""
+    #     today_date = datetime.today().strftime('%Y-%m-%d')
+    #     return self.save_dir + f'Results_fig/{today_date}/'
+    #
+    # @fig_save_path.setter
+    # def fig_save_path(self, value: str):
+    #     """set new default fig save path for data object"""
+    #     self.fig_save_path = value
 
     @property
     def date(self):
         """date of the experiment datacollection"""
-        return self.__metainfo['date']
+        return self._metainfo['date']
 
     @property
     def microscope(self):
         """name of imagign data acquisition microscope"""
-        return self.__metainfo['microscope']
+        return self._metainfo['microscope']
 
     @property
     def expID(self):
         """experiment ID of current trial object"""
-        return self.__metainfo['exp_id']
+        return self._metainfo['exp_id']
 
     @property
     def trialID(self):
         """trial ID of current trial object"""
-        return self.__metainfo['trial_id']
+        return self._metainfo['trial_id']
 
     @property
     def tiff_path(self):
         """tiff path of current trial object"""
-        return self.__metainfo['tiff_path']
+        return self._metainfo['tiff_path']
 
     @property
     def t_series_name(self):
-        if "exp_id" in self.__metainfo.keys() and "trial_id" in self.__metainfo.keys():
-            return f'{self.__metainfo["exp_id"]} {self.__metainfo["trial_id"]}'
+        if "exp_id" in self._metainfo.keys() and "trial_id" in self._metainfo.keys():
+            return f'{self._metainfo["exp_id"]} {self._metainfo["trial_id"]}'
         else:
             raise ValueError('no information found to retrieve t series id')
 
@@ -184,8 +181,8 @@ class TwoPhotonImagingTrial:
                 Exception('required key not present in metadata')
 
     @property
-    def frame_clock(self):
-        if hasattr(self.Paq, 'frame_times'):
+    def paq_frame_clock(self):
+        if hasattr(self.Paq, "frame_times"):
             return self.Paq.frame_times
         else:
             raise ValueError('Frame clock timings couldnt be retrieved from .Paq submodule.')
@@ -209,7 +206,7 @@ class TwoPhotonImagingTrial:
         print(f"\n\- ADDING PAQ MODULE ... ")
         paq_data_obj, paqdata = PaqData.import_paqdata(paq_path=paq_path)
         print(f"\n\- PROCESSING PAQDATA ... ")
-        assert frame_channel in paq_data_obj.paq_channels, print(f"{frame_channel} not found in channels in .paq data.")
+        assert frame_channel in paq_data_obj.paq_channels, f"frame_channel argument: '{frame_channel}', not found in channels in .paq data."
         paq_data_obj.frame_times_channame = frame_channel
         paq_data_obj.frame_times = paq_data_obj.paq_frame_times(frame_channel=frame_channel)
         paq_data_obj.sparse_paq_data = paq_data_obj.get_sparse_paq(frame_clock=paq_data_obj.frame_times)
@@ -326,10 +323,12 @@ class TwoPhotonImagingTrial:
         :param title: (optional) give a string to use as title
         :return: matplotlib imshow plot
         """
-        stack = tf.imread(self.tiff_path, key=frame_num)
-        plt.imshow(stack, cmap='gray')
-        plt.suptitle(title) if title is not None else plt.suptitle(f'frame num: {frame_num}')
-        plt.show()
+        stack = plotSingleImageFrame(tiff_path=self.tiff_path, frame_num=frame_num, title=title)
+
+        # stack = tf.imread(self.tiff_path, key=frame_num)
+        # plt.imshow(stack, cmap='gray')
+        # plt.suptitle(title) if title is not None else plt.suptitle(f'frame num: {frame_num}')
+        # plt.show()
         return stack
 
     @staticmethod

@@ -15,7 +15,7 @@ from __future__ import absolute_import
 from dataclasses import dataclass
 from typing import Optional, MutableMapping, Union
 
-from . import TwoPhotonImagingTrial
+# from .TwoPhotonImagingMain import TwoPhotonImagingTrial
 from .utils.classes import TrialsInformation, PaqInfoTrial
 
 import os
@@ -53,7 +53,7 @@ NEUROPIL_COEFF = 0.7
 
 
 @dataclass
-class Experiment_new:
+class Experiment:
     """A class to initialize and store data of an imaging experiment. This class acts as a bucket to contain
     information about individual trial objects. """
     date: str
@@ -118,8 +118,7 @@ class Experiment_new:
         else:
             ValueError(f"{trialID} not found in Experiment.")
 
-
-    def add_trial(self, trialobj: TwoPhotonImagingTrial, trials_information: TrialsInformation = None):
+    def add_trial(self, trialobj):
         """
         Add trial object to the experiment.
 
@@ -131,15 +130,21 @@ class Experiment_new:
 
         """
 
-        print(f"\n\n\- ADDING trial: {trialobj.t_series_name})")
+        print(f"\n\n\- ADDING trial: {trialobj.t_series_name}", end='\r')
 
-        for i, val in trials_information[trialobj.trialID].items():
-            self.TrialsInformation[trialobj.trialID][i] = val
+        self.TrialsInformation[trialobj.trialID] = {}
+        for attr in dir(trialobj):
+            if 'path' in attr:
+                self.TrialsInformation[trialobj.trialID][attr] = getattr(trialobj, attr)
+        for key, val in trialobj._metainfo.items():
+            self.TrialsInformation[trialobj.trialID][key] = val
+
         self.TrialsInformation[trialobj.trialID]['tiff_path'] = trialobj.tiff_path  # this should be redundant but just keeping up until this is confirmed.
         # update self.TrialsInformation using the information from new trial_obj
-        self.TrialsInformation[trialobj.trialID]['analysis_object_information'] = {'series ID': trialobj.t_series_name,
-                                                                                   'repr': trialobj.__repr__(),
-                                                                                   'pkl path': trialobj.pkl_path}
+        self.TrialsInformation[trialobj.trialID]['series ID'] = trialobj.t_series_name
+        self.TrialsInformation[trialobj.trialID]['repr'] = trialobj.__repr__()
+
+        print(f"|- ADDED trial: {trialobj.t_series_name}")
 
     @property
     def trialIDs(self):
@@ -180,7 +185,7 @@ class Experiment_new:
     def load_trial(self, trialID: str):
         """method for importing individual trial objects from Experiment instance using the trial id for a given trial"""
         try:
-            trial_pkl_path = self.TrialsInformation[trialID]['analysis_object_information']['pkl path']
+            trial_pkl_path = self.TrialsInformation[trialID]['analysis_object_information']['pkl_path']
             from packerlabimaging import import_obj
             trialobj = import_obj(trial_pkl_path)
             return trialobj
@@ -247,9 +252,9 @@ class Experiment_new:
 
 
 ########################################################################################################################
-
+# archiving the approach below
 @dataclass
-class Experiment:
+class ExperimentArchive:
     """A class to initialize and store data of an imaging experiment. This class acts as a bucket to contain
     information about individual trial objects. """
     date: str
@@ -460,7 +465,7 @@ class Experiment:
         # update self.TrialsInformation using the information from new trial_obj
         self.TrialsInformation[trial_id]['analysis_object_information'] = {'series ID': trial_obj.t_series_name,
                                                                           'repr': trial_obj.__repr__(),
-                                                                          'pkl path': trial_obj.pkl_path}
+                                                                          'pkl_path': trial_obj.pkl_path}
 
         # initialize suite2p for trial objects
         if 's2p_use' in [*__trialsInformation] and __trialsInformation['s2p_use'] is True:
@@ -519,7 +524,7 @@ class Experiment:
     def load_trial(self, trialID: str):
         "method for importing individual trial objects from Experiment instance using the trial id for a given trial"
         try:
-            trial_pkl_path = self.TrialsInformation[trialID]['analysis_object_information']['pkl path']
+            trial_pkl_path = self.TrialsInformation[trialID]['analysis_object_information']['pkl_path']
             from packerlabimaging import import_obj
             trialobj = import_obj(trial_pkl_path)
             return trialobj

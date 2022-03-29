@@ -6,7 +6,7 @@ from packerlabimaging.utils.io import import_obj
 SUITE2P_FRAMES_SPONT_t005t006 = [0, 14880]
 SUITE2P_FRAMES_t013 = 103525
 
-@pytest.fixture(scope="session")
+# @pytest.fixture(scope="session")
 def twophoton_imaging_trial_new_noPreDoneSuite2p_fixture():
     "mar 28 2022 - new no pipeline structure"
 
@@ -35,16 +35,16 @@ def twophoton_imaging_trial_new_noPreDoneSuite2p_fixture():
         TwoPhotonImagingMetainfo = {
             'date': ExperimentMetainfo['date'],
             'trial_id': trial,
-            'exp_id': ExperimentMetainfo['exp_id'],
+            'exp_id': ExperimentMetainfo['expID'],
             'microscope': 'Bruker 2pPlus',
             'tiff_path': tiffs_loc,
             'save_dir': ExperimentMetainfo['analysisSavePath'],
             'expGroup': "pre 4ap 2p spont imaging",
             'PaqInfoTrial': {'paq_path': paqs_loc,
-                             'frame_channel': 'frame_times'}
+                             'frame_channel': 'frame_clock'}
         }
 
-        trials_info['trial'] = TwoPhotonImagingMetainfo
+        trials_info[trial] = TwoPhotonImagingMetainfo
 
     return trials_info
 
@@ -87,7 +87,7 @@ def twophoton_imaging_trial_noPreDoneSuite2p_fixture():
                                                            's2p_use': True,
                                                            'expGroup': "pre 4ap 2p imaging",
                                                            'PaqInfoTrial': {'paq_path': paqs_loc,
-                                                                            'frame_channel': 'frame_times'}
+                                                                            'frame_channel': "frame_clock"}
                                                            }
 
     trials_list_post4ap = ['t-006', 't-007', 't-008', 't-009']
@@ -106,7 +106,7 @@ def twophoton_imaging_trial_noPreDoneSuite2p_fixture():
                                                            's2p_use': True,
                                                            'expGroup': "post 4ap 2p imaging",
                                                            'PaqInfoTrial': {'paq_path': paqs_loc,
-                                                                            'frame_channel': 'frame_times'}
+                                                                            'frame_channel': "frame_clock"}
                                                            }
 
     return initialization_dict
@@ -142,7 +142,7 @@ def twophoton_imaging_trial_fixture():
                                                            's2p_use': True,
                                                            'expGroup': "pre 4ap 2p spont imaging",
                                                            'PaqInfoTrial': {
-                                                               'frame_channel': 'frame_times',
+                                                               'frame_channel': "frame_clock",
                                                                'paq_path': f'{data_path_base}/{date}_{animal_prep}_{trial[2:]}.paq'
                                                                # path to the .paq files for the selected trials
                                                            }
@@ -192,7 +192,7 @@ def alloptical_trial_fixture():
                                                            'tiff_path': f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif',
                                                            's2p_use': True,
                                                            'expGroup': "pre 4ap 2p all optical",
-                                                           'PaqInfoTrial': {'frame_channel': 'frame_times',
+                                                           'PaqInfoTrial': {'frame_channel': "frame_clock",
                                                                             'paq_path': f'{data_path_base}/{date}_{animal_prep}_{trial[2:]}.paq',
                                                                             # path to the .paq files for the selected trials
                                                                             'stim_channel': 'markpoints2packio'

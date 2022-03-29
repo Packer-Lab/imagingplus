@@ -1454,7 +1454,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         arg_dict = {'moviePath': movie_path,  # hard-code this
                     'savePath': stam_save_path,
-                    'syncFrameChannel': 'frame_times',
+                    'syncFrameChannel': "frame_clock",
                     'syncStimChannel': 'packio2markpoints',
                     'syncStartSec': 0,
                     'syncStopSec': 0,

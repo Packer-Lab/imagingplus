@@ -174,6 +174,21 @@ def ZProfile(movie, area_center_coords: tuple = None, area_size: int = -1, plot_
     return smol_mean
 
 
+def plotSingleImageFrame(tiff_path, frame_num: int = 0, title: str = None):
+    """
+    plots an image of a single specified tiff frame after reading using tifffile.
+
+    :param tiff_path: path to .tiff file to loads
+    :param frame_num: frame # from 2p imaging tiff to show (default is 0 - i.e. the first frame)
+    :param title: (optional) give a string to use as title
+    :return: matplotlib imshow plot
+    """
+    stack = tf.imread(tiff_path, key=frame_num)
+    plt.imshow(stack, cmap='gray')
+    plt.suptitle(title) if title is not None else plt.suptitle(f'frame num: {frame_num}')
+    plt.show()
+    return stack
+
 def SaveDownsampledTiff(tiff_path: str = None, stack: np.array = None, group_by: int = 4, save_as: str = None,
                         plot_zprofile: bool = True):
     """
@@ -548,7 +563,7 @@ def stim_start_frame(paq=None, stim_chan_name=None, frame_clock=None,
     '''
 
     if frame_clock is None:
-        frame_clock = paq_data(paq, 'frame_times', threshold_ttl=True)
+        frame_clock = paq_data(paq, "frame_clock", threshold_ttl=True)
         stim_times = paq_data(paq, stim_chan_name, threshold_ttl=True)
 
     stim_times = [stim for stim in stim_times if stim < np.nanmax(frame_clock)]

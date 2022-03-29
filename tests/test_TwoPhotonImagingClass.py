@@ -1,5 +1,12 @@
+from conftest import twophoton_imaging_trial_new_noPreDoneSuite2p_fixture
 from packerlabimaging import TwoPhotonImagingMain
 
+
+def test_TwoPhotonImagingTrial_new(twophoton_imaging_trial_new_noPreDoneSuite2p_fixture):
+    dict_ = twophoton_imaging_trial_new_noPreDoneSuite2p_fixture()
+    return TwoPhotonImagingMain.TwoPhotonImagingTrial(**dict_['t-005'])
+
+trialobj = test_TwoPhotonImagingTrial_new(twophoton_imaging_trial_new_noPreDoneSuite2p_fixture)
 
 def test_TwoPhotonImagingTrial(twophoton_imaging_trial_fixture):
     TwoPhotonImagingMain.TwoPhotonImagingTrial(**twophoton_imaging_trial_fixture)
