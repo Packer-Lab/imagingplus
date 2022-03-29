@@ -14,6 +14,8 @@ from the microscope during data collection, and any user generated files associa
 from __future__ import absolute_import
 from dataclasses import dataclass
 from typing import Optional, MutableMapping, Union
+
+from . import TwoPhotonImagingTrial
 from .utils.classes import TrialsInformation, PaqInfoTrial
 
 import os
@@ -50,9 +52,201 @@ N_PLANES = 1
 NEUROPIL_COEFF = 0.7
 
 
-# CLASS DEFINITIONS
+@dataclass
+class Experiment_new:
+    """A class to initialize and store data of an imaging experiment. This class acts as a bucket to contain
+    information about individual trial objects. """
+    date: str
+    comments: str
+    dataPath: str
+    analysisSavePath: str  # main dir where the experiment object and the trial objects will be saved to
+    expID: str
+
+    def __post_init__(self):
+        print(f'***********************')
+        print(f'CREATING new Experiment: (date: {self.date}, expID: {self.expID})')
+        print(f'***********************\n\n')
+
+        self.TrialsInformation: MutableMapping[str, Union[TrialsInformation, PaqInfoTrial]] = {}  #: dictionary of metadata information about each trial
+
+        # suite2p related attrs initialization
+        self._trialsTiffsSuite2p = {}  #: dictionary of trial IDs and their respective .tiff paths for each trial that will be used in Suite2p processing for current experiment
+        self._s2pResultExists = False  #: flag for whether suite2p results exist for current experiment
+        self._suite2p_save_path = self.analysisSavePath + '/suite2p/'  #: default location to save Suite2p output results of current experiment
+        self.Suite2p = None  #: suite2p submodule
+
+        # save Experiment object
+        self._get_save_location()
+        os.makedirs(self.analysisSavePath, exist_ok=True)
+        self.save_pkl(pkl_path=self.pkl_path)
 
 
+        print(f'\n\n\n******************************')
+        print(f"NEW Experiment created: \n")
+        print(self.__str__())
+
+    def __repr__(self):
+        return f"packerlabimaging.Experiment object (date: {self.date}, expID: {self.expID})"
+
+    def __str__(self):
+        lastsaved = time.ctime(os.path.getmtime(self.pkl_path))
+        __return_information = f"packerlabimaging Experiment object (last saved: {lastsaved}), date: {self.date}, expID: {self.expID}"
+        __return_information = __return_information + f"\nfile path: {self.pkl_path}"
+
+        if len(self.TrialsInformation) > 0:
+            __return_information = __return_information + f"\n\ntrials in Experiment object:"
+            for trial in self.TrialsInformation:
+                __return_information = __return_information + self.get_trial_infor(trialID=trial)
+            return f"{__return_information}\n"
+        else:
+            return f"{__return_information}\n"
+
+    def _get_save_location(self):
+        if self.analysisSavePath[-4:] == '.pkl':
+            self._pkl_path = self.analysisSavePath
+            self.analysisSavePath = self.analysisSavePath[
+                                    :[(s.start(), s.end()) for s in re.finditer('/', self.analysisSavePath)][-1][0]]
+        else:
+            self.analysisSavePath = self.analysisSavePath + '/' if self.analysisSavePath[
+                                                                       -1] != '/' else self.analysisSavePath
+            self._pkl_path = f"{self.analysisSavePath}{self.expID}_analysis.pkl"
+        os.makedirs(self.analysisSavePath, exist_ok=True)
+
+    def get_trial_infor(self, trialID: str):
+        if trialID in [*self.TrialsInformation]:
+            return f"\n\t{trialID}: {self.TrialsInformation[trialID]['trialType']}, {self.TrialsInformation[trialID]['expGroup']}"
+        else:
+            ValueError(f"{trialID} not found in Experiment.")
+
+
+    def add_trial(self, trialobj: TwoPhotonImagingTrial, trials_information: TrialsInformation = None):
+        """
+        Add trial object to the experiment.
+
+        :param trialobj:
+        :param trial_id:
+        :param total_frames_stitched:
+        :param trials_information:
+        :return: trial object
+
+        """
+
+        print(f"\n\n\- ADDING trial: {trialobj.t_series_name})")
+
+        for i, val in trials_information[trialobj.trialID].items():
+            self.TrialsInformation[trialobj.trialID][i] = val
+        self.TrialsInformation[trialobj.trialID]['tiff_path'] = trialobj.tiff_path  # this should be redundant but just keeping up until this is confirmed.
+        # update self.TrialsInformation using the information from new trial_obj
+        self.TrialsInformation[trialobj.trialID]['analysis_object_information'] = {'series ID': trialobj.t_series_name,
+                                                                                   'repr': trialobj.__repr__(),
+                                                                                   'pkl path': trialobj.pkl_path}
+
+    @property
+    def trialIDs(self):
+        return [*self.TrialsInformation]
+
+    @staticmethod
+    def tiff_path_dir(tiff_path):
+        """retrieve the parent directory of the provided tiff_path"""
+        return tiff_path[:[(s.start(), s.end()) for s in re.finditer('/', tiff_path)][-1][
+            0]]  # this is the directory where the Bruker xml files associated with the 2p imaging TIFF are located
+
+    @property
+    def pkl_path(self):
+        """path in Analysis folder to save pkl object"""
+        return self._pkl_path
+
+    @pkl_path.setter
+    def pkl_path(self, path: str):
+        self._pkl_path = path
+
+    def save_pkl(self, pkl_path: str = None):
+        """
+        saves packerlabimaging Experiment object using Pickle library (.pkl file extension).
+
+        :param pkl_path: full .pkl s2pResultsPath for saving the Experiment object.
+        """
+        if pkl_path:
+            print(f'\nsaving new pkl object at: {pkl_path}')
+            self.pkl_path = pkl_path
+
+        with open(self.pkl_path, 'wb') as f:
+            pickle.dump(self, f)
+        print(f"\n\t|- Experiment analysis object saved to {self.pkl_path} -- ")
+
+    def save(self):
+        self.save_pkl()
+
+    def load_trial(self, trialID: str):
+        """method for importing individual trial objects from Experiment instance using the trial id for a given trial"""
+        try:
+            trial_pkl_path = self.TrialsInformation[trialID]['analysis_object_information']['pkl path']
+            from packerlabimaging import import_obj
+            trialobj = import_obj(trial_pkl_path)
+            return trialobj
+        except KeyError:
+            raise KeyError("trial_id not found in Experiment instance.")
+
+
+    def add_suite2p(self, s2p_trials: list = None, s2pResultsPath: str = None):
+        """Wrapper for adding suite2p results to Experiment. Can only be run after adding trials to Experiment. """
+
+        print(f'\- Adding suite2p module to experiment. Located under .Suite2p')
+
+        from .processing import suite2p
+        from .processing.suite2p import Suite2pResultsExperiment
+
+        assert len([*self.TrialsInformation]) > 0, 'need to add at least 1 trial to Experiment before adding Suite2p functionality.'
+
+        if s2p_trials is None: s2p_trials = self.trialIDs
+        assert len(s2p_trials) > 0, 'no s2p trials to continue.'
+        for trial in s2p_trials: self._trialsTiffsSuite2p[trial] = self.TrialsInformation[trial]['tiff_path']
+
+        if s2pResultsPath:  # if s2pResultsPath provided then try to find and pre-load results from provided s2pResultsPath, raise error if cannot find results
+            # search for suite2p results items in self.suite2pPath, and auto-assign s2pRunComplete --> True if found successfully
+            __suite2p_path_files = os.listdir(self.s2pResultsPath)
+            self._s2pResultExists = False
+            for filepath in __suite2p_path_files:
+                if 'ops.npy' in filepath:
+                    self._s2pResultExists = True
+                    break
+            if self._s2pResultExists:
+                self._suite2p_save_path = s2pResultsPath
+                self.Suite2p = suite2p.Suite2pResultsExperiment(trialsTiffsSuite2p=self._trialsTiffsSuite2p,
+                                                                s2pResultsPath=self.s2pResultsPath)
+            else:
+                raise ValueError(
+                    f"suite2p results could not be found. `suite2pPath` provided was: {self.s2pResultsPath}")
+        else:  # no s2pResultsPath provided, so initialize without pre-loading any results
+            self.Suite2p = Suite2pResultsExperiment(trialsTiffsSuite2p=self._trialsTiffsSuite2p)
+
+        # adding of suite2p trial level as well in this function as well
+        total_frames = 0
+        for trial in s2p_trials:
+            trialobj = self.load_trial(trialID=trial)
+            trialobj.Suite2p = suite2p.Suite2pResultsTrial(trialsTiffsSuite2p=self._trialsTiffsSuite2p,
+                                                            s2pResultsPath=self.s2pResultsPath,
+                                                            trial_frames=(total_frames, total_frames + trialobj.n_frames))  # use trial obj's current trial frames
+            total_frames += trialobj.n_frames
+
+
+        print(f'|- Finished adding suite2p module to experiment. Located under .Suite2p')
+
+    @property
+    def suite2p_save_path(self):
+        return self._suite2p_save_path
+
+
+
+
+
+
+
+
+
+
+
+########################################################################################################################
 
 @dataclass
 class Experiment:
@@ -84,8 +278,7 @@ class Experiment:
                     trial]], f"must provide {i} as a key in the TrialsInformation dictionary for trial: {trial}"
 
         # START PROCESSING FOR EXPERIMENT:
-
-        # 1) start suite2p:
+        # 1) start suite2p: -- extract out from automatic pipeline
         if self.useSuite2p or self.s2pResultsPath:
             self._trialsTiffsSuite2p: dict = {}  #: dict containing mapping of trial ID and tiff path for trials to be used for Suite2p
             self._add_suite2p_experiment()
@@ -223,7 +416,6 @@ class Experiment:
             'exp_id': self.expID,
             'trial_id': trial_id,
             'date': self.date,
-            't_series_id': f"{self.expID} {trial_id}",  # TODO consider removing occurrence especially since its redundant as a property in twophoton imaging
             'TrialsInformation': __trialsInformation
         }
 
@@ -292,7 +484,7 @@ class Experiment:
 
     @property
     def tiff_path_dir(self):
-        "retrieve the parent directory of the provided tiff_path"
+        """retrieve the parent directory of the provided tiff_path"""
         __first_trial_in_experiment = [*self.TrialsInformation][0]
         __tiff_path_first_trial = self.TrialsInformation[__first_trial_in_experiment]['tiff_path']
         return __tiff_path_first_trial[:[(s.start(), s.end()) for s in re.finditer('/', __tiff_path_first_trial)][-1][
@@ -300,7 +492,7 @@ class Experiment:
 
     @property
     def pkl_path(self):
-        "path in Analysis folder to save pkl object"
+        """path in Analysis folder to save pkl object"""
         return self._pkl_path
 
     @pkl_path.setter
@@ -371,9 +563,7 @@ class WideFieldImaging:
 
     @property
     def t_series_name(self):
-        if 't_series_id' in [*self.metainfo]:
-            return f"{self.metainfo['t_series_id']}"
-        elif "exp_id" in [*self.metainfo] and "trial_id" in [*self.metainfo]:
+        if "exp_id" in [*self.metainfo] and "trial_id" in [*self.metainfo]:
             return f'{self.metainfo["exp_id"]} {self.metainfo["trial_id"]}'
         else:
             raise ValueError('no information found to retrieve t series id')

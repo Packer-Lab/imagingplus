@@ -14,25 +14,31 @@ import xml.etree.ElementTree as ET
 import tifffile as tf
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from packerlabimaging.utils.utils import SaveDownsampledTiff, normalize_dff
-from packerlabimaging.utils.classes import UnavailableOptionError, TrialsInformation
+from packerlabimaging.utils.utils import SaveDownsampledTiff
+from packerlabimaging.utils.classes import UnavailableOptionError, PaqInfoTrial
 from packerlabimaging.processing.paq import PaqData
 from .processing import suite2p, anndata as ad
-from .utils.imagingMetadata import PrairieViewMetadata, ImagingMetadata
+from .processing.imagingMetadata import PrairieViewMetadata, ImagingMetadata
 
 
 class TwoPhotonImagingMetainfo(TypedDict, total=False):
-    data: str
+    date: str
     trial_id: str
     exp_id: str
-    t_series_id: str
-    TrialsInformation: TrialsInformation
+    trialType: str
+    tiff_path: str
+    expGroup: str
+    PaqInfoTrial: PaqInfoTrial
+    s2p_use: bool
+    naparm_path: str
+    analysis_object_information: TypedDict("analysis_object_information",
+                                           {'series ID': str, 'repr': str, 'pkl path': str})
 
 
 class TwoPhotonImagingTrial:
     """Two Photon Imaging Experiment Data Analysis Workflow."""
 
-    def __init__(self, metainfo: dict, analysis_save_path: str, microscope: str = 'Bruker', paq_options: dict = None,
+    def __init__(self, metainfo: TwoPhotonImagingMetainfo, analysis_save_path: str, microscope: str = 'Bruker', paq_options: dict = None,
                  **kwargs):
         """
         TODO update function docstring for approp args
@@ -60,12 +66,13 @@ class TwoPhotonImagingTrial:
         # self.zoom: float = 0.0 # zoom level on Bruker microscope
         # self.last_good_frame = None  # indicates when the last good frame was during the t-series recording, if nothing was wrong the value is 0, otherwise it is >0 and that indicates that PV is not sure what happened after the frame listed, but it could be corrupt data
 
-        if 'date' in [*metainfo] and 'trial_id' in [*metainfo] and 'exp_id' in [*metainfo] and 't_series_id' in [
-            *metainfo] and 'TrialsInformation' in [*metainfo]:
+        print(f'\----- CREATING TwoPhotonImagingTrial for trial: \n\t{metainfo}')
+
+        if 'date' in [*metainfo] and 'trial_id' in [*metainfo] and 'exp_id' in [*metainfo] and 'TrialsInformation' in [*metainfo]:
             self.__metainfo = metainfo
         else:
             raise ValueError(
-                "dev error: metainfo argument must contain the minimum fields: 'date', 'trial_id', 'exp_id', 't_series_id', 'trialInformation dict")
+                "dev error: metainfo argument must contain the minimum fields: 'date', 'trial_id', 'exp_id', 'trialInformation dict")
 
         if os.path.exists(metainfo['TrialsInformation']['tiff_path']):
             self.tiff_path = metainfo['TrialsInformation']['tiff_path']  #: path to the tiff for current trial
@@ -134,7 +141,6 @@ class TwoPhotonImagingTrial:
 
         # SAVE Trial OBJECT
         self.save()
-        print(f'\----- CREATING TwoPhotonImagingTrial for trial: {metainfo["trial_id"]},  {metainfo["t_series_id"]}')
 
     def __str__(self):
         if self.pkl_path:
@@ -174,9 +180,7 @@ class TwoPhotonImagingTrial:
 
     @property
     def t_series_name(self):
-        if 't_series_id' in self.__metainfo.keys():
-            return f"{self.__metainfo['t_series_id']}"
-        elif "exp_id" in self.__metainfo.keys() and "trial_id" in self.__metainfo.keys():
+        if "exp_id" in self.__metainfo.keys() and "trial_id" in self.__metainfo.keys():
             return f'{self.__metainfo["exp_id"]} {self.__metainfo["trial_id"]}'
         else:
             raise ValueError('no information found to retrieve t series id')
@@ -309,7 +313,7 @@ class TwoPhotonImagingTrial:
     def dfof(self):
         """(delta F)/F normalization of raw Suite2p data of trial."""
         if self.Suite2p._s2pResultExists:
-            dFF = normalize_dff(self.Suite2p.raw)
+            dFF = self.normalize_dff(self.Suite2p.raw)
             return dFF
 
     def importTrialTiff(self) -> np.ndarray:

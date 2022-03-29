@@ -12,8 +12,6 @@ from packerlabimaging.utils.utils import make_tiff_stack
 
 # TEMP VARIABLES FOR DEVELOPMENT USAGES
 N_PLANES = 1
-NEUROPIL_COEFF = 0.7
-
 
 # suite2p methods
 def s2pRun(expobj, trialsSuite2P: Union[list, str] = 'all'):  ## TODO gotta specify # of planes somewhere here
@@ -185,8 +183,7 @@ class Suite2pResultsExperiment:
         for key in new_ops_entries:
             cls.ops[key] = new_ops_entries[key]
 
-    def __init__(self, trialsTiffsSuite2p: dict, s2pResultsPath: Optional[str] = None, subtract_neuropil: bool = True,
-                 dataPath: str = None):
+    def __init__(self, trialsTiffsSuite2p: dict, s2pResultsPath: Optional[str] = None):
         """
         Submodule for connecting an Experiment to Suite2p for the specified trials/data_tiffs.
 
@@ -223,6 +220,8 @@ class Suite2pResultsExperiment:
         self.xoff = []  # motion correction info
         self.yoff = []  # motion correction info
 
+        self.neuropil_coeff = 0
+
         # set trials to run together in suite2p for Experiment
         self.trials = []
         tiff_paths_to_use_s2p: dict = trialsTiffsSuite2p
@@ -235,7 +234,6 @@ class Suite2pResultsExperiment:
 
         # self.trials = [*trialsTiffsSuite2p]
         self.tiff_paths_to_use_s2p: dict = tiff_paths_to_use_s2p
-        self.subtract_neuropil = subtract_neuropil
         assert len(
             self.trials) > 0, "no trials found to run suite2p, option available to provide list of trial IDs in " \
                               "`trialsSuite2P` "
@@ -247,8 +245,7 @@ class Suite2pResultsExperiment:
         else:
             self.s2pResultsPath = s2pResultsPath
             try:
-                neuropil_coeff = NEUROPIL_COEFF if subtract_neuropil else 0
-                self._retrieveSuite2pData(self.s2pResultsPath, neuropil_coeff=neuropil_coeff)
+                self._retrieveSuite2pData(self.s2pResultsPath, neuropil_coeff=self.neuropil_coeff)
             except Exception:
                 raise Exception(
                     f'Something went wrong while trying to load suite2p processed data from: {s2pResultsPath}')
@@ -256,7 +253,7 @@ class Suite2pResultsExperiment:
 
         self.db: dict = {'fs': float(self.ops['fs']), 'diameter': self.ops['diameter'], 'batch_size': self.ops['batch_size'],
           'nimg_init': self.ops['batch_size'], 'nplanes': self.ops['nplanes'], 'nchannels': self.ops['nchannels'],
-          'tiff_list': list(self.tiff_paths_to_use_s2p.values()), 'data_path': dataPath,
+          'tiff_list': list(self.tiff_paths_to_use_s2p.values()),
           'save_folder': self.s2pResultsPath}
 
         # Attributes
@@ -460,11 +457,11 @@ class Suite2pResultsExperiment:
         return mean_img
 
     @classmethod
-    def subSuite2p(cls, trialsTiffs, dataPath, s2pResultsPath, subtract_neuropil=True):
+    def subSuite2p(cls, trialsTiffs, s2pResultsPath):
         """
         Alternative constructor for Suite2pResultsExperiment class.
         """
-        return cls(trialsTiffsSuite2p=trialsTiffs, s2pResultsPath=s2pResultsPath, subtract_neuropil=subtract_neuropil)
+        return cls(trialsTiffsSuite2p=trialsTiffs, s2pResultsPath=s2pResultsPath)
 
     def add_bad_frames(self, frames, bad_frames_npy_loc) -> None:
         """
@@ -620,7 +617,7 @@ class Suite2pResultsTrial(Suite2pResultsExperiment):
     """used to collect and store suite2p processed data for one trial - out of overall experiment."""
 
     def __init__(self, trialsTiffsSuite2p: dict, trial_frames: tuple, s2pResultsPath: Optional[str] = None,
-                 subtract_neuropil: bool = True, dataPath: str = None):
+                 subtract_neuropil: bool = True):
         """
         Connecting Suite2p results from a specific trial (which spans trial_frames out of the overall Suite2p run) to that trial.
 
@@ -631,7 +628,7 @@ class Suite2pResultsTrial(Suite2pResultsExperiment):
         :param subtract_neuropil:
         """
         super().__init__(trialsTiffsSuite2p, s2pResultsPath,
-                         subtract_neuropil, dataPath=dataPath)  # - TODO it really is confusing to be passing in all trials for a s2p results obj that should be restricted to just one trial
+                         subtract_neuropil)  # - TODO it really is confusing to be passing in all trials for a s2p results obj that should be restricted to just one trial
 
         print(f"\n\----- ADDING Suite2pResultsTrial ... ")
 
