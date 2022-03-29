@@ -114,7 +114,7 @@ class Experiment:
 
     def get_trial_infor(self, trialID: str):
         if trialID in [*self.TrialsInformation]:
-            return f"\n\t{trialID}: {self.TrialsInformation[trialID]['trialType']}, {self.TrialsInformation[trialID]['expGroup']}"
+            return f"\n\t{trialID}: {self.TrialsInformation[trialID]['repr']}, {self.TrialsInformation[trialID]['expGroup']}"
         else:
             ValueError(f"{trialID} not found in Experiment.")
 
@@ -185,15 +185,15 @@ class Experiment:
     def load_trial(self, trialID: str):
         """method for importing individual trial objects from Experiment instance using the trial id for a given trial"""
         try:
-            trial_pkl_path = self.TrialsInformation[trialID]['analysis_object_information']['pkl_path']
+            trial_pkl_path = self.TrialsInformation[trialID]['pkl_path']
             from packerlabimaging import import_obj
             trialobj = import_obj(trial_pkl_path)
             return trialobj
         except KeyError:
-            raise KeyError("trial_id not found in Experiment instance.")
+            raise KeyError(f"trialID: {trialID} not found in Experiment instance.")
 
 
-    def add_suite2p(self, s2p_trials: list = None, s2pResultsPath: str = None):
+    def add_suite2p(self, s2p_trials: Union[list, str] = 'all', s2pResultsPath: str = None):
         """Wrapper for adding suite2p results to Experiment. Can only be run after adding trials to Experiment. """
 
         print(f'\- Adding suite2p module to experiment. Located under .Suite2p')
@@ -203,13 +203,13 @@ class Experiment:
 
         assert len([*self.TrialsInformation]) > 0, 'need to add at least 1 trial to Experiment before adding Suite2p functionality.'
 
-        if s2p_trials is None: s2p_trials = self.trialIDs
+        if s2p_trials is 'all': s2p_trials = self.trialIDs
         assert len(s2p_trials) > 0, 'no s2p trials to continue.'
         for trial in s2p_trials: self._trialsTiffsSuite2p[trial] = self.TrialsInformation[trial]['tiff_path']
 
         if s2pResultsPath:  # if s2pResultsPath provided then try to find and pre-load results from provided s2pResultsPath, raise error if cannot find results
             # search for suite2p results items in self.suite2pPath, and auto-assign s2pRunComplete --> True if found successfully
-            __suite2p_path_files = os.listdir(self.s2pResultsPath)
+            __suite2p_path_files = os.listdir(s2pResultsPath)
             self._s2pResultExists = False
             for filepath in __suite2p_path_files:
                 if 'ops.npy' in filepath:
@@ -218,10 +218,10 @@ class Experiment:
             if self._s2pResultExists:
                 self._suite2p_save_path = s2pResultsPath
                 self.Suite2p = suite2p.Suite2pResultsExperiment(trialsTiffsSuite2p=self._trialsTiffsSuite2p,
-                                                                s2pResultsPath=self.s2pResultsPath)
+                                                                s2pResultsPath=s2pResultsPath)
             else:
                 raise ValueError(
-                    f"suite2p results could not be found. `suite2pPath` provided was: {self.s2pResultsPath}")
+                    f"suite2p results could not be found. `suite2pPath` provided was: {s2pResultsPath}")
         else:  # no s2pResultsPath provided, so initialize without pre-loading any results
             self.Suite2p = Suite2pResultsExperiment(trialsTiffsSuite2p=self._trialsTiffsSuite2p)
 
@@ -230,12 +230,12 @@ class Experiment:
         for trial in s2p_trials:
             trialobj = self.load_trial(trialID=trial)
             trialobj.Suite2p = suite2p.Suite2pResultsTrial(trialsTiffsSuite2p=self._trialsTiffsSuite2p,
-                                                            s2pResultsPath=self.s2pResultsPath,
+                                                            s2pResultsPath=s2pResultsPath,
                                                             trial_frames=(total_frames, total_frames + trialobj.n_frames))  # use trial obj's current trial frames
             total_frames += trialobj.n_frames
 
 
-        print(f'|- Finished adding suite2p module to experiment. Located under .Suite2p')
+        print(f'|- Finished adding suite2p module to experiment and trials. Located under .Suite2p')
 
     @property
     def suite2p_save_path(self):

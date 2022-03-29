@@ -174,7 +174,7 @@ def ZProfile(movie, area_center_coords: tuple = None, area_size: int = -1, plot_
     return smol_mean
 
 
-def plotSingleImageFrame(tiff_path, frame_num: int = 0, title: str = None):
+def showSingleTiffFrame(tiff_path, frame_num: int = 0, title: str = None):
     """
     plots an image of a single specified tiff frame after reading using tifffile.
 

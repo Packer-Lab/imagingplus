@@ -16,7 +16,7 @@ import tifffile as tf
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
 from packerlabimaging.processing.imagingMetadata import PrairieViewMetadata, ImagingMetadata
-from packerlabimaging.utils.utils import SaveDownsampledTiff, plotSingleImageFrame
+from packerlabimaging.utils.utils import SaveDownsampledTiff, showSingleTiffFrame
 from packerlabimaging.utils.classes import UnavailableOptionError, PaqInfoTrial
 from packerlabimaging.processing.paq import PaqData
 from packerlabimaging.processing import anndata as ad
@@ -323,7 +323,7 @@ class TwoPhotonImagingTrial:
         :param title: (optional) give a string to use as title
         :return: matplotlib imshow plot
         """
-        stack = plotSingleImageFrame(tiff_path=self.tiff_path, frame_num=frame_num, title=title)
+        stack = showSingleTiffFrame(tiff_path=self.tiff_path, frame_num=frame_num, title=title)
 
         # stack = tf.imread(self.tiff_path, key=frame_num)
         # plt.imshow(stack, cmap='gray')

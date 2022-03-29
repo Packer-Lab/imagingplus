@@ -198,7 +198,7 @@ class Suite2pResultsExperiment:
         # self.__s2pResultExists = False
         # self.ops = None
         self.bad_frames: list = []  #: list of frames to discard during Suite2p ROI detection procedure
-        print(f"\- ADDING Suite2p Results to Experiment object ... ", end='\r')
+        print(f"\- ADDING .Suite2p module to Experiment object ... ", end='\r')
 
         ## initialize attr's
         # TODO add attr comments
@@ -260,7 +260,7 @@ class Suite2pResultsExperiment:
         self.n_frames: int = 0  # total number of imaging frames in the Suite2p run
 
         # finish
-        print(f"|- ADDED Suite2p Results to Experiment object. ")
+        print(f"|- ADDED .Suite2p module to Experiment object. ")
 
     @property
     def _s2pResultExists(self):
@@ -616,8 +616,7 @@ class Suite2pResultsExperiment:
 class Suite2pResultsTrial(Suite2pResultsExperiment):
     """used to collect and store suite2p processed data for one trial - out of overall experiment."""
 
-    def __init__(self, trialsTiffsSuite2p: dict, trial_frames: tuple, s2pResultsPath: Optional[str] = None,
-                 subtract_neuropil: bool = True):
+    def __init__(self, trialsTiffsSuite2p: dict, trial_frames: tuple, s2pResultsPath: Optional[str] = None):
         """
         Connecting Suite2p results from a specific trial (which spans trial_frames out of the overall Suite2p run) to that trial.
 
@@ -627,10 +626,9 @@ class Suite2pResultsTrial(Suite2pResultsExperiment):
         :param s2pResultsPath:
         :param subtract_neuropil:
         """
-        super().__init__(trialsTiffsSuite2p, s2pResultsPath,
-                         subtract_neuropil)  # - TODO it really is confusing to be passing in all trials for a s2p results obj that should be restricted to just one trial
+        super().__init__(trialsTiffsSuite2p, s2pResultsPath)  # - TODO it really is confusing to be passing in all trials for a s2p results obj that should be restricted to just one trial
 
-        print(f"\n\----- ADDING Suite2pResultsTrial ... ")
+        print(f"\n\----- ADDING .Suite2p module to trial ... ", end ='\r')
 
         ## initializing attributes to collect Suite2p results for this specific trial
         # self.dfof: list(np.ndarray) = []  # array of dFF normalized Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
@@ -648,6 +646,8 @@ class Suite2pResultsTrial(Suite2pResultsExperiment):
         # s2pResultsPath = suite2p_experiment_obj.s2pResultsPath if hasattr(suite2p_experiment_obj, 's2pResultsPath') else None
         # Suite2pResultsExperiment.__init__(self, trialsSuite2p = suite2p_experiment_obj.trials, s2pResultsPath=s2pResultsPath,
         #                                   subtract_neuropil=suite2p_experiment_obj.subtract_neuropil)
+
+        print(f"\n\----- ADDED .Suite2p module to trial. ", end ='\r')
 
     def __repr__(self):
         if self._s2pResultExists:
