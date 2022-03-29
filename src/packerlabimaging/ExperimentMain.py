@@ -57,10 +57,10 @@ class Experiment_new:
     """A class to initialize and store data of an imaging experiment. This class acts as a bucket to contain
     information about individual trial objects. """
     date: str
-    comments: str
     dataPath: str
     analysisSavePath: str  # main dir where the experiment object and the trial objects will be saved to
     expID: str
+    comments: str = ''
 
     def __post_init__(self):
         print(f'***********************')

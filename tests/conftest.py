@@ -7,7 +7,51 @@ SUITE2P_FRAMES_SPONT_t005t006 = [0, 14880]
 SUITE2P_FRAMES_t013 = 103525
 
 @pytest.fixture(scope="session")
+def twophoton_imaging_trial_new_noPreDoneSuite2p_fixture():
+    "mar 28 2022 - new no pipeline structure"
+
+    ExperimentMetainfo = {
+        'dataPath': '/home/pshah/mnt/qnap/Data/2020-12-19',
+        'analysisSavePath': '/home/pshah/Documents/code/packerlabimaging/tests/',
+        "expID": 'RL109',
+        'date': '2020-12-19',
+        'comments': 'testing out analysis workflow',
+    }
+
+    trials_info = {}
+
+
+    trials_list_spont = ['t-005', 't-006']
+    for idx, trial in enumerate(trials_list_spont):
+        data_path_base = '/home/pshah/mnt/qnap/Data/2020-12-19'
+        animal_prep = ExperimentMetainfo['expID']
+        date = data_path_base[-10:]
+
+        ## everything below should autopopulate
+        paqs_loc = '%s/%s_%s_%s.paq' % (
+        data_path_base, date, animal_prep, trial[2:])  # path to the .paq files for the selected trials
+        tiffs_loc = f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif'
+
+        TwoPhotonImagingMetainfo = {
+            'date': ExperimentMetainfo['date'],
+            'trial_id': trial,
+            'exp_id': ExperimentMetainfo['exp_id'],
+            'microscope': 'Bruker 2pPlus',
+            'tiff_path': tiffs_loc,
+            'save_dir': ExperimentMetainfo['analysisSavePath'],
+            'expGroup': "pre 4ap 2p spont imaging",
+            'PaqInfoTrial': {'paq_path': paqs_loc,
+                             'frame_channel': 'frame_times'}
+        }
+
+        trials_info['trial'] = TwoPhotonImagingMetainfo
+
+    return trials_info
+
+
+@pytest.fixture(scope="session")
 def twophoton_imaging_trial_noPreDoneSuite2p_fixture():
+    "older pipeline structure"
     prep = 'PS12'
     date = '2021-01-25'
 
@@ -195,6 +239,21 @@ def experiment_fixture(alloptical_trial_fixture, twophoton_imaging_trial_fixture
         initialization_dict['TrialsInformation'][trial] = alloptical_trial_fixture['TrialsInformation'][trial]
 
     return initialization_dict
+
+
+@pytest.fixture(scope="session")
+def experimentnew_fixture():
+    ExperimentMetainfo = {
+        'dataPath': '/home/pshah/mnt/qnap/Data/2020-12-19',
+        'analysisSavePath': '/home/pshah/Documents/code/packerlabimaging/tests/',
+        "expID": 'RL109',
+        'date': '2020-12-19',
+        'comments': 'testing out analysis workflow',
+    }
+
+    return ExperimentMetainfo
+
+
 
 
 @pytest.fixture(scope="session")

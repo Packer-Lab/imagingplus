@@ -2,6 +2,7 @@ import os
 import time
 import datetime
 import re
+from dataclasses import dataclass
 from typing import Optional, TypedDict
 
 import pickle
@@ -10,7 +11,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-import xml.etree.ElementTree as ET
 import tifffile as tf
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
@@ -25,21 +25,25 @@ class TwoPhotonImagingMetainfo(TypedDict, total=False):
     date: str
     trial_id: str
     exp_id: str
-    trialType: str
+    microscope: str
     tiff_path: str
     expGroup: str
     PaqInfoTrial: PaqInfoTrial
-    s2p_use: bool
-    naparm_path: str
-    analysis_object_information: TypedDict("analysis_object_information",
-                                           {'series ID': str, 'repr': str, 'pkl path': str})
 
-
+@dataclass
 class TwoPhotonImagingTrial:
     """Two Photon Imaging Experiment Data Analysis Workflow."""
+    date: str
+    trial_id: str
+    exp_id: str
+    microscope: str
+    tiff_path: str  #: path to the tiff for current trial
+    expGroup: str
+    save_dir: str  #: path to the directory to save current trial object
+    PaqInfoTrial: PaqInfoTrial = None
+    imagingMicroscopeMetadata: ImagingMetadata = None
 
-    def __init__(self, metainfo: TwoPhotonImagingMetainfo, analysis_save_path: str, microscope: str = 'Bruker', paq_options: dict = None,
-                 **kwargs):
+    def __post_init__(self):
         """
         TODO update function docstring for approp args
         :param metainfo: TypedDict containing meta-information field needed for this experiment. Please see TwoPhotonImagingMetainfo for type hints on accepted keys.
@@ -53,91 +57,48 @@ class TwoPhotonImagingTrial:
 
         # Initialize Attributes:
 
-        # # Imaging acquisition attr's: - refactored to _prairieview
-        # self.n_frames: int = 0  # number of imaging frames in the current trial
-        # self.fps = None  # rate of imaging acquisition (frames per second)
-        # self.frame_x = None  # num of pixels in the x direction of a single frame
-        # self.frame_y = None  # num of pixels in the y direction of a single frame
-        # self.n_planes = None  # num of FOV planes in imaging acquisition
-        # self.pix_sz_x = None  # size of a single imaging pixel in x direction (microns)
-        # self.pix_sz_y = None  # size of a single imaging pixel in y direction (microns)
-        # self.scan_x = None  # TODO ROB - not sure what the comment for this is
-        # self.scan_y = None  # TODO ROB - not sure what the comment for this is
-        # self.zoom: float = 0.0 # zoom level on Bruker microscope
-        # self.last_good_frame = None  # indicates when the last good frame was during the t-series recording, if nothing was wrong the value is 0, otherwise it is >0 and that indicates that PV is not sure what happened after the frame listed, but it could be corrupt data
+        print(f'\----- CREATING TwoPhotonImagingTrial for trial: \n\t{self.trialID}')
 
-        print(f'\----- CREATING TwoPhotonImagingTrial for trial: \n\t{metainfo}')
+        self.__metainfo = {'date': self.date,
+                           'trial_id': self.trial_id,
+                           'exp_id': self.exp_id,
+                           'microscope': self.microscope}
 
-        if 'date' in [*metainfo] and 'trial_id' in [*metainfo] and 'exp_id' in [*metainfo] and 'TrialsInformation' in [*metainfo]:
-            self.__metainfo = metainfo
+        if not os.path.exists(self.tiff_path):
+            self.__metainfo['tiff_path'] = self.tiff_path
         else:
-            raise ValueError(
-                "dev error: metainfo argument must contain the minimum fields: 'date', 'trial_id', 'exp_id', 'trialInformation dict")
+            raise FileNotFoundError(f"tiff_path does not exist: {self.tiff_path}")
 
-        if os.path.exists(metainfo['TrialsInformation']['tiff_path']):
-            self.tiff_path = metainfo['TrialsInformation']['tiff_path']  #: path to the tiff for current trial
+        # set, create analysis save path directory and create pkl object
+        os.makedirs(self.save_dir, exist_ok=True)
+        self._pkl_path = f"{self.save_dir}{self.date}_{self.trial_id}.pkl"
+        self.save_pkl(pkl_path=self.pkl_path)  # save experiment object to pkl_path
+
+        # get imaging setup parameters
+        if 'Bruker' in self.microscope:
+            self.imparams = PrairieViewMetadata(tiff_path_dir=self.tiff_path_dir)
+        elif self.imagingMicroscopeMetadata:
+            self.imparams = self.imagingMicroscopeMetadata
         else:
-            raise FileNotFoundError(f"tiff_path does not exist: {metainfo['TrialsInformation']['tiff_path']}")
+            Warning(f"NO imaging microscope parameters set. follow imagingMetadata to create a custom imagingMicroscopeMetadata class.")
 
-
-        if os.path.exists(metainfo['TrialsInformation']['tiff_path']):
-            self.tiff_path = metainfo['TrialsInformation']['tiff_path']  #: path to the tiff for current trial
-        else:
-            raise FileNotFoundError(f"tiff_path does not exist: {metainfo['TrialsInformation']['tiff_path']}")
-
-        if 'paq_path' in [*paq_options]:
-            paq_path = paq_options['paq_path']
+        # run Paq processing if paq_path is provided for trial
+        if PaqInfoTrial:
+            paq_path = PaqInfoTrial['paq_path']
             if os.path.exists(paq_path):
                 self._use_paq = True
             else:
                 raise FileNotFoundError(f"paq_path does not exist: {paq_path}")
-        else:
-            self._use_paq = False
 
-
-        # set and create analysis save path directory
-        self.save_dir = analysis_save_path  #: path to the directory to save outputs from analysis
-        os.makedirs(self.save_dir, exist_ok=True)
-        self._pkl_path = f"{self.save_dir}{metainfo['date']}_{metainfo['trial_id']}.pkl"
-
-        self.save_pkl(pkl_path=self.pkl_path)  # save experiment object to pkl_path
-
-        # get imaging setup parameters
-        if 'Bruker' in microscope:
-            self.imparams = self._getImagingParameters(
-                microscope='Bruker')  #: Imaging Microscope Metadata submodule for trial
-        elif 'imagingMicroscopeMetadata' in [*kwargs]:
-            self.imparams = self._getImagingParameters(metadata=kwargs['imagingMicroscopeMetadata'])
-        else:
-            Warning(f"NO imaging microscope parameters set. ")
-
-        # run Paq processing if paq_path is provided for trial
-        if self._use_paq:
-            frame_channel = paq_options['frame_channel'] if 'frame_channel' in [
-                *paq_options] else KeyError(
+            frame_channel = self.PaqInfoTrial['frame_channel'] if 'frame_channel' in [*self.PaqInfoTrial] else KeyError(
                 'No frame_channel specified for .paq processing')  # channel on Paq file to read for determining stims
-            self.Paq = self._paqProcessingTwoPhotonImaging(paq_path=paq_options['paq_path'],
+            self.Paq = self._paqProcessingTwoPhotonImaging(paq_path=self.PaqInfoTrial['paq_path'],
                                                            frame_channel=frame_channel)  #: Paq data submodule for trial
 
         # collect mean FOV Trace
         self.meanFluImg, self.meanFovFluTrace = self.meanRawFluTrace()  #: mean image and mean FOV fluorescence trace
 
-        # if provided Suite2p information provided, add Suite2p results for trial; + run further processing.
-        if 'suite2p_experiment_obj' in [*kwargs] and 'total_frames_stitched' in [*kwargs]:
-            from packerlabimaging.processing.suite2p import Suite2pResultsExperiment
-            s2p_expobj: Suite2pResultsExperiment = kwargs['suite2p_experiment_obj']
-            #: Suite2p results submodule for trial
-            self.Suite2p = suite2p.Suite2pResultsTrial(trialsTiffsSuite2p=s2p_expobj.tiff_paths_to_use_s2p,
-                                                       s2pResultsPath=s2p_expobj.s2pResultsPath,
-                                                       subtract_neuropil=s2p_expobj.subtract_neuropil,
-                                                       trial_frames=(kwargs['total_frames_stitched'], kwargs[
-                                                           'total_frames_stitched'] + self.imparams.n_frames))  # use trial obj's current trial frames
-
-            # normalize dFF for raw Flu
-            self.dFF = self.dfof()  #: dFF normalized Suite2p data for trial
-
-            # create annotated data object
-            self.data = self.create_anndata()  #: anndata storage submodule
+        self.data = None  #: anndata storage submodule
 
         # SAVE Trial OBJECT
         self.save()
@@ -169,6 +130,11 @@ class TwoPhotonImagingTrial:
         return self.__metainfo['date']
 
     @property
+    def microscope(self):
+        """name of imagign data acquisition microscope"""
+        return self.__metainfo['microscope']
+
+    @property
     def expID(self):
         """experiment ID of current trial object"""
         return self.__metainfo['exp_id']
@@ -177,6 +143,11 @@ class TwoPhotonImagingTrial:
     def trialID(self):
         """trial ID of current trial object"""
         return self.__metainfo['trial_id']
+
+    @property
+    def tiff_path(self):
+        """tiff path of current trial object"""
+        return self.__metainfo['tiff_path']
 
     @property
     def t_series_name(self):
