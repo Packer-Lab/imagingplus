@@ -1,5 +1,5 @@
 # TODO update all 2p stim related attr's to naparm submodule
-
+from dataclasses import dataclass
 import glob
 import os
 import signal
@@ -12,7 +12,7 @@ import pandas as pd
 import scipy.stats as stats
 import tifffile as tf
 
-from packerlabimaging.utils.utils import convert_to_8bit, normalize_dff
+from packerlabimaging.utils.utils import convert_to_8bit
 from .TwoPhotonImagingMain import TwoPhotonImagingTrial, TwoPhotonImagingMetainfo
 from .processing.TwoPstim import Targets
 from .utils.classes import PaqInfoTrial, UnavailableOptionError
@@ -29,13 +29,16 @@ def getTargetImage():  # TODO write this function and probably add to the Target
     pass
 
 
+@dataclass
 class AllOpticalTrial(TwoPhotonImagingTrial):
     """All Optical Experimental Data Analysis Workflow."""
+    naparm_path: str = None
+    prestim_sec: float = 1.0  #: length of pre stim trace collected (in frames)
+    poststim_sec: float = 3.0  #: length of post stim trace collected (in frames)
+    pre_stim_response_window: float = 0.500  #: time window for collecting pre-stim measurement (units: msec)
+    post_stim_response_window: float = 0.500  #: time window for collecting post-stim measurement (units: msec)
 
-    def __init__(self, metainfo: TwoPhotonImagingMetainfo, naparm_path: str, analysis_save_path: str, microscope: str,
-                 paq_options: PaqInfoTrial = None, prestim_sec: float = 1.0, poststim_sec: float = 3.0,
-                 pre_stim_response_window: float = 0.500,
-                 post_stim_response_window: float = 0.500, **kwargs):
+    def __post_init__(self):
 
         """
         :param metainfo: TypedDict containing meta-information field needed for this experiment. Please see TwoPhotonImagingMetainfo for type hints on accepted keys.
@@ -50,13 +53,15 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         """
 
+        # 1) initialize object as TwoPhotonImagingTrial
+        super().__init__()
+
+
         # Initialize Attributes:
 
         # PHOTOSTIM PROTOCOL
         self.stim_start_times = None
         self.nomulti_sig_units = None
-        self.stim_channel = paq_options['stim_channel'] if 'stim_channel' in [
-            *paq_options] else 'markpoints2packio'  # channel on Paq file to read for determining stims
 
         self.photostim_frames = []  # imaging frames that are classified as overlapping with photostimulation
         self.stim_start_frames = []  # frame numbers from the start of each photostim trial
@@ -65,12 +70,6 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         self.paq_rate: int = -1  # PackIO acquisition rate for .Paq file
         self.frame_start_times: list = [None]  # Paq clock timestamps of the first imaging acquisition frame of t-series
         self.frame_end_times: list = [None]  # Paq clock timestamps of the last imaging acquisition frame of t-series
-
-        # set photostim trial Flu trace snippet collection and response measurement analysis time windows
-        self.prestim_sec = prestim_sec  # length of pre stim trace collected (in frames)
-        self.poststim_sec = poststim_sec  # length of post stim trace collected (in frames)
-        self.pre_stim_response_window_msec = pre_stim_response_window  # time window for collecting pre-stim measurement (units: msec)
-        self.post_stim_response_window_msec = post_stim_response_window  # time window for collecting post-stim measurement (units: msec)
 
         # attr's for statistical analysis of photostim trials responses
         self.photostimResponsesData = None  # anndata object for collecting photostim responses and associated metadata for experiment and cells
@@ -105,26 +104,26 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         # FUNCTIONS TO RUN AFTER init's of ALL ATTR'S
 
-        # 1) initialize object as TwoPhotonImagingTrial
-        TwoPhotonImagingTrial.__init__(self, metainfo=metainfo, analysis_save_path=analysis_save_path,
-                                       microscope=microscope, paq_options=paq_options, **kwargs)
 
         # 2) get stim timings from paq file
-        self.stim_start_frames = self._paqProcessingAllOptical(stim_channel=paq_options['stim_channel'])
+        self.stim_start_frames = self._paqProcessingAllOptical(stim_channel=self.PaqInfoTrial['stim_channel'])
 
         # 3) process 2p stim protocol
         # set naparm path
-        self.__naparm_path = naparm_path if os.path.exists(naparm_path) else FileNotFoundError(
-            f"naparm path not found, naparm_path: {naparm_path}")
+        self.__naparm_path = self.naparm_path if os.path.exists(self.naparm_path) else FileNotFoundError(
+            f"naparm path not found, naparm_path: {self.naparm_path}")
         self.Targets, self.stim_duration_frames = self._stimProcessing(protocol='naparm')
 
         # 4) determine bad frames in imaging data that correspond to photostim frames
         self.photostim_frames = self._find_photostim_add_bad_framesnpy()
 
         # 5) collect Flu traces from SLM targets
-        self.raw_SLMTargets, self.dFF_SLMTargets, self.meanFluImg_registered = self.collect_traces_from_targets(
-            curr_trial_frames=self.Suite2p.trial_frames, save=True)
-        self.targets_dff, self.targets_dff_avg, self.targets_dfstdF, self.targets_dfstdF_avg, self.targets_raw, self.targets_raw_avg = self.get_alltargets_stim_traces_norm(process='trace dFF')
+        if hasattr(self, 'Suite2p'):
+            self.raw_SLMTargets, self.dFF_SLMTargets, self.meanFluImg_registered = self.collect_traces_from_targets(
+                curr_trial_frames=self.Suite2p.trial_frames, save=True)
+            self.targets_dff, self.targets_dff_avg, self.targets_dfstdF, self.targets_dfstdF_avg, self.targets_raw, self.targets_raw_avg = self.get_alltargets_stim_traces_norm(process='trace dFF')
+        else:
+            Warning('NO Flu traces collected from any SLM targets because Suite2p not found for trial.')
 
         # 6) Collect Flu traces from Suite2p ROIs:
         #   create:
@@ -143,7 +142,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         # save final object
         self.save()
-        print(f'\----- CREATED AllOpticalTrial data object for {metainfo["t_series_id"]}')
+        print(f'\----- CREATED AllOpticalTrial data object for {self.t_series_name}')
 
     def __str__(self):
         if self.pkl_path:
@@ -630,7 +629,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         raw_SLMTargets = targets_trace_full[:,
                          curr_trial_frames[0] - start * 2000: curr_trial_frames[1] - (start * 2000)]
 
-        dFF_SLMTargets = normalize_dff(raw_SLMTargets, threshold_pct=10)
+        dFF_SLMTargets = self.normalize_dff(raw_SLMTargets, threshold_pct=10)
 
         meanFluImg_registered = np.mean(mean_img_stack, axis=0)
 
@@ -1062,15 +1061,18 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         print('----------------------------------------------------------------')
 
         # make trial arrays from dff data shape: [cells x stims x frames]
+        if hasattr(self, 'Suite2p'):
+            photostimFluArray = self._makePhotostimTrialFluSnippets(plane_flu=self.normalize_dff(self.Suite2p.raw))
+            photostimResponseAmplitudes = self.collectPhotostimResponses(photostimFluArray)
 
-        photostimFluArray = self._makePhotostimTrialFluSnippets(plane_flu=normalize_dff(self.Suite2p.raw))
-        photostimResponseAmplitudes = self.collectPhotostimResponses(photostimFluArray)
+            ## create new anndata object for storing measured photostim responses from data, with other relevant data
+            photostim_responses_adata = self._allCellsPhotostimResponsesAnndata(
+                photostimResponseAmplitudes=photostimResponseAmplitudes)
 
-        ## create new anndata object for storing measured photostim responses from data, with other relevant data
-        photostim_responses_adata = self._allCellsPhotostimResponsesAnndata(
-            photostimResponseAmplitudes=photostimResponseAmplitudes)
+            return photostimFluArray, photostimResponseAmplitudes, photostim_responses_adata
+        else:
+            NotImplementedError('Photostim processing cannot be performed without Suite2p data.')
 
-        return photostimFluArray, photostimResponseAmplitudes, photostim_responses_adata
 
     def statisticalProcessingAllCells(self):
         """Runs statistical processing on photostim response arrays"""
