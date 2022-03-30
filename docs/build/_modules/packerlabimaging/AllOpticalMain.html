@@ -8,10 +8,12 @@
     <title>packerlabimaging.AllOpticalMain &#8212; packerlabimaging 0.1-alpha documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinxdoc.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
@@ -21,6 +23,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">packerlabimaging 0.1-alpha documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">packerlabimaging.AllOpticalMain</a></li> 
@@ -34,7 +39,7 @@
             
   <h1>Source code for packerlabimaging.AllOpticalMain</h1><div class="highlight"><pre>
 <span></span><span class="c1"># TODO update all 2p stim related attr&#39;s to naparm submodule</span>
-
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">signal</span>
@@ -47,7 +52,7 @@
 <span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">stats</span>
 <span class="kn">import</span> <span class="nn">tifffile</span> <span class="k">as</span> <span class="nn">tf</span>
 
-<span class="kn">from</span> <span class="nn">packerlabimaging.utils.utils</span> <span class="kn">import</span> <span class="n">convert_to_8bit</span><span class="p">,</span> <span class="n">normalize_dff</span>
+<span class="kn">from</span> <span class="nn">packerlabimaging.utils.utils</span> <span class="kn">import</span> <span class="n">convert_to_8bit</span>
 <span class="kn">from</span> <span class="nn">.TwoPhotonImagingMain</span> <span class="kn">import</span> <span class="n">TwoPhotonImagingTrial</span><span class="p">,</span> <span class="n">TwoPhotonImagingMetainfo</span>
 <span class="kn">from</span> <span class="nn">.processing.TwoPstim</span> <span class="kn">import</span> <span class="n">Targets</span>
 <span class="kn">from</span> <span class="nn">.utils.classes</span> <span class="kn">import</span> <span class="n">PaqInfoTrial</span><span class="p">,</span> <span class="n">UnavailableOptionError</span>
@@ -64,13 +69,16 @@
     <span class="k">pass</span>
 
 
-<div class="viewcode-block" id="AllOpticalTrial"><a class="viewcode-back" href="../../reference.html#packerlabimaging.AllOpticalTrial">[docs]</a><span class="k">class</span> <span class="nc">AllOpticalTrial</span><span class="p">(</span><span class="n">TwoPhotonImagingTrial</span><span class="p">):</span>
+<div class="viewcode-block" id="AllOpticalTrial"><a class="viewcode-back" href="../../reference.html#packerlabimaging.AllOpticalTrial">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">AllOpticalTrial</span><span class="p">(</span><span class="n">TwoPhotonImagingTrial</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;All Optical Experimental Data Analysis Workflow.&quot;&quot;&quot;</span>
+    <span class="n">naparm_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">prestim_sec</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1">#: length of pre stim trace collected (in frames)</span>
+    <span class="n">poststim_sec</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3.0</span>  <span class="c1">#: length of post stim trace collected (in frames)</span>
+    <span class="n">pre_stim_response_window</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.500</span>  <span class="c1">#: time window for collecting pre-stim measurement (units: msec)</span>
+    <span class="n">post_stim_response_window</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.500</span>  <span class="c1">#: time window for collecting post-stim measurement (units: msec)</span>
 
-<div class="viewcode-block" id="AllOpticalTrial.__init__"><a class="viewcode-back" href="../../reference.html#packerlabimaging.AllOpticalTrial.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metainfo</span><span class="p">:</span> <span class="n">TwoPhotonImagingMetainfo</span><span class="p">,</span> <span class="n">naparm_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">analysis_save_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">microscope</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                 <span class="n">paq_options</span><span class="p">:</span> <span class="n">PaqInfoTrial</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">prestim_sec</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">poststim_sec</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3.0</span><span class="p">,</span>
-                 <span class="n">pre_stim_response_window</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.500</span><span class="p">,</span>
-                 <span class="n">post_stim_response_window</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.500</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param metainfo: TypedDict containing meta-information field needed for this experiment. Please see TwoPhotonImagingMetainfo for type hints on accepted keys.</span>
@@ -85,13 +93,15 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="c1"># 1) initialize object as TwoPhotonImagingTrial</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+
         <span class="c1"># Initialize Attributes:</span>
 
         <span class="c1"># PHOTOSTIM PROTOCOL</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stim_start_times</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nomulti_sig_units</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stim_channel</span> <span class="o">=</span> <span class="n">paq_options</span><span class="p">[</span><span class="s1">&#39;stim_channel&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;stim_channel&#39;</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="o">*</span><span class="n">paq_options</span><span class="p">]</span> <span class="k">else</span> <span class="s1">&#39;markpoints2packio&#39;</span>  <span class="c1"># channel on Paq file to read for determining stims</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">photostim_frames</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># imaging frames that are classified as overlapping with photostimulation</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stim_start_frames</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># frame numbers from the start of each photostim trial</span>
@@ -100,12 +110,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">paq_rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># PackIO acquisition rate for .Paq file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">frame_start_times</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>  <span class="c1"># Paq clock timestamps of the first imaging acquisition frame of t-series</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">frame_end_times</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>  <span class="c1"># Paq clock timestamps of the last imaging acquisition frame of t-series</span>
-
-        <span class="c1"># set photostim trial Flu trace snippet collection and response measurement analysis time windows</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">prestim_sec</span> <span class="o">=</span> <span class="n">prestim_sec</span>  <span class="c1"># length of pre stim trace collected (in frames)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">poststim_sec</span> <span class="o">=</span> <span class="n">poststim_sec</span>  <span class="c1"># length of post stim trace collected (in frames)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pre_stim_response_window_msec</span> <span class="o">=</span> <span class="n">pre_stim_response_window</span>  <span class="c1"># time window for collecting pre-stim measurement (units: msec)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">post_stim_response_window_msec</span> <span class="o">=</span> <span class="n">post_stim_response_window</span>  <span class="c1"># time window for collecting post-stim measurement (units: msec)</span>
 
         <span class="c1"># attr&#39;s for statistical analysis of photostim trials responses</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">photostimResponsesData</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># anndata object for collecting photostim responses and associated metadata for experiment and cells</span>
@@ -140,26 +144,26 @@
 
         <span class="c1"># FUNCTIONS TO RUN AFTER init&#39;s of ALL ATTR&#39;S</span>
 
-        <span class="c1"># 1) initialize object as TwoPhotonImagingTrial</span>
-        <span class="n">TwoPhotonImagingTrial</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metainfo</span><span class="o">=</span><span class="n">metainfo</span><span class="p">,</span> <span class="n">analysis_save_path</span><span class="o">=</span><span class="n">analysis_save_path</span><span class="p">,</span>
-                                       <span class="n">microscope</span><span class="o">=</span><span class="n">microscope</span><span class="p">,</span> <span class="n">paq_options</span><span class="o">=</span><span class="n">paq_options</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="c1"># 2) get stim timings from paq file</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stim_start_frames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paqProcessingAllOptical</span><span class="p">(</span><span class="n">stim_channel</span><span class="o">=</span><span class="n">paq_options</span><span class="p">[</span><span class="s1">&#39;stim_channel&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stim_start_frames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paqProcessingAllOptical</span><span class="p">(</span><span class="n">stim_channel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">PaqInfoTrial</span><span class="p">[</span><span class="s1">&#39;stim_channel&#39;</span><span class="p">])</span>
 
         <span class="c1"># 3) process 2p stim protocol</span>
         <span class="c1"># set naparm path</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__naparm_path</span> <span class="o">=</span> <span class="n">naparm_path</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">naparm_path</span><span class="p">)</span> <span class="k">else</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;naparm path not found, naparm_path: </span><span class="si">{</span><span class="n">naparm_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__naparm_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">naparm_path</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">naparm_path</span><span class="p">)</span> <span class="k">else</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;naparm path not found, naparm_path: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">naparm_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Targets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim_duration_frames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stimProcessing</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;naparm&#39;</span><span class="p">)</span>
 
         <span class="c1"># 4) determine bad frames in imaging data that correspond to photostim frames</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">photostim_frames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_photostim_add_bad_framesnpy</span><span class="p">()</span>
 
         <span class="c1"># 5) collect Flu traces from SLM targets</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">raw_SLMTargets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dFF_SLMTargets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">meanFluImg_registered</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_traces_from_targets</span><span class="p">(</span>
-            <span class="n">curr_trial_frames</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">targets_dff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets_dff_avg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets_dfstdF</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets_dfstdF_avg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets_raw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets_raw_avg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_alltargets_stim_traces_norm</span><span class="p">(</span><span class="n">process</span><span class="o">=</span><span class="s1">&#39;trace dFF&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;Suite2p&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">raw_SLMTargets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dFF_SLMTargets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">meanFluImg_registered</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_traces_from_targets</span><span class="p">(</span>
+                <span class="n">curr_trial_frames</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">targets_dff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets_dff_avg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets_dfstdF</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets_dfstdF_avg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets_raw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets_raw_avg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_alltargets_stim_traces_norm</span><span class="p">(</span><span class="n">process</span><span class="o">=</span><span class="s1">&#39;trace dFF&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;NO Flu traces collected from any SLM targets because Suite2p not found for trial.&#39;</span><span class="p">)</span>
 
         <span class="c1"># 6) Collect Flu traces from Suite2p ROIs:</span>
         <span class="c1">#   create:</span>
@@ -178,7 +182,7 @@
 
         <span class="c1"># save final object</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;\----- CREATED AllOpticalTrial data object for </span><span class="si">{</span><span class="n">metainfo</span><span class="p">[</span><span class="s2">&quot;t_series_id&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;\----- CREATED AllOpticalTrial data object for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">t_series_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pkl_path</span><span class="p">:</span>
@@ -236,7 +240,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">paqdata</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">paq_read</span><span class="p">()</span>
         <span class="n">stim_start_frames</span><span class="p">,</span> <span class="n">stim_start_times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">paq_alloptical_stims</span><span class="p">(</span><span class="n">paq_data</span><span class="o">=</span><span class="n">paqdata</span><span class="p">,</span>
-                                                                            <span class="n">frame_clock</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">frame_clock</span><span class="p">,</span>
+                                                                            <span class="n">frame_clock</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">frame_times</span><span class="p">,</span>
                                                                             <span class="n">stim_channel</span><span class="o">=</span><span class="n">stim_channel</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">stim_start_frames</span>
 
@@ -369,12 +373,17 @@
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">|- # of Photostim frames:&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photostim_frames</span><span class="p">),</span> <span class="s1">&#39;frames&#39;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">|- Minus photostim. frames total:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">n_frames</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">photostim_frames</span><span class="p">),</span> <span class="s1">&#39;frames&#39;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photostim_frames</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span>
-                <span class="c1"># f&#39;***Saving a total of {len(self.photostim_frames)} photostim frames to bad_frames.npy at: {self.tiff_path_dir}/bad_frames.npy&#39;)</span>
-                <span class="sa">f</span><span class="s1">&#39;***Saving a total of </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">photostim_frames</span><span class="p">)</span><span class="si">}</span><span class="s1"> photostim frames to bad_frames.npy at: </span><span class="si">{</span><span class="n">BADFRAMESLOC</span><span class="si">}</span><span class="s1">/bad_frames.npy&#39;</span><span class="p">)</span>  <span class="c1"># TODO replace BADFRAMESLOC with self.tiff_path_dir</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tiff_path_dir</span><span class="si">}</span><span class="s1">/bad_frames.npy&#39;</span><span class="p">,</span>
-                    <span class="n">photostim_frames</span><span class="p">)</span>  <span class="c1"># save to npy file and remember to move npy file to tiff folder before running with suite2p</span>
+        <span class="c1"># if using Suite2p then add photostim frames to bad_frames.npy for current Experiment</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photostim_frames</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">bad_frames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">bad_frames</span>
+                <span class="n">bad_frames</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photostim_frames</span><span class="p">)</span>
+                <span class="n">bad_frames</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">bad_frames</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;***Added a total of </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photostim_frames</span><span class="p">)</span><span class="si">}</span><span class="s1"> photostim frames to bad_frames.npy at: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tiff_path_dir</span><span class="si">}</span><span class="s1">/bad_frames.npy </span><span class="se">\n\t</span><span class="s1"> total bad_frames: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">bad_frames</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="c1"># f&#39;***Saving a total of {len(photostim_frames)} photostim frames to bad_frames.npy at: {BADFRAMESLOC}/bad_frames.npy&#39;)  # TODO replace BADFRAMESLOC with self.tiff_path_dir</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tiff_path_dir</span><span class="si">}</span><span class="s1">/bad_frames.npy&#39;</span><span class="p">,</span>
+                        <span class="n">bad_frames</span><span class="p">)</span>  <span class="c1"># save to npy file and remember to move npy file to tiff folder before running with suite2p</span>
 
         <span class="k">return</span> <span class="n">photostim_frames</span>
 
@@ -660,7 +669,7 @@
         <span class="n">raw_SLMTargets</span> <span class="o">=</span> <span class="n">targets_trace_full</span><span class="p">[:,</span>
                          <span class="n">curr_trial_frames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">start</span> <span class="o">*</span> <span class="mi">2000</span><span class="p">:</span> <span class="n">curr_trial_frames</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">start</span> <span class="o">*</span> <span class="mi">2000</span><span class="p">)]</span>
 
-        <span class="n">dFF_SLMTargets</span> <span class="o">=</span> <span class="n">normalize_dff</span><span class="p">(</span><span class="n">raw_SLMTargets</span><span class="p">,</span> <span class="n">threshold_pct</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">dFF_SLMTargets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize_dff</span><span class="p">(</span><span class="n">raw_SLMTargets</span><span class="p">,</span> <span class="n">threshold_pct</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 
         <span class="n">meanFluImg_registered</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">mean_img_stack</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
@@ -1092,15 +1101,18 @@
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;----------------------------------------------------------------&#39;</span><span class="p">)</span>
 
         <span class="c1"># make trial arrays from dff data shape: [cells x stims x frames]</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;Suite2p&#39;</span><span class="p">):</span>
+            <span class="n">photostimFluArray</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_makePhotostimTrialFluSnippets</span><span class="p">(</span><span class="n">plane_flu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">normalize_dff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">raw</span><span class="p">))</span>
+            <span class="n">photostimResponseAmplitudes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collectPhotostimResponses</span><span class="p">(</span><span class="n">photostimFluArray</span><span class="p">)</span>
 
-        <span class="n">photostimFluArray</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_makePhotostimTrialFluSnippets</span><span class="p">(</span><span class="n">plane_flu</span><span class="o">=</span><span class="n">normalize_dff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">raw</span><span class="p">))</span>
-        <span class="n">photostimResponseAmplitudes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collectPhotostimResponses</span><span class="p">(</span><span class="n">photostimFluArray</span><span class="p">)</span>
+            <span class="c1">## create new anndata object for storing measured photostim responses from data, with other relevant data</span>
+            <span class="n">photostim_responses_adata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allCellsPhotostimResponsesAnndata</span><span class="p">(</span>
+                <span class="n">photostimResponseAmplitudes</span><span class="o">=</span><span class="n">photostimResponseAmplitudes</span><span class="p">)</span>
 
-        <span class="c1">## create new anndata object for storing measured photostim responses from data, with other relevant data</span>
-        <span class="n">photostim_responses_adata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allCellsPhotostimResponsesAnndata</span><span class="p">(</span>
-            <span class="n">photostimResponseAmplitudes</span><span class="o">=</span><span class="n">photostimResponseAmplitudes</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">photostimFluArray</span><span class="p">,</span> <span class="n">photostimResponseAmplitudes</span><span class="p">,</span> <span class="n">photostim_responses_adata</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Photostim processing cannot be performed without Suite2p data.&#39;</span><span class="p">)</span></div>
 
-        <span class="k">return</span> <span class="n">photostimFluArray</span><span class="p">,</span> <span class="n">photostimResponseAmplitudes</span><span class="p">,</span> <span class="n">photostim_responses_adata</span></div>
 
 <div class="viewcode-block" id="AllOpticalTrial.statisticalProcessingAllCells"><a class="viewcode-back" href="../../reference.html#packerlabimaging.AllOpticalTrial.statisticalProcessingAllCells">[docs]</a>    <span class="k">def</span> <span class="nf">statisticalProcessingAllCells</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Runs statistical processing on photostim response arrays&quot;&quot;&quot;</span>
@@ -1482,7 +1494,7 @@
 
         <span class="n">arg_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;moviePath&#39;</span><span class="p">:</span> <span class="n">movie_path</span><span class="p">,</span>  <span class="c1"># hard-code this</span>
                     <span class="s1">&#39;savePath&#39;</span><span class="p">:</span> <span class="n">stam_save_path</span><span class="p">,</span>
-                    <span class="s1">&#39;syncFrameChannel&#39;</span><span class="p">:</span> <span class="s1">&#39;frame_clock&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;syncFrameChannel&#39;</span><span class="p">:</span> <span class="s2">&quot;frame_clock&quot;</span><span class="p">,</span>
                     <span class="s1">&#39;syncStimChannel&#39;</span><span class="p">:</span> <span class="s1">&#39;packio2markpoints&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;syncStartSec&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
                     <span class="s1">&#39;syncStopSec&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
@@ -1585,6 +1597,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">packerlabimaging 0.1-alpha documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">packerlabimaging.AllOpticalMain</a></li> 

@@ -27,6 +27,9 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
           <a href="reference.html" title="API reference"
              accesskey="N">next</a> |</li>
         <li class="right" >
@@ -45,9 +48,269 @@
   <section id="plotting-of-data-analysis">
 <span id="making-plots"></span><h1>Plotting of data/analysis<a class="headerlink" href="#plotting-of-data-analysis" title="Permalink to this headline">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code> provides a number of convenience plotting functions to create the most commonly made plots for 2photon imaging analysis.</p>
-<p>All of these pre-built plots are demo’ed at <a class="reference internal" href="Tutorials/Tutorial-3-Making-useful-plots.html"><span class="doc">Tutorial - making plots</span></a>.</p>
-<section id="available-plotting-functions">
-<h2>Available plotting functions:<a class="headerlink" href="#available-plotting-functions" title="Permalink to this headline">¶</a></h2>
+<p>All of these pre-built plots are demo’ed at <a class="reference external" href="Tutorials/Tutorial-3-Making-useful-plots.ipynb">Tutorial - making plots</a>.</p>
+<section id="module-packerlabimaging.plotting.plotting">
+<span id="available-plotting-functions"></span><h2>Available plotting functions:<a class="headerlink" href="#module-packerlabimaging.plotting.plotting" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.plotRoiLocations">
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plotRoiLocations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#packerlabimaging.TwoPhotonImagingTrial" title="packerlabimaging.TwoPhotonImagingMain.TwoPhotonImagingTrial"><span class="pre">packerlabimaging.TwoPhotonImagingMain.TwoPhotonImagingTrial</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">suite2p_rois</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plotRoiLocations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plotRoiLocations" title="Permalink to this definition">¶</a></dt>
+<dd><p>plots an image of the FOV to show the locations of cells given in cells ls.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trialobj</strong> – alloptical or 2p imaging object</p></li>
+<li><p><strong>background</strong> – either 2dim numpy array to use as the backsplash or None (default; which is a black background)</p></li>
+<li><p><strong>suite2p_rois</strong> – list of ROIs (suite2p cell IDs) to show coord location, default is ‘all’ (which is all ROIs)</p></li>
+<li><p><strong>edgecolor</strong> – specify edgecolor of the scatter plot for cells</p></li>
+<li><p><strong>facecolor</strong> – specify facecolor of the scatter plot for cells</p></li>
+<li><p><strong>cells</strong> – list of cells to plot</p></li>
+<li><p><strong>title</strong> – title for plot</p></li>
+<li><p><strong>color_float_list</strong> – if given, it will be used to color the cells according a colormap</p></li>
+<li><p><strong>cmap</strong> – cmap to be used in conjuction with the color_float_array argument</p></li>
+<li><p><strong>show_s2p_targets</strong> – if True, then will prioritize coloring of cell points based on whether they were photostim targets</p></li>
+<li><p><strong>invert_y</strong> – if True, invert the reverse the direction of the y axis</p></li>
+<li><p><strong>fig</strong> – a matplotlib.Figure instance, if provided use this fig for plotting</p></li>
+<li><p><strong>ax</strong> – a matplotlib.Axes.axes instance, if provided use this ax for plotting</p></li>
+<li><p><strong>show</strong> – if False, do not display plot (used when the necessity is to return the fig and ax objects to futher manipulation)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns fig, ax</dt>
+<dd class="field-even"><p>returns fig and ax object, if show is False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.makeSuite2pPlots">
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">makeSuite2pPlots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="reference.html#packerlabimaging.Experiment" title="packerlabimaging.ExperimentMain.Experiment"><span class="pre">packerlabimaging.ExperimentMain.Experiment</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="reference.html#packerlabimaging.TwoPhotonImagingTrial" title="packerlabimaging.TwoPhotonImagingMain.TwoPhotonImagingTrial"><span class="pre">packerlabimaging.TwoPhotonImagingMain.TwoPhotonImagingTrial</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#makeSuite2pPlots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.makeSuite2pPlots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes four plots that are created by Suite2p output.</p>
+<p>credit: run_s2p tutorial on Mouseland/Suite2p on github</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> – Experiment or Trial object to use for creating Suite2p plots.</p></li>
+<li><p><strong>axs</strong> – a matplotlib.Axes.axes instance (4 cols x 1 rows), if provided use these axes for plotting</p></li>
+<li><p><strong>show</strong> – if False, do not display plot (used when the necessity is to return the fig and ax objects to futher manipulation)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns fig, axs</dt>
+<dd class="field-even"><p>returns fig and ax object, if show is False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.plot_flu_trace">
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_flu_trace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#packerlabimaging.TwoPhotonImagingTrial" title="packerlabimaging.TwoPhotonImagingMain.TwoPhotonImagingTrial"><span class="pre">packerlabimaging.TwoPhotonImagingMain.TwoPhotonImagingTrial</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'raw'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plot_flu_trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plot_flu_trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>plot individual cell’s flu or dFF trace, with photostim. timings for that cell</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trialobj</strong> – trialobject to plot</p></li>
+<li><p><strong>cell</strong> – </p></li>
+<li><p><strong>to_plot</strong> – </p></li>
+<li><p><strong>fig</strong> – a matplotlib.Figure instance, if provided use this fig for plotting</p></li>
+<li><p><strong>ax</strong> – a matplotlib.Axes.axes instance, if provided use this ax for plotting</p></li>
+<li><p><strong>show</strong> – if False, do not display plot (used when the necessity is to return the fig and ax objects to futher manipulation)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns fig, ax</dt>
+<dd class="field-even"><p>returns fig and ax object, if show is False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.plot__paq_channel">
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot__paq_channel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paqData</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">packerlabimaging.processing.paq.PaqData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plot__paq_channel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plot__paq_channel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the stored signal from the specified channel from a PaqData submodule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>paqData</strong> – .Paq submodule data</p></li>
+<li><p><strong>channel</strong> – </p></li>
+<li><p><strong>kwargs</strong> – x_axis: str, x axis label, if ‘time’ or “Time” found in x_axis label, will convert x axis to time domain.
+x_tick_secs: int, interval to plot x axis ticks
+ax: matplotlib axis object to use for plotting.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.plotMeanFovFluTrace">
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plotMeanFovFluTrace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#packerlabimaging.TwoPhotonImagingTrial" title="packerlabimaging.TwoPhotonImagingMain.TwoPhotonImagingTrial"><span class="pre">packerlabimaging.TwoPhotonImagingMain.TwoPhotonImagingTrial</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plotMeanFovFluTrace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plotMeanFovFluTrace" title="Permalink to this definition">¶</a></dt>
+<dd><p>make plot of mean Ca trace averaged over the whole FOV</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fig</strong> – a matplotlib.Figure instance, if provided use this fig for plotting</p></li>
+<li><p><strong>ax</strong> – a matplotlib.Axes.axes instance, if provided use this ax for plotting</p></li>
+<li><p><strong>show</strong> – if False, do not display plot (used when the necessity is to return the fig and ax objects to futher manipulation)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns fig, ax</dt>
+<dd class="field-even"><p>returns fig and ax object, if show is False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.plot_photostim_traces_overlap">
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_photostim_traces_overlap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#packerlabimaging.AllOpticalTrial" title="packerlabimaging.AllOpticalMain.AllOpticalTrial"><span class="pre">packerlabimaging.AllOpticalMain.AllOpticalTrial</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_spacing_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Time</span> <span class="pre">(seconds)'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plot_photostim_traces_overlap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plot_photostim_traces_overlap" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> – </p></li>
+<li><p><strong>trialobj</strong> – </p></li>
+<li><p><strong>spacing</strong> – a multiplication factor that will be used when setting the spacing between each trace in the final plot</p></li>
+<li><p><strong>title</strong> – </p></li>
+<li><p><strong>y_min</strong> – </p></li>
+<li><p><strong>y_max</strong> – </p></li>
+<li><p><strong>x_label</strong> – </p></li>
+<li><p><strong>save_fig</strong> – </p></li>
+<li><p><strong>fig</strong> – a matplotlib.Figure instance, if provided use this fig for plotting</p></li>
+<li><p><strong>ax</strong> – a matplotlib.Axes.axes instance, if provided use this ax for plotting</p></li>
+<li><p><strong>show</strong> – if False, do not display plot (used when the necessity is to return the fig and ax objects to futher manipulation)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns fig, ax</dt>
+<dd class="field-even"><p>returns fig and ax object, if show is False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.plot_s2p_raw">
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_s2p_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trialobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plot_s2p_raw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plot_s2p_raw" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trialobj</strong> – </p></li>
+<li><p><strong>cell_id</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.plotLfpSignal">
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plotLfpSignal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#packerlabimaging.TwoPhotonImagingTrial" title="packerlabimaging.TwoPhotonImagingMain.TwoPhotonImagingTrial"><span class="pre">packerlabimaging.TwoPhotonImagingMain.TwoPhotonImagingTrial</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stim_span_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'powderblue'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downsample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stim_lines</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sz_markings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'LFP</span> <span class="pre">trace'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hide_xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plotLfpSignal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plotLfpSignal" title="Permalink to this definition">¶</a></dt>
+<dd><p>make plot of LFP with also showing stim locations
+NOTE: ONLY PLOTTING LFP SIGNAL CROPPED TO 2P IMAGING FRAME START AND END TIMES - SO CUTTING OUT THE LFP SIGNAL BEFORE AND AFTER</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trialobj</strong> – </p></li>
+<li><p><strong>stim_span_color</strong> – </p></li>
+<li><p><strong>downsample</strong> – </p></li>
+<li><p><strong>stim_lines</strong> – </p></li>
+<li><p><strong>sz_markings</strong> – </p></li>
+<li><p><strong>title</strong> – </p></li>
+<li><p><strong>x_axis</strong> – </p></li>
+<li><p><strong>hide_xlabel</strong> – </p></li>
+<li><p><strong>fig</strong> – a matplotlib.Figure instance, if provided use this fig for plotting</p></li>
+<li><p><strong>ax</strong> – a matplotlib.Axes.axes instance, if provided use this ax for plotting</p></li>
+<li><p><strong>show</strong> – if False, do not display plot (used when the necessity is to return the fig and ax objects to futher manipulation)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns fig, ax</dt>
+<dd class="field-even"><p>returns fig and ax object, if show is False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.plot_photostim_traces">
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_photostim_traces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#packerlabimaging.AllOpticalTrial" title="packerlabimaging.AllOpticalMain.AllOpticalTrial"><span class="pre">packerlabimaging.AllOpticalMain.AllOpticalTrial</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plot_photostim_traces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plot_photostim_traces" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> – </p></li>
+<li><p><strong>trialobj</strong> – </p></li>
+<li><p><strong>title</strong> – </p></li>
+<li><p><strong>y_min</strong> – </p></li>
+<li><p><strong>y_max</strong> – </p></li>
+<li><p><strong>x_label</strong> – </p></li>
+<li><p><strong>y_label</strong> – </p></li>
+<li><p><strong>save_fig</strong> – </p></li>
+<li><p><strong>kwargs</strong> – <dl class="simple">
+<dt>options include:</dt><dd><p>hits: ls; a ls of 1s and 0s that is used to add a scatter point to the plot at stim_start_frames indexes at 1s</p>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.plot_periphotostim_avg">
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_periphotostim_avg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#packerlabimaging.AllOpticalTrial" title="packerlabimaging.AllOpticalMain.AllOpticalTrial"><span class="pre">packerlabimaging.AllOpticalMain.AllOpticalTrial</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_stim_sec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_stim_sec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avg_only</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plot_periphotostim_avg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plot_periphotostim_avg" title="Permalink to this definition">¶</a></dt>
+<dd><p>plot trace across all stims
+:param arr: Flu traces to plot (will be plotted as individual traces unless avg_only is True) dimensions should be cells x stims x frames
+:param trialobj: instance object of AllOpticalTrial
+:param pre_stim_sec: seconds of array to plot for pre-stim period
+:param post_stim_sec: seconds of array to plot for post-stim period
+:param title: title to use for plot
+:param avg_only: if True, only plot the mean trace calculated from the traces provided in arr
+:param x_label: x axis label
+:param y_label: y axis label
+:param kwargs:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>options include:</dt><dd><p>‘stim_duration’: photostimulation duration in secs
+‘y_lims’: tuple, y min and max of the plot
+‘edgecolor’: str, edgecolor of the individual traces behind the mean trace
+‘savepath’: str, path to save plot to</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fig</strong> – a matplotlib.Figure instance, if provided use this fig for plotting</p></li>
+<li><p><strong>ax</strong> – a matplotlib.Axes.axes instance, if provided use this ax for plotting</p></li>
+<li><p><strong>show</strong> – if False, do not display plot (used when the necessity is to return the fig and ax objects to futher manipulation)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns fig, ax</dt>
+<dd class="field-even"><p>returns fig and ax object, if show is False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.plot_SLMtargets_Locs">
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_SLMtargets_Locs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#packerlabimaging.AllOpticalTrial" title="packerlabimaging.AllOpticalMain.AllOpticalTrial"><span class="pre">packerlabimaging.AllOpticalMain.AllOpticalTrial</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets_coords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plot_SLMtargets_Locs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plot_SLMtargets_Locs" title="Permalink to this definition">¶</a></dt>
+<dd><p>plot SLM target coordinate locations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trialobj</strong> – </p></li>
+<li><p><strong>targets_coords</strong> – ls containing (x,y) coordinates of targets to plot</p></li>
+<li><p><strong>background</strong> – </p></li>
+<li><p><strong>kwargs</strong> – </p></li>
+<li><p><strong>fig</strong> – a matplotlib.Figure instance, if provided use this fig for plotting</p></li>
+<li><p><strong>ax</strong> – a matplotlib.Axes.axes instance, if provided use this ax for plotting</p></li>
+<li><p><strong>show</strong> – if False, do not display plot (used when the necessity is to return the fig and ax objects to futher manipulation)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns fig, ax</dt>
+<dd class="field-even"><p>returns fig and ax object, if show is False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.plot_s2pMasks">
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_s2pMasks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plot_s2pMasks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plot_s2pMasks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates some images of SLM targets to suite2p.</p>
+</dd></dl>
+
 </section>
 <section id="all-plotting-functions">
 <h2>All plotting functions:<a class="headerlink" href="#all-plotting-functions" title="Permalink to this headline">¶</a></h2>
@@ -79,7 +342,7 @@
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">Plotting of data/analysis</a><ul>
-<li><a class="reference internal" href="#available-plotting-functions">Available plotting functions:</a></li>
+<li><a class="reference internal" href="#module-packerlabimaging.plotting.plotting">Available plotting functions:</a></li>
 <li><a class="reference internal" href="#all-plotting-functions">All plotting functions:</a></li>
 </ul>
 </li>
@@ -123,6 +386,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="right" >
           <a href="reference.html" title="API reference"
              >next</a> |</li>
