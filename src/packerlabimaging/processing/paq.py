@@ -139,8 +139,9 @@ class PaqData:
     paq_path: str
     paq_channels: List[str] = None
     paq_rate: float = None
+    def __post_init__(self):
+        print(f"\n\- ADDING PAQ MODULE from {self.paq_path}... ")
 
-    # def __post_init__(self):
     #     _, paq_rate, paq_channels = self.paq_read(paq_path=self.paq_path, plot=False)
     #     self.paq_channels = paq_channels
     #     self.paq_rate = paq_rate
@@ -164,7 +165,7 @@ class PaqData:
 
         for chan_name in paqData_obj.paq_channels:
             chan_name_idx = paq_channels.index(chan_name)
-            print(f"\t|- adding '{chan_name}' channel data as attribute")
+            print(f"\t- adding '{chan_name}' channel data as attribute")
             setattr(paqData_obj, chan_name, paq_data['data'][chan_name_idx])
 
         return paqData_obj, paq_data
@@ -192,7 +193,7 @@ class PaqData:
         paq, _ = paq2py(paq_path, plot=plot)
         paq_rate = paq['rate']
         paq_channels = paq['chan_names']
-        print(f"\t|- loaded {len(paq['chan_names'])} channels from .Paq file: {paq['chan_names']}")
+        print(f"\t - loaded {len(paq['chan_names'])} channels from .Paq file: {paq['chan_names']}")
 
         return paq, paq_rate, paq_channels
 
@@ -235,6 +236,8 @@ class PaqData:
         :param frame_channel: channel to retrieve frame clock times from
         :return: numpy array of frame clock times
         """
+        print(f"\n\t\- Retrieving two-photon imaging frame times from .paq channel: {frame_channel} ... ")
+
         # if frame_channel not in paq_data['chan_names']:
         if frame_channel not in self.paq_channels:
             raise KeyError(f'{frame_channel} not found in .Paq channels. Specify channel containing frame signals.')
@@ -282,6 +285,8 @@ class PaqData:
         :param frame_clock:
         :return:
         """
+        print(f"\n\t\- Getting imaging frames timed .paq data from {len(frame_clock)} frames ... ")
+
         # read in and save sparse version of all Paq channels (only save data from timepoints at frame clock times)
         sparse_paq_data = {}
         for idx, chan in enumerate(self.paq_channels):

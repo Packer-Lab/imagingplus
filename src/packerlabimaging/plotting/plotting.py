@@ -1,11 +1,13 @@
 # library of convenience plotting funcs that are used for making various plots for all optical photostimulation/imaging experiments
 
 # imports
+import os
 from typing import Union
 
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import tifffile as tf
 
 from packerlabimaging import Experiment
 
@@ -194,7 +196,70 @@ def plot__paq_channel(paqData: PaqData, channel: str, **kwargs):
 
 
 
+def makeFrameAverageTiff(tiff_path: str, frames: Union[int, list], peri_frames: int = 100, save_dir: str = None, to_plot=False):
+    """
+    Creates, plots and/or saves an average image of the specified number of peri-frames around the given frame from a multipage imaging TIFF file.
 
+    :param peri_frames:
+    :param save_img:
+    :param to_plot:
+    :param force_redo:
+    :param verbose:
+    :return:
+    """
+
+    print('\nMaking peri-frame avg image...')
+
+    if type(frames) == int:
+        frames = [frames]
+
+    # read tiff
+    print(f'\t\- Creating avg img for frame: {frames}, from tiff: {tiff_path}')
+    im_stack = tf.imread(tiff_path)
+
+    for frame in frames:
+        if frame < peri_frames // 2:
+            peri_frames_low = frame
+        else:
+            peri_frames_low = peri_frames // 2
+        peri_frames_high = peri_frames // 2
+        im_sub = im_stack[frame - peri_frames_low: frame + peri_frames_high]
+        avg_sub = np.mean(im_sub, axis=0)
+
+        # convert to 8-bit
+        from packerlabimaging.utils.utils import convert_to_8bit
+        avg_sub = convert_to_8bit(avg_sub, 0, 255)
+
+        if save_dir:
+            if '.tif' in save_dir:
+                from packerlabimaging.utils.utils import return_parent_dir
+                save_dir = return_parent_dir(save_dir) + '/'
+            save_path = save_dir + f'/{frame}_frame_avg.tif'
+            os.makedirs(save_dir, exist_ok=True)
+
+            print(f"\t\- Saving averaged tiff for frame: {frame}, to: {save_path}")
+            tf.imwrite(save_path, avg_sub, photometric='minisblack')
+
+        if to_plot:
+            plt.imshow(avg_sub, cmap='gray')
+            plt.suptitle(f'{peri_frames} peri-frames avg from frame {frame}')
+            plt.show()  # just plot for now to make sure that you are doing things correctly so far
+
+
+def showSingleTiffFrame(tiff_path, frame_num: int = 0, title: str = None):
+    """
+    plots an image of a single specified tiff frame after reading using tifffile.
+
+    :param tiff_path: path to .tiff file to loads
+    :param frame_num: frame # from 2p imaging tiff to show (default is 0 - i.e. the first frame)
+    :param title: (optional) give a string to use as title
+    :return: matplotlib imshow plot
+    """
+    stack = tf.imread(tiff_path, key=frame_num)
+    plt.imshow(stack, cmap='gray')
+    plt.suptitle(title) if title is not None else plt.suptitle(f'frame num: {frame_num}')
+    plt.show()
+    return stack
 
 
 # plots the raw trace for the Flu mean of the FOV (similar to the ZProject in Fiji)
@@ -713,6 +778,7 @@ def plot_SLMtargets_Locs(trialobj: AllOpticalTrial, targets_coords: Union[list, 
         raise ObjectClassError(function='plot_SLMtargets_Locs', valid_class=[AllOpticalTrial],
                                invalid_class=type(trialobj))
     ax = kwargs['ax']
+    fig = kwargs['fig']
     kwargs.pop('ax')
 
     if background is None:

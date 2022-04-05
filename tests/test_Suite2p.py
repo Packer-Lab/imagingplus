@@ -117,7 +117,7 @@ def test_s2pRun():
     # TODO run suite2p - but probably want to select only a subset of trials to run for testing!
     expobj.Suite2p.s2pRun(expobj=expobj)
 
-test_s2pRun()
+# test_s2pRun()
 
 
 # ## creating test for Suite2p.s2pRun():
@@ -137,5 +137,15 @@ test_s2pRun()
 # expobj.Suite2p.s2pRun(expobj=expobj)
 
 
+def test_makeFrameAverageTiff():
+    from packerlabimaging.utils.io import import_obj
+    expobj = import_obj(pkl_path='/home/pshah/mnt/qnap/Analysis/2021-01-25/PS12/PS12_analysis.pkl')
+    trialobj = expobj.load_trial(trialID=expobj.trialIDs[0])
 
+    trialobj.Suite2p.makeFrameAverageTiff(reg_tif_dir='/home/pshah/mnt/qnap/Analysis/2021-01-25/PS12/suite2p/reg_tif/',
+                                          frames=[110, 510],
+                                          peri_frames=100, save_dir=trialobj.saveDir + f'/export/avg_frames/',
+                                          to_plot=True)
+
+test_makeFrameAverageTiff()
 

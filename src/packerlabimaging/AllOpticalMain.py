@@ -1387,7 +1387,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
                 if save_img:
                     # save in a subdirectory under the ANALYSIS folder path from whence t-series TIFF came from
-                    save_path = self.save_dir + 'avg_stim_images'
+                    save_path = self.saveDir + 'avg_stim_images'
                     save_path_stim = save_path + '/%s_%s_stim-%s.tif' % (
                         self.metainfo['date'], self.metainfo['trial_id'], stim)
                     if os.path.exists(save_path):

@@ -12,7 +12,7 @@ def twophoton_imaging_trial_new_noPreDoneSuite2p_fixture():
 
     ExperimentMetainfo = {
         'dataPath': '/home/pshah/mnt/qnap/Data/2020-12-19',
-        'analysisSavePath': '/home/pshah/Documents/code/packerlabimaging/tests/',
+        'saveDir': '/home/pshah/Documents/code/packerlabimaging/tests/',
         "expID": 'RL109',
         'date': '2020-12-19',
         'comments': 'testing out analysis workflow',
@@ -38,7 +38,7 @@ def twophoton_imaging_trial_new_noPreDoneSuite2p_fixture():
             'exp_id': ExperimentMetainfo['expID'],
             'microscope': 'Bruker 2pPlus',
             'tiff_path': tiffs_loc,
-            'save_dir': ExperimentMetainfo['analysisSavePath'],
+            'saveDir': ExperimentMetainfo['saveDir'],
             'expGroup': "pre 4ap 2p spont imaging",
             'PaqInfoTrial': {'paq_path': paqs_loc,
                              'frame_channel': 'frame_clock'}
@@ -58,7 +58,7 @@ def twophoton_imaging_trial_noPreDoneSuite2p_fixture():
     initialization_dict = {
         'dataPath': f'/home/pshah/mnt/qnap/Data/{date}',
         # todo this seems very vauge, maybe add very specific documentation about what this is supposed to be, or just say tiff path?
-        'analysisSavePath': f'/home/pshah/mnt/qnap/Analysis/{date}/{prep}/',
+        'saveDir': f'/home/pshah/mnt/qnap/Analysis/{date}/{prep}/',
         'microscope': "Bruker",
         "expID": prep,
         'date': date,
@@ -118,7 +118,7 @@ def twophoton_imaging_trial_fixture():
 
     initialization_dict = {
         'dataPath': '/home/pshah/mnt/qnap/Data/2020-12-19',
-        'analysisSavePath': '/home/pshah/Documents/code/packerlabimaging/tests/',
+        'saveDir': '/home/pshah/Documents/code/packerlabimaging/tests/',
         'microscope': "Bruker",
         "expID": 'RL109',
         'date': '2020-12-19',
@@ -154,7 +154,7 @@ def twophoton_imaging_trial_fixture():
             'TrialsInformation': initialization_dict["TrialsInformation"][trial]
         }
         initialization_dict['metainfo'] = _metainfo
-        initialization_dict['analysis_save_path'] = initialization_dict['analysisSavePath']
+        initialization_dict['analysis_save_path'] = initialization_dict['saveDir']
         initialization_dict['suite2p_experiment_obj'] = expobj.Suite2p
         initialization_dict['paq_options'] = _metainfo['TrialsInformation']['PaqInfoTrial']
         initialization_dict['total_frames_stitched'] = SUITE2P_FRAMES_SPONT_t005t006[idx]
@@ -168,7 +168,7 @@ def alloptical_trial_fixture():
 
     initialization_dict = {
         'dataPath': '/home/pshah/mnt/qnap/Data/2020-12-19',
-        'analysisSavePath': '/home/pshah/Documents/code/packerlabimaging/tests/',
+        'saveDir': '/home/pshah/Documents/code/packerlabimaging/tests/',
         'microscope': "Bruker",
         "expID": 'RL109',
         'date': '2020-12-19',
@@ -209,7 +209,7 @@ def alloptical_trial_fixture():
 
         initialization_dict['metainfo'] = _metainfo
         initialization_dict['naparm_path'] = initialization_dict["TrialsInformation"][trial]['naparm_path']
-        initialization_dict['analysis_save_path'] = initialization_dict['analysisSavePath']
+        initialization_dict['analysis_save_path'] = initialization_dict['saveDir']
         initialization_dict['suite2p_experiment_obj'] = expobj.Suite2p
         initialization_dict['paq_options'] = _metainfo['TrialsInformation']['PaqInfoTrial']
         initialization_dict['total_frames_stitched'] = SUITE2P_FRAMES_t013
@@ -221,7 +221,7 @@ def alloptical_trial_fixture():
 def experiment_fixture(alloptical_trial_fixture, twophoton_imaging_trial_fixture):
     initialization_dict = {
         'dataPath': '/home/pshah/mnt/qnap/Data/2020-12-19',
-        'analysisSavePath': '/home/pshah/Documents/code/packerlabimaging/tests/',
+        'saveDir': '/home/pshah/Documents/code/packerlabimaging/tests/',
         'microscope': "Bruker",
         "expID": 'RL109',
         'date': '2020-12-19',
@@ -245,7 +245,7 @@ def experiment_fixture(alloptical_trial_fixture, twophoton_imaging_trial_fixture
 def experimentnew_fixture():
     ExperimentMetainfo = {
         'dataPath': '/home/pshah/mnt/qnap/Data/2020-12-19',
-        'analysisSavePath': '/home/pshah/Documents/code/packerlabimaging/tests/',
+        'saveDir': '/home/pshah/Documents/code/packerlabimaging/tests/',
         "expID": 'RL109',
         'date': '2020-12-19',
         'comments': 'testing out analysis workflow',

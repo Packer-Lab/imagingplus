@@ -56,11 +56,11 @@ NEUROPIL_COEFF = 0.7
 class Experiment:
     """A class to initialize and store data of an imaging experiment. This class acts as a bucket to contain
     information about individual trial objects. """
-    date: str
-    dataPath: str
-    analysisSavePath: str  # main dir where the experiment object and the trial objects will be saved to
-    expID: str
-    comments: str = ''
+    date: str  #: date of experiment data collection
+    dataPath: str   #: main dir where the imaging data is contained
+    saveDir: str  #: main dir where the experiment object and the trial objects will be saved to
+    expID: str  #: given identification name for experiment
+    comments: str = ''  #: notes related to experiment
 
     def __post_init__(self):
         print(f'***********************')
@@ -72,12 +72,12 @@ class Experiment:
         # suite2p related attrs initialization
         self._trialsTiffsSuite2p = {}  #: dictionary of trial IDs and their respective .tiff paths for each trial that will be used in Suite2p processing for current experiment
         self._s2pResultExists = False  #: flag for whether suite2p results exist for current experiment
-        self._suite2p_save_path = self.analysisSavePath + '/suite2p/'  #: default location to save Suite2p output results of current experiment
+        self._suite2p_save_path = self.saveDir + '/suite2p/'  #: default location to save Suite2p output results of current experiment
         self.Suite2p = None  #: suite2p submodule
 
         # save Experiment object
         self._get_save_location()
-        os.makedirs(self.analysisSavePath, exist_ok=True)
+        os.makedirs(self.saveDir, exist_ok=True)
         self.save_pkl(pkl_path=self.pkl_path)
 
 
@@ -102,15 +102,15 @@ class Experiment:
             return f"{__return_information}\n"
 
     def _get_save_location(self):
-        if self.analysisSavePath[-4:] == '.pkl':
-            self._pkl_path = self.analysisSavePath
-            self.analysisSavePath = self.analysisSavePath[
-                                    :[(s.start(), s.end()) for s in re.finditer('/', self.analysisSavePath)][-1][0]]
+        if self.saveDir[-4:] == '.pkl':
+            self._pkl_path = self.saveDir
+            self.saveDir = self.saveDir[
+                                    :[(s.start(), s.end()) for s in re.finditer('/', self.saveDir)][-1][0]]
         else:
-            self.analysisSavePath = self.analysisSavePath + '/' if self.analysisSavePath[
-                                                                       -1] != '/' else self.analysisSavePath
-            self._pkl_path = f"{self.analysisSavePath}{self.expID}_analysis.pkl"
-        os.makedirs(self.analysisSavePath, exist_ok=True)
+            self.saveDir = self.saveDir + '/' if self.saveDir[
+                                                                       -1] != '/' else self.saveDir
+            self._pkl_path = f"{self.saveDir}{self.expID}_analysis.pkl"
+        os.makedirs(self.saveDir, exist_ok=True)
 
     def get_trial_infor(self, trialID: str):
         if trialID in [*self.TrialsInformation]:
@@ -193,8 +193,12 @@ class Experiment:
             raise KeyError(f"trialID: {trialID} not found in Experiment instance.")
 
 
-    def add_suite2p(self, s2p_trials: Union[list, str] = 'all', s2pResultsPath: str = None):
-        """Wrapper for adding suite2p results to Experiment. Can only be run after adding trials to Experiment. """
+    def add_suite2p(self, s2p_trials: Union[list, str] = 'all', s2pResultsPath: Optional[str] = None):
+        """Wrapper for adding suite2p results to Experiment. Can only be run after adding trials to Experiment.
+
+        :param s2p_trials: list of trials to use for Suite2p processing/analysis pipeline, default = 'all' to use all trials of Experiment
+        :param s2pResultsPath: optional, if suite2p already run then here provide path to plane0 folder of existing suite2p results
+        """
 
         print(f'\- Adding suite2p module to experiment. Located under .Suite2p')
 
@@ -232,10 +236,12 @@ class Experiment:
             trialobj.Suite2p = suite2p.Suite2pResultsTrial(trialsTiffsSuite2p=self._trialsTiffsSuite2p,
                                                             s2pResultsPath=s2pResultsPath,
                                                             trial_frames=(total_frames, total_frames + trialobj.n_frames))  # use trial obj's current trial frames
+            trialobj.save()
             total_frames += trialobj.n_frames
 
 
         print(f'|- Finished adding suite2p module to experiment and trials. Located under .Suite2p')
+        self.save()
 
     @property
     def suite2p_save_path(self):
@@ -547,10 +553,10 @@ class WideFieldImaging:
         self.paq_path = paq_path
         self.metainfo = exp_metainfo
         # set and create analysis save s2pResultsPath directory
-        self.analysis_save_dir = self.pkl_path[:[(s.start(), s.end()) for s in re.finditer('/', self.pkl_path)][-1][0]]
-        if not os.path.exists(self.analysis_save_dir):
-            print('making analysis save folder at: \n  %s' % self.analysis_save_dir)
-            os.makedirs(self.analysis_save_dir)
+        self.analysis_saveDir = self.pkl_path[:[(s.start(), s.end()) for s in re.finditer('/', self.pkl_path)][-1][0]]
+        if not os.path.exists(self.analysis_saveDir):
+            print('making analysis save folder at: \n  %s' % self.analysis_saveDir)
+            os.makedirs(self.analysis_saveDir)
 
         self.save_pkl(pkl_path=pkl_path)  # save experiment object to pkl_path
 

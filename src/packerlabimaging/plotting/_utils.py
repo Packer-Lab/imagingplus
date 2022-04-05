@@ -109,11 +109,6 @@ def plotting_decorator(figsize=(3, 3), nrows=1, ncols=1, apply_image_frame_optio
         return inner
     return plotting_decorator
 
-def save_figure(fig, save_path_full: str = None):
-    print(f'\nsaving figure to: {save_path_full}')
-    os.makedirs(save_path_full)
-    fig.savefig(save_path_full)
-
 # custom colorbar for heatmaps
 from matplotlib.colors import LinearSegmentedColormap
 def _make_colormap(seq):

@@ -7,6 +7,7 @@ import numpy as np
 import suite2p
 import matplotlib.pyplot as plt
 from suite2p import run_s2p
+import tifffile as tf
 
 from packerlabimaging.utils.utils import make_tiff_stack
 
@@ -188,7 +189,7 @@ class Suite2pResultsExperiment:
         Submodule for connecting an Experiment to Suite2p for the specified trials/data_tiffs.
 
         :param trialsTiffsSuite2p:
-        :param s2pResultsPath:
+        :param s2pResultsPath: optional, if suite2p already run then here provide path to plane0 folder of existing suite2p results
         :param subtract_neuropil:
         :param dataPath:
         """
@@ -297,6 +298,7 @@ class Suite2pResultsExperiment:
             self.spks.append(spks)  # deconvolved spikes each suite2p ROI
             self.neuropil.append(neuropil)  # neuropil value of each suite2p ROI
             self.stat.append(stat)  # stat dictionary for each suite2p ROI
+            self.n_frames = len(spks)
 
             self.ops: dict = np.load(os.path.join(s2p_path, 'ops.npy'), allow_pickle=True).item()
             self.mean_img.append(self.ops['meanImg'])
@@ -329,7 +331,7 @@ class Suite2pResultsExperiment:
             self.cell_plane.append(cell_plane)
 
             print(
-                f'|- Loaded {self.n_units} suite2p classified cells from plane {plane}, recorded for {round(self.raw[plane].shape[1] / self.ops["fs"], 2)} secs total')
+                f'|- Loaded {self.n_units} suite2p classified cells from plane {plane}, recorded for {round(self.raw[plane].shape[1] / self.ops["fs"], 2)} secs total, {self.n_frames} frames total')
 
         # consider replacing this and use returning properties
         if self.n_planes == 1:
@@ -346,6 +348,7 @@ class Suite2pResultsExperiment:
             self.cell_plane = self.cell_plane[0]
             self.cell_x = self.cell_x[0]
             self.cell_y = self.cell_y[0]
+            self.n_frames = len(self.spks)
 
         # read in other files
         self.output_op: dict = np.load(Path(self.s2pResultsPath).joinpath('ops.npy'), allow_pickle=True).item()
@@ -687,10 +690,57 @@ class Suite2pResultsTrial(Suite2pResultsExperiment):
                 # self.dfof.append(normalize_dff(self.raw[plane]))  # calculate df/f based on relevant frames
                 self.__s2pResultExists = True
 
+    def makeFrameAverageTiff(self, reg_tif_dir: str, frames: Union[int, list], peri_frames: int = 100,
+                             save_dir: str = None,
+                             to_plot=False):
+        """Creates, plots and/or saves an average image of the specified number of peri-frames around the given frame from the suite2p registered TIFF file.
+        """
 
-    # @property
-    # def stat(self):
-    #     if self.n_planes == 1:
-    #         return self.stat[0]
-    #     else:
-    #         return self.stat
+        # read in registered tiff
+        reg_tif_folder = reg_tif_dir
+        assert os.path.exists(reg_tif_dir), '`reg_tif_dir` could not be found.'
+        reg_tif_list = os.listdir(reg_tif_dir)
+        reg_tif_list.sort()
+
+        if type(frames) == int:
+            frames = [frames]
+
+        frames_s2prun_num = [(frame + self.trial_frames[0]) for frame in frames]
+
+        for idx, frame in enumerate(frames_s2prun_num):
+            batch_num = frame // self.ops['batch_size']
+
+            tif_path = reg_tif_folder + reg_tif_list[batch_num]
+
+            im_batch_reg = tf.imread(tif_path, key=range(0, self.ops['batch_size']))
+
+            frame_num_batch = frame - (batch_num * self.ops['batch_size'])
+
+            if frame_num_batch < peri_frames // 2:
+                peri_frames_low = frame_num_batch
+            else:
+                peri_frames_low = peri_frames // 2
+            peri_frames_high = peri_frames // 2
+            im_sub_reg = im_batch_reg[frame_num_batch - peri_frames_low: frame_num_batch + peri_frames_high]
+
+            avg_sub = np.mean(im_sub_reg, axis=0)
+
+            # convert to 8-bit
+            from packerlabimaging.utils.utils import convert_to_8bit
+            avg_sub = convert_to_8bit(avg_sub, 0, 255)
+
+            if save_dir:
+                if '.tif' in save_dir:
+                    from packerlabimaging.utils.utils import return_parent_dir
+                    save_dir = return_parent_dir(save_dir) + '/'
+                save_path = save_dir + f'/{frames[idx]}_s2preg_frame_avg.tif'
+                os.makedirs(save_dir, exist_ok=True)
+
+                print(f"\t\- Saving averaged s2p registered tiff for frame: {frames[idx]}, to: {save_path}")
+                tf.imwrite(save_path, avg_sub, photometric='minisblack')
+
+            if to_plot:
+                plt.imshow(avg_sub, cmap='gray')
+                plt.suptitle(f'{peri_frames} frames avg from s2p reg tif, frame: {frames[idx]}')
+                plt.show()  # just plot for now to make sure that you are doing things correctly so far
+

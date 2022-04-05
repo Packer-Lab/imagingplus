@@ -9,7 +9,7 @@ import packerlabimaging as pkg
 
 # initialization_dict = {
 #     'dataPath': '/home/pshah/mnt/qnap/Data/2020-12-19',
-#     'analysisSavePath': '/home/pshah/Documents/code/packerlabimaging/tests/',
+#     'saveDir': '/home/pshah/Documents/code/packerlabimaging/tests/',
 #     'microscope': "Bruker",
 #     "expID": 'RL109',
 #     'date': '2020-12-19',
@@ -51,7 +51,7 @@ import packerlabimaging as pkg
 #
 #     initialization_dict['metainfo'] = _metainfo
 #     initialization_dict['naparm_path'] = initialization_dict["TrialsInformation"][trial]['naparm_path']
-#     initialization_dict['analysis_save_path'] = initialization_dict['analysisSavePath']
+#     initialization_dict['analysis_save_path'] = initialization_dict['saveDir']
 #     initialization_dict['suite2p_experiment_obj'] = expobj.Suite2p
 #     initialization_dict['total_frames_stitched'] = SUITE2P_FRAMES
 #

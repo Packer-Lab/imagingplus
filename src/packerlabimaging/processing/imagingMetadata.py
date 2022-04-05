@@ -25,6 +25,8 @@ class PrairieViewMetadata:
     # PrairieView files should also be in the same directory.
 
     def __post_init__(self):
+        print('\n\- Adding Imaging Acquisition Metadata from Bruker PrairieView ...')
+
         assert self.microscope == 'Bruker', 'invalid use of PrairieViewMetadata on nonBruker system.'
         # self.n_frames: int = 0  # number of imaging frames in the current trial
         # self.fps = None  # rate of imaging acquisition (frames per second)
@@ -100,7 +102,7 @@ class PrairieViewMetadata:
 
         """
 
-        print('\n\----- Parsing PV Metadata for Bruker microscope...')
+        print('\n\t\- Parsing PV Metadata for Bruker microscope...')
 
 
         tiff_path = self.tiff_path_dir  # starting path to search for the .xml PrairieView files

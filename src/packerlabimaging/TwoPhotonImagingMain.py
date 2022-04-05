@@ -16,7 +16,7 @@ import tifffile as tf
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
 from packerlabimaging.processing.imagingMetadata import PrairieViewMetadata, ImagingMetadata
-from packerlabimaging.utils.utils import SaveDownsampledTiff, showSingleTiffFrame
+from packerlabimaging.utils.utils import SaveDownsampledTiff
 from packerlabimaging.utils.classes import UnavailableOptionError, PaqInfoTrial
 from packerlabimaging.processing.paq import PaqData
 from packerlabimaging.processing import anndata as ad
@@ -30,15 +30,16 @@ class TwoPhotonImagingMetainfo(TypedDict, total=False):
     tiff_path: str
     expGroup: str
     PaqInfoTrial: PaqInfoTrial
+    comments: str
 
 
 class TwoPhotonImagingTrial:
     """Two Photon Imaging Experiment Data Analysis Workflow."""
 
     def __init__(self, date: str = None, trial_id: str = None, exp_id: str = None, microscope: str = None, tiff_path: str  = None,
-                 expGroup: str = None, save_dir: str = None, PaqInfoTrial: PaqInfoTrial = None, imagingMicroscopeMetadata: ImagingMetadata = None):
+                 expGroup: str = None, saveDir: str = None, PaqInfoTrial: PaqInfoTrial = None, imagingMicroscopeMetadata: ImagingMetadata = None,
+                 comments: str = ''):
 
-    # def __post_init__(self):
         """
         TODO update function docstring for approp args
         :param metainfo: TypedDict containing meta-information field needed for this experiment. Please see TwoPhotonImagingMetainfo for type hints on accepted keys.
@@ -53,10 +54,11 @@ class TwoPhotonImagingTrial:
         # Initialize Attributes:
 
         self._metainfo = {'date': date,
-                           'trial_id': trial_id,
-                           'exp_id': exp_id,
-                           'microscope': microscope,
-                           'expGroup': expGroup}
+                          'trial_id': trial_id,
+                          'exp_id': exp_id,
+                          'microscope': microscope,
+                          'expGroup': expGroup,
+                          'comments': comments}
 
         print(f'\----- CREATING TwoPhotonImagingTrial for trial: \n\t{self.trialID}')
 
@@ -66,9 +68,9 @@ class TwoPhotonImagingTrial:
             raise FileNotFoundError(f"tiff_path does not exist: {tiff_path}")
 
         # set, create analysis save path directory and create pkl object
-        self.save_dir = save_dir
-        os.makedirs(self.save_dir, exist_ok=True)
-        self._pkl_path = f"{self.save_dir}{self.date}_{self.trialID}.pkl"
+        self.saveDir = saveDir
+        os.makedirs(self.saveDir, exist_ok=True)
+        self._pkl_path = f"{self.saveDir}{self.date}_{self.trialID}.pkl"
         self.save_pkl(pkl_path=self.pkl_path)  # save experiment object to pkl_path
 
         # get imaging setup parameters
@@ -96,6 +98,7 @@ class TwoPhotonImagingTrial:
         self.meanFluImg, self.meanFovFluTrace = self.meanRawFluTrace()  #: mean image and mean FOV fluorescence trace
 
         self.data = None  #: anndata storage submodule
+        self.dFF = None  #: dFF normalized traces of cells
 
         # SAVE Trial OBJECT
         self.save()
@@ -114,7 +117,7 @@ class TwoPhotonImagingTrial:
     # def fig_save_path(self):
     #     """path for saving figures"""
     #     today_date = datetime.today().strftime('%Y-%m-%d')
-    #     return self.save_dir + f'Results_fig/{today_date}/'
+    #     return self.saveDir + f'Results_fig/{today_date}/'
     #
     # @fig_save_path.setter
     # def fig_save_path(self, value: str):
@@ -203,9 +206,7 @@ class TwoPhotonImagingTrial:
         :return: PAQ data object
         """
 
-        print(f"\n\- ADDING PAQ MODULE ... ")
         paq_data_obj, paqdata = PaqData.import_paqdata(paq_path=paq_path)
-        print(f"\n\- PROCESSING PAQDATA ... ")
         assert frame_channel in paq_data_obj.paq_channels, f"frame_channel argument: '{frame_channel}', not found in channels in .paq data."
         paq_data_obj.frame_times_channame = frame_channel
         paq_data_obj.frame_times = paq_data_obj.paq_frame_times(frame_channel=frame_channel)
@@ -216,7 +217,7 @@ class TwoPhotonImagingTrial:
     def stitch_s2p_reg_tiff(self): ## TODO refactoring in new code from the Suite2p class script?
         assert self.Suite2p._s2pResultExists, UnavailableOptionError('stitch_s2p_reg_tiff')
 
-        tif_path_save2 = self.save_dir + f'reg_tiff_{self.t_series_name}_r.tif'
+        tif_path_save2 = self.saveDir + f'reg_tiff_{self.t_series_name}_r.tif'
 
         start = self.Suite2p.trial_frames[0] // 2000  # 2000 because that is the batch size for suite2p run
         end = self.Suite2p.trial_frames[1] // 2000 + 1
@@ -280,6 +281,7 @@ class TwoPhotonImagingTrial:
 
     def dfof(self):
         """(delta F)/F normalization of raw Suite2p data of trial."""
+        assert hasattr(self, 'Suite2p'), 'no Suite2p module found. dfof function implemented to just normalize raw traces from Suite2p ROIs.'
         if self.Suite2p._s2pResultExists:
             dFF = self.normalize_dff(self.Suite2p.raw)
             return dFF
@@ -314,7 +316,7 @@ class TwoPhotonImagingTrial:
         """Import current trial tiff, create downsampled tiff and save in default analysis directory."""
 
         stack = self.importTrialTiff()
-        SaveDownsampledTiff(stack=stack, save_as=f"{self.save_dir}/{self.date}_{self.trialID}_downsampled.tif")
+        SaveDownsampledTiff(stack=stack, save_as=f"{self.saveDir}/{self.date}_{self.trialID}_downsampled.tif")
 
     def plotSingleImageFrame(self, frame_num: int = 0, title: str = None):
         """
@@ -323,6 +325,7 @@ class TwoPhotonImagingTrial:
         :param title: (optional) give a string to use as title
         :return: matplotlib imshow plot
         """
+        from packerlabimaging.plotting.plotting import showSingleTiffFrame
         stack = showSingleTiffFrame(tiff_path=self.tiff_path, frame_num=frame_num, title=title)
 
         # stack = tf.imread(self.tiff_path, key=frame_num)

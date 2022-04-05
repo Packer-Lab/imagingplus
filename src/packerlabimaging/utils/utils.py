@@ -1,6 +1,9 @@
 # TODO need to update this file to remove duplicates that have been refactored...
 
 import bisect
+import re
+from typing import Union
+
 import io
 
 import numpy as np
@@ -18,7 +21,42 @@ from statsmodels import stats
 
 from packerlabimaging.utils import io
 
+def return_parent_dir(file_path: str):
+    return file_path[:[(s.start(), s.end()) for s in re.finditer('/', file_path)][-1][0]]
 
+
+def save_figure(fig, save_path_full: str = None):
+    print(f'\nsaving figure to: {save_path_full}')
+    os.makedirs(save_path_full)
+    fig.savefig(save_path_full)
+
+
+def filterDfBoolCol(df, true_cols=[], false_cols=[]):
+    '''Filter indices in a pandas dataframe using logical operations
+    on columns with Boolean values
+    
+    Inputs:
+        df         -- dataframe
+        true_cols  -- columns where True should be filtered
+        false_cols -- columns where False should be filtered
+    
+    Outputs:
+        indices of the dataframe where the logical operation is true
+    '''
+    if true_cols: 
+        true_rows = df[true_cols].all(axis='columns')
+    
+    if false_cols:
+        false_rows = (~df[false_cols]).all(axis='columns')
+    
+    if true_cols and false_cols:
+        filtered_df = df[true_rows & false_rows]
+    elif true_cols:
+        filtered_df = df[true_rows]
+    elif false_cols:
+        filtered_df = df[false_rows]
+    
+    return filtered_df.index
 
 
 # calculates average over sliding window for an array
@@ -174,20 +212,17 @@ def ZProfile(movie, area_center_coords: tuple = None, area_size: int = -1, plot_
     return smol_mean
 
 
-def showSingleTiffFrame(tiff_path, frame_num: int = 0, title: str = None):
-    """
-    plots an image of a single specified tiff frame after reading using tifffile.
+def listdirFullpath(directory, string=''):
+    """Return full path of all files in directory containing specified string
 
-    :param tiff_path: path to .tiff file to loads
-    :param frame_num: frame # from 2p imaging tiff to show (default is 0 - i.e. the first frame)
-    :param title: (optional) give a string to use as title
-    :return: matplotlib imshow plot
+    :param directory:  path to directory (string)
+    :param string:  sequence to be found in file name (string)
+    :return: string
     """
-    stack = tf.imread(tiff_path, key=frame_num)
-    plt.imshow(stack, cmap='gray')
-    plt.suptitle(title) if title is not None else plt.suptitle(f'frame num: {frame_num}')
-    plt.show()
-    return stack
+    return [os.path.join(directory, file) \
+            for file in os.listdir(directory) \
+            if string in file]
+
 
 def SaveDownsampledTiff(tiff_path: str = None, stack: np.array = None, group_by: int = 4, save_as: str = None,
                         plot_zprofile: bool = True):
