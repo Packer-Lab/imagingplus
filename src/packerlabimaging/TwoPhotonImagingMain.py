@@ -53,6 +53,7 @@ class TwoPhotonImagingTrial:
 
         # Initialize Attributes:
 
+        self.Suite2p = None  #: Suite2p analysis sub-module  # todo consider adding wrapper method for attaching Suite2p to trial object (like might just need to refactor over from the experiment main file)
         self._metainfo = {'date': date,
                           'trial_id': trial_id,
                           'exp_id': exp_id,
@@ -238,7 +239,6 @@ class TwoPhotonImagingTrial:
         Creates annotated data (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial.
 
         """
-
         if self.Suite2p._s2pResultExists and self.Paq:
             # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
             # build dataframe for obs_meta from suite2p stat information

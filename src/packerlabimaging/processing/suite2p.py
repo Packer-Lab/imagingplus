@@ -351,10 +351,10 @@ class Suite2pResultsExperiment:
             self.n_frames = len(self.spks)
 
         # read in other files
-        self.output_op: dict = np.load(Path(self.s2pResultsPath).joinpath('ops.npy'), allow_pickle=True).item()
+        self.output_ops: dict = np.load(Path(self.s2pResultsPath).joinpath('ops.npy'), allow_pickle=True).item()
         stats_file = Path(self.s2pResultsPath).joinpath('stat.npy')
         self.iscell = np.load(Path(self.s2pResultsPath).joinpath('iscell.npy'), allow_pickle=True)[:, 0].astype(bool)
-        self.stats = np.load(stats_file, allow_pickle=True)
+        self.stat = np.load(stats_file, allow_pickle=True)
 
         # quick workaround (patch of suite2p code) because of suite2p internal error for these methods in ROI class
         def from_stat_dict(stat: Dict[str, Any]) -> suite2p.ROI:
@@ -368,8 +368,8 @@ class Suite2pResultsExperiment:
 
         def stats_dicts_to_3d_array_():
             arrays = []
-            for i, stat in enumerate(self.stats):
-                array = to_array_(from_stat_dict(stat=stat), Ly=self.output_op['Ly'], Lx=self.output_op['Lx'])
+            for i, stat in enumerate(self.stat):
+                array = to_array_(from_stat_dict(stat=stat), Ly=self.output_ops['Ly'], Lx=self.output_ops['Lx'])
                 array *= i + 1
                 arrays.append(array)
             return np.stack(arrays)
@@ -616,6 +616,27 @@ class Suite2pResultsExperiment:
     def s2pRun(expobj, trialsSuite2P: Union[list, str] = 'all'):
         s2pRun(expobj, trialsSuite2P=trialsSuite2P)
 
+    def s2pROIsTiff(self, save_path, cell_ids: Union[str, list] = 'all'):
+        """save a TIFF image of the suite2p ROIs masks."""
+        # todo test function
+        # os.chdir(self.s2pResultsPath)
+        # stat = np.load('stat.npy', allow_pickle=True)
+        # ops = np.load('ops.npy', allow_pickle=True).item()
+        # iscell = np.load('iscell.npy', allow_pickle=True)
+
+
+        mask_img = np.zeros((self.output_ops['Ly'], self.output_ops['Lx']), dtype='uint8')
+
+        cell_ids = self.cell_id if cell_ids == 'all' else cell_ids
+        for n in range(0, len(self.iscell)):
+            if n in cell_ids:
+                ypix = self.stat[n]['ypix']
+                xpix = self.stat[n]['xpix']
+                mask_img[ypix, xpix] = 255
+
+        tf.imwrite(save_path, mask_img, photometric='minisblack')
+
+
 class Suite2pResultsTrial(Suite2pResultsExperiment):
     """used to collect and store suite2p processed data for one trial - out of overall experiment."""
 
@@ -629,15 +650,16 @@ class Suite2pResultsTrial(Suite2pResultsExperiment):
         :param s2pResultsPath:
         :param subtract_neuropil:
         """
+        # todo need to reconsider this heirarchy; it saves in the entire suite2p result for every trial....
         super().__init__(trialsTiffsSuite2p, s2pResultsPath)  # - TODO it really is confusing to be passing in all trials for a s2p results obj that should be restricted to just one trial
 
         print(f"\n\----- ADDING .Suite2p module to trial ... ", end ='\r')
 
         ## initializing attributes to collect Suite2p results for this specific trial
         # self.dfof: list(np.ndarray) = []  # array of dFF normalized Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
-        self.__raw: List[np.ndarray] = self.raw
-        self.__spks: List[np.ndarray] = self.spks
-        self.__neuropil: List[np.ndarray] = self.neuropil
+        # self.__raw: List[np.ndarray] = self.raw
+        # self.__spks: List[np.ndarray] = self.spks
+        # self.__neuropil: List[np.ndarray] = self.neuropil
 
         self.trial_frames = trial_frames  # tuple of first and last frame (out of the overall suite2p run) corresponding to the present trial
 
@@ -672,11 +694,11 @@ class Suite2pResultsTrial(Suite2pResultsExperiment):
             self.cell_id = self.cell_id
             self.stat = self.stat[0]
 
-            self.raw = self.__raw[:, self.trial_frames[0]:self.trial_frames[
+            self.raw = self.raw[:, self.trial_frames[0]:self.trial_frames[
                 1]]  # array of raw Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
-            self.spks = self.__spks[:, self.trial_frames[0]:self.trial_frames[
+            self.spks = self.spks[:, self.trial_frames[0]:self.trial_frames[
                 1]]  # array of deconvolved spks values from suite2p output [num cells x length of imaging acquisition], one per plane
-            self.neuropil = self.__neuropil[:, self.trial_frames[0]:self.trial_frames[
+            self.neuropil = self.neuropil[:, self.trial_frames[0]:self.trial_frames[
                 1]]  # array of neuropil Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
 
             self.__s2pResultExists = True

@@ -104,7 +104,7 @@ def makeSuite2pPlots(obj: Union[Experiment, TwoPhotonImagingTrial], **kwargs):
     # f, axs = plt.subplots(figsize=[15, 5], nrows=1, ncols=4)
 
     # plt.subplot(1, 4, 1)
-    axs[0].imshow(obj.Suite2p.output_op['max_proj'], cmap='gray')
+    axs[0].imshow(obj.Suite2p.output_ops['max_proj'], cmap='gray')
     axs[0].set_title("Registered Image, Max Projection", wrap=True)
 
     # plt.subplot(1, 4, 2)
