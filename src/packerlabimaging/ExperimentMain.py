@@ -208,7 +208,7 @@ class Experiment:
         assert len([*self.TrialsInformation]) > 0, 'need to add at least 1 trial to Experiment before adding Suite2p functionality.'
 
         if s2p_trials is 'all': s2p_trials = self.trialIDs
-        assert len(s2p_trials) > 0, 'no s2p trials to continue.'
+        assert type(s2p_trials) == list and len(s2p_trials) > 0, 'no s2p trials given in list form.'
         for trial in s2p_trials: self._trialsTiffsSuite2p[trial] = self.TrialsInformation[trial]['tiff_path']
 
         if s2pResultsPath:  # if s2pResultsPath provided then try to find and pre-load results from provided s2pResultsPath, raise error if cannot find results
@@ -229,13 +229,13 @@ class Experiment:
         else:  # no s2pResultsPath provided, so initialize without pre-loading any results
             self.Suite2p = Suite2pResultsExperiment(trialsTiffsSuite2p=self._trialsTiffsSuite2p)
 
+        # print(self.Suite2p)
         # adding of suite2p trial level as well in this function as well
         total_frames = 0
         for trial in s2p_trials:
             trialobj = self.load_trial(trialID=trial)
-            trialobj.Suite2p = suite2p.Suite2pResultsTrial(trialsTiffsSuite2p=self._trialsTiffsSuite2p,
-                                                            s2pResultsPath=s2pResultsPath,
-                                                            trial_frames=(total_frames, total_frames + trialobj.n_frames))  # use trial obj's current trial frames
+            # print(f'n_frames', self.Suite2p.n_frames)
+            trialobj.Suite2p = suite2p.Suite2pResultsTrial(s2pExp=self.Suite2p, trial_frames=(total_frames, total_frames + trialobj.n_frames))  # use trial obj's current trial frames
             trialobj.save()
             total_frames += trialobj.n_frames
 

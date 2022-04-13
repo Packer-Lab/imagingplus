@@ -2,6 +2,7 @@
 
 import bisect
 import re
+import sys
 from typing import Union
 
 import io
@@ -20,6 +21,28 @@ from scipy import signal
 from statsmodels import stats
 
 from packerlabimaging.utils import io
+
+# report sizes of variables
+def _sizeof_fmt(num, suffix='B'):
+    """ by Fred Cirera,  https://stackoverflow.com/a/1094933/1870254, modified"""
+    for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
+        if abs(num) < 1024.0:
+            return "%3.1f %s%s" % (num, unit, suffix)
+        num /= 1024.0
+    return "%.1f %s%s" % (num, 'Yi', suffix)
+
+
+# report sizes of variables
+def print_size_of(var):
+    print(_sizeof_fmt(sys.getsizeof(var)))
+
+
+# report sizes of variables
+def print_size_vars():
+    for name, size in sorted(((name, sys.getsizeof(value)) for name, value in locals().items()),
+                             key=lambda x: -x[1])[:10]:
+        print("{:>30}: {:>8}".format(name, _sizeof_fmt(size)))
+
 
 def return_parent_dir(file_path: str):
     return file_path[:[(s.start(), s.end()) for s in re.finditer('/', file_path)][-1][0]]

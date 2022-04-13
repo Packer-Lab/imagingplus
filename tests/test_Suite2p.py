@@ -23,11 +23,7 @@ def test_Suite2pResultsTrial(existing_trialobj_twophotonimaging_fixture, existin
     for n_obj in [trialobj, trialobj_, alloptical_trialobj]:
         from packerlabimaging.processing.suite2p import Suite2pResultsExperiment
         s2p_expobj: Suite2pResultsExperiment = expobj.Suite2p
-        n_obj.Suite2p = suite2p.Suite2pResultsTrial(trialsTiffsSuite2p=s2p_expobj.tiff_paths_to_use_s2p,
-                                                    s2pResultsPath=s2p_expobj.s2pResultsPath,
-                                                    subtract_neuropil=s2p_expobj.subtract_neuropil,
-                                                    trial_frames=n_obj.Suite2p.trial_frames)  # use trial obj's current trial frames
-
+        n_obj.Suite2p = suite2p.Suite2pResultsTrial(s2pExp=s2p_expobj, trial_frames=n_obj.Suite2p.trial_frames)  # use trial obj's current trial frames
         n_obj.save()
 
 def test_Suite2pExp():
@@ -50,7 +46,7 @@ def test_Suite2pTrial():
 
     trial_frames: tuple
     s2ptrial = Suite2pResultsTrial(trialsTiffsSuite2p=trialsSuite2p, trial_frames=(0, 1000))
-    assert s2ptrial.__s2pResultExists == False  # - doesnt seem to be setting to False as expected during the super() call!
+    assert s2ptrial._s2pResultExists == False  # - doesnt seem to be setting to False as expected during the super() call!
 
 # test_Suite2pTrial()
 
