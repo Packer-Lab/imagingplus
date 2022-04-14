@@ -109,10 +109,10 @@ class TwoPhotonImagingTrial:
             lastmod = time.ctime(os.path.getmtime(self.pkl_path))
         else:
             lastmod = "(unsaved pkl object)"
-        return repr(f"({self.t_series_name}) TwoPhotonImagingTrial experimental data object, last saved: {lastmod}")
+        return repr(f"ID: {self.t_series_name} (TwoPhotonImagingTrial experimental data object, last saved: {lastmod})")
 
     def __repr__(self):
-        return repr(f"TwoPhotonImagingTrial experimental data object")
+        return repr(f"ID: {self.t_series_name} (TwoPhotonImagingTrial experimental data object)")
 
     # @property
     # def fig_save_path(self):

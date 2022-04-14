@@ -170,20 +170,21 @@ def _add_scalebar(trialobj: Union[TwoPhotonImagingTrial, AllOpticalTrial], ax: p
 
     """
 
-    if type(trialobj) not in [TwoPhotonImagingTrial, AllOpticalTrial]:
-        raise ObjectClassError(function='_add_scalebar', valid_class=[TwoPhotonImagingTrial, AllOpticalTrial], invalid_class=type(trialobj))
-    else:
-        numpx = scale_bar_um/trialobj.imparams.pix_sz_x
+    # REMOVED FOR THE TIME BEING WHILE FIGURING OUT HOW TO ACCEPT CHILD CLASSES OF VALID CLASSES
+    # if type(trialobj) not in [TwoPhotonImagingTrial, AllOpticalTrial]:
+    #     raise ObjectClassError(function='_add_scalebar', valid_class=[TwoPhotonImagingTrial, AllOpticalTrial], invalid_class=type(trialobj))
+    # else:
+    numpx = scale_bar_um/trialobj.imparams.pix_sz_x
 
-        lw = 5 if 'lw' not in [*kwargs] else kwargs['lw']
-        color = 'white' if 'color' not in [*kwargs] else kwargs['color']
-        right_offset = 50 if 'right_offset' not in [*kwargs] else kwargs['right_offset']
-        bottom_offset = 50 if 'bottom_offset' not in [*kwargs] else kwargs['bottom_offset']
+    lw = 5 if 'lw' not in [*kwargs] else kwargs['lw']
+    color = 'white' if 'color' not in [*kwargs] else kwargs['color']
+    right_offset = 50 if 'right_offset' not in [*kwargs] else kwargs['right_offset']
+    bottom_offset = 50 if 'bottom_offset' not in [*kwargs] else kwargs['bottom_offset']
 
-        ax.plot(np.linspace(trialobj.imparams.frame_x - right_offset - numpx, trialobj.imparams.frame_x - right_offset, 40),
-                [trialobj.imparams.frame_y - bottom_offset]*40,
-                color=color, lw=lw)
-        return ax
+    ax.plot(np.linspace(trialobj.imparams.frame_x - right_offset - numpx, trialobj.imparams.frame_x - right_offset, 40),
+            [trialobj.imparams.frame_y - bottom_offset]*40,
+            color=color, lw=lw, solid_capstyle='butt')
+    return ax
 
 
 image_frame_ops = {
@@ -287,7 +288,10 @@ def dataplot_ax_options(ax, data_length: int, **kwargs):
                 x_tick_secs = 30 if 'x_tick_secs' not in [*kwargs] else kwargs['x_tick_secs']
                 # change x axis ticks to every 30 seconds
                 labels = list(range(0, int(data_length // kwargs['collection_hz']), x_tick_secs))
-                ax.set_xticks(ticks=[(label * kwargs['collection_hz']) for label in labels])
+                x_tick_locations = [(label * kwargs['collection_hz']) for label in labels]
+                print('labels: ', labels)
+                print('x tick locs: ', x_tick_locations)
+                ax.set_xticks(ticks=x_tick_locations)
 
                 ax.set_xticklabels(labels)
                 ax.set_xlabel('Time (secs)')

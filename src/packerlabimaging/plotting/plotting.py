@@ -104,8 +104,8 @@ def makeSuite2pPlots(obj: Union[Experiment, TwoPhotonImagingTrial], **kwargs):
     # f, axs = plt.subplots(figsize=[15, 5], nrows=1, ncols=4)
 
     # plt.subplot(1, 4, 1)
-    axs[0].imshow(obj.Suite2p.output_ops['max_proj'], cmap='gray')
-    axs[0].set_title("Registered Image, Max Projection", wrap=True)
+    axs[0].imshow(obj.Suite2p.output_ops['meanImgE'], cmap='gray')
+    axs[0].set_title("Registered Image, Mean Enhanced", wrap=True)
 
     # plt.subplot(1, 4, 2)
     axs[1].imshow(np.nanmax(obj.Suite2p.im, axis=0), cmap='jet')
@@ -179,8 +179,10 @@ def plot__paq_channel(paqData: PaqData, channel: str, **kwargs):
     # set any kwargs provided
     ax = kwargs['ax']
     kwargs.pop('ax')
-    x_axis = 'Time (secs)' if 'x_axis' not in [*kwargs] else kwargs['x_axis']
-    x_tick_secs = 120 if 'x_tick_secs' not in [*kwargs] else kwargs['x_tick_secs']
+
+    # kwargs['x_axis'] = 'Time (secs)' if 'x_axis' not in [*kwargs] else kwargs['x_axis']
+    kwargs['x_tick_secs'] = 120 if 'x_tick_secs' not in [*kwargs] else kwargs['x_tick_secs']
+
     lw = 0.5 if 'lw' not in [*kwargs] else kwargs['lw']
     color = 'black' if 'color' not in [*kwargs] else kwargs['color']
 
@@ -188,11 +190,17 @@ def plot__paq_channel(paqData: PaqData, channel: str, **kwargs):
     data = getattr(paqData, channel)
 
     # make plot
-    ax.plot(data, lw=lw, color=color)
+    x = np.linspace(0, len(data)/paqData.paq_rate, len(data))
+    ax.plot(x, data, lw=lw, color=color)
     ax.set_title(f"{channel}")
-    from packerlabimaging.plotting._utils import dataplot_ax_options
-    dataplot_ax_options(ax=ax, data_length=len(data), collection_hz=paqData.paq_rate, **kwargs)
-    # ax.grid(True)
+    ax.set_ylim(kwargs['y_lims']) if 'y_lims' in kwargs else None
+    ax.set_xlabel('Time (secs)')
+    ax.set_xticks([label for label in range(0, int(len(data) / paqData.paq_rate), kwargs['x_tick_secs'])])
+    ax.set_xlabel(kwargs['x_axis'])
+    # from packerlabimaging.plotting._utils import dataplot_ax_options
+    # dataplot_ax_options(ax=ax, data_length=len(data), collection_hz=paqData.paq_rate, **kwargs)
+    # dataplot_ax_options(ax=ax, data_length=len(data), collection_hz=1, **kwargs)
+    ax.grid(True)
 
 
 

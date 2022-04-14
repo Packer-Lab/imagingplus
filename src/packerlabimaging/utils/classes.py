@@ -5,6 +5,7 @@ class ObjectClassError(Exception):
     """handles exceptions caused by calling function on invalid class type."""
 
     def __init__(self, function, valid_class, invalid_class):
+        # todo need to add eq checking I think to allow extended classes of the valid classes to be considered as equals....if that doesn't work then consider removing use of error in some locations
         super().__init__(f'Invalid class ({invalid_class}) being used. <{function}> only available for {valid_class}.')
 
 

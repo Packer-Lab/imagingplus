@@ -10,7 +10,7 @@ class ImagingMetadata:
     """Class containing metadata about imaging microscope"""
     microscope: str  # given name of microscope (use 'Bruker' to process Metadata from PrairieView)
     n_frames: int  # number of imaging frames in the current trial
-    fps: str  # rate of imaging acquisition (frames per second)
+    fps: float  # rate of imaging acquisition (frames per second)
     frame_x: int  # num of pixels in the x direction of a single frame
     frame_y: int  # num of pixels in the y direction of a single frame
     n_planes: int  # num of FOV planes in imaging acquisition
@@ -19,7 +19,7 @@ class ImagingMetadata:
 
 
 @dataclass
-class PrairieViewMetadata:
+class PrairieViewMetadata:  # todo convert to child inheritance of ImagingMetadata as parent class
     tiff_path_dir: str  # path to the directory containing the .tiff imaging output from PrairieView. the .xml
     microscope: str = 'Bruker'
     # PrairieView files should also be in the same directory.
@@ -165,7 +165,7 @@ class PrairieViewMetadata:
         extra_params = root.find('Sequence/Frame/ExtraParameters')
         last_good_frame = extra_params.get('lastGoodFrame')
 
-        self.fps = fps / n_planes
+        self.fps: float = fps / n_planes
         self.frame_x = frame_x
         self.frame_y = frame_y
         self.n_planes = n_planes

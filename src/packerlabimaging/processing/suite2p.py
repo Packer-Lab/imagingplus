@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from suite2p import run_s2p
 import tifffile as tf
 
-from packerlabimaging.utils.utils import make_tiff_stack
+from packerlabimaging.utils.utils import make_tiff_stack, save_array_to_tiff
 
 # TEMP VARIABLES FOR DEVELOPMENT USAGES
 N_PLANES = 1
@@ -126,6 +126,24 @@ def s2p_loader(s2p_path, subtract_neuropil=True, neuropil_coeff=0.7):
         neuropil_corrected = all_cells - neuropil * neuropil_coeff
         return neuropil_corrected, spks, stat, neuropil
 
+# utility funcs
+# quick workaround (patch of suite2p code) because of suite2p internal error for these methods in ROI class
+def from_stat_dict(stat: Dict[str, Any]) -> suite2p.ROI:
+    return suite2p.ROI(ypix=stat['ypix'], xpix=stat['xpix'], lam=stat['lam'], med=stat['med'], do_crop=False)
+
+def to_array_(self, Ly: int, Lx: int) -> np.ndarray:
+    """Returns a 2D boolean array of shape (Ly x Lx) indicating where the roi is located."""
+    arr = np.zeros((Ly, Lx), dtype=float)
+    arr[self.ypix, self.xpix] = 1
+    return arr
+
+def stats_dicts_to_3d_array_(stat_dict, output_ops):
+    arrays = []
+    for i, stat in enumerate(stat_dict):
+        array = to_array_(from_stat_dict(stat=stat), Ly=output_ops['Ly'], Lx=output_ops['Lx'])
+        array *= i + 1
+        arrays.append(array)
+    return np.stack(arrays)
 
 class Suite2pResultsExperiment:
     """used to run and further process suite2p processed data, and analysis associated with suite2p processed data."""
@@ -360,25 +378,7 @@ class Suite2pResultsExperiment:
         self.iscell = np.load(Path(self.s2pResultsPath).joinpath('iscell.npy'), allow_pickle=True)[:, 0].astype(bool)
         self.stat = np.load(stats_file, allow_pickle=True)
 
-        # quick workaround (patch of suite2p code) because of suite2p internal error for these methods in ROI class
-        def from_stat_dict(stat: Dict[str, Any]) -> suite2p.ROI:
-            return suite2p.ROI(ypix=stat['ypix'], xpix=stat['xpix'], lam=stat['lam'], med=stat['med'], do_crop=False)
-
-        def to_array_(self, Ly: int, Lx: int) -> np.ndarray:
-            """Returns a 2D boolean array of shape (Ly x Lx) indicating where the roi is located."""
-            arr = np.zeros((Ly, Lx), dtype=float)
-            arr[self.ypix, self.xpix] = 1
-            return arr
-
-        def stats_dicts_to_3d_array_():
-            arrays = []
-            for i, stat in enumerate(self.stat):
-                array = to_array_(from_stat_dict(stat=stat), Ly=self.output_ops['Ly'], Lx=self.output_ops['Lx'])
-                array *= i + 1
-                arrays.append(array)
-            return np.stack(arrays)
-
-        self.im = stats_dicts_to_3d_array_()
+        self.im = stats_dicts_to_3d_array_(stat_dict=self.stat, output_ops=self.output_ops)
         self.im[self.im == 0] = np.nan
 
     # consider use of properties
@@ -628,7 +628,6 @@ class Suite2pResultsExperiment:
         # ops = np.load('ops.npy', allow_pickle=True).item()
         # iscell = np.load('iscell.npy', allow_pickle=True)
 
-
         mask_img = np.zeros((self.output_ops['Ly'], self.output_ops['Lx']), dtype='uint8')
 
         cell_ids = self.cell_id if cell_ids == 'all' else cell_ids
@@ -636,9 +635,28 @@ class Suite2pResultsExperiment:
             if n in cell_ids:
                 ypix = self.stat[n]['ypix']
                 xpix = self.stat[n]['xpix']
-                mask_img[ypix, xpix] = 255
+                mask_img[ypix, xpix] = np.random.randint(10, 255)
 
-        tf.imwrite(save_path, mask_img, photometric='minisblack')
+        save_array_to_tiff(save_path=save_path, data=mask_img)
+
+
+    # PROCESSING OF SUITE2P OUTPUT
+    def filterROIs(self, overlapthreshold: int = None, skewthreshold: float = None, footprintthreshold: float = None, npixthreshold: float = None,
+                   aspectratiothreshold: float = None, classifierthreshold: float = None, boundarybox: np.array = None):
+
+        """todo
+        Filter Suite2p ROIs based on a variety of metrics of each ROI. Filters can be combined by providing a value to each filter.
+
+        :param skewthreshold:
+        :param footprintthreshold:
+        :param npixthreshold:
+        :param aspectratiothreshold:
+        :param classifierthreshold:
+        :param boundarybox:
+        :param overlapthreshold: percentage threshold for filtering out overlapping ROIs. if overlap between two or more ROIs exceeds a specified percentage threshold, then remove the ROI with smaller npix.
+
+        """
+
 
 
 class Suite2pResultsTrial:
@@ -701,6 +719,7 @@ class Suite2pResultsTrial:
             self.stat = s2pExp.stat[0]
             self.output_ops = s2pExp.output_ops
             self.n_units = s2pExp.n_units
+            self.iscell = s2pExp.iscell
 
             self.raw = s2pExp.raw[:, self.trial_frames[0]:self.trial_frames[
                 1]]  # array of raw Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
@@ -719,6 +738,10 @@ class Suite2pResultsTrial:
 
                 # self.dfof.append(normalize_dff(self.raw[plane]))  # calculate df/f based on relevant frames
                 self.__s2pResultExists = True
+
+        self.im = stats_dicts_to_3d_array_(stat_dict=s2pExp.stat, output_ops=s2pExp.output_ops)
+        self.im[self.im == 0] = np.nan
+
 
     def makeFrameAverageTiff(self, reg_tif_dir: str, frames: Union[int, list], peri_frames: int = 100,
                              save_dir: str = None, to_plot=False):

@@ -3,6 +3,7 @@
 import bisect
 import re
 import sys
+from pathlib import Path
 from typing import Union
 
 import io
@@ -49,9 +50,22 @@ def return_parent_dir(file_path: str):
 
 
 def save_figure(fig, save_path_full: str = None):
-    print(f'\nsaving figure to: {save_path_full}')
-    os.makedirs(save_path_full)
+    print(f'\n\- saving figure to: {save_path_full}', end="\r")
+    os.makedirs(return_parent_dir(save_path_full), exist_ok=True)
     fig.savefig(save_path_full)
+    print(f'\n|- saved figure to: {save_path_full}')
+
+def save_to_csv(df: pd.DataFrame, savepath: Path = None):
+    """
+    Save pandas dataframe to csv at savepath.
+
+    :param df:
+    :param savepath:
+    """
+    savepath.parent.mkdir(parents=True, exist_ok=True)
+
+    df.to_csv(savepath)
+    print(f"|- saved dataframe to {savepath}")
 
 
 def filterDfBoolCol(df, true_cols=[], false_cols=[]):
@@ -247,6 +261,14 @@ def listdirFullpath(directory, string=''):
             if string in file]
 
 
+def save_array_to_tiff(save_path, data: np.array):
+    """use Tifffile imwrite function to save a numpy array to tiff file"""
+    print(f"\n\- saving array of shape {data.shape} to: {save_path}", end="\r")
+    if not os.path.exists(return_parent_dir(save_path)):
+        os.makedirs(return_parent_dir(save_path), exist_ok=True)
+    tf.imwrite(file=save_path, data=data, photometric='minisblack')
+    print(f"\n|- saved array of shape {data.shape} to: {save_path}")
+
 def SaveDownsampledTiff(tiff_path: str = None, stack: np.array = None, group_by: int = 4, save_as: str = None,
                         plot_zprofile: bool = True):
     """
@@ -308,8 +330,10 @@ def SaveDownsampledTiff(tiff_path: str = None, stack: np.array = None, group_by:
         final_stack = avgd_stack
 
     # write output
-    print("\nsaving %s to... %s" % (final_stack.shape, save_as))
-    tf.imwrite(save_as, final_stack, photometric='minisblack')
+    # print("\nsaving %s to... %s" % (final_stack.shape, save_as))
+    # tf.imwrite(save_as, final_stack, photometric='minisblack')
+    save_array_to_tiff(save_path=save_as, data=final_stack)
+
 
     return final_stack
 
