@@ -1,7 +1,3 @@
-from packerlabimaging.AllOpticalMain import AllOpticalTrial
-
-import packerlabimaging as pkg
-
 # expobj = pkg.import_obj('/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
 # trialobj = expobj.load_trial(trialID='t-013')
 #
@@ -59,7 +55,7 @@ import packerlabimaging as pkg
 
 
 # %%
-from packerlabimaging import AllOpticalMain
+from packerlabimaging.extensions import AllOpticalMain
 
 
 def test_AllOpticalClass(alloptical_trial_fixture):

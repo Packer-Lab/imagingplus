@@ -1,4 +1,4 @@
-from packerlabimaging.AllOpticalMain import AllOpticalTrial
+from packerlabimaging.extensions.AllOpticalMain import AllOpticalTrial
 
 from packerlabimaging.utils.io import import_obj
 

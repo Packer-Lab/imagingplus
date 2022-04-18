@@ -46,7 +46,8 @@ def print_size_vars():
 
 
 def return_parent_dir(file_path: str):
-    return file_path[:[(s.start(), s.end()) for s in re.finditer('/', file_path)][-1][0]]
+    return os.path.dirname(file_path)  # todo replace instance usages of return_parent_dir with os.path.dirname
+    # return file_path[:[(s.start(), s.end()) for s in re.finditer('/', file_path)][-1][0]]
 
 
 def save_figure(fig, save_path_full: str = None):

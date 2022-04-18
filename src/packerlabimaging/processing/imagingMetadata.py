@@ -4,55 +4,55 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 
 # need to implement alternative class constructor using cls.method
+from typing import List, Union, Any
 
-@dataclass
+
 class ImagingMetadata:
     """Class containing metadata about imaging microscope"""
-    microscope: str  # given name of microscope (use 'Bruker' to process Metadata from PrairieView)
-    n_frames: int  # number of imaging frames in the current trial
-    fps: float  # rate of imaging acquisition (frames per second)
-    frame_x: int  # num of pixels in the x direction of a single frame
-    frame_y: int  # num of pixels in the y direction of a single frame
-    n_planes: int  # num of FOV planes in imaging acquisition
-    pix_sz_x: float  # size of a single imaging pixel in x direction (microns)
-    pix_sz_y: float  # size of a single imaging pixel in y direction (microns)
 
+    def __init__(self, microscope, n_frames, fps, frame_x, frame_y, n_planes, pix_sz_x, pix_sz_y, **kwargs):
 
-@dataclass
-class PrairieViewMetadata:  # todo convert to child inheritance of ImagingMetadata as parent class
-    tiff_path_dir: str  # path to the directory containing the .tiff imaging output from PrairieView. the .xml
-    microscope: str = 'Bruker'
-    # PrairieView files should also be in the same directory.
-
-    def __post_init__(self):
-        print('\n\- Adding Imaging Acquisition Metadata from Bruker PrairieView ...')
-
-        assert self.microscope == 'Bruker', 'invalid use of PrairieViewMetadata on nonBruker system.'
-        # self.n_frames: int = 0  # number of imaging frames in the current trial
-        # self.fps = None  # rate of imaging acquisition (frames per second)
-        # self.frame_x = None  # num of pixels in the x direction of a single frame
-        # self.frame_y = None  # num of pixels in the y direction of a single frame
-        # self.n_planes = None  # num of FOV planes in imaging acquisition
-        # self.pix_sz_x = None  # size of a single imaging pixel in x direction (microns)
-        # self.pix_sz_y = None  # size of a single imaging pixel in y direction (microns)
-        self.scan_x = None  # TODO ROB - not sure what the comment for this is
-        self.scan_y = None  # TODO ROB - not sure what the comment for this is
-        self.zoom: float = 0.0  # zoom level on Bruker microscope
-        self.last_good_frame = None  # indicates when the last good frame was during the t-series recording,
-        # if nothing was wrong the value is 0, otherwise it is >0 and that indicates that PV is not sure what
-        # happened after the frame listed, but it could be corrupt data
-
-        self._parsePVMetadata()
+        self.microscope = microscope  #: given name of microscope (use 'Bruker' to process Metadata from PrairieView)
+        self.n_frames = n_frames  # number of imaging frames in the current trial
+        self.fps = fps  # rate of imaging acquisition (frames per second)
+        self.frame_x = frame_x  # num of pixels in the x direction of a single frame
+        self.frame_y = frame_y  # num of pixels in the y direction of a single frame
+        self.n_planes = n_planes  # num of FOV planes in imaging acquisition
+        self.pix_sz_x = pix_sz_x  # size of a single imaging pixel in x direction (microns)
+        self.pix_sz_y = pix_sz_y  # size of a single imaging pixel in y direction (microns)
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
     def __repr__(self):
-        return (
-            f'PrairieViewMetadata from: {self.tiff_path_dir}\n\tn planes: {self.n_planes} \n\tn frames: {self.n_frames}'
-            f'\n\tfps: {self.fps} \n\tframe size (px): {self.frame_x} x {self.frame_y}  \n\tzoom: {self.zoom} \n\t '
-            f'pixel size (um): {self.pix_sz_x}, {self.pix_sz_y} '
-            f'\n\tscan centre (V):', self.scan_x, self.scan_y)
+        return f'ImagingMetadata for imaging data collected with {self.microscope}.'
+
+
+
+class PrairieViewMetadata(ImagingMetadata):
+    """class for parsing metadata of imaging microscope system."""
+
+    def __init__(self, pv_xml_dir: str, microscope: str = 'Bruker', **kwargs):
+        assert microscope == 'Bruker', 'invalid use of PrairieViewMetadata on non Bruker system.'
+
+        print(f'\n\- Adding Imaging Acquisition Metadata from {microscope} ...')
+        self.pv_xml_dir = pv_xml_dir  #: path to the directory containing the .xml imaging output from PrairieView for a given trial
+        pv_metadata = self._parsePVMetadata()
+        super().__init__(microscope=microscope, **pv_metadata)  # call to ImagingMetadata parent class
+
+        self.scan_x = pv_metadata['scan_x']  #: resonant scan center in x axis
+        self.scan_y = pv_metadata['scan_y']  #: resonant scan center in y axis
+        self.zoom: float = pv_metadata['zoom']  #: zoom level on Bruker microscope
+        self.last_good_frame = pv_metadata['last_good_frame']  #: indicates when the last good frame was during the t-series recording, if nothing was wrong the value is 0, otherwise it is >0 and that indicates that PV is not sure what happened after the frame listed, but it could be corrupt data
+
+
+    def __repr__(self):
+        return f'PrairieViewMetadata from: {self.pv_xml_dir}\n\tn planes: {self.n_planes} \n\tn frames: {self.n_frames}' \
+               f'\n\tfps: {self.fps} \n\tframe size (px): {self.frame_x} x {self.frame_y}  \n\tzoom: {self.zoom} \n\t' \
+            f'pixel size (um): {self.pix_sz_x}, {self.pix_sz_y} ' \
+            f'\n\tscan centre (V): {self.scan_x}, {self.scan_y}'
 
     @staticmethod
-    def _getPVStateShard(root, key):
+    def _getPVStateShard(root, key) -> List:
         """
         Find the value, description and indices of a particular parameter from an xml file
 
@@ -95,7 +95,6 @@ class PrairieViewMetadata:  # todo convert to child inheritance of ImagingMetada
 
         return value, description, index
 
-    # noinspection PyTypeChecker,PyUnboundLocalVariable
     def _parsePVMetadata(self):
         """
         Parse all of the relevant acquisition metadata from the PrairieView xml file for this recording
@@ -105,20 +104,20 @@ class PrairieViewMetadata:  # todo convert to child inheritance of ImagingMetada
         print('\n\t\- Parsing PV Metadata for Bruker microscope...')
 
 
-        tiff_path = self.tiff_path_dir  # starting path to search for the .xml PrairieView files
+        xml_dir_path = self.pv_xml_dir  # starting path to search for the .xml PrairieView files
         xml_path = []  # searching for xml path
-        print(f'\t searching for xml path in tiff path directory at: {tiff_path} ... ')
+        print(f'\t searching for xml path in tiff path directory at: {xml_dir_path} ... ')
         try:  # look for xml file in path, or two paths up (achieved by decreasing count in while loop)
             count = 2
             while count != 0 and not xml_path:
                 count -= 1
-                for file in os.listdir(tiff_path):
+                for file in os.listdir(xml_dir_path):
                     if file.endswith('.xml'):
-                        xml_path = os.path.join(tiff_path, file)
-                tiff_path = os.path.dirname(tiff_path)  # re-assign tiff_path as next folder up
-
+                        xml_path = os.path.join(xml_dir_path, file)
+                xml_dir_path = os.path.dirname(xml_path)  # re-assign xml_dir_path as next folder up
+            assert os.path.exists(xml_path), f'xml_path could not be found: {xml_path}'
         except Exception:
-            raise Exception(f'ERROR: Could not find xml for this acquisition at: {tiff_path}')
+            raise Exception(f'ERROR: Could not find xml for this acquisition at: {xml_dir_path}')
 
         xml_tree = ET.parse(xml_path)  # parse xml from a path
         root = xml_tree.getroot()  # make xml tree structure
@@ -132,7 +131,6 @@ class PrairieViewMetadata:  # todo convert to child inheritance of ImagingMetada
             n_planes = 1
 
         frame_branch = root.findall('Sequence/Frame')[-1]
-        #         frame_period = float(self._getPVStateShard(root,'framePeriod')[0])
         try:
             frame_period = float(self._getPVStateShard(frame_branch, 'framePeriod')[0])
         except Exception:
@@ -180,24 +178,27 @@ class PrairieViewMetadata:  # todo convert to child inheritance of ImagingMetada
         print('\tn planes:', self.n_planes,
               '\n\tn frames:', self.n_frames,
               '\n\tfps:', self.fps,
-              '\n\tframe size (px):', self.frame_x, 'x', self.frame_y,
+              '\n\tframe size (px):', self.frame_x, 'y', self.frame_y,
               '\n\tzoom:', self.zoom,
               '\n\tpixel size (um):', self.pix_sz_x, self.pix_sz_y,
               '\n\tscan centre (V):', self.scan_x, self.scan_y
               )
 
-        # return {
-        # "fps": fps / n_planes,
-        # "frame_x": frame_x,
-        # "frame_y": frame_y,
-        # "n_planes": n_planes,
-        # "pix_sz_x": pix_sz_x,
-        # "pix_sz_y": pix_sz_y,
-        # "scan_x": scan_x,
-        # "scan_y": scan_y,
-        # "zoom": zoom,
-        # "n_frames": int(n_frames),
-        # "last_good_frame": last_good_frame
-        # }
+        return_dict = {'fps': round(self.fps, 5),
+                'n_planes': self.n_planes,
+                'n_frames': self.n_frames,
+                'frame_x': self.frame_x,
+                'frame_y': self.frame_y,
+                'zoom': self.zoom,
+                'pix_sz_x': round(pix_sz_x, 5),
+                'pix_sz_y': round(pix_sz_y, 5),
+                'scan_x': scan_x,
+                'scan_y': scan_y,
+                'last_good_frame': last_good_frame}
 
+        return return_dict
 
+if __name__ == '__main__':
+    testdir = '/home/pshah/mnt/qnap/Data/2021-01-28/2021-01-28_PS14_t-002'
+    pvdata = PrairieViewMetadata(pv_xml_dir=testdir)
+    print(pvdata)

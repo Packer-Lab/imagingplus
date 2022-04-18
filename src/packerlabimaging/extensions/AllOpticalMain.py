@@ -13,11 +13,11 @@ import scipy.stats as stats
 import tifffile as tf
 
 from packerlabimaging.utils.utils import convert_to_8bit
-from .TwoPhotonImagingMain import TwoPhotonImagingTrial, TwoPhotonImagingMetainfo
-from .processing.TwoPstim import Targets
-from .utils.classes import PaqInfoTrial, UnavailableOptionError
+from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial, TwoPhotonImagingMetainfo
+from packerlabimaging.processing.TwoPstim import Targets
+from packerlabimaging.utils.classes import PaqInfoTrial, UnavailableOptionError
 # %%
-from .processing.anndata import AnnotatedData
+from packerlabimaging.processing.anndata import AnnotatedData
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
 
@@ -341,7 +341,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
                 bad_frames = list(np.unique(bad_frames))
                 print(
                     f'***Added a total of {len(self.photostim_frames)} photostim frames to bad_frames.npy at: {self.tiff_path_dir}/bad_frames.npy \n\t total bad_frames: {len(bad_frames)}')
-                    # f'***Saving a total of {len(photostim_frames)} photostim frames to bad_frames.npy at: {BADFRAMESLOC}/bad_frames.npy')  # TODO replace BADFRAMESLOC with self.tiff_path_dir
+                    # f'***Saving a total of {len(photostim_frames)} photostim frames to bad_frames.npy at: {BADFRAMESLOC}/bad_frames.npy')  # TODO replace BADFRAMESLOC with self.pv_xml_dir
                 np.save(f'{self.tiff_path_dir}/bad_frames.npy',
                         bad_frames)  # save to npy file and remember to move npy file to tiff folder before running with suite2p
 
