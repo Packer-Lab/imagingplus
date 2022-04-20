@@ -17,7 +17,7 @@ from packerlabimaging.main.classes import Trial
 from packerlabimaging.processing.imagingMetadata import PrairieViewMetadata, ImagingMetadata
 from packerlabimaging.utils.utils import SaveDownsampledTiff
 from packerlabimaging.utils.classes import UnavailableOptionError, PaqInfo
-from packerlabimaging.processing.paq import PaqData
+from packerlabimaging.main.paq import PaqData
 from packerlabimaging.processing import anndata as ad
 
 
@@ -203,11 +203,11 @@ class TwoPhotonImaging(Trial):
         :return: PAQ data object
         """
 
-        paq_data_obj, paqdata = PaqData.import_paqdata(paq_path=paq_path)
+        paq_data_obj = PaqData.import_paqdata(file_path=paq_path, plot = False)
         assert frame_channel in paq_data_obj.paq_channels, f"frame_channel argument: '{frame_channel}', not found in channels in .paq data."
         paq_data_obj.frame_times_channame = frame_channel
-        paq_data_obj.frame_times = paq_data_obj.paq_frame_times(frame_channel=frame_channel)
-        paq_data_obj.sparse_paq_data = paq_data_obj.get_sparse_paq(frame_clock=paq_data_obj.frame_times)
+        paq_data_obj.frame_times = paq_data_obj.getPaqFrameTimes(frame_channel=frame_channel)
+        paq_data_obj.sparse_paq_data = paq_data_obj.get_sparse_data(frame_times=paq_data_obj.frame_times)
 
         return paq_data_obj
 

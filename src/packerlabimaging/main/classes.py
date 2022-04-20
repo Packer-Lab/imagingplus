@@ -1,7 +1,7 @@
 # this file contains the two fundamental class types (Trial and Experiment) needed to construct an experiment in packerlabimaging
 from __future__ import absolute_import
 from dataclasses import dataclass
-from typing import Optional, MutableMapping, Union, TypedDict, List
+from typing import Optional, MutableMapping, Union, TypedDict, List, Dict
 
 import numpy as np
 
@@ -14,7 +14,8 @@ import re
 import pickle
 
 
-# TODO add new class for temporal synchronization of additional 1d dataarrays with imaging data - parent of Paq
+# add new class for temporal synchronization of additional 1d dataarrays with imaging data - parent of Paq
+# todo - test new paqdata child class.
 
 # TODO add new class for cell annotations - parent of Suite2p
 
@@ -28,13 +29,33 @@ import pickle
 class TemporalData:
     file_path: str  #: path to data file
     sampling_rate: float  #: rate of data collection (Hz)
-    time_array: np.ndarray  #: 1D array of data collection time stamps
-    frame_times: str #: timestamps representing imaging frame times. must be of same time duration as imaging dataset.
+    channels: List[str]  #: list of data channel names.
+    # time_array: np.ndarray  #: 1D array of data collection time stamps
+    frame_times: Union[list, np.ndarray] = None #: timestamps representing imaging frame times. must be of same time duration as imaging dataset.
     data: np.ndarray = None #: N x Time array of an arbritrary number (N) 1D data channels collected over Time. must be of same time duration as time_array.
+    sparse_data: Dict[str, np.ndarray] = None  #: dictionary of channels with
 
     def __post_init__(self):
-        assert len(self.time_array) == self.data.shape[1]
+        # assert len(self.time_array) == self.data.shape[1]
+        pass
 
+    def get_sparse_data(self, frame_times: Union[list, np.ndarray]):
+        """
+        Returns dictionary of numpy array keyed on channels from paq_data timed to 2photon imaging frame_times.
+
+        :param frame_times:
+        :return:
+        """
+        assert self.frame_times, 'no frame_times found to retrieve data from those timestamps.'
+
+        print(f"\n\t\- Getting imaging frames timed data from {len(frame_times)} frames ... ")
+
+        # read in and save sparse version of all data channels (only save data from timepoints at frame clock times)
+        sparse_data = {}
+        for idx, chan in enumerate(self.channels):
+            data = getattr(self, chan)
+            sparse_data[chan] = data[frame_times]
+        return sparse_data
 
 @dataclass
 class CellAnnotations:
