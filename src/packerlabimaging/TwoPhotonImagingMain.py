@@ -235,7 +235,7 @@ class TwoPhotonImagingTrial:
         Creates annotated data (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial.
 
         """
-        if self.Suite2p._s2pResultExists and self.Paq:
+        if self.Suite2p.s2pResultExists and self.Paq:
             # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
             # build dataframe for obs_meta from suite2p stat information
             obs_meta = pd.DataFrame(
@@ -278,7 +278,7 @@ class TwoPhotonImagingTrial:
     def dfof(self):
         """(delta F)/F normalization of raw Suite2p data of trial."""
         assert hasattr(self, 'Suite2p'), 'no Suite2p module found. dfof function implemented to just normalize raw traces from Suite2p ROIs.'
-        if self.Suite2p._s2pResultExists:
+        if self.Suite2p.s2pResultExists:
             dFF = self.normalize_dff(self.Suite2p.raw)
             return dFF
 

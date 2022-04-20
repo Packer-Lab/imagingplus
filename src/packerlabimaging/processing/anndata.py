@@ -1,7 +1,10 @@
 import anndata as ad
 from typing import Optional, Literal
 
+import numpy as np
 import pandas as pd
+
+from packerlabimaging.main.classes import ImagingTrial
 
 
 class AnnotatedData(ad.AnnData):
@@ -141,60 +144,36 @@ class AnnotatedData(ad.AnnData):
 
         return df
 
+    @classmethod
+    def create_anndata(cls, trial: ImagingTrial):
+        """
+        Alternative constructor to create anndata object using ImagingTrial as input.
+        Creates annotated data (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial.
+
+        """
+        if trial.cells and trial.tmdata and trial.imdata:
+            # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
+            # build dataframe for obs_meta from suite2p stat information
+            obs_meta = trial.cells.data
+
+            var_meta = trial.tmdata.data
+
+            assert obs_meta.shape[0] == trial.imdata.data.shape[1], '.cells.data shape does not match .imdata.data shape that are being set together.'
+            if var_meta.shape[0] == trial.imdata.data.shape[0]:
+                var_meta = var_meta.T
+            elif var_meta.shape[1] != trial.imdata.data.shape[0]:
+                raise ValueError('.tmdata.data shape does not match .imdata.data shape that are being set together.')
 
 
+            print(f"\n\----- CREATING annotated data object using AnnData:")
+            adata = cls(X=trial.imdata.data, obs=obs_meta, var=var_meta.T)
 
+            print(f"\n{adata}")
+            return adata
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        else:
+            Warning(
+                'did not create anndata. anndata creation only available if experiments were processed with suite2p and .Paq file(s) provided for temporal synchronization')
 
 
 

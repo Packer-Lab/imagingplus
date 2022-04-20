@@ -1,3 +1,5 @@
+# use this in a tutorial as example of building new workflow from existing TwoPhotonImaging
+
 import os
 import time
 

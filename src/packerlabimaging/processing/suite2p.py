@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Dict, Any, Optional, List, Union
 
 import numpy as np
+import pandas as pd
 import suite2p
 import matplotlib.pyplot as plt
 from suite2p import run_s2p
@@ -797,8 +798,17 @@ class Suite2pResultsTrial:
                 plt.show()  # just plot for now to make sure that you are doing things correctly so far
 
 
+    def getCellsAnnotations(self):
+        if self.s2pResultExists:
+            # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
+            # build dataframe for obs_meta from suite2p stat information
+            obs_meta = pd.DataFrame(columns=['original_index', 'footprint', 'mrs', 'mrs0', 'compact', 'med', 'npix', 'radius',
+                         'aspect_ratio', 'npix_norm', 'skew', 'std'], index=range(len(self.stat)))
+            for idx, __stat in enumerate(self.stat):
+                for __column in obs_meta:
+                    obs_meta.loc[idx, __column] = __stat[__column]
 
-
+            return obs_meta
 
 
 #### archiving away for now - trying to switch to an approach that doesn't inherit from parent suite2p obj.

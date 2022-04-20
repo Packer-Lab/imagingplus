@@ -4,12 +4,17 @@ from dataclasses import dataclass
 from typing import Optional, MutableMapping, Union, TypedDict, List, Dict
 
 import numpy as np
+import pandas as pd
 
+from packerlabimaging.processing.imagingMetadata import ImagingMetadata
+from packerlabimaging.processing.suite2p import Suite2pResultsTrial
 from packerlabimaging.utils.classes import TrialsInformation, PaqInfo
 
 import os
 import time
 import re
+import tifffile as tf
+
 
 import pickle
 
@@ -23,7 +28,8 @@ import pickle
 
 # TODO add function in experiment object for merging of Trials across time axis (assert they have the same cell annotations).
 
-
+# TODO [ ]  thinking about restructuring TwoPhotonImaging trial methods to more general trial type
+#    [ ]  then making TwoPhotonImaging as an independent workflow, allowing the general trial type to retain the methods that are *currently* in TwoPhotonImaging
 
 @dataclass
 class TemporalData:
@@ -32,12 +38,33 @@ class TemporalData:
     channels: List[str]  #: list of data channel names.
     # time_array: np.ndarray  #: 1D array of data collection time stamps
     frame_times: Union[list, np.ndarray] = None #: timestamps representing imaging frame times. must be of same time duration as imaging dataset.
-    data: np.ndarray = None #: N x Time array of an arbritrary number (N) 1D data channels collected over Time. must be of same time duration as time_array.
+    data: pd.DataFrame = None #: N x Time array of an arbritrary number (N) 1D data channels collected over Time. must be of same time duration as time_array.
     sparse_data: Dict[str, np.ndarray] = None  #: dictionary of channels with
 
     def __post_init__(self):
         # assert len(self.time_array) == self.data.shape[1]
         pass
+
+    def __repr__(self):
+        return f"TemporalData module, containing {self.n_timepoints} timepoints and {self.n_channels} channels."
+
+    def __str__(self):
+        return f"TemporalData module, containing {self.n_timepoints} timepoints and {self.n_channels} channels: \n{self.channels}"
+
+    @property
+    def n_frames(self):
+        """number of timed frames"""
+        return len(self.frame_times)
+
+    @property
+    def n_timepoints(self):
+        """number of data collection timepoints"""
+        return len(self.data.columns)
+
+    @property
+    def n_channels(self):
+        """number of data collection channels"""
+        return len(self.data.columns)
 
     def get_sparse_data(self, frame_times: Union[list, np.ndarray]):
         """
@@ -60,7 +87,32 @@ class TemporalData:
 @dataclass
 class CellAnnotations:
     cells_array: List[int]  #: ID of all cells in imaging dataset. must be of same cell length as imaging dataset.
-    data: np.ndarray = None  #: N x Cells array of an arbritrary number (N) 1D annotations channels collected for all Cells. must contain same number of cells as cells_array.
+    annotations: List[str]  #: list of names of annotations.
+    data: pd.DataFrame = None  #: N x Cells array of an arbritrary number (N) 1D annotations channels collected for all Cells. must contain same number of cells as cells_array.
+
+    # todo - think about adding alt constructor for things like suite2p
+    @classmethod
+    def s2p_to_CellAnnotations(cls, s2pTrial: Suite2pResultsTrial):
+        """alternative constructor for CellAnnotations from suite2p results."""
+        data = s2pTrial.getCellsAnnotations()
+        obj = cls(cells_array=data['original_index'], annotations=data.columns, data=data)
+        return obj
+
+    @property
+    def n_cells(self):
+        """number of cells"""
+        return len(self.cells_array)
+
+    @property
+    def n_annotations(self):
+        """number of annotations"""
+        return len(self.annotations)
+
+    def __repr__(self):
+        return f"CellAnnotations module, containing {self.n_cells} cells and {self.n_annotations} annotations."
+
+    def __str__(self):
+        return f"CellAnnotations module, containing {self.n_cells} cells and {self.n_annotations} annotations: \n{self.annotations}"
 
 
 @dataclass
@@ -70,14 +122,174 @@ class ImagingData:
 
 
 @dataclass
-class Trial:
+class ImagingTrial:
     date: str
     trialID: str
     expID: str
     dataPath: str
+    saveDir: str  #: main dir where the experiment object and the trial objects will be saved to
     microscope: str = ''
     group: str = ''
     comment: str = ''
+    imparams: ImagingMetadata = None
+    imdata: ImagingData = None
+    cells: CellAnnotations = None
+    tmdata: TemporalData = None
+
+    def __post_init__(self):
+        self._metainfo = {'date': self.date,
+                          'trialID': self.trialID,
+                          'expID': self.expID,
+                          'expGroup': self.group,
+                          'comments': self.comment,
+                          'microscope': self.microscope}
+
+        if os.path.exists(self.dataPath):
+            self._metainfo['dataPath'] = self.dataPath
+        else:
+            raise FileNotFoundError(f"tiff_path does not exist: {self.dataPath}")
+
+        # set, create analysis save path directory and create pkl object
+        os.makedirs(self.saveDir, exist_ok=True)
+        self._pkl_path = f"{self.saveDir}{self.date}_{self.trialID}.pkl"
+        self.save_pkl(pkl_path=self.pkl_path)  # save experiment object to pkl_path
+
+    # todo maybe ? - add alternative constrcutor to handle construction if temporal data or cell annotations or imaging data is provided
+        # might be useful for providing like submodules (especially things like Suite2p)
+
+    @property
+    def date(self):
+        """date of the experiment datacollection"""
+        return self._metainfo['date']
+
+    @property
+    def microscope(self):
+        """name of imaging data acquisition microscope system"""
+        return self._metainfo['microscope']
+
+    @property
+    def expID(self):
+        """experiment ID of current trial object"""
+        return self._metainfo['expID']
+
+    @property
+    def trialID(self):
+        """trial ID of current trial object"""
+        return self._metainfo['trialID']
+
+    @property
+    def tiff_path(self):
+        """tiff path of current trial object"""
+        return self._metainfo['dataPath']
+
+    @property
+    def t_series_name(self):
+        if "expID" in self._metainfo.keys() and "trialID" in self._metainfo.keys():
+            return f'{self._metainfo["expID"]} {self._metainfo["trialID"]}'
+        else:
+            raise ValueError('no information found to retrieve t series id')
+
+    @property
+    def tiff_path_dir(self):
+        """Parent directory of .tiff data path"""
+        return os.path.dirname(self.tiff_path)
+
+    @property
+    def pkl_path(self):
+        """path in Analysis folder to save pkl object"""
+        return self._pkl_path
+
+    @pkl_path.setter
+    def pkl_path(self, path: str):
+        self._pkl_path = path
+
+    def save_pkl(self, pkl_path: str = None):
+        """
+        Alias method for saving current object to pickle file.
+
+        :param pkl_path: (optional) provide path to save object to pickle file.
+        """
+        if pkl_path:
+            parent = os.path.relpath(os.path.join(pkl_path, os.pardir))
+            if os.path.exists(parent):
+                print(f'saving new trial object to: {pkl_path}')
+                self.pkl_path = pkl_path
+            else:
+                raise FileNotFoundError(f"Parent directory path: `{parent}` was not found for saving .pkl")
+
+
+        with open(self.pkl_path, 'wb') as f:
+            pickle.dump(self, f)
+        print("\n\t -- data object saved to %s -- " % self.pkl_path)
+
+    def save(self):
+        """
+        Alias method for saving current object as pickle file.
+        """
+        self.save_pkl()
+
+    def plotSingleImageFrame(self, frame_num: int = 0, title: str = None):
+        """
+        plots an image of a single specified tiff frame after reading using tifffile.
+        :param frame_num: frame # from 2p imaging tiff to show (default is 0 - i.e. the first frame)
+        :param title: (optional) give a string to use as title
+        :return: matplotlib imshow plot
+        """
+        from packerlabimaging.plotting.plotting import showSingleTiffFrame
+        stack = showSingleTiffFrame(tiff_path=self.tiff_path, frame_num=frame_num, title=title)
+
+        # stack = tf.imread(self.tiff_path, key=frame_num)
+        # plt.imshow(stack, cmap='gray')
+        # plt.suptitle(title) if title is not None else plt.suptitle(f'frame num: {frame_num}')
+        # plt.show()
+        return stack
+
+
+    ## below properties/methods have pre-requisite processing steps
+    @property
+    def n_frames(self):
+        assert self.imparams, f'add imaging metadata under imparams to access n_frames property.'
+        try:
+            return self.imparams.n_frames
+        except AttributeError:
+            raise AttributeError('n_frames couldnot be retrieved from imaging metadata.')
+
+    def importTrialTiff(self) -> np.ndarray:
+        """
+        Import current trial's imaging tiff in full.
+
+        :return: imaging tiff as numpy array
+        """
+        print(f"\n\- loading raw TIFF file from: {self.tiff_path}", end='\r')
+        im_stack = tf.imread(self.tiff_path, key=range(self.imparams.n_frames))
+        print('|- Loaded experiment tiff of shape: ', im_stack.shape)
+
+        return im_stack
+
+    def meanRawFluTrace(self):
+        """
+        Collects the raw mean of FOV fluorescence trace across the t-series.
+
+        :return: mean fluorescence trace
+        """
+        try:
+            im_stack = self.importTrialTiff()
+
+            print('\n-----collecting mean raw flu trace from tiff file...')
+            mean_flu_img = np.mean(im_stack, axis=0)
+            mean_fov_flutrace = np.mean(np.mean(im_stack, axis=1), axis=1)
+
+            return mean_flu_img, mean_fov_flutrace
+        except AssertionError:
+            raise Warning('no imaging metadata module found for trial. set imaging metadata to `.imparams`')
+
+    def makeDownsampledTiff(self):
+        """Import current trial tiff, create downsampled tiff and save in default analysis directory."""
+
+        stack = self.importTrialTiff()
+        from packerlabimaging.utils.utils import SaveDownsampledTiff
+        SaveDownsampledTiff(stack=stack, save_as=f"{self.saveDir}/{self.date}_{self.trialID}_downsampled.tif")
+
 
 
 # noinspection DuplicatedCode
@@ -86,9 +298,9 @@ class Experiment:
     """A class to initialize and store data of an imaging experiment. This class acts as a bucket to contain
     information about individual trial objects. """
     date: str  #: date of experiment data collection
+    expID: str  #: given identification name for experiment
     dataPath: str   #: main dir where the imaging data is contained
     saveDir: str  #: main dir where the experiment object and the trial objects will be saved to
-    expID: str  #: given identification name for experiment
     comments: str = ''  #: notes related to experiment
 
     def __post_init__(self):

@@ -16,7 +16,7 @@ from .utils.io import import_obj
 from .ExperimentMain import Experiment
 from .TwoPhotonImagingMain import TwoPhotonImagingTrial
 from packerlabimaging.workflows.AllOpticalMain import AllOpticalTrial
-from packerlabimaging.workflows.onePstimMain import OnePhotonStim
+from packerlabimaging.workflows.OnePhotonStimImaging import OnePhotonStim
 from .plotting import plotting
 from .utils.utils import define_term
 
