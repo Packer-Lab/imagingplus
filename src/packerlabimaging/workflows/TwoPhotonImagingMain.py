@@ -1,3 +1,5 @@
+# this file tries an approach of building twophoton imaging trial on top of a general Trial class
+
 import os
 import time
 import re
@@ -11,6 +13,7 @@ import pandas as pd
 import tifffile as tf
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
+from packerlabimaging.main.classes import Trial
 from packerlabimaging.processing.imagingMetadata import PrairieViewMetadata, ImagingMetadata
 from packerlabimaging.utils.utils import SaveDownsampledTiff
 from packerlabimaging.utils.classes import UnavailableOptionError, PaqInfo
@@ -18,22 +21,12 @@ from packerlabimaging.processing.paq import PaqData
 from packerlabimaging.processing import anndata as ad
 
 
-class TwoPhotonImagingMetainfo(TypedDict, total=False):
-    date: str
-    trial_id: str
-    exp_id: str
-    microscope: str
-    tiff_path: str
-    expGroup: str
-    PaqInfoTrial: PaqInfo
-    comments: str
 
-
-class TwoPhotonImagingTrial:
+class TwoPhotonImaging(Trial):
     """Two Photon Imaging Experiment Data Analysis Workflow."""
 
-    def __init__(self, date: str = None, trial_id: str = None, exp_id: str = None, microscope: str = None, tiff_path: str  = None,
-                 expGroup: str = None, saveDir: str = None, PaqInfoTrial: PaqInfo = None, imagingMicroscopeMetadata: ImagingMetadata = None,
+    def __init__(self, date: str = None, trialID: str = None, expID: str = None, tiff_path: str  = None, microscope: str = '',
+                 expGroup: str = None, saveDir: str = None, PaqInfo: PaqInfo = None, ImagingMetadata: ImagingMetadata = None,
                  comments: str = ''):
 
         """
@@ -47,22 +40,24 @@ class TwoPhotonImagingTrial:
         :param total_frames_stitched: provide frame number on which current trial starts in Suite2p Experiment Object
         """
 
+        Trial(date=date, trialID=trialID, expID=expID, dataPath=tiff_path, group=expGroup, comment=comments, microscope=microscope)
+
         # Initialize Attributes:
 
         self.Suite2p = None  #: Suite2p analysis sub-module  # todo consider adding wrapper method for attaching Suite2p to trial object (like might just need to refactor over from the experiment main file)
         self._metainfo = {'date': date,
-                          'trial_id': trial_id,
-                          'exp_id': exp_id,
-                          'microscope': microscope,
+                          'trialID': trialID,
+                          'expID': expID,
                           'expGroup': expGroup,
-                          'comments': comments}
+                          'comments': comments,
+                          'microscope': microscope}
 
         print(f'\----- CREATING TwoPhotonImagingTrial for trial: \n\t{self.trialID}')
 
-        if os.path.exists(tiff_path):
-            self._metainfo['tiff_path'] = tiff_path
+        if os.path.exists(self.dataPath):
+            self._metainfo['tiff_path'] = self.dataPath
         else:
-            raise FileNotFoundError(f"tiff_path does not exist: {tiff_path}")
+            raise FileNotFoundError(f"tiff_path does not exist: {self.dataPath}")
 
         # set, create analysis save path directory and create pkl object
         self.saveDir = saveDir
@@ -70,28 +65,30 @@ class TwoPhotonImagingTrial:
         self._pkl_path = f"{self.saveDir}{self.date}_{self.trialID}.pkl"
         self.save_pkl(pkl_path=self.pkl_path)  # save experiment object to pkl_path
 
-        # get imaging setup parameters
+
+        # ADD MODULES -
+        # imaging metadata
         if 'Bruker' in self.microscope:
             self.imparams = PrairieViewMetadata(pv_xml_dir=self.tiff_path_dir)
-        elif imagingMicroscopeMetadata:
-            self.imparams = imagingMicroscopeMetadata
+        elif ImagingMetadata:
+            self.imparams = ImagingMetadata
         else:
             Warning(f"NO imaging microscope parameters set. follow imagingMetadata to create a custom imagingMicroscopeMetadata class.")
 
-        # run Paq processing if paq_path is provided for trial
-        if PaqInfoTrial:
-            paq_path = PaqInfoTrial['paq_path']
+        # temporal synchronization data from .Paq
+        if PaqInfo:
+            paq_path = PaqInfo['paq_path']
             if os.path.exists(paq_path):
                 self._use_paq = True
             else:
                 raise FileNotFoundError(f"paq_path does not exist: {paq_path}")
 
-            frame_channel = PaqInfoTrial['frame_channel'] if 'frame_channel' in [*PaqInfoTrial] else KeyError(
+            frame_channel = PaqInfo['frame_channel'] if 'frame_channel' in [*PaqInfo] else KeyError(
                 'No frame_channel specified for .paq processing')  # channel on Paq file to read for determining stims
-            self.Paq = self._paqProcessingTwoPhotonImaging(paq_path=PaqInfoTrial['paq_path'],
+            self.Paq = self._paqProcessingTwoPhotonImaging(paq_path=PaqInfo['paq_path'],
                                                            frame_channel=frame_channel)  #: Paq data submodule for trial
 
-        # collect mean FOV Trace
+        # processing collect mean FOV Trace -- after collecting imaging params and Paq timing info
         self.meanFluImg, self.meanFovFluTrace = self.meanRawFluTrace()  #: mean image and mean FOV fluorescence trace
 
         self.data = None  #: anndata storage submodule
@@ -99,6 +96,7 @@ class TwoPhotonImagingTrial:
 
         # SAVE Trial OBJECT
         self.save()
+
 
     def __str__(self):
         if self.pkl_path:
@@ -134,12 +132,12 @@ class TwoPhotonImagingTrial:
     @property
     def expID(self):
         """experiment ID of current trial object"""
-        return self._metainfo['exp_id']
+        return self._metainfo['expID']
 
     @property
     def trialID(self):
         """trial ID of current trial object"""
-        return self._metainfo['trial_id']
+        return self._metainfo['trialID']
 
     @property
     def tiff_path(self):
@@ -148,15 +146,17 @@ class TwoPhotonImagingTrial:
 
     @property
     def t_series_name(self):
-        if "exp_id" in self._metainfo.keys() and "trial_id" in self._metainfo.keys():
-            return f'{self._metainfo["exp_id"]} {self._metainfo["trial_id"]}'
+        if "expID" in self._metainfo.keys() and "trialID" in self._metainfo.keys():
+            return f'{self._metainfo["expID"]} {self._metainfo["trialID"]}'
         else:
-            raise ValueError('._metainfo["exp_id"] and ._metainfo["trial_id"] could not be found to retrieve t series id')
+            raise ValueError('no information found to retrieve t series id')
 
     @property
     def tiff_path_dir(self):
-        return self.tiff_path[:[(s.start(), s.end()) for s in re.finditer('/', self.tiff_path)][-1][
-            0]]  # this is the directory where the Bruker xml files associated with the 2p imaging TIFF are located
+        """Parent directory of .tiff data path"""
+        return os.path.dirname(self.dataPath)
+        # return self.tiff_path[:[(s.start(), s.end()) for s in re.finditer('/', self.tiff_path)][-1][
+        #     0]]  # this is the directory where the Bruker xml files associated with the 2p imaging TIFF are located
 
     @property
     def pkl_path(self):
@@ -284,7 +284,7 @@ class TwoPhotonImagingTrial:
 
     def importTrialTiff(self) -> np.ndarray:
         """
-        Import current trial's microscope imaging tiff in full.
+        Import current trial's imaging tiff in full.
 
         :return: imaging tiff as numpy array
         """
@@ -300,13 +300,18 @@ class TwoPhotonImagingTrial:
 
         :return: mean fluorescence trace
         """
-        im_stack = self.importTrialTiff()
+        try:
+            assert self.imparams
 
-        print('\n-----collecting mean raw flu trace from tiff file...')
-        mean_flu_img = np.mean(im_stack, axis=0)
-        mean_fov_flutrace = np.mean(np.mean(im_stack, axis=1), axis=1)
+            im_stack = self.importTrialTiff()
 
-        return mean_flu_img, mean_fov_flutrace
+            print('\n-----collecting mean raw flu trace from tiff file...')
+            mean_flu_img = np.mean(im_stack, axis=0)
+            mean_fov_flutrace = np.mean(np.mean(im_stack, axis=1), axis=1)
+
+            return mean_flu_img, mean_fov_flutrace
+        except AssertionError:
+            raise Warning('no imaging metadata module found for trial. set imaging metadata to `.imparams`')
 
     def makeDownsampledTiff(self):
         """Import current trial tiff, create downsampled tiff and save in default analysis directory."""

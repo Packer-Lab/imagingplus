@@ -1,19 +1,11 @@
-### MAIN SCRIPT
-"""
-This is the main collection of functions for processing and analysis of calcium imaging data in the Packer lab.
-
-The fundamental object of data is one t-series of imaging, along with its associated .Paq file, accessory files generated
-from the microscope during data collection, and any user generated files associated with the experiment of this t-series.
-
-"""
-
-# option for pre-loading s2p results, and loading Experiment with some trials included in s2p results and some not. -- use s2p_use arg in TrialsInformation dict
-
+# this file contains the two fundamental class types (Trial and Experiment) needed to construct an experiment in packerlabimaging
 from __future__ import absolute_import
 from dataclasses import dataclass
-from typing import Optional, MutableMapping, Union
+from typing import Optional, MutableMapping, Union, TypedDict, List
 
-from .utils.classes import TrialsInformation, PaqInfo
+import numpy as np
+
+from packerlabimaging.utils.classes import TrialsInformation, PaqInfo
 
 import os
 import time
@@ -21,16 +13,53 @@ import re
 
 import pickle
 
-from suite2p.run_s2p import run_s2p
-from .utils import io
+
+# TODO add new class for temporal synchronization of additional 1d dataarrays with imaging data - parent of Paq
+
+# TODO add new class for cell annotations - parent of Suite2p
+
+# TODO test out new Trial class and new workflows
+
+# TODO add function in experiment object for merging of Trials across time axis (assert they have the same cell annotations).
 
 
 
-# TEMP VARIABLES FOR DEVELOPMENT
-N_PLANES = 1
-NEUROPIL_COEFF = 0.7
+@dataclass
+class TemporalData:
+    file_path: str  #: path to data file
+    sampling_rate: float  #: rate of data collection (Hz)
+    time_array: np.ndarray  #: 1D array of data collection time stamps
+    frame_times: str #: timestamps representing imaging frame times. must be of same time duration as imaging dataset.
+    data: np.ndarray = None #: N x Time array of an arbritrary number (N) 1D data channels collected over Time. must be of same time duration as time_array.
+
+    def __post_init__(self):
+        assert len(self.time_array) == self.data.shape[1]
 
 
+@dataclass
+class CellAnnotations:
+    cells_array: List[int]  #: ID of all cells in imaging dataset. must be of same cell length as imaging dataset.
+    data: np.ndarray = None  #: N x Cells array of an arbritrary number (N) 1D annotations channels collected for all Cells. must contain same number of cells as cells_array.
+
+
+@dataclass
+class ImagingData:
+    data: np.ndarray = None  #: N x Frames array of imaging data of cells (N) collected over time (Frames).
+
+
+
+@dataclass
+class Trial:
+    date: str
+    trialID: str
+    expID: str
+    dataPath: str
+    microscope: str = ''
+    group: str = ''
+    comment: str = ''
+
+
+# noinspection DuplicatedCode
 @dataclass
 class Experiment:
     """A class to initialize and store data of an imaging experiment. This class acts as a bucket to contain
@@ -180,13 +209,11 @@ class Experiment:
         """
 
         print(f'\- Adding suite2p module to experiment. Located under .Suite2p')
-
-        from .processing import suite2p
-        from .processing.suite2p import Suite2pResultsExperiment
+        from packerlabimaging.processing.suite2p import Suite2pResultsExperiment, Suite2pResultsTrial
 
         assert len([*self.TrialsInformation]) > 0, 'need to add at least 1 trial to Experiment before adding Suite2p functionality.'
 
-        if s2p_trials is 'all': s2p_trials = self.trialIDs
+        if s2p_trials == 'all': s2p_trials = self.trialIDs
         assert type(s2p_trials) == list and len(s2p_trials) > 0, 'no s2p trials given in list form.'
         for trial in s2p_trials: self._trialsTiffsSuite2p[trial] = self.TrialsInformation[trial]['tiff_path']
 
@@ -200,7 +227,7 @@ class Experiment:
                     break
             if self._s2pResultExists:
                 self._suite2p_save_path = s2pResultsPath
-                self.Suite2p = suite2p.Suite2pResultsExperiment(trialsTiffsSuite2p=self._trialsTiffsSuite2p,
+                self.Suite2p = Suite2pResultsExperiment(trialsTiffsSuite2p=self._trialsTiffsSuite2p,
                                                                 s2pResultsPath=s2pResultsPath)
             else:
                 raise ValueError(
@@ -214,7 +241,7 @@ class Experiment:
         for trial in s2p_trials:
             trialobj = self.load_trial(trialID=trial)
             # print(f'n_frames', self.Suite2p.n_frames)
-            trialobj.Suite2p = suite2p.Suite2pResultsTrial(s2pExp=self.Suite2p, trial_frames=(total_frames, total_frames + trialobj.n_frames))  # use trial obj's current trial frames
+            trialobj.Suite2p = Suite2pResultsTrial(s2pExp=self.Suite2p, trial_frames=(total_frames, total_frames + trialobj.n_frames))  # use trial obj's current trial frames
             trialobj.save()
             total_frames += trialobj.n_frames
 
@@ -225,14 +252,3 @@ class Experiment:
     @property
     def suite2p_save_path(self):
         return self._suite2p_save_path
-
-
-
-
-
-
-
-
-
-
-

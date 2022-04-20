@@ -15,7 +15,7 @@ import tifffile as tf
 from packerlabimaging.utils.utils import convert_to_8bit
 from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial, TwoPhotonImagingMetainfo
 from packerlabimaging.processing.TwoPstim import Targets
-from packerlabimaging.utils.classes import PaqInfoTrial, UnavailableOptionError
+from packerlabimaging.utils.classes import PaqInfo, UnavailableOptionError
 # %%
 from packerlabimaging.processing.anndata import AnnotatedData
 
@@ -1368,7 +1368,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             if 0 in x:
                 tiffs_loc = '%s/*Ch3.tif' % self.tiff_path_dir
                 tiff_path = glob.glob(tiffs_loc)[0]
-                print('working on loading up %s tiff from: ' % self.metainfo['trial_id'], tiff_path)
+                print('working on loading up %s tiff from: ' % self.metainfo['trialID'], tiff_path)
                 im_stack = tf.imread(tiff_path, key=range(self.imparams.n_frames))
                 print('Processing seizures from experiment tiff (wait for all seizure comparisons to be processed), \n '
                       'total tiff shape: ', im_stack.shape)
@@ -1389,7 +1389,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
                     # save in a subdirectory under the ANALYSIS folder path from whence t-series TIFF came from
                     save_path = self.saveDir + 'avg_stim_images'
                     save_path_stim = save_path + '/%s_%s_stim-%s.tif' % (
-                        self.metainfo['date'], self.metainfo['trial_id'], stim)
+                        self.metainfo['date'], self.metainfo['trialID'], stim)
                     if os.path.exists(save_path):
                         print("saving stim_img tiff to... %s" % save_path_stim) if verbose else None
                         avg_sub8 = convert_to_8bit(avg_sub, 0, 255)
@@ -1437,8 +1437,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         # stamm save path
         stam_save_path = os.path.join(qnap_path, 'Analysis', self.metainfo['date'], 'STA_Movies',
                                       '%s_%s_%s' % (self.metainfo['date'],
-                                                    self.metainfo['exp_id'],
-                                                    self.metainfo['trial_id']))
+                                                    self.metainfo['expID'],
+                                                    self.metainfo['trialID']))
         os.makedirs(stam_save_path, exist_ok=True)
 
         ##

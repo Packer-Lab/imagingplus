@@ -4,14 +4,17 @@
 import os
 from typing import Union
 
+import mpl_point_clicker
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import pandas as pd
 import tifffile as tf
 
 from packerlabimaging import Experiment
+from packerlabimaging.utils.utils import save_to_csv
 
-from packerlabimaging.AllOpticalMain import AllOpticalTrial
+from packerlabimaging.workflows.AllOpticalMain import AllOpticalTrial
 
 from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
 from packerlabimaging.plotting._utils import plotting_decorator, make_random_color_array, _add_scalebar, \
@@ -834,11 +837,8 @@ def plot_SLMtargets_Locs(trialobj: AllOpticalTrial, targets_coords: Union[list, 
     else:
         ax.set_title(f'SLM targets location - {trialobj.t_series_name}')
 
-    # mpl.pyplot.rcdefaults()
-    # fig.show()
 
-
-# alloptical trial
+# alloptical trial plotting
 
 
 def plot_s2pMasks():
@@ -846,3 +846,16 @@ def plot_s2pMasks():
 
     """
     pass
+
+# todo need to find new place for this:
+def export_klicker_to_csv(klicker: mpl_point_clicker.clicker, csv_path):
+    """Save point data from mplpointclicker klicker to .csv
+    :param klicker: mplpointclicker klicker object
+    :param csv_path: path to save csv file of klicker points
+    """
+    _columns = [*klicker.get_positions()]
+    data = {}
+    for i in [*klicker.get_positions()]:
+        data[i] = klicker.get_positions()[i][:, 0]  # take just the x coord of the clicked point from klicker (i.e. time value)
+    df = pd.DataFrame(data)
+    save_to_csv(df, savepath=csv_path)

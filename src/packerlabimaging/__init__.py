@@ -13,10 +13,11 @@ warnings.filterwarnings("ignore")
 
 from ._version import __version__
 from .utils.io import import_obj
-from .ExperimentMain import Experiment, define_term
+from .ExperimentMain import Experiment
 from .TwoPhotonImagingMain import TwoPhotonImagingTrial
-from packerlabimaging.extensions.AllOpticalMain import AllOpticalTrial
-from .onePstimMain import OnePhotonStim
+from packerlabimaging.workflows.AllOpticalMain import AllOpticalTrial
+from packerlabimaging.workflows.onePstimMain import OnePhotonStim
 from .plotting import plotting
+from .utils.utils import define_term
 
 print(f"\nimported packerlabimaging successfully\n\tversion: {__version__}\n")

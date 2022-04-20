@@ -43,6 +43,8 @@ class PrairieViewMetadata(ImagingMetadata):
         self.scan_y = pv_metadata['scan_y']  #: resonant scan center in y axis
         self.zoom: float = pv_metadata['zoom']  #: zoom level on Bruker microscope
         self.last_good_frame = pv_metadata['last_good_frame']  #: indicates when the last good frame was during the t-series recording, if nothing was wrong the value is 0, otherwise it is >0 and that indicates that PV is not sure what happened after the frame listed, but it could be corrupt data
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
 
     def __repr__(self):
@@ -197,8 +199,3 @@ class PrairieViewMetadata(ImagingMetadata):
                 'last_good_frame': last_good_frame}
 
         return return_dict
-
-if __name__ == '__main__':
-    testdir = '/home/pshah/mnt/qnap/Data/2021-01-28/2021-01-28_PS14_t-002'
-    pvdata = PrairieViewMetadata(pv_xml_dir=testdir)
-    print(pvdata)

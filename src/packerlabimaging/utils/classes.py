@@ -23,7 +23,7 @@ class UnavailableOptionError(Exception):
         super().__init__(f'Unavailable option for object. <{option}>')
 
 
-class PaqInfoTrial(TypedDict, total=False):
+class PaqInfo(TypedDict, total=False):
     """dictionary with preset keys to hold meta-information about an individual paq file."""
 
     frame_channel: str
@@ -37,7 +37,7 @@ class TrialsInformation(TypedDict, total=False):
     trialType: str
     tiff_path: str
     expGroup: str
-    PaqInfoTrial: PaqInfoTrial
+    PaqInfoTrial: PaqInfo
     s2p_use: bool
     naparm_path: str
     analysis_object_information: TypedDict("analysis_object_information",

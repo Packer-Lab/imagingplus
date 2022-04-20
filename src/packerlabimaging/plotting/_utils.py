@@ -4,14 +4,17 @@
 import os
 from typing import Union
 
+import mpl_point_clicker
 import numpy as np
 import functools
 import random
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+import pandas as pd
 import seaborn as sns
 
-from packerlabimaging.AllOpticalMain import AllOpticalTrial
+from packerlabimaging.utils.utils import save_to_csv
+from packerlabimaging.workflows.AllOpticalMain import AllOpticalTrial
 from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
 
 # global plotting params
@@ -315,12 +318,17 @@ def heatmap_options():
     jet = mpl.cm.get_cmap('jet')
     jet.set_bad(color='k')
 
-# %% GENERAL PLOTTING FUNCS
-### plot the location of provided coordinates
+
+
+
+
+
+# %% PLOTTING UTILITIES
+
 @plotting_decorator(figsize=(5, 5))
 def plot_coordinates(coords: list,  frame_x: int, frame_y: int, background: np.ndarray = None, fig=None, ax=None, **kwargs):
     """
-    plot coordinate locations
+    Plot coordinate locations using matplotlib's imshow function.
 
     :param targets_coords: ls containing (x,y) coordinates of targets to plot
     :param background: np.array on which to plot coordinates, default is black background (optional)

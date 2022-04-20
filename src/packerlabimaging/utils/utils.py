@@ -23,6 +23,23 @@ from statsmodels import stats
 
 from packerlabimaging.utils import io
 
+# UTILITIES
+
+# dictionary of terms, phrases, etc. that are used in the processing and analysis of imaging data
+terms_dictionary = {
+    'dFF': "normalization of datatrace for a given imaging ROI by subtraction and division of a given baseline value",
+    'ROI': "a single ROI from the imaging data"
+}
+
+
+def define_term(x: str):
+    try:
+        print(f"{x}:\t{terms_dictionary[x]}") if type(x) is str else print(
+            'ERROR: please provide a string object as the key')
+    except KeyError:
+        print(f'input - {x} - not found in dictionary')
+
+
 # report sizes of variables
 def _sizeof_fmt(num, suffix='B'):
     """ by Fred Cirera,  https://stackoverflow.com/a/1094933/1870254, modified"""
@@ -162,9 +179,12 @@ def points_in_circle_np(radius, x0=0, y0=0):
         yield x, y
 
 
-# useful for returning indexes when a
 def threshold_detect(signal, threshold):
-    '''lloyd russell'''
+    """
+    Returns indexes where the input signal reaches above threshold.
+
+    lloyd russell
+    """
     thresh_signal = signal > threshold
     thresh_signal[1:][thresh_signal[:-1] & thresh_signal[1:]] = False
     frames = np.where(thresh_signal)
@@ -356,7 +376,6 @@ def subselect_tiff(tiff_path: str = None, tiff_stack: np.array = None, select_fr
 
     return stack_cropped
 
-
 def make_tiff_stack(sorted_paths: list, save_as: str):
     """
     read in a bunch of tiffs and stack them together, and save the output as the save_as
@@ -376,7 +395,6 @@ def make_tiff_stack(sorted_paths: list, save_as: str):
             print(msg, end='\r')
             tif.save(data)
 
-
 def convert_to_8bit(img, target_type_min=0, target_type_max=255):
     """
     :param img:
@@ -393,7 +411,6 @@ def convert_to_8bit(img, target_type_min=0, target_type_max=255):
     new_img = (a * img + b).astype(np.uint8)
     return new_img
 
-
 def get_tiff_paths(path):
     """finds files with .tif or .tiff within the given directory."""
     tiff_files = []
@@ -403,7 +420,6 @@ def get_tiff_paths(path):
     print(f"found {len(tiff_files)} tif paths.")
 
     return tiff_files
-
 
 def read_fiji(csv_path):
     '''reads the csv file saved through plot z axis profile in fiji'''
@@ -419,17 +435,9 @@ def read_fiji(csv_path):
 
     return np.array(data)
 
-
 def save_fiji(arr):
     '''saves numpy array in current folder as fiji friendly tiff'''
     tf.imsave('Vape_array.tiff', arr.astype('int16'))
-
-
-
-##### FUNCTIONS THAT MIGHT BE APPROP FOR THIS SCRIPT ####### / end
-
-
-
 
 def _check_path_exists(path_arg: str, path: str):
     try:
@@ -514,17 +522,6 @@ def dfof2(flu):
     flu_mean = np.mean(flu, 1)
     flu_mean = np.reshape(flu_mean, (len(flu_mean), 1))
     return (flu - flu_mean) / flu_mean
-
-
-
-
-def threshold_detect(signal, threshold):
-    '''lloyd russell'''
-    thresh_signal = signal > threshold
-    thresh_signal[1:][thresh_signal[:-1] & thresh_signal[1:]] = False
-    times = np.where(thresh_signal)
-    return times[0]
-
 
 def pade_approx_norminv(p):
     q = math.sqrt(2 * math.pi) * (p - 1 / 2) - (157 / 231) * math.sqrt(2) * \
@@ -1162,7 +1159,7 @@ def non_zero_smoother(arr, window_size=200):
 
 
 def my_floor(a, precision=0):
-    # Floors to a specified number of dps
+    # Floors to a specified number of decimal points
     return np.round(a - 0.5 * 10 ** (-precision), precision)
 
 
@@ -1191,39 +1188,3 @@ def get_trial_frames(clock, start, pre_frames, post_frames, paq_rate, fs=30):
         return None, None
 
     return frames, start_idx
-
-
-def between_two_hits(idxs, easy_idxs, easy_outcome):
-    assert len(easy_idxs) == len(easy_outcome)
-
-    # Next easy trial from each test trial
-    closest_after = np.array([bisect.bisect_left(easy_idxs, idx) for idx in idxs])
-    # Previous easy trial from each test trial
-    closest_before = closest_after - 1
-    # Test trials before the first easy trial should have both previous and next
-    # as the first easy trial
-    closest_before[closest_before == -1] = 0
-    # Test trials after the last easy trial should have both previous and next
-    # as the last easy trial
-    closest_after[idxs > easy_idxs[-1]] = len(easy_idxs) - 1
-
-    assert len(idxs) == len(closest_before) == len(closest_after)
-
-    between_two = []
-    for before, after in zip(closest_before, closest_after):
-        if easy_outcome[before] and easy_outcome[after] == 'hit':
-            between_two.append(True)
-        else:
-            between_two.append(False)
-
-    assert len(between_two) == len(idxs)
-
-    return between_two
-
-
-def points_in_circle_np(radius, x0=0, y0=0, ):
-    x_ = np.arange(x0 - radius - 1, x0 + radius + 1, dtype=int)
-    y_ = np.arange(y0 - radius - 1, y0 + radius + 1, dtype=int)
-    x, y = np.where((x_[:, np.newaxis] - x0) ** 2 + (y_ - y0) ** 2 <= radius ** 2)
-    for x, y in zip(x_[x], y_[y]):
-        yield x, y

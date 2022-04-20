@@ -1,5 +1,32 @@
 # Record for meeting agendas, notes and todo's 
 
+## Apr 19 2022 - TODO list:
+
+**Major code base related tasks:**
+
+- [ ]  create the three fundamental data analysis *axes as fundamental classes . then plug other stuff into those axes.*
+    - like Temporal axis
+        - plug paq into temporal axes
+        - allows for other temporal signals from outside paq to plug in, but Paq becomes a child of this class
+    - data axis
+        - suite2p analysis
+        - this might be fundamentally just the parent trial class
+    - cell annotations axis
+        - suite2p analysis
+        - can also include manual labelling of cells as well (e.g. all optical SLM targets or
+        - allows for ROIs from other algorithms
+- [ ]  testing and fleshing out of AllOpticalTrial code
+- [ ]  making trial subtypes child objects of general parent `Trial` type
+
+**Major packaging related tasks:**
+
+- [ ]  Tutorial addition: Interactive plotting and data exporting using mpl_point_clicker
+- [x]  Add instructions to the README.md for installation of the package
+- [x]  implementing tests
+
+**Less important tasks/considerations:**
+
+
 ## Feb 28 2022 - TODO list transferred over:
 **Major code base related tasks:**
 
@@ -20,19 +47,18 @@
 
 **Major packaging related tasks:**
 
-- [ ]  Interactive plotting using mpl_point_clicker
-- [ ]  Add instructions to the README.md for installation of the package
+- [ ]  Tutorial addition: Interactive plotting and data exporting using mpl_point_clicker
+- [x]  Add instructions to the README.md for installation of the package
 - [ ]  figure out how to release an alpha version of the package
-    - [ ]  add documentation for installation of package
+    - [x]  add documentation for installation of package
 - [ ]  writing out documentation for user-facing functions/methods
-- [ ]  implementing tests
-- [ ]  figuring out how to cache during running tests??
+- [x]  implementing tests
 
 **Less important tasks/considerations:**
 
-- [ ]  try out making trial objs children of Experiments
-    - allows loading of trial objects from: `expobj.t-001`
-    - [ ]  need to remove requirement for providing `suite2p_experiment_obj`, and `total_frames_stitched`  args for `TwoPhotonImagingTrial` (probably part of making trial objs children of Experiment)
+- ~~[ ]  try out making trial objs children of Experiments~~
+    ~~- allows loading of trial objects from: `expobj.t-001`~~
+    ~~- [ ]  need to remove requirement for providing `suite2p_experiment_obj`, and `total_frames_stitched`  args for `TwoPhotonImagingTrial` (probably part of making trial objs children of Experiment)~~
 
 
 

@@ -34,13 +34,13 @@ def twophoton_imaging_trial_new_noPreDoneSuite2p_fixture():
 
         TwoPhotonImagingMetainfo = {
             'date': ExperimentMetainfo['date'],
-            'trial_id': trial,
-            'exp_id': ExperimentMetainfo['expID'],
+            'trialID': trial,
+            'expID': ExperimentMetainfo['expID'],
             'microscope': 'Bruker 2pPlus',
             'tiff_path': tiffs_loc,
             'saveDir': ExperimentMetainfo['saveDir'],
             'expGroup': "pre 4ap 2p spont imaging",
-            'PaqInfoTrial': {'paq_path': paqs_loc,
+            'PaqInfo': {'paq_path': paqs_loc,
                              'frame_channel': 'frame_clock'}
         }
 
@@ -86,7 +86,7 @@ def twophoton_imaging_trial_noPreDoneSuite2p_fixture():
                                                            'tiff_path': f"{tiffs_loc}",
                                                            's2p_use': True,
                                                            'expGroup': "pre 4ap 2p imaging",
-                                                           'PaqInfoTrial': {'paq_path': paqs_loc,
+                                                           'PaqInfo': {'paq_path': paqs_loc,
                                                                             'frame_channel': "frame_clock"}
                                                            }
 
@@ -105,7 +105,7 @@ def twophoton_imaging_trial_noPreDoneSuite2p_fixture():
                                                            'tiff_path': f"{tiffs_loc}",
                                                            's2p_use': True,
                                                            'expGroup': "post 4ap 2p imaging",
-                                                           'PaqInfoTrial': {'paq_path': paqs_loc,
+                                                           'PaqInfo': {'paq_path': paqs_loc,
                                                                             'frame_channel': "frame_clock"}
                                                            }
 
@@ -141,22 +141,22 @@ def twophoton_imaging_trial_fixture():
                                                            'tiff_path': f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif',
                                                            's2p_use': True,
                                                            'expGroup': "pre 4ap 2p spont imaging",
-                                                           'PaqInfoTrial': {
+                                                           'PaqInfo': {
                                                                'frame_channel': "frame_clock",
                                                                'paq_path': f'{data_path_base}/{date}_{animal_prep}_{trial[2:]}.paq'
                                                                # path to the .paq files for the selected trials
                                                            }
                                                            }
         _metainfo = {
-            'exp_id': initialization_dict['expID'],
-            'trial_id': trial,
+            'expID': initialization_dict['expID'],
+            'trialID': trial,
             'date': initialization_dict['date'],
             'TrialsInformation': initialization_dict["TrialsInformation"][trial]
         }
         initialization_dict['metainfo'] = _metainfo
         initialization_dict['analysis_save_path'] = initialization_dict['saveDir']
         initialization_dict['suite2p_experiment_obj'] = expobj.Suite2p
-        initialization_dict['paq_options'] = _metainfo['TrialsInformation']['PaqInfoTrial']
+        initialization_dict['paq_options'] = _metainfo['TrialsInformation']['PaqInfo']
         initialization_dict['total_frames_stitched'] = SUITE2P_FRAMES_SPONT_t005t006[idx]
 
     return initialization_dict
@@ -192,7 +192,7 @@ def alloptical_trial_fixture():
                                                            'tiff_path': f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif',
                                                            's2p_use': True,
                                                            'expGroup': "pre 4ap 2p all optical",
-                                                           'PaqInfoTrial': {'frame_channel': "frame_clock",
+                                                           'PaqInfo': {'frame_channel': "frame_clock",
                                                                             'paq_path': f'{data_path_base}/{date}_{animal_prep}_{trial[2:]}.paq',
                                                                             # path to the .paq files for the selected trials
                                                                             'stim_channel': 'markpoints2packio'
@@ -201,8 +201,8 @@ def alloptical_trial_fixture():
                                                            }
 
         _metainfo = {
-            'exp_id': initialization_dict['expID'],
-            'trial_id': trial,
+            'expID': initialization_dict['expID'],
+            'trialID': trial,
             'date': initialization_dict['date'],
             'TrialsInformation': initialization_dict["TrialsInformation"][trial]
         }
@@ -211,7 +211,7 @@ def alloptical_trial_fixture():
         initialization_dict['naparm_path'] = initialization_dict["TrialsInformation"][trial]['naparm_path']
         initialization_dict['analysis_save_path'] = initialization_dict['saveDir']
         initialization_dict['suite2p_experiment_obj'] = expobj.Suite2p
-        initialization_dict['paq_options'] = _metainfo['TrialsInformation']['PaqInfoTrial']
+        initialization_dict['paq_options'] = _metainfo['TrialsInformation']['PaqInfo']
         initialization_dict['total_frames_stitched'] = SUITE2P_FRAMES_t013
 
     return initialization_dict

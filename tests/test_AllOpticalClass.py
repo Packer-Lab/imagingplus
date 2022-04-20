@@ -38,8 +38,8 @@
 #                                                         }
 #
 #     _metainfo = {
-#         'exp_id': initialization_dict['expID'],
-#         'trial_id': trials_list_alloptical[0],
+#         'expID': initialization_dict['expID'],
+#         'trialID': trials_list_alloptical[0],
 #         'date': initialization_dict['date'],
 #         't_series_id': f"{initialization_dict['expID']} {trial}",
 #         'TrialsInformation': initialization_dict["TrialsInformation"][trial]
@@ -55,7 +55,7 @@
 
 
 # %%
-from packerlabimaging.extensions import AllOpticalMain
+from packerlabimaging.workflows import AllOpticalMain
 
 
 def test_AllOpticalClass(alloptical_trial_fixture):
