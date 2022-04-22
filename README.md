@@ -3,9 +3,7 @@
 packerlabimaging is a simple Python package for essential processing and analysis of 2photon imaging data collected in the Packer Lab. 
 Especially, there is a fully implemented pipeline for data structuring, processing, analysis and plotting of 2photon Ca2+ imaging experiments, and experiments based around 2photon imaging such as all optical experiments (i.e. 2photon optogenetic stim or 1photon optogenetic stim, with combined 2photon Ca2+ imaging).
 
-![Overall packerlabimaging package Flow Diagram](https://github.com/Packer-Lab/packerlabimaging/blob/7e16cf76588fa3fa34f634b9b455d9f386c54226/files/Overall%20Package%20Flow%20Diagram.drawio.png "Overall Flow Diagram")
-
-![Typical Imaging Experiment Diagram](https://github.com/Packer-Lab/packerlabimaging/blob/41ab1740166e937ef96a7c5fbfdf9e59e5465c0b/docs/source/files/Typical-experiment-apr-22-2022.jpeg "Typical Imaging Experiment Diagram")
+![Overall packerlabimaging package Flow Diagram](https://github.com/Packer-Lab/packerlabimaging/blob/7e16cf76588fa3fa34f634b9b455d9f386c54226/files/Overall%20Package%20Flow%20Diagram.drawio.png "Overall Flow Diagram") ![Typical Imaging Experiment Diagram](https://github.com/Packer-Lab/packerlabimaging/blob/41ab1740166e937ef96a7c5fbfdf9e59e5465c0b/docs/source/files/Typical-experiment-apr-22-2022.jpeg "Typical Imaging Experiment Diagram")
 
 This package is designed for imaging experiments that follow the general structure showed above. We have additionally provided specific sub-modules to suit imaging experiments performed using PackIO, a Bruker 2pPlus microscope and using Suite2p for Ca2+ imaging 
 data processing for ROI segmentation. It should be completely usable and understandable for anyone with the correct data in hand and basic knowledge of Python. There are tutorials to help along the way. Ultimately, the goal of this package is to jump-start your own analysis of your awesome experiment.  
