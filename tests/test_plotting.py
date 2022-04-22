@@ -1,4 +1,4 @@
-from packerlabimaging.workflows.AllOpticalMain import AllOpticalTrial
+from packerlabimaging.workflows.AllOptical import AllOpticalTrial
 
 from packerlabimaging.utils.io import import_obj
 

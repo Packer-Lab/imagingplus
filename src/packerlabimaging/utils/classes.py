@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import TypedDict, Dict
 
 
 class ObjectClassError(Exception):
@@ -13,16 +13,16 @@ class IncompatibleFunctionError(Exception):
     """handles exceptions caused by incompatible functions"""
 
     def __init__(self, function):
-        super().__init__(f'Incompatible function call. <{function}>')
+        super().__init__(f'Incompatible function: <{function}>')
 
 
 class UnavailableOptionError(Exception):
     """handles exceptions caused by unavailable options"""
 
     def __init__(self, option):
-        super().__init__(f'Unavailable option for object. <{option}>')
+        super().__init__(f'Unavailable option for object: <{option}>')
 
-
+# deprecating soon
 class PaqInfo(TypedDict, total=False):
     """dictionary with preset keys to hold meta-information about an individual paq file."""
 
@@ -30,17 +30,23 @@ class PaqInfo(TypedDict, total=False):
     paq_path: str  # complete path to .paq file for trial
     stim_channel: str
 
-
+# deprecating soon
 class TrialsInformation(TypedDict, total=False):
-    """dictionary with preset keys to hold meta-information about an individual trial."""
+    """dictionary with preset keys to hold meta-information about an individual trial: used in Experiment"""
 
-    trialType: str
-    tiff_path: str
+    data_path: str
     expGroup: str
-    PaqInfoTrial: PaqInfo
-    s2p_use: bool
-    naparm_path: str
-    analysis_object_information: TypedDict("analysis_object_information",
-                                           {'series ID': str, 'repr': str, 'pkl path': str})
+    repr: str
+    pkl_path: str
+    paths: Dict[str, str]
+    other: Dict[str, str]
 
-
+class TrialMetainfo(TypedDict, total=False):
+    """dictionary with preset keys to hold meta-information about an individual trial: used in Trial"""
+    date: str
+    trialID: str
+    expID: str
+    expGroup: str
+    comments: str
+    microscope: str
+    paths: Dict[str, str]

@@ -55,7 +55,7 @@
 
 
 # %%
-from packerlabimaging.workflows import AllOpticalMain
+from packerlabimaging.workflows import AllOptical
 
 
 def test_AllOpticalClass(alloptical_trial_fixture):

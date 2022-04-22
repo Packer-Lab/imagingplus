@@ -2,16 +2,16 @@ import numpy as np
 from conftest import existing_expobj_nopredones2p_fixture
 from packerlabimaging import Experiment, TwoPhotonImagingTrial
 from packerlabimaging.processing import suite2p
-from packerlabimaging.processing.suite2p import Suite2pResultsExperiment, Suite2pResultsTrial
+from packerlabimaging.processing.suite2p import Suite2pExperiment, Suite2pResultsTrial
 
-
+# todo this test is likely breaking!!
 def test_Suite2pResultsExperiment(existing_expobj_fixture):
     expobj: Experiment = existing_expobj_fixture[0]
     trialSuite2p = existing_expobj_fixture[1]
     s2pResultsPath = existing_expobj_fixture[2]
 
-    expobj.Suite2p = suite2p.Suite2pResultsExperiment(trialsTiffsSuite2p=trialSuite2p,
-                                                      s2pResultsPath=s2pResultsPath)
+    expobj.Suite2p = suite2p.Suite2pExperiment(trialsTiffsSuite2p=trialSuite2p,
+                                               s2pResultsPath=s2pResultsPath)
 
 
 def test_Suite2pResultsTrial(existing_trialobj_twophotonimaging_fixture, existing_trialobj_alloptical_fixture,
@@ -21,8 +21,8 @@ def test_Suite2pResultsTrial(existing_trialobj_twophotonimaging_fixture, existin
     expobj: Experiment = existing_expobj_fixture[0]
 
     for n_obj in [trialobj, trialobj_, alloptical_trialobj]:
-        from packerlabimaging.processing.suite2p import Suite2pResultsExperiment
-        s2p_expobj: Suite2pResultsExperiment = expobj.Suite2p
+        from packerlabimaging.processing.suite2p import Suite2pExperiment
+        s2p_expobj: Suite2pExperiment = expobj.Suite2p
         n_obj.Suite2p = suite2p.Suite2pResultsTrial(s2pExp=s2p_expobj, trial_frames=n_obj.Suite2p.trial_frames)  # use trial obj's current trial frames
         n_obj.save()
 
@@ -33,9 +33,9 @@ def test_Suite2pExp():
     from packerlabimaging import import_obj
     expobj = import_obj(pkl_path='/home/pshah/mnt/qnap/Analysis/2021-01-25/PS12/PS12_analysis.pkl')
 
-    expobj.Suite2p = Suite2pResultsExperiment(trialsTiffsSuite2p=expobj.Suite2p.tiff_paths_to_use_s2p,
-                                              s2pResultsPath=expobj.Suite2p.s2pResultsPath,
-                                              subtract_neuropil=expobj.Suite2p.subtract_neuropil)
+    expobj.Suite2p = Suite2pExperiment(trialsTiffsSuite2p=expobj.Suite2p.tiff_paths_to_use_s2p,
+                                       s2pResultsPath=expobj.Suite2p.s2pResultsPath,
+                                       subtract_neuropil=expobj.Suite2p.subtract_neuropil)
     expobj.save()
 # test_Suite2pExp()
 

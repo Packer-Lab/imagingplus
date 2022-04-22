@@ -14,7 +14,7 @@ import tifffile as tf
 from packerlabimaging import Experiment
 from packerlabimaging.utils.utils import save_to_csv
 
-from packerlabimaging.workflows.AllOpticalMain import AllOpticalTrial
+from packerlabimaging.workflows.AllOptical import AllOpticalTrial
 
 from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
 from packerlabimaging.plotting._utils import plotting_decorator, make_random_color_array, _add_scalebar, \

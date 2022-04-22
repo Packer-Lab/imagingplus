@@ -34,8 +34,6 @@ class AnnotatedData(ad.AnnData):
         descr += f"\n\t.obs (obs metadata): \n\t\t|- {str(list(self.obs.keys()))[1:-1]}"
         descr += f"\n\t.var (vars metadata): \n\t\t|- {str(list(self.var.keys()))[1:-1]}"
         for attr in [
-            # "obs",
-            # "var",
             ".uns",
             ".obsm",
             ".varm",
@@ -53,32 +51,6 @@ class AnnotatedData(ad.AnnData):
         """overrides the default anndata _gen_repr_() method for imaging data usage."""
 
         return f"Annotated Data of n_obs (# ROIs) × n_vars (# Frames) = {n_obs} × {n_vars}"
-
-        # if self.filename:
-        #     backed_at = f" backed at {str(self.filename)!r}"
-        # else:
-        #     backed_at = ""
-        #
-        # descr = f"Annotated Data of n_obs (# ROIs) × n_vars (# Frames) = {n_obs} × {n_vars} {backed_at}"
-        # descr += f"\navailable attributes: "
-        #
-        # descr += f"\n\t.X (primary datamatrix, with .data_label): \n\t\t|-- {str(self.data_label)}" if self.data_label else f"\n\t.X (primary datamatrix)"
-        # descr += f"\n\t.obs (ROIs metadata) keys: \n\t\t|-- {str(list(self.obs.keys()))[1:-1]}"
-        # descr += f"\n\t.var (frames metadata) keys: \n\t\t|-- {str(list(self.var.keys()))[1:-1]}"
-        # for attr in [
-        #     # "obs",
-        #     # "var",
-        #     ".uns",
-        #     ".obsm",
-        #     ".varm",
-        #     ".layers",
-        #     ".obsp",
-        #     ".varp",
-        # ]:
-        #     keys = getattr(self, attr[1:]).keys()
-        #     if len(keys) > 0:
-        #         descr += f"\n\t{attr} keys: \n\t\t|-- {str(list(keys))[1:-1]}"
-        # return descr
 
 
     def add_obs(self, obs_name: str, values: list):

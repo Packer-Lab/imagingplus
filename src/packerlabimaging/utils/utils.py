@@ -376,7 +376,7 @@ def subselect_tiff(tiff_path: str = None, tiff_stack: np.array = None, select_fr
 
     return stack_cropped
 
-def make_tiff_stack(sorted_paths: list, save_as: str):
+def make_tiff_stack(sorted_paths: list, save_as: str) -> np.ndarray:
     """
     read in a bunch of tiffs and stack them together, and save the output as the save_as
 
@@ -394,6 +394,7 @@ def make_tiff_stack(sorted_paths: list, save_as: str):
             msg = ' -- Writing tiff: ' + str(i + 1) + ' out of ' + str(num_tiffs)
             print(msg, end='\r')
             tif.save(data)
+    return data
 
 def convert_to_8bit(img, target_type_min=0, target_type_max=255):
     """

@@ -14,7 +14,7 @@ import pandas as pd
 import seaborn as sns
 
 from packerlabimaging.utils.utils import save_to_csv
-from packerlabimaging.workflows.AllOpticalMain import AllOpticalTrial
+from packerlabimaging.workflows.AllOptical import AllOpticalTrial
 from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
 
 # global plotting params

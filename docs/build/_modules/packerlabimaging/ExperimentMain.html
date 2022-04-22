@@ -239,7 +239,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;\- Adding suite2p module to experiment. Located under .Suite2p&#39;</span><span class="p">)</span>
 
         <span class="kn">from</span> <span class="nn">.processing</span> <span class="kn">import</span> <span class="n">suite2p</span>
-        <span class="kn">from</span> <span class="nn">.processing.suite2p</span> <span class="kn">import</span> <span class="n">Suite2pResultsExperiment</span>
+        <span class="kn">from</span> <span class="nn">.processing.suite2p</span> <span class="kn">import</span> <span class="n">Suite2pExperiment</span>
 
         <span class="k">assert</span> <span class="nb">len</span><span class="p">([</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">TrialsInformation</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;need to add at least 1 trial to Experiment before adding Suite2p functionality.&#39;</span>
 
@@ -257,13 +257,13 @@
                     <span class="k">break</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s2pResultExists</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_suite2p_save_path</span> <span class="o">=</span> <span class="n">s2pResultsPath</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span> <span class="o">=</span> <span class="n">suite2p</span><span class="o">.</span><span class="n">Suite2pResultsExperiment</span><span class="p">(</span><span class="n">trialsTiffsSuite2p</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_trialsTiffsSuite2p</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span> <span class="o">=</span> <span class="n">suite2p</span><span class="o">.</span><span class="n">Suite2pExperiment</span><span class="p">(</span><span class="n">trialsTiffsSuite2p</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_trialsTiffsSuite2p</span><span class="p">,</span>
                                                                 <span class="n">s2pResultsPath</span><span class="o">=</span><span class="n">s2pResultsPath</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;suite2p results could not be found. `suite2pPath` provided was: </span><span class="si">{</span><span class="n">s2pResultsPath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># no s2pResultsPath provided, so initialize without pre-loading any results</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span> <span class="o">=</span> <span class="n">Suite2pResultsExperiment</span><span class="p">(</span><span class="n">trialsTiffsSuite2p</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_trialsTiffsSuite2p</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span> <span class="o">=</span> <span class="n">Suite2pExperiment</span><span class="p">(</span><span class="n">trialsTiffsSuite2p</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_trialsTiffsSuite2p</span><span class="p">)</span>
 
         <span class="c1"># adding of suite2p trial level as well in this function as well</span>
         <span class="n">total_frames</span> <span class="o">=</span> <span class="mi">0</span>
@@ -370,7 +370,7 @@
 
     <span class="k">def</span> <span class="nf">_add_suite2p_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">.processing</span> <span class="kn">import</span> <span class="n">suite2p</span>
-        <span class="kn">from</span> <span class="nn">.processing.suite2p</span> <span class="kn">import</span> <span class="n">Suite2pResultsExperiment</span>
+        <span class="kn">from</span> <span class="nn">.processing.suite2p</span> <span class="kn">import</span> <span class="n">Suite2pExperiment</span>
 
         <span class="k">for</span> <span class="n">trial</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trialIDs</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">trial</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trialsTiffsSuite2p</span><span class="p">:</span>
@@ -388,7 +388,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_s2pResultExists</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="k">break</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s2pResultExists</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span> <span class="o">=</span> <span class="n">suite2p</span><span class="o">.</span><span class="n">Suite2pResultsExperiment</span><span class="p">(</span><span class="n">trialsTiffsSuite2p</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_trialsTiffsSuite2p</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span> <span class="o">=</span> <span class="n">suite2p</span><span class="o">.</span><span class="n">Suite2pExperiment</span><span class="p">(</span><span class="n">trialsTiffsSuite2p</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_trialsTiffsSuite2p</span><span class="p">,</span>
                                                                 <span class="c1"># dataPath=self.dataPath,</span>
                                                                 <span class="n">s2pResultsPath</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">s2pResultsPath</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -397,7 +397,7 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">useSuite2p</span><span class="p">:</span>  <span class="c1"># no s2pResultsPath provided, so initialize without pre-loading any results</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_s2pResultExists</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_suite2p_save_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysisSavePath</span> <span class="o">+</span> <span class="s1">&#39;/suite2p/&#39;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span> <span class="o">=</span> <span class="n">Suite2pResultsExperiment</span><span class="p">(</span><span class="n">trialsTiffsSuite2p</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_trialsTiffsSuite2p</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span> <span class="o">=</span> <span class="n">Suite2pExperiment</span><span class="p">(</span><span class="n">trialsTiffsSuite2p</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_trialsTiffsSuite2p</span><span class="p">,</span>
                                                     <span class="c1"># dataPath=self.dataPath</span>
                                                     <span class="p">)</span>
 
@@ -408,7 +408,7 @@
 <span class="sd">        :param trialID: trial name to add to suite2p list</span>
 <span class="sd">        :param s2pResultsPath: path to output of suite2p to use to update .Suite2p submodule</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">.processing.suite2p</span> <span class="kn">import</span> <span class="n">Suite2pResultsExperiment</span>
+        <span class="kn">from</span> <span class="nn">.processing.suite2p</span> <span class="kn">import</span> <span class="n">Suite2pExperiment</span>
 
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;No existing Suite2p sub-module found in Experiment.&#39;</span>
 
@@ -425,7 +425,7 @@
                         <span class="n">_s2pResultExists</span> <span class="o">=</span> <span class="kc">True</span>
                         <span class="k">break</span>
                 <span class="k">if</span> <span class="n">_s2pResultExists</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span> <span class="o">=</span> <span class="n">Suite2pResultsExperiment</span><span class="p">(</span><span class="n">trialsTiffsSuite2p</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_trialsTiffsSuite2p</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span> <span class="o">=</span> <span class="n">Suite2pExperiment</span><span class="p">(</span><span class="n">trialsTiffsSuite2p</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_trialsTiffsSuite2p</span><span class="p">,</span>
                                                             <span class="c1"># dataPath=self.dataPath,</span>
                                                             <span class="n">s2pResultsPath</span><span class="o">=</span><span class="n">s2pResultsPath</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">s2pResultsPath</span> <span class="o">=</span> <span class="n">s2pResultsPath</span>
@@ -435,7 +435,7 @@
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">useSuite2p</span><span class="p">:</span>  <span class="c1"># no s2pResultsPath provided, so initialize without pre-loading any results</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_s2pResultExists</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_suite2p_save_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysisSavePath</span> <span class="o">+</span> <span class="s1">&#39;/suite2p/&#39;</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span> <span class="o">=</span> <span class="n">Suite2pResultsExperiment</span><span class="p">(</span><span class="n">trialsTiffsSuite2p</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_trialsTiffsSuite2p</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span> <span class="o">=</span> <span class="n">Suite2pExperiment</span><span class="p">(</span><span class="n">trialsTiffsSuite2p</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_trialsTiffsSuite2p</span><span class="p">,</span>
                                                         <span class="c1"># dataPath=self.dataPath</span>
                                                         <span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>

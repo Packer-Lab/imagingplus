@@ -21,12 +21,13 @@ from packerlabimaging.main.paq import PaqData
 from packerlabimaging.processing import anndata as ad
 
 
-
 class TwoPhotonImaging(ImagingTrial):
     """Two Photon Imaging Experiment Data Analysis Workflow."""
 
-    def __init__(self, date: str = None, trialID: str = None, expID: str = None, tiff_path: str  = None, microscope: str = '',
-                 expGroup: str = None, saveDir: str = None, PaqInfo: PaqInfo = None, ImagingMetadata: ImagingMetadata = None,
+    def __init__(self, date: str = None, trialID: str = None, expID: str = None, tiff_path: str = None,
+                 microscope: str = '',
+                 expGroup: str = None, saveDir: str = None, PaqInfo: PaqInfo = None,
+                 ImagingMetadata: ImagingMetadata = None,
                  comments: str = ''):
 
         """
@@ -40,12 +41,11 @@ class TwoPhotonImaging(ImagingTrial):
         :param total_frames_stitched: provide frame number on which current trial starts in Suite2p Experiment Object
         """
 
-        ImagingTrial(date=date, trialID=trialID, expID=expID, dataPath=tiff_path, group=expGroup, comment=comments, microscope=microscope, saveDir=saveDir)
-
+        ImagingTrial(date=date, trialID=trialID, expID=expID, dataPath=tiff_path, group=expGroup, comment=comments,
+                     microscope=microscope, saveDir=saveDir)
 
         # ADD MODULES -
         self.Suite2p = None  #: Suite2p analysis sub-module  # todo consider adding wrapper method for attaching Suite2p to trial object (like might just need to refactor over from the experiment main file)
-
 
         print(f'\----- CREATING TwoPhotonImagingTrial for trial: \n\t{self.trialID}')
 
@@ -55,7 +55,8 @@ class TwoPhotonImaging(ImagingTrial):
         elif ImagingMetadata:
             self.imparams = ImagingMetadata
         else:
-            Warning(f"NO imaging microscope parameters set. follow imagingMetadata to create a custom imagingMicroscopeMetadata class.")
+            Warning(
+                f"NO imaging microscope parameters set. follow imagingMetadata to create a custom imagingMicroscopeMetadata class.")
 
         # temporal synchronization data from .Paq
         if PaqInfo:
@@ -79,7 +80,6 @@ class TwoPhotonImaging(ImagingTrial):
         # SAVE Trial OBJECT
         self.save()
 
-
     def __str__(self):
         if self.pkl_path:
             lastmod = time.ctime(os.path.getmtime(self.pkl_path))
@@ -89,7 +89,6 @@ class TwoPhotonImaging(ImagingTrial):
 
     def __repr__(self):
         return repr(f"ID: {self.t_series_name} (TwoPhotonImagingTrial experimental data object)")
-
 
     def _getImagingParameters(self, metadata: Optional[dict] = None, microscope: Optional[str] = 'Bruker'):
         """retrieves imaging metadata parameters. If using Bruker microscope and PrairieView, then _prairieview module is used to collect this data.
@@ -111,7 +110,6 @@ class TwoPhotonImaging(ImagingTrial):
         else:
             raise ValueError('Frame clock timings couldnt be retrieved from .Paq submodule.')
 
-
     def _paqProcessingTwoPhotonImaging(self, paq_path, frame_channel):
         """
         Add and further process paq data for current trial.
@@ -121,7 +119,7 @@ class TwoPhotonImaging(ImagingTrial):
         :return: PAQ data object
         """
 
-        paq_data_obj = PaqData.import_paqdata(file_path=paq_path, plot = False)
+        paq_data_obj = PaqData.import_paqdata(file_path=paq_path, plot=False)
         assert frame_channel in paq_data_obj.paq_channels, f"frame_channel argument: '{frame_channel}', not found in channels in .paq data."
         paq_data_obj.frame_times_channame = frame_channel
         paq_data_obj.frame_times = paq_data_obj.getPaqFrameTimes(frame_channel=frame_channel)
@@ -129,7 +127,7 @@ class TwoPhotonImaging(ImagingTrial):
 
         return paq_data_obj
 
-    def stitch_s2p_reg_tiff(self): ## TODO refactoring in new code from the Suite2p class script?
+    def stitch_s2p_reg_tiff(self):  ## TODO refactoring in new code from the Suite2p class script?
         assert self.Suite2p._s2pResultExists, UnavailableOptionError('stitch_s2p_reg_tiff')
 
         tif_path_save2 = self.saveDir + f'reg_tiff_{self.t_series_name}_r.tif'
@@ -143,14 +141,16 @@ class TwoPhotonImaging(ImagingTrial):
                     print('cropping registered tiff')
                     data = input_tif.asarray()
                     print('shape of stitched tiff: ', data.shape)
-                reg_tif_crop = data[self.Suite2p.trial_frames[0] - start * self.Suite2p.s2p_run_batch: self.Suite2p.trial_frames[1] - (
-                        self.Suite2p.trial_frames - start * self.Suite2p.s2p_run_batch)]
+                reg_tif_crop = data[self.Suite2p.trial_frames[0] - start * self.Suite2p.s2p_run_batch:
+                                    self.Suite2p.trial_frames[1] - (
+                                            self.Suite2p.trial_frames - start * self.Suite2p.s2p_run_batch)]
                 print('saving cropped tiff ', reg_tif_crop.shape)
                 tif.write(reg_tif_crop)
 
     def dfof(self):
         """(delta F)/F normalization of raw Suite2p data of trial."""
-        assert hasattr(self, 'Suite2p'), 'no Suite2p module found. dfof function implemented to just normalize raw traces from Suite2p ROIs.'
+        assert hasattr(self,
+                       'Suite2p'), 'no Suite2p module found. dfof function implemented to just normalize raw traces from Suite2p ROIs.'
         if self.Suite2p._s2pResultExists:
             dFF = self.normalize_dff(self.Suite2p.raw)
             return dFF
@@ -187,50 +187,3 @@ class TwoPhotonImaging(ImagingTrial):
                     print('      Mean of the sub-threshold for this cell: %s' % mean_)
 
         return new_array
-
-    def create_anndata(self):
-        """
-        Creates annotated data (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial.
-
-        """
-        if self.Suite2p.s2pResultExists and self.Paq:
-            # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
-            # build dataframe for obs_meta from suite2p stat information
-            obs_meta = pd.DataFrame(
-                columns=['original_index', 'footprint', 'mrs', 'mrs0', 'compact', 'med', 'npix', 'radius',
-                         'aspect_ratio', 'npix_norm', 'skew', 'std'], index=range(len(self.Suite2p.stat)))
-            for idx, __stat in enumerate(self.Suite2p.stat):
-                for __column in obs_meta:
-                    obs_meta.loc[idx, __column] = __stat[__column]
-
-            # build numpy array for multidimensional obs metadata
-            obs_m = {'ypix': [],
-                     'xpix': []}
-            for col in [*obs_m]:
-                for idx, __stat in enumerate(self.Suite2p.stat):
-                    obs_m[col].append(__stat[col])
-                obs_m[col] = np.asarray(obs_m[col])
-
-            # SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata
-            # build dataframe for var annot's from Paq file
-            var_meta = pd.DataFrame(index=[self.Paq.frame_times_channame], columns=range(self.imparams.n_frames))
-            for fr_idx in range(self.imparams.n_frames):
-                var_meta.loc[self.Paq.frame_times_channame, fr_idx] = self.Paq.frame_times[fr_idx]
-
-            # BUILD LAYERS TO ADD TO anndata OBJECT
-            layers = {'dFF': self.dFF
-                      }
-
-            print(f"\n\----- CREATING annotated data object using AnnData:")
-            _data_type = 'Suite2p Raw (neuropil substracted)' if self.Suite2p.subtract_neuropil else 'Suite2p Raw'
-            adata = ad.AnnotatedData(X=self.Suite2p.raw, obs=obs_meta, var=var_meta.T, obsm=obs_m, layers=layers,
-                                     data_label=_data_type)
-
-            print(f"\n{adata}")
-            return adata
-
-        else:
-            Warning(
-                'did not create anndata. anndata creation only available if experiments were processed with suite2p and .Paq file(s) provided for temporal synchronization')
-
-
