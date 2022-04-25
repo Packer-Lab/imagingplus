@@ -14,7 +14,7 @@ import tifffile as tf
 
 from packerlabimaging.utils.utils import convert_to_8bit
 from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial, TwoPhotonImagingMetainfo
-from packerlabimaging.processing.TwoPstim import Targets
+from packerlabimaging.processing.naparm import Targets
 from packerlabimaging.utils.classes import PaqInfo, UnavailableOptionError
 # %%
 from packerlabimaging.processing.anndata import AnnotatedData

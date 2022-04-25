@@ -4,18 +4,12 @@
 import os
 import numpy as np
 import time
-try:
-    # for Python2
-    import Tkinter as tk
-    import tkFileDialog as filedialog
-except ImportError:
-    # for Python3
-    import tkinter as tk
-    from tkinter import filedialog
+import tkinter as tk
+from tkinter import filedialog
 
 
 def ReadRawFile(movie_path=None, start=1, stop=np.Inf, num_frames=np.Inf, verbose=False):
-	'''
+	"""
 	Input
 	-----
 	movie_path : string, optional
@@ -32,7 +26,7 @@ def ReadRawFile(movie_path=None, start=1, stop=np.Inf, num_frames=np.Inf, verbos
 	------
 	data : np.ndarray
 		frames x rows x cols array (dtype=np.uint16)
-	'''
+	"""
 
 	# open file diaog if input not provided
 	if not movie_path:
@@ -62,7 +56,7 @@ def ReadRawFile(movie_path=None, start=1, stop=np.Inf, num_frames=np.Inf, verbos
 
 		# Define read limits
 		if stop == np.Inf:
-			stop = start + num_frames 
+			stop = start + num_frames
 		if stop > total_num_frames:
 			num_frames = total_num_frames - (start-1)
 			stop = total_num_frames
@@ -75,7 +69,7 @@ def ReadRawFile(movie_path=None, start=1, stop=np.Inf, num_frames=np.Inf, verbos
 		# Read data
 		start_on_byte = (((start-1) * samples_per_frame)+2) *2  # plus 2 because header size, x2 because 1 uint16 is 2 bytes
 		num_chars_to_read = (num_frames * samples_per_frame)  # note size in bytes of char defined by fread function argument
-		f.seek(start_on_byte, 0) 
+		f.seek(start_on_byte, 0)
 		data = np.fromfile(f, dtype=np.uint16, count=num_chars_to_read)
 
 	# Reshape data into frame array
@@ -103,6 +97,6 @@ def WriteRawFile(data, file_name):
 		# write the header
 		num_rows.tofile(raw_file)
 		num_cols.tofile(raw_file)
-		
+
 		# write the data
 		data.tofile(raw_file)

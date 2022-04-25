@@ -42,7 +42,7 @@ class TwoPhotonImaging(ImagingTrial):
         """
 
         ImagingTrial(date=date, trialID=trialID, expID=expID, dataPath=tiff_path, group=expGroup, comment=comments,
-                     microscope=microscope, saveDir=saveDir)
+                     saveDir=saveDir)
 
         # ADD MODULES -
         self.Suite2p = None  #: Suite2p analysis sub-module  # todo consider adding wrapper method for attaching Suite2p to trial object (like might just need to refactor over from the experiment main file)
@@ -50,7 +50,7 @@ class TwoPhotonImaging(ImagingTrial):
         print(f'\----- CREATING TwoPhotonImagingTrial for trial: \n\t{self.trialID}')
 
         # imaging metadata
-        if 'Bruker' in self.microscope:
+        if 'Bruker' in microscope:
             self.imparams = PrairieViewMetadata(pv_xml_dir=self.tiff_path_dir)
         elif ImagingMetadata:
             self.imparams = ImagingMetadata
@@ -88,7 +88,7 @@ class TwoPhotonImaging(ImagingTrial):
         return repr(f"ID: {self.t_series_name} (TwoPhotonImagingTrial experimental data object, last saved: {lastmod})")
 
     def __repr__(self):
-        return repr(f"ID: {self.t_series_name} (TwoPhotonImagingTrial experimental data object)")
+        return repr(f"{self.t_series_name} (TwoPhotonImagingTrial experimental data object)")
 
     def _getImagingParameters(self, metadata: Optional[dict] = None, microscope: Optional[str] = 'Bruker'):
         """retrieves imaging metadata parameters. If using Bruker microscope and PrairieView, then _prairieview module is used to collect this data.

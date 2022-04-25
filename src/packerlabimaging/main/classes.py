@@ -282,11 +282,17 @@ class TemporalData:
 
     def get_sparse_data(self, frame_times: Union[list, np.ndarray]):
         """
+        todo: need to probably average the original signal between frames if collected at a higher rate than frame_times.
+            - why not just use a downsampling algorithm to downsample to the same frame rate and num datapoints as the imaging frames????
         Returns dictionary of numpy array keyed on channels from paq_data timed to 2photon imaging frame_times.
+        In effect this works as a downsampling algorithm.
 
         :param frame_times:
         :return:
         """
+
+        # todo insert test to check that original signal has been collected at a rate higher than imaging. if not then need to handle differently.
+
         assert self.frame_times, 'no frame_times found to retrieve data from those timestamps.'
 
         print(f"\n\t\- Getting imaging frames timed data from {len(frame_times)} frames ... ")
@@ -344,7 +350,7 @@ class CellAnnotations:
 
 @dataclass
 class ImagingData:
-    data: Dict[str, Union[np.ndarray, pd.DataFrame]]  #: dictionary of data labels containing N x Frames array of imaging data of cells (N) collected over time (Frames) for each data label.
+    data: Dict[str, Union[np.ndarray, pd.DataFrame, Any]]  #: dictionary of data labels containing N x Frames array of imaging data of cells (N) collected over time (Frames) for each data label.
 
     @property
     def data_labels(self):
@@ -392,6 +398,11 @@ class ImagingTrial:
         # make anndata
         if self.imdata and self.cells and self.tmdata:
             self.create_anndata()
+
+    def __repr__(self):
+        # todo test repr
+        return repr(f"{self.t_series_name} (ImagingTrial)")
+
 
     # todo maybe ? - add alternative constructor to handle construction if temporal data or cell annotations or imaging data is provided
     # might be useful for providing like submodules (especially things like Suite2p)
