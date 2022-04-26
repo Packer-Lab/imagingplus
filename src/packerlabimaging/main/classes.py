@@ -232,7 +232,7 @@ class Experiment:
             trialobj = self.load_trial(trialID=trial)
             # print(f'n_frames', self.Suite2p.n_frames)
             trialobj.Suite2p = Suite2pResultsTrial(s2pExp=self.Suite2p, trial_frames=(
-            total_frames, total_frames + trialobj.n_frames))  # use trial obj's current trial frames
+            total_frames, total_frames + trialobj.n_frames))  # use trial obj's current trial key_frames
             trialobj.save()
             total_frames += trialobj.n_frames
 
@@ -267,7 +267,7 @@ class TemporalData:
 
     @property
     def n_frames(self):
-        """number of timed frames"""
+        """number of timed key_frames"""
         return len(self.frame_times)
 
     @property
@@ -282,8 +282,8 @@ class TemporalData:
 
     def get_sparse_data(self, frame_times: Union[list, np.ndarray]):
         """
-        todo: need to probably average the original signal between frames if collected at a higher rate than frame_times.
-            - why not just use a downsampling algorithm to downsample to the same frame rate and num datapoints as the imaging frames????
+        todo: need to probably average the original signal between key_frames if collected at a higher rate than frame_times.
+            - why not just use a downsampling algorithm to downsample to the same frame rate and num datapoints as the imaging key_frames????
         Returns dictionary of numpy array keyed on channels from paq_data timed to 2photon imaging frame_times.
         In effect this works as a downsampling algorithm.
 
@@ -295,7 +295,7 @@ class TemporalData:
 
         assert self.frame_times, 'no frame_times found to retrieve data from those timestamps.'
 
-        print(f"\n\t\- Getting imaging frames timed data from {len(frame_times)} frames ... ")
+        print(f"\n\t\- Getting imaging key_frames timed data from {len(frame_times)} key_frames ... ")
 
         # read in and save sparse version of all data channels (only save data from timepoints at frame clock times)
         sparse_data = {}

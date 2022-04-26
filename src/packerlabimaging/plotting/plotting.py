@@ -206,54 +206,118 @@ def plot__paq_channel(paqData: PaqData, channel: str, **kwargs):
     ax.grid(True)
 
 
-
-def makeFrameAverageTiff(tiff_path: str, frames: Union[int, list], peri_frames: int = 100, save_dir: str = None, to_plot=False):
+def makeAverageTiff(tiff_path: str = None, frames: tuple = None, save_path: str = None, to_plot=False, imstack: np.ndarray=None):
     """
-    Creates, plots and/or saves an average image of the specified number of peri-frames around the given frame from a multipage imaging TIFF file.
+    Creates, plots and (optionally) saves an average image of the loaded tiff. Note: saves as 8-bit grayscale image.
 
+    :param frames:
+    :param tiff_path: key_frames: Union[int, list]
+    :return:
+    """
+
+    if imstack is None and tiff_path:
+        # read tiff
+        print(f'\t\- Creating avg img, from tiff: {tiff_path}')
+        im_stack = tf.imread(tiff_path)
+    elif imstack and tiff_path is None:
+        im_stack = imstack
+        assert im_stack.ndim == 3, 'can only average 3D image stacks (implicit dimensions are: Frames x Xpixels x Ypixels)'
+    else:
+        raise ValueError('values provided for both tiff_path and imstack. Unclear where to source image data from. Provide only one please.')
+
+    if frames:
+        print(f'\t collecting average image for frames: {frames}')
+        im_stack = im_stack[frames[0]: frames[1]]
+
+    print(f'\t\- Averaging {len(im_stack)} total frames.')
+    avg_sub = np.mean(im_stack, axis=0)
+
+    # convert to 8-bit
+    from packerlabimaging.utils.utils import convert_to_8bit
+    avg_sub = convert_to_8bit(avg_sub, 0, 255)
+
+    if save_path:
+        if '.tif' in save_path:
+            from packerlabimaging.utils.utils import return_parent_dir
+            save_dir = return_parent_dir(save_path) + '/'
+            os.makedirs(save_dir, exist_ok=True)
+        else:
+            raise ValueError(f'please provide full .tif path to save to. provided value was: {tiff_path}')
+        print(f"\t\- Writing tiff to: {save_path}")
+        tf.imwrite(save_path, avg_sub, photometric='minisblack')
+
+    if to_plot:
+        plt.imshow(avg_sub, cmap='gray')
+        plt.suptitle(f'Average Image')
+        plt.show()  # just plot for now to make sure that you are doing things correctly so far
+
+    return avg_sub
+
+
+
+def makeFrameAverageTiff(key_frames: Union[int, list], tiff_path: str = None, imstack: np.ndarray = None, peri_frames: int = 100, save_path: str = None, to_plot=False):
+    """
+    Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from a multipage imaging TIFF file.
+
+    :param tiff_path:
+    :param key_frames:
+    :param save_path:
+    :param imstack:
     :param peri_frames:
-    :param save_img:
     :param to_plot:
-    :param force_redo:
-    :param verbose:
     :return:
     """
 
     print('\nMaking peri-frame avg image...')
 
-    if type(frames) == int:
-        frames = [frames]
+    if type(key_frames) == int:
+        key_frames = [key_frames]
 
-    # read tiff
-    print(f'\t\- Creating avg img for frame: {frames}, from tiff: {tiff_path}')
-    im_stack = tf.imread(tiff_path)
+    if imstack is None and tiff_path:
+        # read tiff
+        print(f'\t\- Creating avg img for frame: {key_frames}, from tiff: {tiff_path}')
+        im_stack = tf.imread(tiff_path)
+    elif imstack and tiff_path is None:
+        im_stack = imstack
+    else:
+        raise ValueError('values provided for both tiff_path and imstack. Unclear where to source image data from. Provide only one please.')
 
-    for frame in frames:
+
+    for frame in key_frames:
         if frame < peri_frames // 2:
             peri_frames_low = frame
         else:
             peri_frames_low = peri_frames // 2
         peri_frames_high = peri_frames // 2
         im_sub = im_stack[frame - peri_frames_low: frame + peri_frames_high]
-        avg_sub = np.mean(im_sub, axis=0)
 
-        # convert to 8-bit
-        from packerlabimaging.utils.utils import convert_to_8bit
-        avg_sub = convert_to_8bit(avg_sub, 0, 255)
 
-        if save_dir:
-            if '.tif' in save_dir:
+
+        # # refactored to makeAverageTiff function
+        # avg_sub = np.mean(im_sub, axis=0)
+        #
+        # # convert to 8-bit
+        # from packerlabimaging.utils.utils import convert_to_8bit
+        # avg_sub = convert_to_8bit(avg_sub, 0, 255)
+
+        if save_path:
+            if '.tif' in save_path:
                 from packerlabimaging.utils.utils import return_parent_dir
-                save_dir = return_parent_dir(save_dir) + '/'
-            save_path = save_dir + f'/{frame}_frame_avg.tif'
-            os.makedirs(save_dir, exist_ok=True)
+                save_path = return_parent_dir(save_path) + '/'
+            save_path = save_path + f'/{frame}_frame_avg.tif'
+            os.makedirs(save_path, exist_ok=True)
 
-            print(f"\t\- Saving averaged tiff for frame: {frame}, to: {save_path}")
-            tf.imwrite(save_path, avg_sub, photometric='minisblack')
+            print(f"\t\- Saving averaged tiff for frame: {frame}")
+            avg_sub = makeAverageTiff(imstack=im_sub, to_plot=False, save_path=save_path)
+
+            # tf.imwrite(save_path, avg_sub, photometric='minisblack')
+        else:
+            avg_sub = makeAverageTiff(imstack=im_sub, to_plot=False)
+
 
         if to_plot:
             plt.imshow(avg_sub, cmap='gray')
-            plt.suptitle(f'{peri_frames} peri-frames avg from frame {frame}')
+            plt.suptitle(f'{peri_frames} peri-key_frames avg from frame {frame}')
             plt.show()  # just plot for now to make sure that you are doing things correctly so far
 
 
@@ -456,7 +520,7 @@ def plotLfpSignal(trialobj: TwoPhotonImagingTrial, stim_span_color='powderblue',
         ax.tick_params(axis='both', which='both', length=3)
         if not hide_xlabel:
             ax.set_xlabel('Time (secs)')
-    # elif 'frame' or "frames" or "Frames" or "Frame" in x_axis:
+    # elif 'frame' or "key_frames" or "Frames" or "Frame" in x_axis:
     #     x_ticks = range(0, trialobj.n_frames, 2000)
     #     x_clocks = [x_fr*trialobj.paq_rate for x_fr in x_ticks]  ## convert to Paq clock dimension
     #     ax.set_xticks(x_clocks)
@@ -592,14 +656,14 @@ def plot_periphotostim_avg2(dataset, fps=None, legend_labels=None, colors=None, 
     else:
         AttributeError('please provide the data to plot in a ls format, each different data group as a ls item...')
 
-    if 'xlabel' not in kwargs or kwargs['xlabel'] is None or 'frames' not in kwargs['xlabel'] or 'Frames' not in kwargs[
+    if 'xlabel' not in kwargs or kwargs['xlabel'] is None or 'key_frames' not in kwargs['xlabel'] or 'Frames' not in kwargs[
         'xlabel']:
         ## change xaxis to time (secs)
         if fps is not None:
             if pre_stim_sec is not None:
                 x_range = np.linspace(0, len(meantraces[0]) / fps, len(
                     meantraces[
-                        0])) - pre_stim_sec  # x scale, but in time domain (transformed from frames based on the provided fps)
+                        0])) - pre_stim_sec  # x scale, but in time domain (transformed from key_frames based on the provided fps)
                 if 'xlabel' in kwargs.keys():
                     ax.set_xlabel(kwargs['xlabel'])
                 else:
@@ -608,7 +672,7 @@ def plot_periphotostim_avg2(dataset, fps=None, legend_labels=None, colors=None, 
                 AttributeError('need to provide a pre_stim_sec value to the function call!')
         else:
             AttributeError('need to provide fps value to convert xaxis in units of time (secs)')
-    elif 'frames' in kwargs['xlabel'] or 'Frames' in kwargs['xlabel']:
+    elif 'key_frames' in kwargs['xlabel'] or 'Frames' in kwargs['xlabel']:
         x_range = range(len(meanst[0]))
         ax.set_xlabel('Frames')
 
@@ -662,7 +726,7 @@ def plot_periphotostim_avg(arr: np.ndarray, trialobj: AllOpticalTrial, pre_stim_
                            avg_only: bool = False, x_label=None, y_label=None, pad=20, **kwargs):
     """
     plot trace across all stims
-    :param arr: Flu traces to plot (will be plotted as individual traces unless avg_only is True) dimensions should be cells x stims x frames
+    :param arr: Flu traces to plot (will be plotted as individual traces unless avg_only is True) dimensions should be cells x stims x key_frames
     :param trialobj: instance object of AllOpticalTrial
     :param pre_stim_sec: seconds of array to plot for pre-stim period
     :param post_stim_sec: seconds of array to plot for post-stim period
@@ -684,8 +748,8 @@ def plot_periphotostim_avg(arr: np.ndarray, trialobj: AllOpticalTrial, pre_stim_
 
     """
 
-    fps = trialobj.imparams.fps  # frames per second rate of the imaging data collection for the data to be plotted
-    exp_prestim = trialobj.pre_stim_frames  # frames of pre-stim data collected for each trace for this trialobj (should be same as what's under trialobj.pre_stim_sec)
+    fps = trialobj.imparams.fps  # key_frames per second rate of the imaging data collection for the data to be plotted
+    exp_prestim = trialobj.pre_stim_frames  # key_frames of pre-stim data collected for each trace for this trialobj (should be same as what's under trialobj.pre_stim_sec)
     if 'stim_duration' in kwargs.keys():
         stim_duration = kwargs['stim_duration']
     else:
@@ -698,7 +762,7 @@ def plot_periphotostim_avg(arr: np.ndarray, trialobj: AllOpticalTrial, pre_stim_
     x = list(range(arr.shape[1]))
     # x range in time (secs)
     x_time = np.linspace(0, arr.shape[1] / fps, arr.shape[
-        1]) - pre_stim_sec  # x scale, but in time domain (transformed from frames based on the provided fps)
+        1]) - pre_stim_sec  # x scale, but in time domain (transformed from key_frames based on the provided fps)
 
     len_ = len(arr)
     flu_avg = np.mean(arr, axis=0)
@@ -710,7 +774,7 @@ def plot_periphotostim_avg(arr: np.ndarray, trialobj: AllOpticalTrial, pre_stim_
     else:
         alpha = 0.2
 
-    if x_label is None or not 'Frames' in x_label or 'frames' in x_label:
+    if x_label is None or not 'Frames' in x_label or 'key_frames' in x_label:
         x = x_time  # set the x plotting range
         if x_label is not None:
             x_label = x_label + 'post-stimulation relative'
@@ -743,7 +807,7 @@ def plot_periphotostim_avg(arr: np.ndarray, trialobj: AllOpticalTrial, pre_stim_
     if 'y_lims' in kwargs.keys():
         ax.set_ylim(kwargs['y_lims'])
     if pre_stim_sec and post_stim_sec:
-        if x_label is None or not 'Frames' in x_label or 'frames' in x_label:
+        if x_label is None or not 'Frames' in x_label or 'key_frames' in x_label:
             ax.set_xlim(-pre_stim_sec,
                         stim_duration + post_stim_sec)  # remember that x axis is set to be relative to the stim time (i.e. stim is at t = 0)
         else:

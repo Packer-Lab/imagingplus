@@ -52,7 +52,7 @@ def s2pRun(expobj, trialsSuite2P: Union[list, str] = 'all'):  ## TODO gotta spec
     # # setup ops dictionary
     # # expobj.Suite2p.ops['fs'] = fps / n_planes
     # batch_size = expobj.Suite2p.ops['batch_size'] * (262144 / (
-    #         frame_x * frame_y))  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
+    #         frame_x * frame_y))  # larger key_frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
 
     # # set other ops parameters if provided in kwargs:
     # for key in [*kwargs]:
@@ -67,11 +67,6 @@ def s2pRun(expobj, trialsSuite2P: Union[list, str] = 'all'):  ## TODO gotta spec
           'nchannels': expobj.Suite2p.ops['nchannels'],
           'tiff_list': list(tiffs_paths_to_use_s2p), 'data_path': expobj.dataPath, 'save_folder': _suite2p_save_path
           }
-
-    # db = {'fs': float(expobj.Suite2p.ops['fs']), 'diameter': expobj.Suite2p.ops['diameter'], 'batch_size': int(batch_size),
-    #       'nimg_init': int(batch_size), 'nplanes': n_planes, 'nchannels': n_channels,
-    #       'tiff_list': tiffs_paths_to_use_s2p, 'data_path': expobj.dataPath,
-    #       'save_folder': expobj._suite2p_save_path}
 
     expobj.Suite2p.db = db
 
@@ -184,14 +179,14 @@ class Suite2pExperiment:
         'num_workers_roi': 0,  # 0 to select number of planes, -1 to disable parallelism, N to enforce value
         # registration settings
         'do_registration': True,  # whether to register data
-        'nimg_init': 200,  # subsampled frames for finding reference image
+        'nimg_init': 200,  # subsampled key_frames for finding reference image
         'maxregshift': 0.1,  # max allowed registration shift, as a fraction of frame max(width and height)
         'align_by_chan': 1,  # when multi-channel, you can align by non-functional channel (1-based)
         'reg_tif': False,  # whether to save registered tiffs
         'subpixel': 10,  # precision of subpixel registration (1/subpixel steps)
         # cell detection settings
         'connected': True,  # whether or not to keep ROIs fully connected (set to 0 for dendrites)
-        'navg_frames_svd': 5000,  # max number of binned frames for the SVD
+        'navg_frames_svd': 5000,  # max number of binned key_frames for the SVD
         'nsvd_for_roi': 1000,  # max number of SVD components to keep for ROI detection
         'max_iterations': 20,  # maximum number of iterations to do cell detection
         'ratio_neuropil': 6.,  # ratio between neuropil basis size and cell radius
@@ -226,12 +221,12 @@ class Suite2pExperiment:
         :param dataPath:
         """
 
-        self.bad_frames: list = []  #: list of frames to discard during Suite2p ROI detection procedure
+        self.bad_frames: list = []  #: list of key_frames to discard during Suite2p ROI detection procedure
         print(f"\- ADDING .Suite2p module to Experiment object ... ", end='\r')
 
         ## initialize attr's
         # TODO add attr comments
-        self.n_frames: int = 0  # total number of imaging frames in the Suite2p run
+        self.n_frames: int = 0  # total number of imaging key_frames in the Suite2p run
 
         self.n_planes: int = N_PLANES
 
@@ -241,7 +236,7 @@ class Suite2pExperiment:
         self.cell_med = []  # y, x location of each cell in the imaging frame
         self.cell_x = []  # TODO ROB
         self.cell_y = []  # TODO ROB
-        self.raw = []  # [cells x num frames], raw traces for each cell from suite2p
+        self.raw = []  # [cells x num key_frames], raw traces for each cell from suite2p
         self.stat = []
         self.spks = []
         self.neuropil = []
@@ -356,7 +351,7 @@ class Suite2pExperiment:
             self.cell_plane.append(cell_plane)
 
             print(
-                f'|- Loaded {self.n_units} suite2p classified cells from plane {plane}, recorded for {round(self.raw[plane].shape[1] / self.ops["fs"], 2)} secs total, {self.n_frames} frames total')
+                f'|- Loaded {self.n_units} suite2p classified cells from plane {plane}, recorded for {round(self.raw[plane].shape[1] / self.ops["fs"], 2)} secs total, {self.n_frames} key_frames total')
 
         # consider replacing this and use returning properties
         if self.n_planes == 1:
@@ -461,7 +456,7 @@ class Suite2pExperiment:
 
     def add_bad_frames(self, frames, bad_frames_npy_loc) -> None:
         """
-        Add frames to bad_frames.npy file that will be used by Suite2p to ignore these frames during ROI detection.
+        Add key_frames to bad_frames.npy file that will be used by Suite2p to ignore these key_frames during ROI detection.
         """
 
         self.bad_frames.extend(frames)
@@ -522,7 +517,7 @@ class Suite2pExperiment:
 
         # calculate batch size to use in Suite2p run
         batch_size = Suite2p_obj.ops['batch_size'] * (262144 / (
-                frame_x * frame_y))  # larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
+                frame_x * frame_y))  # larger key_frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
 
         # setup db dict
         Suite2p_obj.db = {'fs': float(Suite2p_obj.ops['fs']), 'diameter': Suite2p_obj.ops['diameter'],
@@ -606,7 +601,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
         self.trial_frames = trial_frames  # tuple of first and last frame (out of the overall suite2p run) corresponding to the present trial
 
         print(
-            f"\t|- current trial frames: {trial_frames} out of {s2pExp.n_frames} total frames processed through suite2p")
+            f"\t|- current trial key_frames: {trial_frames} out of {s2pExp.n_frames} total key_frames processed through suite2p")
         if s2pExp.s2pResultsPath:
             raw, spks, neuropil = self._get_suite2pResults(s2pExp)
         else:
@@ -626,9 +621,9 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
 
     def __repr__(self):
         if self.s2pResultExists:
-            return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} frames x {self.n_units} s2p ROIs'
+            return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} key_frames x {self.n_units} s2p ROIs'
         else:
-            return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} frames. No Suite2p Results loaded.'
+            return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} key_frames. No Suite2p Results loaded.'
 
     @property
     def s2pResultExists(self):
@@ -641,7 +636,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
     def _get_suite2pResults(self,
                             s2pExp: Suite2pExperiment):
         """
-        Get suite2p data for current trial's frames.
+        Get suite2p data for current trial's key_frames.
 
         :param s2pExp:
         :return:
@@ -682,7 +677,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
 
     def makeFrameAverageTiff(self, reg_tif_dir: str, frames: Union[int, list], peri_frames: int = 100,
                              save_dir: str = None, to_plot=False):
-        """Creates, plots and/or saves an average image of the specified number of peri-frames around the given frame from the suite2p registered TIFF file.
+        """Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from the suite2p registered TIFF file.
         """
 
         # read in registered tiff
@@ -730,7 +725,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
 
             if to_plot:
                 plt.imshow(avg_sub, cmap='gray')
-                plt.suptitle(f'{peri_frames} frames avg from s2p reg tif, frame: {frames[idx]}')
+                plt.suptitle(f'{peri_frames} key_frames avg from s2p reg tif, frame: {frames[idx]}')
                 plt.show()  # just plot for now to make sure that you are doing things correctly so far
 
 
@@ -837,7 +832,7 @@ class Suite2PTrial_(Suite2pExperiment):
 
         # self.suite2p_overall = suite2p_experiment_obj
         print(
-            f"\t|- current trial frames: {trial_frames} out of {self.n_frames} total frames processed through suite2p")
+            f"\t|- current trial key_frames: {trial_frames} out of {self.n_frames} total key_frames processed through suite2p")
         self._get_suite2pResults() if self.s2pResultsPath else None
 
         # s2pResultsPath = suite2p_experiment_obj.s2pResultsPath if hasattr(suite2p_experiment_obj, 's2pResultsPath') else None
@@ -848,12 +843,12 @@ class Suite2PTrial_(Suite2pExperiment):
 
     def __repr__(self):
         if self.s2pResultExists:
-            return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} frames x {self.n_units} s2p ROIs'
+            return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} key_frames x {self.n_units} s2p ROIs'
         else:
-            return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} frames. No Suite2p Results loaded.'
+            return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} key_frames. No Suite2p Results loaded.'
 
     def _get_suite2pResults(self):  # TODO complete code for getting suite2p results for trial
-        """crop suite2p data for frames only for the present trial"""
+        """crop suite2p data for key_frames only for the present trial"""
 
         # for attr in ['n_units', 'cell_id', 'cell_plane', 'cell_x', 'cell_y', 'xoff', 'yoff', 'raw', 'spks', 'neuropil', 'stat']:
         #     try:
@@ -880,13 +875,13 @@ class Suite2PTrial_(Suite2pExperiment):
                 self.spks.append(self.spks[plane][:, self.trial_frames[0]:self.trial_frames[1]])
                 self.neuropil.append(self.neuropil[plane][:, self.trial_frames[0]:self.trial_frames[1]])
 
-                # self.dfof.append(normalize_dff(self.raw[plane]))  # calculate df/f based on relevant frames
+                # self.dfof.append(normalize_dff(self.raw[plane]))  # calculate df/f based on relevant key_frames
                 self.s2pResultExists = True
 
     def makeFrameAverageTiff(self, reg_tif_dir: str, frames: Union[int, list], peri_frames: int = 100,
                              save_dir: str = None,
                              to_plot=False):
-        """Creates, plots and/or saves an average image of the specified number of peri-frames around the given frame from the suite2p registered TIFF file.
+        """Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from the suite2p registered TIFF file.
         """
 
         # read in registered tiff
@@ -934,7 +929,7 @@ class Suite2PTrial_(Suite2pExperiment):
 
             if to_plot:
                 plt.imshow(avg_sub, cmap='gray')
-                plt.suptitle(f'{peri_frames} frames avg from s2p reg tif, frame: {frames[idx]}')
+                plt.suptitle(f'{peri_frames} key_frames avg from s2p reg tif, frame: {frames[idx]}')
                 plt.show()  # just plot for now to make sure that you are doing things correctly so far
 
 
@@ -987,7 +982,7 @@ def add_suite2p_results(expobj, s2p_trials: Union[list, str] = 'all', s2pResults
         trialobj = expobj.load_trial(trialID=trial)
         # print(f'n_frames', expobj.Suite2p.n_frames)
         trialobj.Suite2p = Suite2pResultsTrial(s2pExp=expobj.Suite2p, trial_frames=(
-            total_frames, total_frames + trialobj.n_frames))  # use trial obj's current trial frames
+            total_frames, total_frames + trialobj.n_frames))  # use trial obj's current trial key_frames
         trialobj.save()
         total_frames += trialobj.n_frames
 

@@ -419,7 +419,7 @@
       if (typeof a != 'object' || typeof b != 'object') return false;
 
       // Objects with different constructors are not equivalent, but `Object`s or `Array`s
-      // from different frames are.
+      // from different key_frames are.
       var aCtor = a.constructor, bCtor = b.constructor;
       if (aCtor !== bCtor && !(isFunction$1(aCtor) && aCtor instanceof aCtor &&
                                isFunction$1(bCtor) && bCtor instanceof bCtor)

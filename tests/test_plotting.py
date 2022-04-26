@@ -7,10 +7,11 @@ from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
 from packerlabimaging.ExperimentMain import Experiment
 
 from packerlabimaging.plotting.plotting import makeSuite2pPlots, plot_flu_trace, plotMeanFovFluTrace, \
-    plot_photostim_traces_overlap, plot_periphotostim_avg, plotRoiLocations, plot_SLMtargets_Locs
+    plot_photostim_traces_overlap, plot_periphotostim_avg, plotRoiLocations, plot_SLMtargets_Locs, makeFrameAverageTiff, \
+    makeAverageTiff
 
-expobj: Experiment = import_obj(pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
-trialobj: TwoPhotonImagingTrial = expobj.load_trial(trialID='t-005')
+# expobj: Experiment = import_obj(pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
+# trialobj: TwoPhotonImagingTrial = expobj.load_trial(trialID='t-005')
 
 
 def test_plotRoiLocations(existing_trialobj_twophotonimaging_fixture):
@@ -49,3 +50,8 @@ def test_plot_periphotostim_avg(existing_trialobj_alloptical_fixture):
 def test_plot_SLMtargets_Locs(existing_trialobj_alloptical_fixture):
     trialobj: AllOpticalTrial = existing_trialobj_alloptical_fixture
     plot_SLMtargets_Locs(trialobj=trialobj)
+
+def test_makeAverageTiff(tiff_path, save_path):
+    makeAverageTiff(tiff_path=tiff_path, save_path=save_path)
+
+test_makeAverageTiff(tiff_path='/home/pshah/mnt/qnap/Data/2020-03a/2020-03-03/2020-03-03_t-001/2020-03-03_t-001_Cycle00001_Ch3_downsampled.tif', save_path='/home/pshah/mnt/qnap/Analysis/analysis_export/2020-03-03_t-001_Cycle00001_Ch3_downsampled_MEAN.tif')
