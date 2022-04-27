@@ -53,15 +53,15 @@ def plotRoiLocations(trialobj: TwoPhotonImagingTrial, suite2p_rois: Union[list, 
     # image_frame_options()
 
     # fig = kwargs['fig']
-    # suptitle = kwargs['suptitle'] if 'suptitle' in [*kwargs] else None
-    image_frame_options() if 'apply_image_frame_options' not in [*kwargs] or kwargs[
+    # suptitle = kwargs['suptitle'] if 'suptitle' in kwargs else None
+    image_frame_options() if 'apply_image_frame_options' not in kwargs or kwargs[
         'apply_image_frame_options'] else None
 
     ax = kwargs['ax']
     kwargs.pop('ax')
 
-    facecolors = kwargs['facecolors'] if 'facecolors' in [*kwargs] else 'none'
-    edgecolors = kwargs['edgecolors'] if 'edgecolors' in [*kwargs] else 'orange'
+    facecolors = kwargs['facecolors'] if 'facecolors' in kwargs else 'none'
+    edgecolors = kwargs['edgecolors'] if 'edgecolors' in kwargs else 'orange'
 
     if suite2p_rois == 'all':
         suite2p_rois = trialobj.Suite2p.cell_id
@@ -80,7 +80,7 @@ def plotRoiLocations(trialobj: TwoPhotonImagingTrial, suite2p_rois: Union[list, 
 
     ax.invert_yaxis()
 
-    _add_scalebar(trialobj=trialobj, ax=ax) if 'scalebar' in [*kwargs] and kwargs['scalebar'] is True else None
+    _add_scalebar(trialobj=trialobj, ax=ax) if 'scalebar' in kwargs and kwargs['scalebar'] is True else None
     mpl.pyplot.rcdefaults()
 
 
@@ -122,7 +122,7 @@ def makeSuite2pPlots(obj: Union[Experiment, TwoPhotonImagingTrial], **kwargs):
     axs[3].imshow(np.nanmax(obj.Suite2p.im[obj.Suite2p.iscell], axis=0), cmap='jet')
     axs[3].set_title("All Cell ROIs", wrap=True)
 
-    _add_scalebar(trialobj=obj, ax=axs[3]) if 'scalebar' in [*kwargs] and kwargs['scalebar'] is True else None
+    _add_scalebar(trialobj=obj, ax=axs[3]) if 'scalebar' in kwargs and kwargs['scalebar'] is True else None
     mpl.pyplot.rcdefaults()
 
 
@@ -168,6 +168,7 @@ def plot_flu_trace(trialobj: TwoPhotonImagingTrial, cell, to_plot='raw', **kwarg
 @plotting_decorator()
 def plot__paq_channel(paqData: PaqData, channel: str, **kwargs):
     """
+    todo change to more general temporal series data plotting
     Plot the stored signal from the specified channel from a PaqData submodule.
 
     :param paqData: .Paq submodule data
@@ -183,11 +184,10 @@ def plot__paq_channel(paqData: PaqData, channel: str, **kwargs):
     ax = kwargs['ax']
     kwargs.pop('ax')
 
-    # kwargs['x_axis'] = 'Time (secs)' if 'x_axis' not in [*kwargs] else kwargs['x_axis']
-    kwargs['x_tick_secs'] = 120 if 'x_tick_secs' not in [*kwargs] else kwargs['x_tick_secs']
+    kwargs['x_tick_secs'] = 120 if 'x_tick_secs' not in kwargs else kwargs['x_tick_secs']
 
-    lw = 0.5 if 'lw' not in [*kwargs] else kwargs['lw']
-    color = 'black' if 'color' not in [*kwargs] else kwargs['color']
+    lw = 0.5 if 'lw' not in kwargs else kwargs['lw']
+    color = 'black' if 'color' not in kwargs else kwargs['color']
 
     # collect data to plot
     data = getattr(paqData, channel)
@@ -200,9 +200,6 @@ def plot__paq_channel(paqData: PaqData, channel: str, **kwargs):
     ax.set_xlabel('Time (secs)')
     ax.set_xticks([label for label in range(0, int(len(data) / paqData.paq_rate), kwargs['x_tick_secs'])])
     ax.set_xlabel(kwargs['x_axis'])
-    # from packerlabimaging.plotting._utils import dataplot_ax_options
-    # dataplot_ax_options(ax=ax, data_length=len(data), collection_hz=paqData.paq_rate, **kwargs)
-    # dataplot_ax_options(ax=ax, data_length=len(data), collection_hz=1, **kwargs)
     ax.grid(True)
 
 
@@ -512,7 +509,7 @@ def plotLfpSignal(trialobj: TwoPhotonImagingTrial, stim_span_color='powderblue',
     # ax.spines['left'].set_visible(False)
 
     # change x axis ticks to seconds
-    labels_ = kwargs['labels'] if 'labels' in [*kwargs] else ax.get_xticklabels()
+    labels_ = kwargs['labels'] if 'labels' in kwargs else ax.get_xticklabels()
     labels_ = [int(i) for i in labels_]
     if 'time' in x_axis or 'Time' in x_axis:
         ax.set_xticks(ticks=[(label * trialobj.Paq.paq_rate) for label in labels_])

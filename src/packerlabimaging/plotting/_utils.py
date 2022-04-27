@@ -356,3 +356,10 @@ def plot_coordinates(coords: list,  frame_x: int, frame_y: int, background: np.n
             ax.set_title(kwargs['title'])
         else:
             pass
+
+
+# todo add utility to send a plot/data to a plotly server, or a basic flask SVG server
+
+
+
+

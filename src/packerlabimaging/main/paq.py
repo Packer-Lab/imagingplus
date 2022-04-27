@@ -312,6 +312,9 @@ class PaqData(TemporalData):
         return stim_start_frames, stim_start_times
 
 
+    def plot__paq_channel(self):
+        """temp placeholder incase you need specific plotting code compared to plotting with the general temporal data function"""
+        pass
 
     # # TODO review code
     # def _1p_stims(self, paq_data, plot: bool = False, optoloopback_channel: str = 'opto_loopback'):

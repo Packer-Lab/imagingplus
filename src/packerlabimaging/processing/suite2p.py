@@ -46,8 +46,8 @@ def s2pRun(expobj, trialsSuite2P: Union[list, str] = 'all'):  ## TODO gotta spec
     # trialobj: TwoPhotonImagingTrial = import_obj(expobj.TrialsInformation[trial]['analysis_object_information']['pkl path'])
 
     # # set imaging parameters using defaults or kwargs if provided
-    # frame_x = trialobj.imparams.frame_x if 'frame_x' not in [*kwargs] else kwargs['frame_x']
-    # frame_y = trialobj.imparams.frame_y if 'frame_y' not in [*kwargs] else kwargs['frame_y']
+    # frame_x = trialobj.imparams.frame_x if 'frame_x' not in kwargs else kwargs['frame_x']
+    # frame_y = trialobj.imparams.frame_y if 'frame_y' not in kwargs else kwargs['frame_y']
 
     # # setup ops dictionary
     # # expobj.Suite2p.ops['fs'] = fps / n_planes
@@ -55,7 +55,7 @@ def s2pRun(expobj, trialsSuite2P: Union[list, str] = 'all'):  ## TODO gotta spec
     #         frame_x * frame_y))  # larger key_frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
 
     # # set other ops parameters if provided in kwargs:
-    # for key in [*kwargs]:
+    # for key in kwargs:
     #     if key in [*expobj.Suite2p.ops]:
     #         expobj.Suite2p.ops[key] = kwargs[key]
 
@@ -495,12 +495,12 @@ class Suite2pExperiment:
         trialobj = import_obj(TrialsInformation[trial]['analysis_object_information']['pkl path'])
 
         # set imaging parameters using defaults or kwargs if provided
-        fps = trialobj.fps if 'fs' not in [*kwargs] else kwargs['fs']
-        n_planes = trialobj.n_planes if 'n_planes' not in [*kwargs] else kwargs['n_planes']
-        pix_sz_x = trialobj.pix_sz_x if 'pix_sz_x' not in [*kwargs] else kwargs['pix_sz_x']
-        pix_sz_y = trialobj.pix_sz_y if 'pix_sz_y' not in [*kwargs] else kwargs['pix_sz_y']
-        frame_x = trialobj.frame_x if 'frame_x' not in [*kwargs] else kwargs['frame_x']
-        frame_y = trialobj.frame_y if 'frame_y' not in [*kwargs] else kwargs['frame_y']
+        fps = trialobj.fps if 'fs' not in kwargs else kwargs['fs']
+        n_planes = trialobj.n_planes if 'n_planes' not in kwargs else kwargs['n_planes']
+        pix_sz_x = trialobj.pix_sz_x if 'pix_sz_x' not in kwargs else kwargs['pix_sz_x']
+        pix_sz_y = trialobj.pix_sz_y if 'pix_sz_y' not in kwargs else kwargs['pix_sz_y']
+        frame_x = trialobj.frame_x if 'frame_x' not in kwargs else kwargs['frame_x']
+        frame_y = trialobj.frame_y if 'frame_y' not in kwargs else kwargs['frame_y']
         n_channels = kwargs['n_channels'] if 'n_channels' in [
             *kwargs] else 1  # default is 1 channel imaging in .tiffs for suite2p
 
@@ -511,7 +511,7 @@ class Suite2pExperiment:
         Suite2p_obj.ops['diameter'] = int(diameter_x), int(diameter_y) if diameter_y != diameter_x else diameter_x
 
         # set other ops parameters if provided in kwargs:
-        for key in [*kwargs]:
+        for key in kwargs:
             if key in [*Suite2p_obj.ops]:
                 Suite2p_obj.ops[key] = kwargs[key]
 

@@ -517,6 +517,18 @@ class ImagingTrial:
         # plt.show()
         return stack
 
+    def addImagingMetadata(self, microscope):
+        """Add the imaging metadata submodule to the current ImagingTrial."""
+        # imaging metadata
+        if 'Bruker' in self.microscope:
+            self.imparams = PrairieViewMetadata(pv_xml_dir=self.tiff_path_dir)
+        elif ImagingMetadata:
+            self.imparams = ImagingMetadata
+        else:
+            Warning(
+                f"NO imaging microscope parameters set. follow imagingMetadata to create a custom imagingMicroscopeMetadata class.")
+
+
     ## below properties/methods have pre-requisite processing steps
     @property
     def n_frames(self):
