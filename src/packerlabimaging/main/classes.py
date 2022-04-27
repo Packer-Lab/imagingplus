@@ -26,7 +26,7 @@ import pickle
 # TODO test out new Trial class and new workflows
 # todo test anndata creation from Trial
 
-# TODO add function in experiment object for merging of Trials across time axis (assert they have the same cell annotations).
+# TODO add function in Experiment object for merging of Trials across time axis (assert they have the same cell annotations).
 
 # TODO [ ]  thinking about restructuring TwoPhotonImaging trial methods to more general trial type
 #    [ ]  then making TwoPhotonImaging as an independent workflow, allowing the general trial type to retain the methods that are *currently* in TwoPhotonImaging
@@ -34,9 +34,8 @@ import pickle
 # noinspection DuplicatedCode
 @dataclass
 class Experiment:
-    """A class to initialize and store data of an imaging experiment. This class acts as a bucket to contain
-    information about individual trial objects. """
-    # date: str  #: date of experiment data collection
+    """Overall experiment. It can collate all imaging trials that are part of a single field-of-view (FOV) of imaging"""
+
     expID: str  #: given identification name for experiment
     dataPath: str  #: main dir where the imaging data is contained
     saveDir: str  #: main dir where the experiment object and the trial objects will be saved to
@@ -246,6 +245,7 @@ class Experiment:
 
 @dataclass
 class TemporalData:
+    """1-D time series datsets corresponding with an imaging trial."""
     file_path: str  #: path to data file
     sampling_rate: float  #: rate of data collection (Hz)
     channels: List[str]  #: list of data channel names.
@@ -307,6 +307,7 @@ class TemporalData:
 
 @dataclass
 class CellAnnotations:
+    """Annotations of cells in an imaging trial."""
     cells_array: Union[List[
                            int], pd.Index, pd.RangeIndex, np.ndarray]  #: ID of all cells in imaging dataset. must be of same cell length as imaging dataset.
     annotations: Union[List[str], pd.Index]  #: list of names of annotations.
@@ -350,7 +351,8 @@ class CellAnnotations:
 
 @dataclass
 class ImagingData:
-    data: Dict[str, Union[np.ndarray, pd.DataFrame, Any]]  #: dictionary of data labels containing N x Frames array of imaging data of cells (N) collected over time (Frames) for each data label.
+    """Imaging dataset."""
+    data: Dict[str, Union[np.ndarray, pd.DataFrame, Any]]  #: dictionary of data labels, where each key corresponds to a N x Frames table of imaging data of cells (N) collected over time (Frames) for each data label.
 
     @property
     def data_labels(self):
@@ -364,7 +366,7 @@ class ImagingData:
 
 
 class ImagingMetadata:
-    """Class containing metadata about imaging system parameters."""
+    """Metadata about imaging system parameters."""
 
     def __init__(self, microscope, n_frames, fps, frame_x, frame_y, n_planes, pix_sz_x, pix_sz_y, **kwargs):
 
