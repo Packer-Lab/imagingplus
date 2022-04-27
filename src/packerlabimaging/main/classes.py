@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from packerlabimaging.processing.anndata import AnnotatedData
 
-from packerlabimaging.processing.imagingMetadata import ImagingMetadata
+# from packerlabimaging.processing.imagingMetadata import ImagingMetadata
 from packerlabimaging.utils.classes import UnavailableOptionError, TrialMetainfo
 
 import os
@@ -362,6 +362,25 @@ class ImagingData:
         """number of data labels contained in .data"""
         return len([*self.data])
 
+
+class ImagingMetadata:
+    """Class containing metadata about imaging system parameters."""
+
+    def __init__(self, microscope, n_frames, fps, frame_x, frame_y, n_planes, pix_sz_x, pix_sz_y, **kwargs):
+
+        self.microscope = microscope  #: given name of microscope
+        self.n_frames = n_frames  #: number of imaging frames in the current trial
+        self.fps = fps  #: rate of imaging acquisition (frames per second)
+        self.frame_x = frame_x  #: num of pixels in the x direction of a single frame
+        self.frame_y = frame_y  #: num of pixels in the y direction of a single frame
+        self.n_planes = n_planes  #: num of FOV planes in imaging acquisition
+        self.pix_sz_x = pix_sz_x  #: size of a single imaging pixel in x direction (microns)
+        self.pix_sz_y = pix_sz_y  #: size of a single imaging pixel in y direction (microns)
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+    def __repr__(self):
+        return f'ImagingMetadata for imaging data collected with {self.microscope}.'
 
 
 @dataclass
