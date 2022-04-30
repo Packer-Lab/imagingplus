@@ -39,11 +39,11 @@ class TwoPhotonImaging(ImagingTrial):
         :param total_frames_stitched: provide frame number on which current trial starts in Suite2p Experiment Object
         """
 
+        print(f'\----- CREATING TwoPhotonImagingTrial for trial: {trialID}')
 
         # ADD MODULES -
         self.Suite2p = None  #: Suite2p analysis sub-module  # todo consider adding wrapper method for attaching Suite2p to trial object (like might just need to refactor over from the experiment main file)
 
-        print(f'\----- CREATING TwoPhotonImagingTrial for trial: \n\t{self.trialID}')
 
         # # imaging metadata
         # if not imparams:
@@ -62,12 +62,19 @@ class TwoPhotonImaging(ImagingTrial):
         #     tmdata = self._paqProcessingTwoPhotonImaging(paq_path=PaqInfo['paq_path'], frame_channel=frame_channel)  #: Paq data submodule for trial
 
         # processing collect mean FOV Trace -- after collecting imaging params and Paq timing info
+        print('here!!')
+
+        ImagingTrial(date=date, trialID=trialID, expID=expID, dataPath=dataPath, group=expGroup, comment=comments,
+                     saveDir=saveDir, imparams=imparams, cells=cells, tmdata=tmdata)
+
+        print('here!! 2')
+
         self.meanFluImg, self.meanFovFluTrace = self.meanRawFluTrace()  #: mean image and mean FOV fluorescence trace
 
         self.dFF = None  #: dFF normalized traces of cells
 
-        ImagingTrial(date=date, trialID=trialID, expID=expID, dataPath=dataPath, group=expGroup, comment=comments,
-                     saveDir=saveDir, imparams=imparams, cells=cells, tmdata=tmdata)
+
+
 
         # todo if there's the full complement in ImagingTrial then make the annotateddata as well to get the complete process done
 

@@ -60,34 +60,18 @@ def twophoton_imaging_multitrial_noPreDoneSuite2p_fixture():
     date = '2021-01-31'
 
     trials_paq = {'t-001': '001.paq',
-                  't-002': '002.paq',
-                  't-003': '003.paq',
-                  't-004': '004.paq'}
+                  # 't-002': '002.paq',
+                  # 't-003': '003.paq',
+                  # 't-004': '004.paq'
+                  }
 
-    TwoPhotonImagingMultiTrial = {}
-    for trial, paq in trials_paq.items():
-        data_path_base = f'/home/pshah/mnt/qnap/Data/{date}'  # same as above, unclear what this is supposed to be.. (need more clear argument name)
+    info = {
+        'prep': prep,
+    'date': date,
+        'trials_paq': trials_paq
+    }
 
-        paqs_loc = f'{data_path_base}/{date}_{prep}_{paq}'  # path to the .paq files for the selected trials
-        dataPath = f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif'
-
-        imparams = PrairieViewMetadata(pv_xml_dir=os.path.dirname(dataPath), microscope='Bruker 2pPlus')
-        tmdata = PaqData.paqProcessingTwoPhotonImaging(paq_path=paqs_loc, frame_channel='frame_clock')
-
-
-        TwoPhotonImagingMultiTrial[trial] = {'date': date,
-                                    'trialID': trial,
-                                    'expID': prep,
-                                    'imparams': imparams,
-                                    'tmdata': tmdata,
-                                    'saveDir': f'/home/pshah/mnt/qnap/Analysis/{date}/{prep}/',
-                                    'dataPath': dataPath,
-                                    'expGroup': "awake spont. 2p imaging + LFP",
-                                    }
-
-
-
-    return TwoPhotonImagingMultiTrial
+    return info
 
 @pytest.fixture(scope="session")
 def twophoton_imaging_trial_fixture():

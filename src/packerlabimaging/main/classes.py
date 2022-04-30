@@ -282,7 +282,7 @@ class TemporalData:
         """number of data collection channels"""
         return len(self.data.columns)
 
-    def get_sparse_data(self, frame_times: Union[list, np.ndarray]):
+    def get_sparse_data(self, frame_times: Union[list, np.ndarray] = None):
         """
         todo: need to probably average the original signal between key_frames if collected at a higher rate than frame_times.
             - why not just use a downsampling algorithm to downsample to the same frame rate and num datapoints as the imaging key_frames????
@@ -295,13 +295,16 @@ class TemporalData:
 
         # todo insert test to check that original signal has been collected at a rate higher than imaging. if not then need to handle differently.
 
-        assert self.frame_times, 'no frame_times found to retrieve data from those timestamps.'
+        assert hasattr(self, 'frame_times') or frame_times, 'no frame_times given to retrieve data from those timestamps.'
 
-        print(f"\n\t\- Getting imaging key_frames timed data from {len(frame_times)} key_frames ... ")
+        frame_times = self.frame_times if frame_times is None else frame_times
+
+        print(f"\n\t\- Getting imaging key frames timed data from {len(frame_times)} frames ... ")
 
         # read in and save sparse version of all data channels (only save data from timepoints at frame clock times)
         sparse_data = {}
         for idx, chan in enumerate(self.channels):
+            print(f'\t\t\- Adding sparse data for channel: {chan} ')
             data = getattr(self, chan)
             sparse_data[chan] = data[frame_times]
         return sparse_data
@@ -405,7 +408,7 @@ class ImagingTrial:
 
     def __post_init__(self):
         self._metainfo = TrialMetainfo(date=self.date, trialID=self.trialID, expID=self.expID, expGroup=self.group,
-                                       comments=self.comment)  # , microscope=self.microscope)
+                                       comments=self.comment, paths={})  # , microscope=self.microscope)
 
         if os.path.exists(self.dataPath):
             self._metainfo['paths']['dataPath'] = self.dataPath
@@ -453,25 +456,25 @@ class ImagingTrial:
                                      comment=comment)
         experiment.add_trial(trialID=trialID, trialobj=trialobj)
 
-    @property
-    def date(self):
-        """date of the experiment datacollection"""
-        return self._metainfo['date']
+    # @property
+    # def date(self):
+    #     """date of the experiment datacollection"""
+    #     return self._metainfo['date']
 
     # @property
     # def microscope(self):
     #     """name of imaging data acquisition microscope system"""
     #     return self._metainfo['microscope']
 
-    @property
-    def expID(self):
-        """experiment ID of current trial object"""
-        return self._metainfo['expID']
+    # @property
+    # def expID(self):
+    #     """experiment ID of current trial object"""
+    #     return self._metainfo['expID']
 
-    @property
-    def trialID(self):
-        """trial ID of current trial object"""
-        return self._metainfo['trialID']
+    # @property
+    # def trialID(self):
+    #     """trial ID of current trial object"""
+    #     return self._metainfo['trialID']
 
     @property
     def tiff_path(self):
