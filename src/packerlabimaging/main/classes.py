@@ -407,19 +407,19 @@ class ImagingTrial:
     tmdata: TemporalData = None
 
     def __post_init__(self):
-        self._metainfo = TrialMetainfo(date=self.date, trialID=self.trialID, expID=self.expID, expGroup=self.group,
+        self.metainfo = TrialMetainfo(date=self.date, trialID=self.trialID, expID=self.expID, expGroup=self.group,
                                        comments=self.comment, paths={})  # , microscope=self.microscope)
 
         if os.path.exists(self.dataPath):
-            self._metainfo['paths']['dataPath'] = self.dataPath
+            self.metainfo['paths']['dataPath'] = self.dataPath
         else:
             raise FileNotFoundError(f"dataPath does not exist: {self.dataPath}")
 
         # set, create analysis save path directory and create pkl object
         os.makedirs(self.saveDir, exist_ok=True)
-        self._metainfo['paths']['pkl_path'] = f"{self.saveDir}{self.date}_{self.trialID}.pkl"
+        self.metainfo['paths']['pkl_path'] = f"{self.saveDir}{self.date}_{self.trialID}.pkl"
         self.save_pkl(pkl_path=self.pkl_path)  # save experiment object to pkl_path
-        self._metainfo['paths']['pkl_path'] = self.pkl_path
+        self.metainfo['paths']['pkl_path'] = self.pkl_path
 
         # make anndata
         if self.imdata and self.cells and self.tmdata:
@@ -459,32 +459,32 @@ class ImagingTrial:
     # @property
     # def date(self):
     #     """date of the experiment datacollection"""
-    #     return self._metainfo['date']
+    #     return self.metainfo['date']
 
     # @property
     # def microscope(self):
     #     """name of imaging data acquisition microscope system"""
-    #     return self._metainfo['microscope']
+    #     return self.metainfo['microscope']
 
     # @property
     # def expID(self):
     #     """experiment ID of current trial object"""
-    #     return self._metainfo['expID']
+    #     return self.metainfo['expID']
 
     # @property
     # def trialID(self):
     #     """trial ID of current trial object"""
-    #     return self._metainfo['trialID']
+    #     return self.metainfo['trialID']
 
     @property
     def tiff_path(self):
         """tiff path of current trial object"""
-        return self._metainfo['paths']['dataPath']
+        return self.metainfo['paths']['dataPath']
 
     @property
     def t_series_name(self):
-        if "expID" in self._metainfo.keys() and "trialID" in self._metainfo.keys():
-            return f'{self._metainfo["expID"]} {self._metainfo["trialID"]}'
+        if "expID" in self.metainfo.keys() and "trialID" in self.metainfo.keys():
+            return f'{self.metainfo["expID"]} {self.metainfo["trialID"]}'
         else:
             raise ValueError('no information found to retrieve t series id')
 
@@ -496,11 +496,11 @@ class ImagingTrial:
     @property
     def pkl_path(self):
         """path in Analysis folder to save pkl object"""
-        return self._metainfo['paths']['pkl_path']
+        return self.metainfo['paths']['pkl_path']
 
     @pkl_path.setter
     def pkl_path(self, path: str):
-        self._metainfo['paths']['pkl_path'] = path
+        self.metainfo['paths']['pkl_path'] = path
 
     def save_pkl(self, pkl_path: str = None):
         """
@@ -571,6 +571,7 @@ class ImagingTrial:
 
         :return: imaging tiff as numpy array
         """
+        print(f'test print here importTrialTiff')
         print(f"\n\- loading raw TIFF file from: {self.tiff_path}", end='\r')
         im_stack = tf.imread(self.tiff_path, key=range(self.imparams.n_frames))
         print('|- Loaded experiment tiff of shape: ', im_stack.shape)
@@ -601,9 +602,6 @@ class ImagingTrial:
         from packerlabimaging.utils.utils import SaveDownsampledTiff
         SaveDownsampledTiff(stack=stack, save_as=f"{self.saveDir}/{self.date}_{self.trialID}_downsampled.tif")
 
-    @property
-    def metainfo(self):
-        return self._metainfo
 
     def create_anndata(self, imdata_type: str = None, layers=False):
         """

@@ -62,15 +62,15 @@ class TwoPhotonImaging(ImagingTrial):
         #     tmdata = self._paqProcessingTwoPhotonImaging(paq_path=PaqInfo['paq_path'], frame_channel=frame_channel)  #: Paq data submodule for trial
 
         # processing collect mean FOV Trace -- after collecting imaging params and Paq timing info
-        print('here!!')
 
-        ImagingTrial(date=date, trialID=trialID, expID=expID, dataPath=dataPath, group=expGroup, comment=comments,
+        super().__init__(date=date, trialID=trialID, expID=expID, dataPath=dataPath, group=expGroup, comment=comments,
                      saveDir=saveDir, imparams=imparams, cells=cells, tmdata=tmdata)
 
-        print('here!! 2')
-
+        # print('test here!!')
+        print(self.date)
         self.meanFluImg, self.meanFovFluTrace = self.meanRawFluTrace()  #: mean image and mean FOV fluorescence trace
 
+        # print('test here!! 333')
         self.dFF = None  #: dFF normalized traces of cells
 
 
@@ -80,6 +80,7 @@ class TwoPhotonImaging(ImagingTrial):
 
 
         # SAVE Trial OBJECT
+
         self.save()
 
     def __str__(self):
