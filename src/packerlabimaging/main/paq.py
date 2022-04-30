@@ -64,7 +64,7 @@ def paq2py(file_path=None, plot=False):
         num_chars = int(np.fromfile(fid, dtype='>f', count=1))
         chan_name = ''
         for j in range(num_chars):
-            chan_name = chan_name + chr(np.fromfile(fid, dtype='>f', count=1)[0])
+            chan_name = chan_name + chr(int(np.fromfile(fid, dtype='>f', count=1)[0]))
         chan_names.append(chan_name)
 
     # get channel hardware lines
@@ -73,7 +73,7 @@ def paq2py(file_path=None, plot=False):
         num_chars = int(np.fromfile(fid, dtype='>f', count=1))
         hw_chan = ''
         for j in range(num_chars):
-            hw_chan = hw_chan + chr(np.fromfile(fid, dtype='>f', count=1)[0])
+            hw_chan = hw_chan + chr(int(np.fromfile(fid, dtype='>f', count=1)[0]))
         hw_chans.append(hw_chan)
 
     # get acquisition units
@@ -82,7 +82,7 @@ def paq2py(file_path=None, plot=False):
         num_chars = int(np.fromfile(fid, dtype='>f', count=1))
         unit = ''
         for j in range(num_chars):
-            unit = unit + chr(np.fromfile(fid, dtype='>f', count=1)[0])
+            unit = unit + chr(int(np.fromfile(fid, dtype='>f', count=1)[0]))
         units.append(unit)
 
     # get data
