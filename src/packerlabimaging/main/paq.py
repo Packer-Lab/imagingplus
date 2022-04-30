@@ -318,7 +318,7 @@ class PaqData(TemporalData):
 
 
     @classmethod
-    def _paqProcessingTwoPhotonImaging(cls, paq_path, frame_channel):
+    def paqProcessingTwoPhotonImaging(cls, paq_path, frame_channel):
         """
         Alternative constructor for paq module for working with two photon imaging trials.
 

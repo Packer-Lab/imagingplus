@@ -24,7 +24,7 @@ from packerlabimaging.processing import anndata as ad
 class TwoPhotonImaging(ImagingTrial):
     """Two Photon Imaging Experiment Data Analysis Workflow."""
 
-    def __init__(self, date: str = None, trialID: str = None, expID: str = None, tiff_path: str = None, microscope: str = '',
+    def __init__(self, date: str = None, trialID: str = None, expID: str = None, dataPath: str = None, microscope: str = '',
                  expGroup: str = None, saveDir: str = None, tmdata: TemporalData = None,  imparams: ImagingMetadata = None,
                  cells: CellAnnotations = None, comments: str = ''):
 
@@ -45,28 +45,28 @@ class TwoPhotonImaging(ImagingTrial):
 
         print(f'\----- CREATING TwoPhotonImagingTrial for trial: \n\t{self.trialID}')
 
-        # imaging metadata
-        if not imparams:
-            Warning(f"NO imaging microscope parameters set. follow imagingMetadata submodule to provide an ImagingMetadata object.")
+        # # imaging metadata
+        # if not imparams:
+        #     Warning(f"NO imaging microscope parameters set. follow imagingMetadata submodule to provide an ImagingMetadata object.")
 
-        # temporal synchronization data from .Paq
-        if PaqInfo:
-            paq_path = PaqInfo['paq_path']
-            if os.path.exists(paq_path):
-                self._use_paq = True
-            else:
-                raise FileNotFoundError(f"paq_path does not exist: {paq_path}")
-
-            frame_channel = PaqInfo['frame_channel'] if 'frame_channel' in [*PaqInfo] else KeyError(
-                'No frame_channel specified for .paq processing')  # channel on Paq file to read for determining stims
-            tmdata = self._paqProcessingTwoPhotonImaging(paq_path=PaqInfo['paq_path'], frame_channel=frame_channel)  #: Paq data submodule for trial
+        # # temporal synchronization data from .Paq
+        # if PaqInfo:
+        #     paq_path = PaqInfo['paq_path']
+        #     if os.path.exists(paq_path):
+        #         self._use_paq = True
+        #     else:
+        #         raise FileNotFoundError(f"paq_path does not exist: {paq_path}")
+        #
+        #     frame_channel = PaqInfo['frame_channel'] if 'frame_channel' in [*PaqInfo] else KeyError(
+        #         'No frame_channel specified for .paq processing')  # channel on Paq file to read for determining stims
+        #     tmdata = self._paqProcessingTwoPhotonImaging(paq_path=PaqInfo['paq_path'], frame_channel=frame_channel)  #: Paq data submodule for trial
 
         # processing collect mean FOV Trace -- after collecting imaging params and Paq timing info
         self.meanFluImg, self.meanFovFluTrace = self.meanRawFluTrace()  #: mean image and mean FOV fluorescence trace
 
         self.dFF = None  #: dFF normalized traces of cells
 
-        ImagingTrial(date=date, trialID=trialID, expID=expID, dataPath=tiff_path, group=expGroup, comment=comments,
+        ImagingTrial(date=date, trialID=trialID, expID=expID, dataPath=dataPath, group=expGroup, comment=comments,
                      saveDir=saveDir, imparams=imparams, cells=cells, tmdata=tmdata)
 
         # todo if there's the full complement in ImagingTrial then make the annotateddata as well to get the complete process done

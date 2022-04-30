@@ -32,8 +32,7 @@ from packerlabimaging.main.classes import ImagingMetadata
 class PrairieViewMetadata(ImagingMetadata):
     """class for parsing metadata of imaging microscope system."""
 
-    def __init__(self, pv_xml_dir: str, microscope: str = 'Bruker', **kwargs):
-        assert microscope == 'Bruker', 'invalid use of PrairieViewMetadata on non Bruker system.'
+    def __init__(self, pv_xml_dir: str, microscope: str = 'Bruker'):
 
         print(f'\n\- Adding Imaging Acquisition Metadata from {microscope} ...')
         self.pv_xml_dir = pv_xml_dir  #: path to the directory containing the .xml imaging output from PrairieView for a given trial
@@ -44,8 +43,8 @@ class PrairieViewMetadata(ImagingMetadata):
         self.scan_y = pv_metadata['scan_y']  #: resonant scan center in y axis
         self.zoom: float = pv_metadata['zoom']  #: zoom level on Bruker microscope
         self.last_good_frame = pv_metadata['last_good_frame']  #: indicates when the last good frame was during the t-series recording, if nothing was wrong the value is 0, otherwise it is >0 and that indicates that PV is not sure what happened after the frame listed, but it could be corrupt data
-        for key, value in kwargs.items():
-            setattr(self, key, value)
+        # for key, value in kwargs.items():  # todo removing kwargs
+        #     setattr(self, key, value)
 
 
     def __repr__(self):
