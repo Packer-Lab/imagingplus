@@ -2,29 +2,19 @@
 
 import os
 import time
-import re
-from typing import Optional, TypedDict
-
-import pickle
 
 import numpy as np
-import pandas as pd
 
-import tifffile as tf
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
 from packerlabimaging.main.classes import ImagingTrial, CellAnnotations, TemporalData
 from packerlabimaging.processing.imagingMetadata import PrairieViewMetadata, ImagingMetadata
-from packerlabimaging.utils.utils import SaveDownsampledTiff
-from packerlabimaging.utils.classes import UnavailableOptionError, PaqInfo
-from packerlabimaging.main.paq import PaqData
-from packerlabimaging.processing import anndata as ad
 
 
 class TwoPhotonImaging(ImagingTrial):
     """Two Photon Imaging Experiment Data Analysis Workflow."""
 
-    def __init__(self, date: str = None, trialID: str = None, expID: str = None, dataPath: str = None, microscope: str = '',
+    def __init__(self, date: str = None, trialID: str = None, expID: str = None, dataPath: str = None,
                  expGroup: str = None, saveDir: str = None, tmdata: TemporalData = None,  imparams: ImagingMetadata = None,
                  cells: CellAnnotations = None, comments: str = ''):
 
@@ -73,14 +63,7 @@ class TwoPhotonImaging(ImagingTrial):
         # print('test here!! 333')
         self.dFF = None  #: dFF normalized traces of cells
 
-
-
-
-        # todo if there's the full complement in ImagingTrial then make the annotateddata as well to get the complete process done
-
-
-        # SAVE Trial OBJECT
-
+        # SAVE two photon trial object
         self.save()
 
     def __str__(self):
@@ -93,53 +76,53 @@ class TwoPhotonImaging(ImagingTrial):
     def __repr__(self):
         return repr(f"{self.t_series_name} (TwoPhotonImagingTrial experimental data object)")
 
-    def _getImagingParameters(self, metadata: Optional[dict] = None, microscope: Optional[str] = 'Bruker'):
-        """retrieves imaging metadata parameters. If using Bruker microscope and PrairieView, then _prairieview module is used to collect this data.
+    # def _getImagingParameters(self, metadata: Optional[dict] = None, microscope: Optional[str] = 'Bruker'):
+    #     """retrieves imaging metadata parameters. If using Bruker microscope and PrairieView, then _prairieview module is used to collect this data.
+    #
+    #     :param microscope: name of the microscope, currently the only supported microscope for parsing metadata directly is Bruker/PrairieView imaging setup.
+    #     """
+    #     if 'Bruker' in microscope:
+    #         return PrairieViewMetadata(tiff_path_dir=self.tiff_path_dir)
+    #     else:
+    #         try:
+    #             return ImagingMetadata(**metadata)
+    #         except TypeError:
+    #             Exception('required key not present in metadata')
+    #
+    # @property
+    # def frame_clock(self):
+    #     if hasattr(self.tmdata, "frame_times"):
+    #         return self.tmdata.frame_times
+    #     else:
+    #         raise ValueError('Frame clock timings couldnt be retrieved from .tmdata submodule.')
 
-        :param microscope: name of the microscope, currently the only supported microscope for parsing metadata directly is Bruker/PrairieView imaging setup.
-        """
-        if 'Bruker' in microscope:
-            return PrairieViewMetadata(tiff_path_dir=self.tiff_path_dir)
-        else:
-            try:
-                return ImagingMetadata(**metadata)
-            except TypeError:
-                Exception('required key not present in metadata')
+    # def stitch_s2p_reg_tiff(self):  ## TODO refactoring in new code from the Suite2p class script?
+    #     assert self.Suite2p._s2pResultExists, UnavailableOptionError('stitch_s2p_reg_tiff')
+    #
+    #     tif_path_save2 = self.saveDir + f'reg_tiff_{self.t_series_name}_r.tif'
+    #
+    #     start = self.Suite2p.trial_frames[0] // 2000  # 2000 because that is the batch size for suite2p run
+    #     end = self.Suite2p.trial_frames[1] // 2000 + 1
+    #
+    #     if not os.path.exists(tif_path_save2):
+    #         with tf.TiffWriter(tif_path_save2, bigtiff=True) as tif:
+    #             with tf.TiffFile(self.Suite2p.reg_tiff_path, multifile=False) as input_tif:
+    #                 print('cropping registered tiff')
+    #                 data = input_tif.asarray()
+    #                 print('shape of stitched tiff: ', data.shape)
+    #             reg_tif_crop = data[self.Suite2p.trial_frames[0] - start * self.Suite2p.s2p_run_batch:
+    #                                 self.Suite2p.trial_frames[1] - (
+    #                                         self.Suite2p.trial_frames - start * self.Suite2p.s2p_run_batch)]
+    #             print('saving cropped tiff ', reg_tif_crop.shape)
+    #             tif.write(reg_tif_crop)
 
-    @property
-    def frame_clock(self):
-        if hasattr(self.tmdata, "frame_times"):
-            return self.tmdata.frame_times
-        else:
-            raise ValueError('Frame clock timings couldnt be retrieved from .tmdata submodule.')
-
-    def stitch_s2p_reg_tiff(self):  ## TODO refactoring in new code from the Suite2p class script?
-        assert self.Suite2p._s2pResultExists, UnavailableOptionError('stitch_s2p_reg_tiff')
-
-        tif_path_save2 = self.saveDir + f'reg_tiff_{self.t_series_name}_r.tif'
-
-        start = self.Suite2p.trial_frames[0] // 2000  # 2000 because that is the batch size for suite2p run
-        end = self.Suite2p.trial_frames[1] // 2000 + 1
-
-        if not os.path.exists(tif_path_save2):
-            with tf.TiffWriter(tif_path_save2, bigtiff=True) as tif:
-                with tf.TiffFile(self.Suite2p.reg_tiff_path, multifile=False) as input_tif:
-                    print('cropping registered tiff')
-                    data = input_tif.asarray()
-                    print('shape of stitched tiff: ', data.shape)
-                reg_tif_crop = data[self.Suite2p.trial_frames[0] - start * self.Suite2p.s2p_run_batch:
-                                    self.Suite2p.trial_frames[1] - (
-                                            self.Suite2p.trial_frames - start * self.Suite2p.s2p_run_batch)]
-                print('saving cropped tiff ', reg_tif_crop.shape)
-                tif.write(reg_tif_crop)
-
-    def dfof(self):
-        """(delta F)/F normalization of raw Suite2p data of trial."""
-        assert hasattr(self,
-                       'Suite2p'), 'no Suite2p module found. dfof function implemented to just normalize raw traces from Suite2p ROIs.'
-        if self.Suite2p._s2pResultExists:
-            dFF = self.normalize_dff(self.Suite2p.raw)
-            return dFF
+    # def dfof(self):
+    #     """(delta F)/F normalization of raw Suite2p data of trial."""
+    #     assert hasattr(self,
+    #                    'Suite2p'), 'no Suite2p module found. dfof function implemented to just normalize raw traces from Suite2p ROIs.'
+    #     if self.Suite2p._s2pResultExists:
+    #         dFF = self.normalize_dff(self.Suite2p.raw)
+    #         return dFF
 
     @staticmethod
     def normalize_dff(arr, threshold_pct=20, threshold_val=None):

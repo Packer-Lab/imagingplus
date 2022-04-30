@@ -1,6 +1,7 @@
 import numpy as np
 from conftest import existing_expobj_nopredones2p_fixture
-from packerlabimaging import Experiment, TwoPhotonImagingTrial
+from packerlabimaging import Experiment
+from packerlabimaging._archive.TwoPhotonImagingMain import TwoPhotonImagingTrial
 from packerlabimaging.processing import suite2p
 from packerlabimaging.processing.suite2p import Suite2pExperiment, Suite2pResultsTrial
 
@@ -13,7 +14,7 @@ def test_Suite2pResultsExperiment(existing_expobj_fixture):
     expobj.Suite2p = suite2p.Suite2pExperiment(trialsTiffsSuite2p=trialSuite2p,
                                                s2pResultsPath=s2pResultsPath)
 
-
+# todo this test is likely breaking!!
 def test_Suite2pResultsTrial(existing_trialobj_twophotonimaging_fixture, existing_trialobj_alloptical_fixture,
                              existing_expobj_fixture):
     trialobj, trialobj_ = existing_trialobj_twophotonimaging_fixture
@@ -116,23 +117,6 @@ def test_s2pRun():
 # test_s2pRun()
 
 
-# ## creating test for Suite2p.s2pRun():
-# # TODO need to add custom bad_frames creation function
-# expobj: Experiment = existing_expobj_nopredones2p_fixture()
-#
-# expobj.Suite2p.bad_frames = []
-# for trial in expobj.trialIDs:
-#     if 'post' in expobj.TrialsInformation[trial]['expGroup']:
-#         trialobj: TwoPhotonImagingTrial = expobj.load_trial(trialID=trial)
-#         print(len(expobj.Suite2p.bad_frames))
-#
-#         expobj.Suite2p.add_bad_frames(key_frames=np.arange(trialobj.Suite2p.trial_frames[0], trialobj.Suite2p.trial_frames[1]), bad_frames_npy_loc = expobj.dataPath)
-#
-# expobj.save()
-#
-# expobj.Suite2p.s2pRun(expobj=expobj)
-
-
 def test_makeFrameAverageTiff():
     from packerlabimaging.utils.io import import_obj
     expobj = import_obj(pkl_path='/home/pshah/mnt/qnap/Analysis/2021-01-25/PS12/PS12_analysis.pkl')
@@ -141,5 +125,8 @@ def test_makeFrameAverageTiff():
     trialobj.Suite2p.makeFrameAverageTiff(key_frames=[110, 510], peri_frames=100,
                                           save_path=trialobj.saveDir + f'/export/avg_frames/', to_plot=True)
 
-test_makeFrameAverageTiff()
+# test_makeFrameAverageTiff()
 
+def test_stitch_s2p_reg_tiff(existing_trialobj_twophotonimaging_fixture):
+    trialobj = existing_trialobj_twophotonimaging_fixture
+    assert hasattr(trialobj, 'Suite2p')
