@@ -6,7 +6,7 @@ from datetime import time
 import numpy as np
 from matplotlib import pyplot as plt
 
-from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
+from packerlabimaging._archive.TwoPhotonImagingMain import TwoPhotonImagingTrial
 from .paq import PaqData
 from packerlabimaging.utils.utils import threshold_detect
 from packerlabimaging.utils.classes import PaqInfoTrial

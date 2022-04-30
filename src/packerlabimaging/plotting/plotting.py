@@ -16,7 +16,7 @@ from packerlabimaging.utils.utils import save_to_csv
 
 from packerlabimaging.workflows.AllOptical import AllOpticalTrial
 
-from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
+from packerlabimaging._archive.TwoPhotonImagingMain import TwoPhotonImagingTrial
 from packerlabimaging.plotting._utils import plotting_decorator, make_random_color_array, _add_scalebar, \
     image_frame_options, dataplot_frame_options, dataplot_ax_options, plot_coordinates, heatmap_options, image_frame_ops
 from packerlabimaging.processing.paq import PaqData

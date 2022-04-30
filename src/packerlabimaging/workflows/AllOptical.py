@@ -4,7 +4,6 @@ import glob
 import os
 import signal
 import time
-from typing import TypedDict
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -13,9 +12,9 @@ import scipy.stats as stats
 import tifffile as tf
 
 from packerlabimaging.utils.utils import convert_to_8bit
-from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial, TwoPhotonImagingMetainfo
+from packerlabimaging._archive.TwoPhotonImagingMain import TwoPhotonImagingTrial
 from packerlabimaging.processing.naparm import Targets
-from packerlabimaging.utils.classes import PaqInfo, UnavailableOptionError
+from packerlabimaging.utils.classes import UnavailableOptionError
 # %%
 from packerlabimaging.processing.anndata import AnnotatedData
 

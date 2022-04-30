@@ -13,7 +13,7 @@ from __future__ import absolute_import
 from dataclasses import dataclass
 from typing import Optional, MutableMapping, Union
 
-from .utils.classes import TrialsInformation, PaqInfo
+from packerlabimaging.utils.classes import TrialsInformation, PaqInfo
 
 import os
 import time
@@ -22,7 +22,7 @@ import re
 import pickle
 
 from suite2p.run_s2p import run_s2p
-from .utils import io
+from packerlabimaging.utils import io
 
 
 

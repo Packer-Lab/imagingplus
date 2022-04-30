@@ -155,6 +155,7 @@ def stats_dicts_to_3d_array_(stat_dict, output_ops):
         arrays.append(array)
     return np.stack(arrays)
 
+# todo have suite2p run return a cells annotations (and maybe even imaging data set??) that can get added to trials' cells and imdata attr's immediately
 
 class Suite2pExperiment:
     """used to run and further process suite2p processed data, and analysis associated with suite2p processed data."""

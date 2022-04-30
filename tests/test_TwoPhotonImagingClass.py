@@ -1,5 +1,5 @@
 from conftest import twophoton_imaging_trial_new_noPreDoneSuite2p_fixture
-from packerlabimaging import TwoPhotonImagingMain
+from packerlabimaging._archive import TwoPhotonImagingMain
 
 
 def test_TwoPhotonImagingTrial_new(twophoton_imaging_trial_new_noPreDoneSuite2p_fixture):
@@ -18,3 +18,7 @@ def test_meanRawFluTrace(existing_trialobj_twophotonimaging_fixture):
     trialobj.save()
 
 # TODO add tests for main public functions - especially those in tutorial 1
+
+
+
+

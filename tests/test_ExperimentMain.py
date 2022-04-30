@@ -4,8 +4,7 @@ import packerlabimaging as pkg
 
 
 # pytest framework
-from conftest import experimentnew_fixture
-from packerlabimaging.ExperimentMain import Experiment
+from packerlabimaging._archive.ExperimentMain import Experiment
 
 @pytest.mark.skip
 def test_ExperimentClass(experiment_fixture):

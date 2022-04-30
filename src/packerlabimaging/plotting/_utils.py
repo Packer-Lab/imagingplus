@@ -1,21 +1,17 @@
 # library of convenience plotting funcs that are used for making various plots for all optical photostimulation/imaging experiments
 
 # imports
-import os
 from typing import Union
 
-import mpl_point_clicker
 import numpy as np
 import functools
 import random
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-import pandas as pd
 import seaborn as sns
 
-from packerlabimaging.utils.utils import save_to_csv
 from packerlabimaging.workflows.AllOptical import AllOpticalTrial
-from packerlabimaging.TwoPhotonImagingMain import TwoPhotonImagingTrial
+from packerlabimaging._archive.TwoPhotonImagingMain import TwoPhotonImagingTrial
 
 # global plotting params
 params = {'legend.fontsize': 'x-large',
@@ -31,7 +27,6 @@ sns.set_style('white')
 # %% UTILITY FUNCS
 
 # wrapper for piping plots in and out of figures
-from packerlabimaging.utils.classes import ObjectClassError
 
 
 def plotting_decorator(figsize=(3, 3), nrows=1, ncols=1, apply_image_frame_options=False, apply_heatmap_options=False):

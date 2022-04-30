@@ -116,7 +116,7 @@ class Experiment:
     #
     #     print(f"|- ADDED trial: {trialobj.trialID} to {self.expID} experiment")
 
-    def add_trial(self, trialID, **kwargs):
+    def add_trial(self, trialID, trialobj = None, **kwargs):
         """
         Add trial object to the experiment. This will add metainformation about the trial to the experiment.
 
@@ -125,7 +125,9 @@ class Experiment:
 
         print(f"\n\n\- ADDING trial: {trialID} to {self.expID} experiment", end='\r')
 
-        trialobj = ImagingTrial.newImagingTrialfromExperiment(experiment=self, trialID=trialID, **kwargs)
+        if trialobj is None:
+            trialobj = ImagingTrial.newImagingTrialfromExperiment(experiment=self, trialID=trialID, **kwargs)
+
 
         self.TrialsInformation[trialobj.trialID] = trialobj.metainfo
         self.TrialsInformation[trialobj.trialID]['expGroup'] = trialobj.metainfo['expGroup']
@@ -449,8 +451,7 @@ class ImagingTrial:
                                      expID=experiment.expID,
                                      group=group,
                                      comment=comment)
-
-        return trialobj
+        experiment.add_trial(trialID=trialID, trialobj=trialobj)
 
     @property
     def date(self):

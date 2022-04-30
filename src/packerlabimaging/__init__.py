@@ -13,8 +13,7 @@ warnings.filterwarnings("ignore")
 
 from ._version import __version__
 from .utils.io import import_obj
-from .ExperimentMain import Experiment
-from .TwoPhotonImagingMain import TwoPhotonImagingTrial
+from packerlabimaging._archive.ExperimentMain import Experiment
 from packerlabimaging.workflows.AllOptical import AllOpticalTrial
 from packerlabimaging.workflows.OnePhotonStimImaging import OnePhotonStim
 from .plotting import plotting

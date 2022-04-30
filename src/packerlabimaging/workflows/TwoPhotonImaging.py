@@ -13,7 +13,7 @@ import pandas as pd
 import tifffile as tf
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from packerlabimaging.main.classes import ImagingTrial
+from packerlabimaging.main.classes import ImagingTrial, CellAnnotations, TemporalData
 from packerlabimaging.processing.imagingMetadata import PrairieViewMetadata, ImagingMetadata
 from packerlabimaging.utils.utils import SaveDownsampledTiff
 from packerlabimaging.utils.classes import UnavailableOptionError, PaqInfo
@@ -24,11 +24,9 @@ from packerlabimaging.processing import anndata as ad
 class TwoPhotonImaging(ImagingTrial):
     """Two Photon Imaging Experiment Data Analysis Workflow."""
 
-    def __init__(self, date: str = None, trialID: str = None, expID: str = None, tiff_path: str = None,
-                 microscope: str = '',
-                 expGroup: str = None, saveDir: str = None, PaqInfo: PaqInfo = None,
-                 ImagingMetadata: ImagingMetadata = None,
-                 comments: str = ''):
+    def __init__(self, date: str = None, trialID: str = None, expID: str = None, tiff_path: str = None, microscope: str = '',
+                 expGroup: str = None, saveDir: str = None, tmdata: TemporalData = None,  imparams: ImagingMetadata = None,
+                 cells: CellAnnotations = None, comments: str = ''):
 
         """
         TODO update function docstring for approp args
@@ -41,8 +39,6 @@ class TwoPhotonImaging(ImagingTrial):
         :param total_frames_stitched: provide frame number on which current trial starts in Suite2p Experiment Object
         """
 
-        ImagingTrial(date=date, trialID=trialID, expID=expID, dataPath=tiff_path, group=expGroup, comment=comments,
-                     saveDir=saveDir)
 
         # ADD MODULES -
         self.Suite2p = None  #: Suite2p analysis sub-module  # todo consider adding wrapper method for attaching Suite2p to trial object (like might just need to refactor over from the experiment main file)
@@ -50,13 +46,8 @@ class TwoPhotonImaging(ImagingTrial):
         print(f'\----- CREATING TwoPhotonImagingTrial for trial: \n\t{self.trialID}')
 
         # imaging metadata
-        if 'Bruker' in microscope:
-            self.imparams = PrairieViewMetadata(pv_xml_dir=self.tiff_path_dir)
-        elif ImagingMetadata:
-            self.imparams = ImagingMetadata
-        else:
-            Warning(
-                f"NO imaging microscope parameters set. follow imagingMetadata to create a custom imagingMicroscopeMetadata class.")
+        if not imparams:
+            Warning(f"NO imaging microscope parameters set. follow imagingMetadata submodule to provide an ImagingMetadata object.")
 
         # temporal synchronization data from .Paq
         if PaqInfo:
@@ -68,14 +59,18 @@ class TwoPhotonImaging(ImagingTrial):
 
             frame_channel = PaqInfo['frame_channel'] if 'frame_channel' in [*PaqInfo] else KeyError(
                 'No frame_channel specified for .paq processing')  # channel on Paq file to read for determining stims
-            self.Paq = self._paqProcessingTwoPhotonImaging(paq_path=PaqInfo['paq_path'],
-                                                           frame_channel=frame_channel)  #: Paq data submodule for trial
+            tmdata = self._paqProcessingTwoPhotonImaging(paq_path=PaqInfo['paq_path'], frame_channel=frame_channel)  #: Paq data submodule for trial
 
         # processing collect mean FOV Trace -- after collecting imaging params and Paq timing info
         self.meanFluImg, self.meanFovFluTrace = self.meanRawFluTrace()  #: mean image and mean FOV fluorescence trace
 
-        self.data = None  #: anndata storage submodule
         self.dFF = None  #: dFF normalized traces of cells
+
+        ImagingTrial(date=date, trialID=trialID, expID=expID, dataPath=tiff_path, group=expGroup, comment=comments,
+                     saveDir=saveDir, imparams=imparams, cells=cells, tmdata=tmdata)
+
+        # todo if there's the full complement in ImagingTrial then make the annotateddata as well to get the complete process done
+
 
         # SAVE Trial OBJECT
         self.save()
@@ -104,28 +99,11 @@ class TwoPhotonImaging(ImagingTrial):
                 Exception('required key not present in metadata')
 
     @property
-    def paq_frame_clock(self):
-        if hasattr(self.Paq, "frame_times"):
-            return self.Paq.frame_times
+    def frame_clock(self):
+        if hasattr(self.tmdata, "frame_times"):
+            return self.tmdata.frame_times
         else:
-            raise ValueError('Frame clock timings couldnt be retrieved from .Paq submodule.')
-
-    def _paqProcessingTwoPhotonImaging(self, paq_path, frame_channel):
-        """
-        Add and further process paq data for current trial.
-        :param paq_path: path to .paq file
-        :param frame_channel: channel to use for measuring frame times from .paq data
-
-        :return: PAQ data object
-        """
-
-        paq_data_obj = PaqData.import_paqdata(file_path=paq_path, plot=False)
-        assert frame_channel in paq_data_obj.paq_channels, f"frame_channel argument: '{frame_channel}', not found in channels in .paq data."
-        paq_data_obj.frame_times_channame = frame_channel
-        paq_data_obj.frame_times = paq_data_obj.getPaqFrameTimes(frame_channel=frame_channel)
-        paq_data_obj.sparse_paq_data = paq_data_obj.get_sparse_data(frame_times=paq_data_obj.frame_times)
-
-        return paq_data_obj
+            raise ValueError('Frame clock timings couldnt be retrieved from .tmdata submodule.')
 
     def stitch_s2p_reg_tiff(self):  ## TODO refactoring in new code from the Suite2p class script?
         assert self.Suite2p._s2pResultExists, UnavailableOptionError('stitch_s2p_reg_tiff')

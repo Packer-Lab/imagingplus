@@ -316,6 +316,28 @@ class PaqData(TemporalData):
         """temp placeholder incase you need specific plotting code compared to plotting with the general temporal data function"""
         pass
 
+
+    @classmethod
+    def _paqProcessingTwoPhotonImaging(cls, paq_path, frame_channel):
+        """
+        Alternative constructor for paq module for working with two photon imaging trials.
+
+        :param paq_path: path to .paq file
+        :param frame_channel: channel to use for measuring frame times from .paq data
+
+        :return: PAQ data object
+        """
+
+        paq_data_obj = cls.import_paqdata(file_path=paq_path, plot=False)
+        assert frame_channel in paq_data_obj.channels, f"frame_channel argument: '{frame_channel}', not found in channels in .paq data."
+        paq_data_obj.frame_times_channame = frame_channel
+        paq_data_obj.frame_times = paq_data_obj.getPaqFrameTimes(frame_times_channel=frame_channel)
+        paq_data_obj.sparse_paq_data = paq_data_obj.get_sparse_data(frame_times=paq_data_obj.frame_times)
+
+        return paq_data_obj
+
+
+
     # # TODO review code
     # def _1p_stims(self, paq_data, plot: bool = False, optoloopback_channel: str = 'opto_loopback'):
     #     "find 1p stim times"
