@@ -30,7 +30,7 @@ class TwoPhotonImaging(ImagingTrial):
 
         print(f'\----- CREATING TwoPhotonImagingTrial for trial: {trialID}')
 
-        super().__init__(date=date, trialID=trialID, expID=expID, dataPath=dataPath, group=expGroup, comment=comment,
+        super().__init__(date=date, trialID=trialID, expID=expID, dataPath=dataPath, expGroup=expGroup, comment=comment,
                          saveDir=saveDir, imparams=imparams, cells=cells, tmdata=tmdata)
 
         # processing collect mean FOV Trace -- after collecting imaging params and Paq timing info

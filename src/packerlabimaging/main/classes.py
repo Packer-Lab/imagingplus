@@ -579,7 +579,7 @@ class ImagingTrial:
         :return: imaging tiff as numpy array
         """
         print(f"\n\- loading raw TIFF file from: {self.tiff_path}", end='\r')
-        im_stack = tf.imread(self.tiff_path, key=range(self.imparams.n_frames))
+        im_stack = tf.imread(self.tiff_path, key=range(self.n_frames))
         print('|- Loaded experiment tiff of shape: ', im_stack.shape)
 
         return im_stack

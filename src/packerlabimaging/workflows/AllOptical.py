@@ -12,7 +12,9 @@ import scipy.stats as stats
 import tifffile as tf
 
 from packerlabimaging import TwoPhotonImaging
-from packerlabimaging.main.classes import ImagingMetadata, ImagingData, TemporalData, ImagingTrial, CellAnnotations
+from packerlabimaging.main.classes import ImagingMetadata, ImagingData, TemporalData, ImagingTrial, CellAnnotations, \
+    Experiment
+from packerlabimaging.utils.io import import_obj
 from packerlabimaging.utils.utils import convert_to_8bit
 from packerlabimaging.processing.naparm import Targets
 from packerlabimaging.utils.classes import UnavailableOptionError
@@ -111,7 +113,7 @@ class AllOpticalTrial(TwoPhotonImaging):
 
         # FUNCTIONS TO RUN AFTER init's of ALL ATTR'S
 
-        # 2) get stim timings from paq file
+        # 2) get stim timings from paq file  - TODO work on debuggin gettting stim start frames!
         self.stim_start_frames = self._paqProcessingAllOptical(stim_channel=self.PaqInfoTrial['stim_channel'])
 
         # 3) process 2p stim protocol
@@ -1551,3 +1553,52 @@ class AllOpticalTrial(TwoPhotonImaging):
             dist = np.nan
 
         self.sta_euclid_dist = dist
+
+
+
+if __name__ == '__main__':
+
+    LOCAL_DATA_PATH = '/Users/prajayshah/data/oxford-data-to-process/'
+    REMOTE_DATA_PATH = '/home/pshah/mnt/qnap/Data/'
+    BASE_PATH = LOCAL_DATA_PATH
+
+    ExperimentMetainfo = {
+        'dataPath': f'{BASE_PATH}/2020-12-19/2020-12-19_t-013/2020-12-19_t-013_Cycle00001_Ch3.tif',
+        'saveDir': f'{BASE_PATH}/2020-12-19/',
+        'expID': 'RL109',
+        'comment': 'two photon imaging + alloptical trials',
+    }
+
+    expobj = Experiment(**ExperimentMetainfo)
+
+
+    def alloptical_trial_fixture():
+        initialization_dict = {'naparm_path': f'{BASE_PATH}/2020-12-19/photostim/2020-12-19_RL109_ps_014/',
+                               'dataPath': f'{BASE_PATH}/2020-12-19/2020-12-19_t-013/2020-12-19_t-013_Cycle00001_Ch3.tif',
+                               'saveDir': f'{BASE_PATH}/2020-12-19/',
+                               'date': '2020-12-19',
+                               'trialID': 't-013',
+                               'expID': 'RL109',
+                               'expGroup': 'all optical trial with LFP',
+                               'comment': ''}
+
+        return initialization_dict
+
+    def test_AllOpticalClass(alloptical_trial_fixture):
+
+        from packerlabimaging.processing.imagingMetadata import PrairieViewMetadata
+        from packerlabimaging.main.paq import PaqData
+
+        paqs_loc = f'{BASE_PATH}/2020-12-19/2020-12-19_RL109_013.paq'  # path to the .paq files for the selected trials
+        dataPath = alloptical_trial_fixture['dataPath']
+
+        imparams = PrairieViewMetadata(pv_xml_dir=os.path.dirname(dataPath), microscope='Bruker 2pPlus')
+        tmdata = PaqData.paqProcessingTwoPhotonImaging(paq_path=paqs_loc, frame_channel='frame_clock')
+
+        aotrial = AllOpticalTrial(imparams=imparams, tmdata=tmdata, **alloptical_trial_fixture)
+        return aotrial
+
+
+    idict = alloptical_trial_fixture()
+    aotrial = test_AllOpticalClass(idict)
+

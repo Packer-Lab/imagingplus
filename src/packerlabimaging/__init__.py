@@ -21,3 +21,10 @@ from .plotting import plotting
 from .utils.utils import define_term
 
 print(f"\nimported packerlabimaging successfully\n\tversion: {__version__}\n")
+
+LOCAL_DATA_PATH = '/Users/prajayshah/data/oxford-data-to-process/'
+REMOTE_DATA_PATH = '/home/pshah/mnt/qnap/Data/'
+BASE_PATH = LOCAL_DATA_PATH
+
+
+

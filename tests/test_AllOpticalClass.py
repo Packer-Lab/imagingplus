@@ -7,12 +7,12 @@ from packerlabimaging import AllOpticalTrial
 
 # %%
 
-def test_AllOpticalClass(alloptical_trial_fixture):
-    aotrial = AllOpticalTrial(**alloptical_trial_fixture)
-    return aotrial
-
-idict = alloptical_trial_fixture()
-aotrial = test_AllOpticalClass(idict)
+# def test_AllOpticalClass(alloptical_trial_fixture):
+#     aotrial = AllOpticalTrial(**alloptical_trial_fixture)
+#     return aotrial
+#
+# idict = alloptical_trial_fixture()
+# aotrial = test_AllOpticalClass(idict)
 
 
 
