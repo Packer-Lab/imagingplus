@@ -51,9 +51,10 @@ class Experiment:
             str, TrialMetainfo] = {}  #: dictionary of metadata information about each trial. Gets filled while adding each trial.
 
         # suite2p related attrs initialization
+        self.Suite2p = None
+        self._suite2p_save_path = None
         # self._trialsTiffsSuite2p = {}  #: dictionary of trial IDs and their respective .tiff paths for each trial that will be used in Suite2p processing for current experiment
         # self._s2pResultExists = False  #: flag for whether suite2p results exist for current experiment
-        self.Suite2p = None  #: suite2p submodule
 
         # save Experiment object
         self._pkl_path = self._get_save_location()
@@ -135,7 +136,9 @@ class Experiment:
             if 'path' in attr:  # add any attr's containing 'path' from trialobj to the TrialsInformation dict
                 self.TrialsInformation[trialobj.trialID]['paths'][attr] = getattr(trialobj, attr)
 
+        self.save()
         print(f"|- ADDED trial: {trialobj.trialID} to {self.expID} experiment")
+
 
     def combine_trials(self):
         """todo: Combine anndata table of trials with same cells."""
@@ -198,15 +201,17 @@ class Experiment:
         """
 
         print(f'\- Adding suite2p module to experiment. Located under .Suite2p')
-        from packerlabimaging.processing.suite2p import Suite2pResultsExperiment, Suite2pResultsTrial
+        from packerlabimaging.processing.suite2p import Suite2pExperiment, Suite2pResultsTrial
 
         if not len([*self.TrialsInformation]) > 0:
             raise UnavailableOptionError(
                 'need to add at least 1 trial to Experiment before adding Suite2p functionality.')
 
+        _trialsTiffsSuite2p = {}
+
         if s2p_trials == 'all': s2p_trials = self.trialIDs
         assert type(s2p_trials) == list and len(s2p_trials) > 0, 'no s2p trials given in list form.'
-        for trial in s2p_trials: self._trialsTiffsSuite2p[trial] = self.TrialsInformation[trial]['paths']['dataPath']
+        for trial in s2p_trials: _trialsTiffsSuite2p[trial] = self.TrialsInformation[trial]['paths']['dataPath']
 
         if s2pResultsPath:  # if s2pResultsPath provided then try to find and pre-load results from provided s2pResultsPath, raise error if cannot find results
             # search for suite2p results items in self.suite2pPath, and auto-assign s2pRunComplete --> True if found successfully
@@ -218,13 +223,13 @@ class Experiment:
                     break
             if self._s2pResultExists:
                 self._suite2p_save_path = s2pResultsPath
-                self.Suite2p = Suite2pResultsExperiment(trialsTiffsSuite2p=self._trialsTiffsSuite2p,
+                self.Suite2p = Suite2pExperiment(trialsTiffsSuite2p=_trialsTiffsSuite2p,
                                                         s2pResultsPath=s2pResultsPath)
             else:
                 raise ValueError(
                     f"suite2p results could not be found. `suite2pPath` provided was: {s2pResultsPath}")
         else:  # no s2pResultsPath provided, so initialize without pre-loading any results
-            self.Suite2p = Suite2pResultsExperiment(trialsTiffsSuite2p=self._trialsTiffsSuite2p)
+            self.Suite2p = Suite2pExperiment(trialsTiffsSuite2p=_trialsTiffsSuite2p)
 
         # print(self.Suite2p)
         # adding of suite2p trial level as well in this function as well
@@ -455,6 +460,7 @@ class ImagingTrial:
                                      group=group,
                                      comment=comment)
         experiment.add_trial(trialID=trialID, trialobj=trialobj)
+        return trialobj
 
     # @property
     # def date(self):
@@ -572,7 +578,6 @@ class ImagingTrial:
 
         :return: imaging tiff as numpy array
         """
-        print(f'test print here importTrialTiff')
         print(f"\n\- loading raw TIFF file from: {self.tiff_path}", end='\r')
         im_stack = tf.imread(self.tiff_path, key=range(self.imparams.n_frames))
         print('|- Loaded experiment tiff of shape: ', im_stack.shape)

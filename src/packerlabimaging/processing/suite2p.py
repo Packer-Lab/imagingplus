@@ -319,7 +319,7 @@ class Suite2pExperiment:
             self.spks.append(spks)  # deconvolved spikes each suite2p ROI
             self.neuropil.append(neuropil)  # neuropil value of each suite2p ROI
             self.stat.append(stat)  # stat dictionary for each suite2p ROI
-            self.n_frames = len(spks)
+            self.n_frames = spks.shape[1]
 
             self.ops: dict = np.load(os.path.join(s2p_path, 'ops.npy'), allow_pickle=True).item()
             self.mean_img.append(self.ops['meanImg'])
@@ -352,7 +352,7 @@ class Suite2pExperiment:
             self.cell_plane.append(cell_plane)
 
             print(
-                f'|- Loaded {self.n_units} suite2p classified cells from plane {plane}, recorded for {round(self.raw[plane].shape[1] / self.ops["fs"], 2)} secs total, {self.n_frames} key_frames total')
+                f'|- Loaded {self.n_units} suite2p classified cells from plane {plane}, recorded for {round(self.raw[plane].shape[1] / self.ops["fs"], 2)} secs total, {self.n_frames} frames total')
 
         # consider replacing this and use returning properties
         if self.n_planes == 1:
@@ -645,7 +645,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
 
         if s2pExp.n_planes == 1:
             self.cell_id = s2pExp.cell_id
-            self.stat = s2pExp.stat[0]
+            self.stat = s2pExp.stat
             self.output_ops = s2pExp.output_ops
             self.n_units = s2pExp.n_units
             self.iscell = s2pExp.iscell
@@ -737,9 +737,14 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
             obs_meta = pd.DataFrame(
                 columns=['original_index', 'footprint', 'mrs', 'mrs0', 'compact', 'med', 'npix', 'radius',
                          'aspect_ratio', 'npix_norm', 'skew', 'std'], index=range(len(self.stat)))
+
             for idx, __stat in enumerate(self.stat):
-                for __column in obs_meta:
-                    obs_meta.loc[idx, __column] = __stat[__column]
+                if 'original_index' not in [*__stat]:
+                    obs_meta.loc[idx, 'original_index'] = idx
+                for __column in [*__stat]:
+                    if __column in obs_meta.columns:
+                        obs_meta.loc[idx, __column] = __stat[__column]
+
 
             obs_m = {'ypix': [],
                      'xpix': []}

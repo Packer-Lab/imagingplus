@@ -4,54 +4,26 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from packerlabimaging.processing.imagingMetadata import PrairieViewMetadata
-from packerlabimaging.main.paq import PaqData
 from packerlabimaging.utils.io import import_obj
+
 
 SUITE2P_FRAMES_SPONT_t005t006 = [0, 14880]
 SUITE2P_FRAMES_t013 = 103525
 
 @pytest.fixture(scope="session")
 def twophoton_imaging_trial_new_noPreDoneSuite2p_fixture():
-    "mar 28 2022 - new no pipeline structure"
+    """apr 30 2022 - newest v0.2.0 structure"""
 
-    ExperimentMetainfo = {
-        'dataPath': '/home/pshah/mnt/qnap/Data/2020-12-19',
-        'saveDir': '/home/pshah/Documents/code/packerlabimaging/tests/',
-        "expID": 'RL109',
-        'date': '2020-12-19',
-        'comments': 'testing out analysis workflow',
-    }
+    date = '2021-01-31'
+    prep = 'HF113'
 
-    trials_info = {}
+    # add information about each trial in experiment to trialsInformation field of the initialization_dict
+    trials_paq = {'t-001': '001.paq',
+                  't-002': '002.paq',
+                  't-003': '003.paq',
+                  't-004': '004.paq'}
 
-
-    trials_list_spont = ['t-005', 't-006']
-    for idx, trial in enumerate(trials_list_spont):
-        data_path_base = '/home/pshah/mnt/qnap/Data/2020-12-19'
-        animal_prep = ExperimentMetainfo['expID']
-        date = data_path_base[-10:]
-
-        ## everything below should autopopulate
-        paqs_loc = '%s/%s_%s_%s.paq' % (
-        data_path_base, date, animal_prep, trial[2:])  # path to the .paq files for the selected trials
-        tiffs_loc = f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif'
-
-        TwoPhotonImagingMetainfo = {
-            'date': ExperimentMetainfo['date'],
-            'trialID': trial,
-            'expID': ExperimentMetainfo['expID'],
-            'microscope': 'Bruker 2pPlus',
-            'tiff_path': tiffs_loc,
-            'saveDir': ExperimentMetainfo['saveDir'],
-            'expGroup': "pre 4ap 2p spont imaging",
-            'PaqInfo': {'paq_path': paqs_loc,
-                             'frame_channel': 'frame_clock'}
-        }
-
-        trials_info[trial] = TwoPhotonImagingMetainfo
-
-    return trials_info
+    return trials_paq
 
 
 @pytest.fixture(scope="session")
@@ -60,9 +32,9 @@ def twophoton_imaging_multitrial_noPreDoneSuite2p_fixture():
     date = '2021-01-31'
 
     trials_paq = {'t-001': '001.paq',
-                  # 't-002': '002.paq',
-                  # 't-003': '003.paq',
-                  # 't-004': '004.paq'
+                  't-002': '002.paq',
+                  't-003': '003.paq',
+                  't-004': '004.paq'
                   }
 
     info = {
@@ -179,57 +151,37 @@ def alloptical_trial_fixture():
 
 
 @pytest.fixture(scope="session")
-def experiment_fixture(alloptical_trial_fixture, twophoton_imaging_trial_fixture):
-    initialization_dict = {
-        'dataPath': '/home/pshah/mnt/qnap/Data/2020-12-19',
-        'saveDir': '/home/pshah/Documents/code/packerlabimaging/tests/',
-        'microscope': "Bruker",
-        "expID": 'RL109',
-        'date': '2020-12-19',
-        'comments': 'testing out analysis workflow',
-        'TrialsInformation': {},  # NOTE: this dictionary is populated in the code cells below.
-        # 'useSuite2p': True,
-        # 'useSuite2p': False,
-        's2pResultsPath': "/home/pshah/mnt/qnap/Analysis/2020-12-19/suite2p/alloptical-2p-1x-alltrials/plane0"
-    }
-
-    for trial in [*twophoton_imaging_trial_fixture['TrialsInformation']]:
-        initialization_dict['TrialsInformation'][trial] = twophoton_imaging_trial_fixture['TrialsInformation'][trial]
-
-    for trial in [*alloptical_trial_fixture['TrialsInformation']]:
-        initialization_dict['TrialsInformation'][trial] = alloptical_trial_fixture['TrialsInformation'][trial]
-
-    return initialization_dict
-
-
-@pytest.fixture(scope="session")
-def experimentnew_fixture():
+def experiment_fixture():
     ExperimentMetainfo = {
-        'dataPath': '/home/pshah/mnt/qnap/Data/2020-12-19',
-        'saveDir': '/home/pshah/Documents/code/packerlabimaging/tests/',
-        "expID": 'RL109',
-        'date': '2020-12-19',
-        'comments': 'testing out analysis workflow',
+        'dataPath': '/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-data',
+        'saveDir': '/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis',
+        "expID": 'HF113',
+        'comments': 'two photon imaging + LFP dataset',
     }
-
     return ExperimentMetainfo
-
-
 
 
 @pytest.fixture(scope="session")
 def existing_trialobj_twophotonimaging_fixture():
-    expobj = import_obj(pkl_path='/home/pshah/mnt/qnap/Analysis/2021-01-31/HF113/2021-01-31_t-001.pkl')
+    expobj = import_obj(pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis/HF113_analysis.pkl')
     trialobj1 = expobj.load_trial(expobj.trialIDs[0])
     return trialobj1
 
 
 @pytest.fixture(scope="session")
 def existing_expobj_fixture():
-    expobj = import_obj(pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
-    trialsSuite2p = ['t-005', 't-006', 't-013']
-    s2pResultsPath = '/home/pshah/mnt/qnap/Analysis/2020-12-19/suite2p/alloptical-2p-1x-alltrials/plane0'
-    return expobj, trialsSuite2p, s2pResultsPath
+    expobj = import_obj(pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis/HF113_analysis.pkl')
+    return expobj
+
+@pytest.fixture(scope="session")
+def suite2p_results_fixture():
+    expobj = import_obj(pkl_path='/home/pshah/mnt/qnap/Analysis/2021-01-31/HF113/HF113_analysis.pkl')
+    s2p_path = f'/home/pshah/mnt/qnap/Analysis/2021-01-31/HF113//suite2p//plane0/'
+    assert os.path.exists(s2p_path), 's2p path not found...'
+    from packerlabimaging.processing.suite2p import s2p_loader
+    FminusFneu, spks, stat, neuropil = s2p_loader(s2p_path=s2p_path)
+    return FminusFneu, spks, stat, neuropil
+
 
 
 @pytest.fixture(scope="session")

@@ -1,11 +1,16 @@
 import numpy as np
+import pandas as pd
+
 from conftest import existing_expobj_nopredones2p_fixture
-from packerlabimaging import Experiment
+from packerlabimaging import Experiment, import_obj
 from packerlabimaging._archive.TwoPhotonImagingMain import TwoPhotonImagingTrial
 from packerlabimaging.processing import suite2p
 from packerlabimaging.processing.suite2p import Suite2pExperiment, Suite2pResultsTrial
 
 # todo this test is likely breaking!!
+from packerlabimaging.workflows import TwoPhotonImaging
+
+
 def test_Suite2pResultsExperiment(existing_expobj_fixture):
     expobj: Experiment = existing_expobj_fixture[0]
     trialSuite2p = existing_expobj_fixture[1]
@@ -17,11 +22,11 @@ def test_Suite2pResultsExperiment(existing_expobj_fixture):
 # todo this test is likely breaking!!
 def test_Suite2pResultsTrial(existing_trialobj_twophotonimaging_fixture, existing_trialobj_alloptical_fixture,
                              existing_expobj_fixture):
-    trialobj, trialobj_ = existing_trialobj_twophotonimaging_fixture
-    alloptical_trialobj = existing_trialobj_alloptical_fixture
-    expobj: Experiment = existing_expobj_fixture[0]
+    trialobj = existing_trialobj_twophotonimaging_fixture
+    # alloptical_trialobj = existing_trialobj_alloptical_fixture
+    expobj: Experiment = existing_expobj_fixture
 
-    for n_obj in [trialobj, trialobj_, alloptical_trialobj]:
+    for n_obj in [trialobj]:
         from packerlabimaging.processing.suite2p import Suite2pExperiment
         s2p_expobj: Suite2pExperiment = expobj.Suite2p
         n_obj.Suite2p = suite2p.Suite2pResultsTrial(s2pExp=s2p_expobj, trial_frames=n_obj.Suite2p.trial_frames)  # use trial obj's current trial key_frames
@@ -128,5 +133,41 @@ def test_makeFrameAverageTiff():
 # test_makeFrameAverageTiff()
 
 def test_stitch_s2p_reg_tiff(existing_trialobj_twophotonimaging_fixture):
-    trialobj = existing_trialobj_twophotonimaging_fixture
+    trialobj: TwoPhotonImaging = existing_trialobj_twophotonimaging_fixture
     assert hasattr(trialobj, 'Suite2p')
+    trialobj.Suite2p
+
+
+def getCellsAnnotations(self: TwoPhotonImaging):
+    # if self.s2pResultExists:
+    # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
+    # build dataframe for obs_meta from suite2p stat information
+    obs_meta = pd.DataFrame(
+        columns=['original_index', 'footprint', 'mrs', 'mrs0', 'compact', 'med', 'npix', 'radius',
+                 'aspect_ratio', 'npix_norm', 'skew', 'std'], index=range(len(self.stat)))
+    for idx, __stat in enumerate(self.stat):
+        for __column in obs_meta:
+            obs_meta.loc[idx, __column] = __stat[__column]
+
+    obs_m = {'ypix': [],
+             'xpix': []}
+    for col in [*obs_m]:
+        for idx, __stat in enumerate(self.stat):
+            obs_m[col].append(__stat[col])
+        obs_m[col] = np.asarray(obs_m[col])
+
+    return obs_meta, obs_m
+
+    # else:
+    #     raise ValueError('cannot set cell annotations. no s2p results found in trial.')
+
+def test_getCellsAnnotations(existing_trialobj_twophotonimaging_fixture):
+    # FminusFneu, spks, stat, neuropil = suite2p_results_fixture
+    expobj = import_obj(pkl_path='/home/pshah/mnt/qnap/Analysis/2021-01-31/HF113/HF113_analysis.pkl')
+    s2p_path = f'/home/pshah/mnt/qnap/Analysis/2021-01-31/HF113//suite2p//plane0/'
+
+    trialobj: TwoPhotonImaging = existing_trialobj_twophotonimaging_fixture
+
+    trialobj.Suite2p.getCellsAnnotations()
+
+

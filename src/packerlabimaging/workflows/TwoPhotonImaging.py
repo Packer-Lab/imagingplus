@@ -31,37 +31,11 @@ class TwoPhotonImaging(ImagingTrial):
 
         print(f'\----- CREATING TwoPhotonImagingTrial for trial: {trialID}')
 
-        # ADD MODULES -
-        self.Suite2p = None  #: Suite2p analysis sub-module  # todo consider adding wrapper method for attaching Suite2p to trial object (like might just need to refactor over from the experiment main file)
-
-
-        # # imaging metadata
-        # if not imparams:
-        #     Warning(f"NO imaging microscope parameters set. follow imagingMetadata submodule to provide an ImagingMetadata object.")
-
-        # # temporal synchronization data from .Paq
-        # if PaqInfo:
-        #     paq_path = PaqInfo['paq_path']
-        #     if os.path.exists(paq_path):
-        #         self._use_paq = True
-        #     else:
-        #         raise FileNotFoundError(f"paq_path does not exist: {paq_path}")
-        #
-        #     frame_channel = PaqInfo['frame_channel'] if 'frame_channel' in [*PaqInfo] else KeyError(
-        #         'No frame_channel specified for .paq processing')  # channel on Paq file to read for determining stims
-        #     tmdata = self._paqProcessingTwoPhotonImaging(paq_path=PaqInfo['paq_path'], frame_channel=frame_channel)  #: Paq data submodule for trial
-
-        # processing collect mean FOV Trace -- after collecting imaging params and Paq timing info
-
         super().__init__(date=date, trialID=trialID, expID=expID, dataPath=dataPath, group=expGroup, comment=comments,
                      saveDir=saveDir, imparams=imparams, cells=cells, tmdata=tmdata)
 
-        # print('test here!!')
-        print(self.date)
+        # processing collect mean FOV Trace -- after collecting imaging params and Paq timing info
         self.meanFluImg, self.meanFovFluTrace = self.meanRawFluTrace()  #: mean image and mean FOV fluorescence trace
-
-        # print('test here!! 333')
-        self.dFF = None  #: dFF normalized traces of cells
 
         # SAVE two photon trial object
         self.save()
@@ -135,7 +109,6 @@ class TwoPhotonImaging(ImagingTrial):
                 mean_ = arr[arr < a].mean()
             else:
                 mean_ = threshold_val
-            # mean_ = abs(arr[arr < a].mean())
             new_array = ((arr - mean_) / mean_) * 100
             if np.isnan(new_array).any() == True:
                 Warning('Cell (unknown) contains nan, normalization factor: %s ' % mean_)
