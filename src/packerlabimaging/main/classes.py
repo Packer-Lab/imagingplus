@@ -39,7 +39,7 @@ class Experiment:
     expID: str  #: given identification name for experiment
     dataPath: str  #: main dir where the imaging data is contained
     saveDir: str  #: main dir where the experiment object and the trial objects will be saved to
-    comments: str = ''  #: notes related to experiment
+    comment: str = ''  #: notes related to experiment
 
     def __post_init__(self):
         print(f'***********************')
@@ -403,7 +403,7 @@ class ImagingTrial:
     trialID: str
     expID: str
     # microscope: str = ''
-    group: str = ''
+    expGroup: str = ''
     comment: str = ''
     imparams: ImagingMetadata = None
     data: AnnotatedData = None
@@ -412,8 +412,8 @@ class ImagingTrial:
     tmdata: TemporalData = None
 
     def __post_init__(self):
-        self.metainfo = TrialMetainfo(date=self.date, trialID=self.trialID, expID=self.expID, expGroup=self.group,
-                                       comments=self.comment, paths={})  # , microscope=self.microscope)
+        self.metainfo = TrialMetainfo(date=self.date, trialID=self.trialID, expID=self.expID, expGroup=self.expGroup,
+                                      comment=self.comment, paths={})  # , microscope=self.microscope)
 
         if os.path.exists(self.dataPath):
             self.metainfo['paths']['dataPath'] = self.dataPath

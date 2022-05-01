@@ -11,8 +11,9 @@ import pandas as pd
 import scipy.stats as stats
 import tifffile as tf
 
+from packerlabimaging import TwoPhotonImaging
+from packerlabimaging.main.classes import ImagingMetadata, ImagingData, TemporalData, ImagingTrial, CellAnnotations
 from packerlabimaging.utils.utils import convert_to_8bit
-from packerlabimaging._archive.TwoPhotonImagingMain import TwoPhotonImagingTrial
 from packerlabimaging.processing.naparm import Targets
 from packerlabimaging.utils.classes import UnavailableOptionError
 # %%
@@ -28,16 +29,15 @@ def getTargetImage():  # TODO write this function and probably add to the Target
     pass
 
 
-@dataclass
-class AllOpticalTrial(TwoPhotonImagingTrial):
+class AllOpticalTrial(TwoPhotonImaging):
     """All Optical Experimental Data Analysis Workflow."""
-    naparm_path: str = None
     prestim_sec: float = 1.0  #: length of pre stim trace collected (in frames)
     poststim_sec: float = 3.0  #: length of post stim trace collected (in frames)
     pre_stim_response_window: float = 0.500  #: time window for collecting pre-stim measurement (units: msec)
     post_stim_response_window: float = 0.500  #: time window for collecting post-stim measurement (units: msec)
 
-    def __post_init__(self):
+    def __init__(self, naparm_path, dataPath: str, saveDir: str, date: str, trialID: str, expID: str, expGroup: str = '',
+                 comment: str = '', imparams: ImagingMetadata = None, cells: CellAnnotations = None, tmdata: TemporalData = None):
 
         """
         :param metainfo: TypedDict containing meta-information field needed for this experiment. Please see TwoPhotonImagingMetainfo for type hints on accepted keys.
@@ -52,9 +52,17 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         """
 
-        # 1) initialize object as TwoPhotonImagingTrial
-        super().__init__()
+        initialization_dict = {'date': date,
+                               'trialID': trialID,
+                               'dataPath': dataPath,
+                               'saveDir': saveDir,
+                               'expID': expID,
+                               'expGroup': expGroup,
+                               'comment': comment}
 
+
+        # 1) initialize object as a TwoPhotonImagingTrial
+        super().__init__(imparams=imparams, cells=cells, tmdata=tmdata, **initialization_dict)
 
         # Initialize Attributes:
 
@@ -103,14 +111,13 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
 
         # FUNCTIONS TO RUN AFTER init's of ALL ATTR'S
 
-
         # 2) get stim timings from paq file
         self.stim_start_frames = self._paqProcessingAllOptical(stim_channel=self.PaqInfoTrial['stim_channel'])
 
         # 3) process 2p stim protocol
         # set naparm path
-        self.__naparm_path = self.naparm_path if os.path.exists(self.naparm_path) else FileNotFoundError(
-            f"naparm path not found, naparm_path: {self.naparm_path}")
+        self.__naparm_path = naparm_path if os.path.exists(naparm_path) else FileNotFoundError(
+            f"naparm path not found, naparm_path: {naparm_path}")
         self.Targets, self.stim_duration_frames = self._stimProcessing(protocol='naparm')
 
         # 4) determine bad frames in imaging data that correspond to photostim frames
@@ -120,7 +127,8 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
         if hasattr(self, 'Suite2p'):
             self.raw_SLMTargets, self.dFF_SLMTargets, self.meanFluImg_registered = self.collect_traces_from_targets(
                 curr_trial_frames=self.Suite2p.trial_frames, save=True)
-            self.targets_dff, self.targets_dff_avg, self.targets_dfstdF, self.targets_dfstdF_avg, self.targets_raw, self.targets_raw_avg = self.get_alltargets_stim_traces_norm(process='trace dFF')
+            self.targets_dff, self.targets_dff_avg, self.targets_dfstdF, self.targets_dfstdF_avg, self.targets_raw, self.targets_raw_avg = self.get_alltargets_stim_traces_norm(
+                process='trace dFF')
         else:
             Warning('NO Flu traces collected from any SLM targets because Suite2p not found for trial.')
 
@@ -154,9 +162,25 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
     def __repr__(self):
         return f"TwoPhotonImagingTrial.alloptical experimental trial object"
 
+    @classmethod
+    def AllOpticalTrialfromImagingTrial(cls, naparm_path, imaging_trial: ImagingTrial):
+        """Alternative constructor for AllOpticalTrial.
+
+        Creates an all optical trial from an existing imaging trial.
+        """
+
+        initialization_dict = {'naparm_path': naparm_path, 'dataPath': imaging_trial.dataPath, 'saveDir': imaging_trial.saveDir,
+                               'expID': imaging_trial.expID, 'group': imaging_trial.expGroup, 'comment': imaging_trial.comment}
+
+
+
+        aotrial = cls(**initialization_dict)
+
+        return aotrial
+
     @property
     def naparm_path(self):
-        """setting location of naparm files that specify the photostimulation experiment setup"""
+        """path to folder containing photostimulation protocols output by NAPARM"""
         if self.__naparm_path[-1] == '/':
             return self.__naparm_path
         else:
@@ -340,7 +364,7 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
                 bad_frames = list(np.unique(bad_frames))
                 print(
                     f'***Added a total of {len(self.photostim_frames)} photostim frames to bad_frames.npy at: {self.tiff_path_dir}/bad_frames.npy \n\t total bad_frames: {len(bad_frames)}')
-                    # f'***Saving a total of {len(photostim_frames)} photostim frames to bad_frames.npy at: {BADFRAMESLOC}/bad_frames.npy')  # TODO replace BADFRAMESLOC with self.pv_xml_dir
+                # f'***Saving a total of {len(photostim_frames)} photostim frames to bad_frames.npy at: {BADFRAMESLOC}/bad_frames.npy')  # TODO replace BADFRAMESLOC with self.pv_xml_dir
                 np.save(f'{self.tiff_path_dir}/bad_frames.npy',
                         bad_frames)  # save to npy file and remember to move npy file to tiff folder before running with suite2p
 
@@ -1071,7 +1095,6 @@ class AllOpticalTrial(TwoPhotonImagingTrial):
             return photostimFluArray, photostimResponseAmplitudes, photostim_responses_adata
         else:
             NotImplementedError('Photostim processing cannot be performed without Suite2p data.')
-
 
     def statisticalProcessingAllCells(self):
         """Runs statistical processing on photostim response arrays"""

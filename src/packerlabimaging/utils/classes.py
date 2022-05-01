@@ -47,6 +47,6 @@ class TrialMetainfo(TypedDict, total=False):
     trialID: str
     expID: str
     expGroup: str
-    comments: str
+    comment: str
     microscope: str
     paths: Dict[str, str]

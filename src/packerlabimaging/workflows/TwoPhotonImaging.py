@@ -5,18 +5,17 @@ import time
 
 import numpy as np
 
-
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
 from packerlabimaging.main.classes import ImagingTrial, CellAnnotations, TemporalData
-from packerlabimaging.processing.imagingMetadata import PrairieViewMetadata, ImagingMetadata
+from packerlabimaging.processing.imagingMetadata import ImagingMetadata
 
 
 class TwoPhotonImaging(ImagingTrial):
     """Two Photon Imaging Experiment Data Analysis Workflow."""
 
     def __init__(self, date: str = None, trialID: str = None, expID: str = None, dataPath: str = None,
-                 expGroup: str = None, saveDir: str = None, tmdata: TemporalData = None,  imparams: ImagingMetadata = None,
-                 cells: CellAnnotations = None, comments: str = ''):
+                 expGroup: str = None, saveDir: str = None, tmdata: TemporalData = None,
+                 imparams: ImagingMetadata = None, cells: CellAnnotations = None, comment: str = ''):
 
         """
         TODO update function docstring for approp args
@@ -31,8 +30,8 @@ class TwoPhotonImaging(ImagingTrial):
 
         print(f'\----- CREATING TwoPhotonImagingTrial for trial: {trialID}')
 
-        super().__init__(date=date, trialID=trialID, expID=expID, dataPath=dataPath, group=expGroup, comment=comments,
-                     saveDir=saveDir, imparams=imparams, cells=cells, tmdata=tmdata)
+        super().__init__(date=date, trialID=trialID, expID=expID, dataPath=dataPath, group=expGroup, comment=comment,
+                         saveDir=saveDir, imparams=imparams, cells=cells, tmdata=tmdata)
 
         # processing collect mean FOV Trace -- after collecting imaging params and Paq timing info
         self.meanFluImg, self.meanFovFluTrace = self.meanRawFluTrace()  #: mean image and mean FOV fluorescence trace

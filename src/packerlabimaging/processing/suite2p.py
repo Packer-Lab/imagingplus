@@ -226,7 +226,7 @@ class Suite2pExperiment:
         print(f"\- ADDING .Suite2p module to Experiment object ... ", end='\r')
 
         ## initialize attr's
-        # TODO add attr comments
+        # TODO add attr comment
         self.n_frames: int = 0  # total number of imaging key_frames in the Suite2p run
 
         self.n_planes: int = N_PLANES
@@ -735,12 +735,9 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
             # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
             # build dataframe for obs_meta from suite2p stat information
             obs_meta = pd.DataFrame(
-                columns=['original_index', 'footprint', 'mrs', 'mrs0', 'compact', 'med', 'npix', 'radius',
-                         'aspect_ratio', 'npix_norm', 'skew', 'std'], index=range(len(self.stat)))
+                columns=[*self.stat[0]], index=range(len(self.stat)))
 
             for idx, __stat in enumerate(self.stat):
-                if 'original_index' not in [*__stat]:
-                    obs_meta.loc[idx, 'original_index'] = idx
                 for __column in [*__stat]:
                     if __column in obs_meta.columns:
                         obs_meta.loc[idx, __column] = __stat[__column]

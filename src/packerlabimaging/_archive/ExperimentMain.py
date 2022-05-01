@@ -39,7 +39,7 @@ class Experiment:
     dataPath: str   #: main dir where the imaging data is contained
     saveDir: str  #: main dir where the experiment object and the trial objects will be saved to
     expID: str  #: given identification name for experiment
-    comments: str = ''  #: notes related to experiment
+    comment: str = ''  #: notes related to experiment
 
     def __post_init__(self):
         print(f'***********************')

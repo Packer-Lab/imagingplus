@@ -1,65 +1,19 @@
-# expobj = pkg.import_obj('/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
-# trialobj = expobj.load_trial(trialID='t-013')
-#
-# SUITE2P_FRAMES = 0
+import packerlabimaging as pli
+from conftest import alloptical_trial_fixture
+from packerlabimaging import AllOpticalTrial
 
-# initialization_dict = {
-#     'dataPath': '/home/pshah/mnt/qnap/Data/2020-12-19',
-#     'saveDir': '/home/pshah/Documents/code/packerlabimaging/tests/',
-#     'microscope': "Bruker",
-#     "expID": 'RL109',
-#     'date': '2020-12-19',
-#     'comments': 'testing out analysis workflow',
-#     'TrialsInformation': {},  # NOTE: this dictionary is populated in the code cells below.
-#     # 'useSuite2p': True,
-#     # 'useSuite2p': False,
-#     's2pResultsPath': "/home/pshah/mnt/qnap/Analysis/2020-12-19/suite2p/alloptical-2p-1x-alltrials/plane0"
-# }
-#
-# # add information about each trial in experiment to TrialsInformation field of the initialization_dict
-# trials_list_alloptical = ['t-013']
-# naparm_paths = {'t-013': '/home/pshah/mnt/qnap/Data/2020-12-19/photostim/2020-12-19_RL109_ps_014/'}
-# for idx, trial in enumerate(trials_list_alloptical):
-#     data_path_base = '/home/pshah/mnt/qnap/Data/2020-12-19'
-#     animal_prep = initialization_dict['expID']
-#     date = data_path_base[-10:]
-#
-#     ## everything below should autopopulate and run automatically
-#     paqs_loc = '%s/%s_%s_%s.Paq' % (data_path_base, date, animal_prep, trial[2:])  # path to the .Paq files for the selected trials
-#     tiffs_loc = f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif'
-#
-#
-#     initialization_dict["TrialsInformation"][trial] = {'trialType': 'AllOpticalTrial',
-#                                                        'tiff_path': f"{tiffs_loc}",
-#                                                        's2p_use': True,
-#                                                        'expGroup': "pre 4ap 2p all optical",
-#                                                        'paq_path': paqs_loc,
-#                                                        'naparm_path': naparm_paths[trial]
-#                                                         }
-#
-#     _metainfo = {
-#         'expID': initialization_dict['expID'],
-#         'trialID': trials_list_alloptical[0],
-#         'date': initialization_dict['date'],
-#         't_series_id': f"{initialization_dict['expID']} {trial}",
-#         'TrialsInformation': initialization_dict["TrialsInformation"][trial]
-#     }
-#
-#     initialization_dict['metainfo'] = _metainfo
-#     initialization_dict['naparm_path'] = initialization_dict["TrialsInformation"][trial]['naparm_path']
-#     initialization_dict['analysis_save_path'] = initialization_dict['saveDir']
-#     initialization_dict['suite2p_experiment_obj'] = expobj.Suite2p
-#     initialization_dict['total_frames_stitched'] = SUITE2P_FRAMES
-#
-#     aotrial = AllOpticalMain.AllOpticalTrial(**initialization_dict)
+# %%
 
 
 # %%
-from packerlabimaging.workflows import AllOptical
-
 
 def test_AllOpticalClass(alloptical_trial_fixture):
-    trialobj = AllOpticalMain.AllOpticalTrial(**alloptical_trial_fixture)
+    aotrial = AllOpticalTrial(**alloptical_trial_fixture)
+    return aotrial
+
+idict = alloptical_trial_fixture()
+aotrial = test_AllOpticalClass(idict)
+
 
 
 def test_processing_targets_stims(existing_trialobj_alloptical_fixture):

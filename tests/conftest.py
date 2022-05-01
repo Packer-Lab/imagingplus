@@ -6,9 +6,14 @@ import pytest
 
 from packerlabimaging.utils.io import import_obj
 
+LOCAL_DATA_PATH = '/Users/prajayshah/data/oxford-data-to-process/'
+REMOTE_DATA_PATH = '/home/pshah/mnt/qnap/Data/'
+BASE_PATH = LOCAL_DATA_PATH
+
 
 SUITE2P_FRAMES_SPONT_t005t006 = [0, 14880]
 SUITE2P_FRAMES_t013 = 103525
+
 
 @pytest.fixture(scope="session")
 def twophoton_imaging_trial_new_noPreDoneSuite2p_fixture():
@@ -39,11 +44,12 @@ def twophoton_imaging_multitrial_noPreDoneSuite2p_fixture():
 
     info = {
         'prep': prep,
-    'date': date,
+        'date': date,
         'trials_paq': trials_paq
     }
 
     return info
+
 
 @pytest.fixture(scope="session")
 def twophoton_imaging_trial_fixture():
@@ -55,7 +61,7 @@ def twophoton_imaging_trial_fixture():
         'microscope': "Bruker",
         "expID": 'RL109',
         'date': '2020-12-19',
-        'comments': 'testing out analysis workflow',
+        'comment': 'testing out analysis workflow',
         'TrialsInformation': {},  # NOTE: this dictionary is populated in the code cells below.
         # 'useSuite2p': True,
         # 'useSuite2p': False,
@@ -95,57 +101,18 @@ def twophoton_imaging_trial_fixture():
     return initialization_dict
 
 
-@pytest.fixture(scope="session")
+# @pytest.fixture(scope="session")
 def alloptical_trial_fixture():
     expobj = import_obj('/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
 
-    initialization_dict = {
-        'dataPath': '/home/pshah/mnt/qnap/Data/2020-12-19',
-        'saveDir': '/home/pshah/Documents/code/packerlabimaging/tests/',
-        'microscope': "Bruker",
-        "expID": 'RL109',
-        'date': '2020-12-19',
-        'comments': 'testing out analysis workflow',
-        'TrialsInformation': {},  # NOTE: this dictionary is populated in the code cells below.
-        # 'useSuite2p': True,
-        # 'useSuite2p': False,
-        's2pResultsPath': "/home/pshah/mnt/qnap/Analysis/2020-12-19/suite2p/alloptical-2p-1x-alltrials/plane0"
-    }
-
-    # add information about each trial in experiment to TrialsInformation field of the initialization_dict
-    trials_list_alloptical = ['t-013']
-    naparm_paths = {'t-013': '/home/pshah/mnt/qnap/Data/2020-12-19/photostim/2020-12-19_RL109_ps_014/'}
-    for idx, trial in enumerate(trials_list_alloptical):
-        data_path_base = '/home/pshah/mnt/qnap/Data/2020-12-19'
-        animal_prep = initialization_dict['expID']
-        date = data_path_base[-10:]
-
-        ## create dictionary containing necessary information for initialization
-        initialization_dict["TrialsInformation"][trial] = {'trialType': 'AllOpticalTrial',
-                                                           'tiff_path': f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif',
-                                                           's2p_use': True,
-                                                           'expGroup': "pre 4ap 2p all optical",
-                                                           'PaqInfo': {'frame_channel': "frame_clock",
-                                                                            'paq_path': f'{data_path_base}/{date}_{animal_prep}_{trial[2:]}.paq',
-                                                                            # path to the .paq files for the selected trials
-                                                                            'stim_channel': 'markpoints2packio'
-                                                                            },
-                                                           'naparm_path': naparm_paths[trial]
-                                                           }
-
-        _metainfo = {
-            'expID': initialization_dict['expID'],
-            'trialID': trial,
-            'date': initialization_dict['date'],
-            'TrialsInformation': initialization_dict["TrialsInformation"][trial]
-        }
-
-        initialization_dict['metainfo'] = _metainfo
-        initialization_dict['naparm_path'] = initialization_dict["TrialsInformation"][trial]['naparm_path']
-        initialization_dict['analysis_save_path'] = initialization_dict['saveDir']
-        initialization_dict['suite2p_experiment_obj'] = expobj.Suite2p
-        initialization_dict['paq_options'] = _metainfo['TrialsInformation']['PaqInfo']
-        initialization_dict['total_frames_stitched'] = SUITE2P_FRAMES_t013
+    initialization_dict = {'naparm_path': f'{BASE_PATH}/2020-12-19/photostim/2020-12-19_RL109_ps_014/',
+                           'dataPath': f'{BASE_PATH}/2020-12-19/2020-12-19_t-013/2020-12-19_t-013_Cycle00001_Ch3.tif',
+                           'saveDir': f'{BASE_PATH}/2020-12-19/',
+                           'date': '2020-12-19',
+                           'trialID': 't-013',
+                           'expID': 'RL109',
+                           'expGroup': 'all optical trial with LFP',
+                           'comment': ''}
 
     return initialization_dict
 
@@ -156,22 +123,25 @@ def experiment_fixture():
         'dataPath': '/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-data',
         'saveDir': '/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis',
         "expID": 'HF113',
-        'comments': 'two photon imaging + LFP dataset',
+        'comment': 'two photon imaging + LFP dataset',
     }
     return ExperimentMetainfo
 
 
 @pytest.fixture(scope="session")
 def existing_trialobj_twophotonimaging_fixture():
-    expobj = import_obj(pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis/HF113_analysis.pkl')
+    expobj = import_obj(
+        pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis/HF113_analysis.pkl')
     trialobj1 = expobj.load_trial(expobj.trialIDs[0])
     return trialobj1
 
 
 @pytest.fixture(scope="session")
 def existing_expobj_fixture():
-    expobj = import_obj(pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis/HF113_analysis.pkl')
+    expobj = import_obj(
+        pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis/HF113_analysis.pkl')
     return expobj
+
 
 @pytest.fixture(scope="session")
 def suite2p_results_fixture():
@@ -181,7 +151,6 @@ def suite2p_results_fixture():
     from packerlabimaging.processing.suite2p import s2p_loader
     FminusFneu, spks, stat, neuropil = s2p_loader(s2p_path=s2p_path)
     return FminusFneu, spks, stat, neuropil
-
 
 
 @pytest.fixture(scope="session")
@@ -224,6 +193,7 @@ def anndata_trial_data():
 
     return X, var, obs
 
+
 @pytest.fixture(scope='session')
 def existing_anndata():
     expobj = import_obj(
@@ -242,71 +212,3 @@ def existing_anndata():
     trialobj.data.add_var(var_name='exp_group', values=list(var_meta['exp_group']))
 
     print(trialobj.data)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

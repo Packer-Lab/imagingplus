@@ -26,7 +26,7 @@ class TwoPhotonImagingMetainfo(TypedDict, total=False):
     tiff_path: str
     expGroup: str
     PaqInfoTrial: PaqInfo
-    comments: str
+    comment: str
 
 
 class TwoPhotonImagingTrial:
@@ -34,7 +34,7 @@ class TwoPhotonImagingTrial:
 
     def __init__(self, date: str = None, trial_id: str = None, exp_id: str = None, microscope: str = None, tiff_path: str  = None,
                  expGroup: str = None, saveDir: str = None, PaqInfoTrial: PaqInfo = None, imagingMicroscopeMetadata: ImagingMetadata = None,
-                 comments: str = ''):
+                 comment: str = ''):
 
         """
         TODO update function docstring for approp args
@@ -55,7 +55,7 @@ class TwoPhotonImagingTrial:
                           'exp_id': exp_id,
                           'microscope': microscope,
                           'expGroup': expGroup,
-                          'comments': comments}
+                          'comment': comment}
 
         print(f'\----- CREATING TwoPhotonImagingTrial for trial: \n\t{self.trialID}')
 
