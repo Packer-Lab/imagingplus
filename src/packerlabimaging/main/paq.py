@@ -134,15 +134,32 @@ def paq2py(file_path=None, plot=False):
 
 
 # noinspection DuplicatedCode
-@dataclass
 class PaqData(TemporalData):
     """access and storage of data from .paq files."""
 
-    # initialize attrs
-    sparse_paq_data = None  #: array of paq data that corresponds to
+    def __init__(self, file_path, **kwargs):
+        print(f"\n\- ADDING PAQ DATA from {file_path}... ")
+        self.sparse_paq_data = None  #: array of paq data that corresponds to
 
-    def __post_init__(self):
-        print(f"\n\- ADDING PAQ DATA from {self.file_path}... ")
+        if 'channels' not in kwargs or 'sampling_rate' not in kwargs or 'paq_data' not in kwargs:
+            paq_data, paq_rate, channels = self.paq_read(file_path=file_path, plot=True)
+        else:
+            paq_data = kwargs['paq_data']
+            channels = kwargs['channels']
+            paq_rate = kwargs['sampling_rate']
+
+        # # todo switch this out in favour of the pandas dataframes below:
+        # for chan_name in channels:
+        #     chan_name_idx = channels.index(chan_name)
+        #     print(f"\t- adding '{chan_name}' channel data as attribute")
+        #     setattr(self, chan_name, paq_data['data'][chan_name_idx])
+
+        data = pd.DataFrame(data=paq_data['data'].T, columns=channels, index=range(paq_data['data'].shape[1]))
+        super(PaqData, self).__init__(file_path=file_path, channels=channels, sampling_rate=paq_rate, data=data)
+
+        # init attr's
+        self.stim_start_times = []  #: paq clock time of photostimulation trial start
+
 
 
     @classmethod
@@ -161,18 +178,13 @@ class PaqData(TemporalData):
 
         paqData_obj = cls(file_path=file_path, channels=channels, sampling_rate=paq_rate)
 
-        for chan_name in paqData_obj.channels:
-            chan_name_idx = channels.index(chan_name)
-            print(f"\t- adding '{chan_name}' channel data as attribute")
-            setattr(paqData_obj, chan_name, paq_data['data'][chan_name_idx])
-
         if frame_times_channel:
             paqData_obj.getPaqFrameTimes(frame_times_channel=frame_times_channel)
             paqData_obj.sparse_paq_data = paqData_obj.get_sparse_data(frame_times=paqData_obj.frame_times)
 
         return paqData_obj
 
-    def __repr__(self):
+    def __str__(self):
         information = ""
         for i in self.__dict__:
             if type(self.__dict__[i]) != dict:
@@ -228,7 +240,6 @@ class PaqData(TemporalData):
             cropdata = data[begin: end]
             setattr(self, channel, cropdata)
 
-
     ## refactor these methods to their respective Trial code locations
     def getPaqFrameTimes(self, frame_times_channel: str):
         """
@@ -279,43 +290,9 @@ class PaqData(TemporalData):
 
         return frame_clock_actual
 
-
-    @staticmethod
-    def paq_alloptical_stims(paq_data, frame_clock: List[int], stim_channel: str, plot: bool = False):
-        if stim_channel not in paq_data['chan_names']:
-            raise KeyError(f'{stim_channel} not found in .Paq channels. Specify channel containing frame signals.')
-
-        # find stim times
-        stim_idx = paq_data['chan_names'].index(stim_channel)
-        stim_volts = paq_data['data'][stim_idx, :]
-        stim_times = threshold_detect(stim_volts, 1)
-        stim_start_times = stim_times
-        print(f'# of stims found on {stim_channel}: {len(stim_start_times)}')
-
-        if plot:
-            plt.figure(figsize=(10, 5))
-            plt.plot(stim_volts)
-            plt.plot(stim_times, np.ones(len(stim_times)), '.')
-            plt.suptitle('stim times')
-            sns.despine()
-            plt.show()
-
-        # TODO need to figure out how to handle multi-plane imaging and retrieving stim frame times
-        # find stim frames
-        stim_start_frames = []
-        for stim in stim_times:
-            # the index of the frame immediately preceeding stim
-            stim_start_frame = next(
-                i - 1 for i, sample in enumerate(frame_clock) if sample - stim >= 0)
-            stim_start_frames.append(stim_start_frame)
-
-        return stim_start_frames, stim_start_times
-
-
     def plot__paq_channel(self):
         """temp placeholder incase you need specific plotting code compared to plotting with the general temporal data function"""
         pass
-
 
     @classmethod
     def paqProcessingTwoPhotonImaging(cls, paq_path, frame_channel, plot: bool = False):
@@ -336,7 +313,6 @@ class PaqData(TemporalData):
 
         return paq_data_obj
 
-
     @classmethod
     def paqProcessingAllOptical(cls, paq_path: str, stim_channel: str, frame_channel: str, plot: bool =False):
         """
@@ -354,42 +330,27 @@ class PaqData(TemporalData):
 
         assert stim_channel in paq_data_obj.channels, f"stim_channel argument: '{stim_channel}', not found in channels in .paq data."
 
-
         # find stim times
         stim_volts = getattr(paq_data_obj, stim_channel)
         stim_start_times = threshold_detect(stim_volts, 1)
         print('# of stims found on %s: %s' % (stim_channel, len(stim_start_times)))
 
-        # correct this based on txt file
-        # PLUG INTO NAPARM PARAM'S
-        duration_ms = self.stim_dur
-        frame_rate = self.fps / self.n_planes
-        duration_frames = np.ceil((duration_ms / 1000) * frame_rate)
-        self.stim_duration_frames = int(duration_frames)
 
-        plt.figure(figsize=(10, 5))
-        plt.plot(stim_volts)
-        plt.plot(stim_start_times, np.ones(len(stim_start_times)), '.')
-        plt.suptitle('photostim start times')
+        fig, ax = plt.subplots(figsize=(10, 5))
+        ax.plot(stim_volts)
+        ax.plot(stim_start_times, np.ones(len(stim_start_times)), '.')
+        fig.suptitle(f'detected photostim start times from {stim_channel}')
+        ax.set_xlabel(f'paq clock (sampled at {paq_data_obj.sampling_rate} Hz)')
+        ax.set_ylabel(f"{stim_channel} volt")
         sns.despine()
         plt.show()
 
-        # find stim frames
-        stim_start_frames = []
-
-        for stim in stim_start_times:
-            # the index of the frame immediately preceeding stim
-            stim_start_frame = next(
-                i - 1 for i, sample in enumerate(paq_data_obj.frame_times) if sample - stim >= 0)
-            stim_start_frames.append(stim_start_frame)
+        paq_data_obj.stim_start_times = stim_start_times
 
         # self.stim_start_frames.append(np.array(stim_start_frames))  # recoded with slight improvement
 
         # # sanity check
         # assert max(self.stim_start_frames[0]) < self.raw[plane].shape[1] * self.n_planes
-
-        paq_data_obj.stim_start_frames = stim_start_frames  #: frame numbers from the start of each photostimulation trial
-        paq_data_obj.photostim_frames = []  #: imaging frames during photostimulation
 
         return paq_data_obj
 

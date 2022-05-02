@@ -10,24 +10,28 @@ import xml.etree.ElementTree as ET
 
 from packerlabimaging.utils.utils import path_finder, points_in_circle_np
 
-
+@dataclass
 class naparm:
-    def __init__(self, naparm_path: str):
-        self.naparm_path = naparm_path
-        self._photostimProcessing()
 
-        self.stim_freq: float  # frequency of photostim protocol (of a single photostim trial? or time between individual photostim trials?)
-        self.single_stim_dur: float  # duration of a single photostim shot
-        self.inter_point_delay: float  # duration of the delay between each photostim shot
-        self.n_shots: int  # num of photostim shots in a single photostim trial
-        self.stim_duration_frames: int  # num of imaging frames in a single photostim trial
+    path: str  #: path to output from NAPARM used for photostimulation protocol of current imaging trial
+
+    def __post_init__(self):
+        self._photostimProcessing()
+        self.stim_freq: float  #: frequency of photostim protocol (of a single photostim trial? or time between individual photostim trials?)
+        self.single_stim_dur: float  #: duration of a single photostim shot (ms)
+        self.inter_point_delay: float  #: duration of the delay between each photostim shot
+        self.n_shots: int  #: num of photostim shots in a single photostim trial
+        self.stim_duration_frames: int  #: num of imaging frames in a single photostim trial
+
+    def __repr__(self):
+        print(f"naparm analysis submodule. Loaded from: {self.path}")
 
     def _parseNAPARMxml(self):
 
         print('\n\----- parsing Naparm xml file...')
 
         print('loading NAPARM_xml_path:')
-        NAPARM_xml_path = path_finder(self.naparm_path, '.xml')[0]
+        NAPARM_xml_path = path_finder(self.path, '.xml')[0]
 
         xml_tree = ET.parse(NAPARM_xml_path)
         root = xml_tree.getroot()
@@ -63,7 +67,7 @@ class naparm:
 
         print('\n\----- parsing Naparm gpl file...')
 
-        NAPARM_gpl_path = path_finder(self.naparm_path, '.gpl')[0]
+        NAPARM_gpl_path = path_finder(self.path, '.gpl')[0]
         print('loading NAPARM_gpl_path: ', NAPARM_gpl_path)
 
         xml_tree = ET.parse(NAPARM_gpl_path)
@@ -133,9 +137,7 @@ class Targets(naparm):
         # self.n_targets_total: int = 0  # total number of SLM targets
         self.target_areas_exclude = []  # similar to .target_areas, but area diameter expanded (used in excluding data from this expanded region)
 
-
-
-        naparm.__init__(self, naparm_path=naparm_path)
+        super().__init__(path=naparm_path)
         self.__frame_x = frame_x
         self.__frame_y = frame_y
         self.__pix_sz_x = pix_sz_x
@@ -145,6 +147,10 @@ class Targets(naparm):
         self.target_areas, self.target_areas_exclude = self._findTargetsAreas(self.__frame_x, self.__pix_sz_x)
         self.euclid_dist = self._euclidDist(resp_positions=self.target_coords)
 
+    def __repr__(self):
+        print(f"naparm.Targets analysis submodule. Loaded from: {self.path}")
+
+
     def _readTargetsImage(self, frame_x, frame_y):
         scale_factor_x = frame_x / 512  ## TODO need to get this from the NAPARM OUTPUT somehow...
         scale_factor_y = frame_y / 512  ## TODO how does the OBFOV scaling work?
@@ -153,7 +159,7 @@ class Targets(naparm):
         scale_factor = frame_x / 512  ## TODO need to get this from the NAPARM OUTPUT somehow...
 
         # load naparm targets file for this experiment
-        naparm_path = os.path.join(self.naparm_path, 'Targets')
+        naparm_path = os.path.join(self.path, 'Targets')
 
         listdir = os.listdir(naparm_path)
 

@@ -14,6 +14,7 @@ import tifffile as tf
 from packerlabimaging import TwoPhotonImaging
 from packerlabimaging.main.classes import ImagingMetadata, ImagingData, TemporalData, ImagingTrial, CellAnnotations, \
     Experiment
+from packerlabimaging.main.paq import PaqData
 from packerlabimaging.utils.io import import_obj
 from packerlabimaging.utils.utils import convert_to_8bit
 from packerlabimaging.processing.naparm import Targets
@@ -41,7 +42,7 @@ class AllOpticalTrial(TwoPhotonImaging):
     def __init__(self, naparm_path, dataPath: str, saveDir: str, date: str, trialID: str, expID: str,
                  expGroup: str = '',
                  comment: str = '', imparams: ImagingMetadata = None, cells: CellAnnotations = None,
-                 tmdata: TemporalData = None):
+                 tmdata: PaqData = None):
 
         """
         :param metainfo: TypedDict containing meta-information field needed for this experiment. Please see TwoPhotonImagingMetainfo for type hints on accepted keys.
@@ -74,11 +75,6 @@ class AllOpticalTrial(TwoPhotonImaging):
         self.nomulti_sig_units = None
 
 
-        # Paq file attr's
-        self.paq_rate: int = -1  # PackIO acquisition rate for .Paq file
-        self.frame_start_times: list = [None]  # Paq clock timestamps of the first imaging acquisition frame of t-series
-        self.frame_end_times: list = [None]  # Paq clock timestamps of the last imaging acquisition frame of t-series
-
         # attr's for statistical analysis of photostim trials responses
         self.photostimResponsesData = None  # anndata object for collecting photostim responses and associated metadata for experiment and cells
 
@@ -100,7 +96,6 @@ class AllOpticalTrial(TwoPhotonImaging):
         ########
 
         # initializing data processing, data analysis and/or results associated attr's
-        self.n_trials = None  # number of photostimulation trials TODO change to assigning from array: cells x Flu frames x # of photostim trials
 
         # PHOTOSTIM SLM TARGETS
         # TODO add attr's related to numpy array's and pandas dataframes for photostim trials - SLM targets
@@ -114,12 +109,10 @@ class AllOpticalTrial(TwoPhotonImaging):
 
         # 3) process 2p stim protocol
         # set naparm path
-        self.__naparm_path = naparm_path if os.path.exists(naparm_path) else FileNotFoundError(
-            f"naparm path not found, naparm_path: {naparm_path}")
-        self.Targets, self.stim_duration_frames = self._stimProcessing(protocol='naparm')
+        self.Targets, stim_start_frames = self._stimProcessing(naparm_path=naparm_path)
 
         # 4) determine bad frames in imaging data that correspond to photostim frames
-        self.photostim_frames = self._find_photostim_add_bad_framesnpy()
+        photostim_frames = self._find_photostim_add_bad_framesnpy()  # TODO <--  debug this - need to figure out where to assign stim_duration_frames
 
         # 5) collect Flu traces from SLM targets
         if hasattr(self, 'Suite2p'):
@@ -140,8 +133,8 @@ class AllOpticalTrial(TwoPhotonImaging):
         # extend annotated imaging data object with imaging frames in photostim and stim_start_frames as additional keys in vars
         __frames_in_stim = [False] * self.imparams.n_frames
         __stim_start_frame = [False] * self.imparams.n_frames
-        for frame in self.photostim_frames: __frames_in_stim[frame] = True
-        for frame in self.stim_start_frames: __stim_start_frame[frame] = True
+        for frame in self.tmdata.photostim_frames: __frames_in_stim[frame] = True
+        for frame in self.tmdata.stim_start_frames: __stim_start_frame[frame] = True
         self.data.add_var(var_name='photostim_frame', values=__frames_in_stim)
         self.data.add_var(var_name='stim_start_frame', values=__stim_start_frame)
 
@@ -206,44 +199,52 @@ class AllOpticalTrial(TwoPhotonImaging):
             self.imparams.fps * self.post_stim_response_window_msec)  # length of the post stim response test window (in frames)
 
     @property
-    def timeVector(self):
-        """vector of frame times in milliseconds rather than frames"""
-        time_vector = np.linspace(-self.prestim_sec, self.poststim_sec, self.imparams.n_frames)
-        return time_vector
+    def n_stims(self):
+        #: TODO change to property assigning from array: cells x Flu frames x # of photostim trials
+        """number of photostimulation trials """
+        return
+
+    @property
+    def stim_start_frames(self):
+        """Imaging frames corresponding to start of photostimulation trials."""
+        # todo use anndata for getting this
+        return []
+
+    @property
+    def photostim_frames(self):
+        """Imaging frames during photostimulation trials."""
+        # todo just use anndata for getting this
+        return []
+
+    @property
+    def stim_duration_frames(self):
+        """Duration of photostimulation as number of frames."""
+        if not hasattr(self, 'targets'):
+            raise ValueError('cannot get stim duration frames because cannot find photostimulation analysis module under .Targets')
+        else:
+            duration_ms = self.Targets.stim_dur
+            frame_rate = self.imparams.fps
+            duration_frames = np.ceil((duration_ms / 1000) * frame_rate)
+            return int(duration_frames)
+
 
     # ALLOPTICAL EXPERIMENT PHOTOSTIM PROTOCOL PROCESSING ##############################################################
+    def _stimProcessing(self, naparm_path):
+        targets = Targets(naparm_path=naparm_path, frame_x=self.imparams.frame_x,
+                          frame_y=self.imparams.frame_y,
+                          pix_sz_x=self.imparams.pix_sz_x, pix_sz_y=self.imparams.pix_sz_y)
 
-    def _paqProcessingAllOptical(self, stim_channel: str):
-        """
-        TODO need to update!
 
-        Process .paq file with relation to all optical processing. In particular, this returns frame numbers timed to
-        individual photostimulation trial synced to the specified stim_channel.
+        # find stim frames and add to anndata
+        stim_start_frames = []
+        for stim in self.tmdata.stim_start_times:
+            # the index of the frame immediately preceeding stim
+            stim_start_frame = next(i - 1 for i, sample in enumerate(self.tmdata.frame_times) if sample - stim >= 0)
+            stim_start_frames.append(stim_start_frame)
 
-        """
-        paqdata, _, _ = self.Paq.paq_read()
-        stim_start_frames, stim_start_times = self.Paq.paq_alloptical_stims(paq_data=paqdata,
-                                                                            frame_clock=self.Paq.frame_times,
-                                                                            stim_channel=stim_channel)
-        return stim_start_frames
 
-    def _stimProcessing(self, protocol: str = 'naparm'):
-        _available_protocols = ['naparm']
-        if protocol == 'naparm':
-            targets = Targets(naparm_path=self.naparm_path, frame_x=self.imparams.frame_x,
-                              frame_y=self.imparams.frame_y,
-                              pix_sz_x=self.imparams.pix_sz_x, pix_sz_y=self.imparams.pix_sz_y)
+        return targets, stim_start_frames
 
-            # correct the following based on txt file
-            duration_ms = targets.stim_dur
-            frame_rate = self.imparams.fps / self.imparams.n_planes
-            duration_frames = np.ceil((duration_ms / 1000) * frame_rate)
-            stim_duration_frames = int(duration_frames)
-
-            return targets, stim_duration_frames
-        else:
-            raise UnavailableOptionError(
-                f"{protocol} is not available for 2p stim processing. Available options are: {_available_protocols}")
 
     def _findTargetedS2pROIs(self, plot: bool = True):
         """finding s2p cell ROIs that were also SLM targets (or more specifically within the target areas as specified by _findTargetAreas - include 15um radius from center coordinate of spiral)
@@ -340,13 +341,16 @@ class AllOpticalTrial(TwoPhotonImaging):
         self.data.add_observation(self.data, 'photostim_target', values=list(self.targeted_cells))
 
     def _find_photostim_add_bad_framesnpy(self):
-        """finds all photostim frames and saves them into the bad_frames attribute for the exp object and saves bad_frames.npy"""
+        """
+        finds all photostim frames and saves them into the bad_frames attribute for the exp object and saves bad_frames.npy
+        This is used by Suite2p.
+        """
         print('\n\----- Finding photostimulation frames in imaging frames ...')
         print('# of photostim frames calculated per stim. trial: ', self.stim_duration_frames + 1)
 
         photostim_frames = []
 
-        for j in self.stim_start_frames:
+        for j in self.tmdata.stim_start_frames:
             for i in range(
                     self.stim_duration_frames + 1):  # usually need to remove 1 more frame than the stim duration, as the stim isn't perfectly aligned with the start of the imaging frame
                 photostim_frames.append(j + i)
@@ -1593,7 +1597,7 @@ if __name__ == '__main__':
 
         # sets the stim start frames
         tmdata = PaqData.paqProcessingAllOptical(paq_path=paqs_loc, frame_channel='frame_clock',
-                                                 stim_channel='markpoints2packio???')
+                                                 stim_channel='markpoints2packio')
 
         # create the trial
         aotrial = AllOpticalTrial(imparams=imparams, tmdata=tmdata, **alloptical_trial_fixture)

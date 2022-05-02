@@ -256,14 +256,12 @@ class TemporalData:
     file_path: str  #: path to data file
     sampling_rate: float  #: rate of data collection (Hz)
     channels: List[str]  #: list of data channel names.
-    # time_array: np.ndarray  #: 1D array of data collection time stamps
-    frame_times: Union[
-        list, np.ndarray] = None  #: timestamps representing imaging frame times. must be of same time duration as imaging dataset.
-    data: pd.DataFrame = None  #: N x Time array of an arbritrary number (N) 1D data channels collected over Time. must be of same time duration as time_array.
-    sparse_data: Dict[str, np.ndarray] = None  #: dictionary of channels with
+    data: pd.DataFrame  #: N columns x Time array of N x 1D data channels collected over Time at the same sampling rate
+    frame_times: Union[list, np.ndarray] = None  #: timestamps representing imaging frame times. must be of same time duration as imaging dataset.
+    sparse_data: Dict[str, np.ndarray] = None  #: dictionary of timeseries channels containing data keyed at imaging frames for each timeseries channel
 
     def __post_init__(self):
-        # assert len(self.time_array) == self.data.shape[1]
+        print(f"Created new TemporalData of {self.n_channels} x {self.n_timepoints} (sampled at {self.sampling_rate}")
         pass
 
     def __repr__(self):
@@ -280,7 +278,7 @@ class TemporalData:
     @property
     def n_timepoints(self):
         """number of data collection timepoints"""
-        return len(self.data.columns)
+        return len(self.data.rows)
 
     @property
     def n_channels(self):
