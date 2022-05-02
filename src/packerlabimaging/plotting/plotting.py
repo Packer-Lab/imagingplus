@@ -750,7 +750,7 @@ def plot_periphotostim_avg(arr: np.ndarray, trialobj: AllOpticalTrial, pre_stim_
     if 'stim_duration' in kwargs.keys():
         stim_duration = kwargs['stim_duration']
     else:
-        stim_duration = trialobj.Targets.stim_dur / 1000  # seconds of stimulation duration
+        stim_duration = trialobj.twopstim.stim_dur / 1000  # seconds of stimulation duration
 
     dataplot_frame_options()
     ax = kwargs['ax']
@@ -859,20 +859,20 @@ def plot_SLMtargets_Locs(trialobj: AllOpticalTrial, targets_coords: Union[list, 
     else:
         ax.imshow(background, cmap='gray')
 
-    colors = make_random_color_array(len(trialobj.Targets.target_coords))
+    colors = make_random_color_array(len(trialobj.twopstim.target_coords))
     if targets_coords is 'all':
-        if len(trialobj.Targets.target_coords) > 1:
-            for i in range(len(trialobj.Targets.target_coords)):
-                ax.scatter(x=trialobj.Targets.target_coords[i][:, 0], y=trialobj.Targets.target_coords[i][:, 1],
+        if len(trialobj.twopstim.target_coords) > 1:
+            for i in range(len(trialobj.twopstim.target_coords)):
+                ax.scatter(x=trialobj.twopstim.target_coords[i][:, 0], y=trialobj.twopstim.target_coords[i][:, 1],
                            edgecolors=colors[i], facecolors='none', linewidths=2.0, label=f'SLM Group {i}')
-                # for (x, y) in trialobj.Targets.target_coords[i]:
+                # for (x, y) in trialobj.twopstim.target_coords[i]:
                 #     ax.scatter(x=x, y=y, edgecolors=colors[i], facecolors='none', linewidths=2.0)
         else:
             if 'edgecolors' in kwargs.keys():
                 edgecolors = kwargs['edgecolors']
             else:
                 edgecolors = 'yellowgreen'
-            for (x, y) in trialobj.Targets.target_coords_all:
+            for (x, y) in trialobj.twopstim.target_coords_all:
                 ax.scatter(x=x, y=y, edgecolors=edgecolors, facecolors='none', linewidths=2.0)
     elif targets_coords:
         if 'edgecolors' in kwargs.keys():

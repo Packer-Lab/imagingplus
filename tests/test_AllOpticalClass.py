@@ -18,7 +18,7 @@ from packerlabimaging import AllOpticalTrial
 
 def test_processing_targets_stims(existing_trialobj_alloptical_fixture):
     self = existing_trialobj_alloptical_fixture
-    self.Targets, self.stim_duration_frames = self._photostimProcessing()
+    self.twopstim, self.stim_duration_frames = self._photostimProcessing()
 
     self.raw_SLMTargets, self.dFF_SLMTargets, self.meanFluImg_registered = self.collect_traces_from_targets(
         curr_trial_frames=self.Suite2p.trial_frames, save=True)

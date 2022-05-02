@@ -457,7 +457,7 @@ class Suite2pExperiment:
 
     def add_bad_frames(self, frames, bad_frames_npy_loc) -> None:
         """
-        Add key_frames to bad_frames.npy file that will be used by Suite2p to ignore these key_frames during ROI detection.
+        Add frames to bad_frames.npy file that will be used by Suite2p to ignore these key_frames during ROI detection.
         """
 
         self.bad_frames.extend(frames)
@@ -803,6 +803,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
                                             self.trial_frames - start * self.output_ops['batch_size'])]
                 print('saving cropped tiff ', reg_tif_crop.shape)
                 tif.write(reg_tif_crop)
+
 
 
 #### archiving away for now - trying to switch to an approach that doesn't inherit from parent suite2p obj.

@@ -132,6 +132,8 @@ class Targets(naparm):
         # SLM target coords attr's
         # self.n_targets = []  # total number of target coordinates per SLM group
         # self.target_coords = []  # x, y locations of target coordinates per SLM group
+        self.stim_start_frames = None  #: list of frame numbers at onset of photostimulation
+        self.photostim_frames = None  #: list of frame numbers contained during photostimulation trials
         self.target_areas = []  # photostim targeted pixels area coordinates per SLM group
         # self.target_coords_all: list = []  # all SLM target coordinates
         # self.n_targets_total: int = 0  # total number of SLM targets

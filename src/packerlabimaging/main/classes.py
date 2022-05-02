@@ -117,7 +117,7 @@ class Experiment:
     #
     #     print(f"|- ADDED trial: {trialobj.trialID} to {self.expID} experiment")
 
-    def add_trial(self, trialID, trialobj = None, **kwargs):
+    def add_trial(self, trialID, trialobj=None, **kwargs):
         """
         Add trial object to the experiment. This will add metainformation about the trial to the experiment.
 
@@ -129,7 +129,6 @@ class Experiment:
         if trialobj is None:
             trialobj = ImagingTrial.newImagingTrialfromExperiment(experiment=self, trialID=trialID, **kwargs)
 
-
         self.TrialsInformation[trialobj.trialID] = trialobj.metainfo
         self.TrialsInformation[trialobj.trialID]['expGroup'] = trialobj.metainfo['expGroup']
         for attr in dir(trialobj):
@@ -138,7 +137,6 @@ class Experiment:
 
         self.save()
         print(f"|- ADDED trial: {trialobj.trialID} to {self.expID} experiment")
-
 
     def combine_trials(self):
         """todo: Combine anndata table of trials with same cells."""
@@ -224,7 +222,7 @@ class Experiment:
             if self._s2pResultExists:
                 self._suite2p_save_path = s2pResultsPath
                 self.Suite2p = Suite2pExperiment(trialsTiffsSuite2p=_trialsTiffsSuite2p,
-                                                        s2pResultsPath=s2pResultsPath)
+                                                 s2pResultsPath=s2pResultsPath)
             else:
                 raise ValueError(
                     f"suite2p results could not be found. `suite2pPath` provided was: {s2pResultsPath}")
@@ -238,7 +236,7 @@ class Experiment:
             trialobj = self.load_trial(trialID=trial)
             # print(f'n_frames', self.Suite2p.n_frames)
             trialobj.Suite2p = Suite2pResultsTrial(s2pExp=self.Suite2p, trial_frames=(
-            total_frames, total_frames + trialobj.n_frames))  # use trial obj's current trial key_frames
+                total_frames, total_frames + trialobj.n_frames))  # use trial obj's current trial key_frames
             trialobj.save()
             total_frames += trialobj.n_frames
 
@@ -257,8 +255,10 @@ class TemporalData:
     sampling_rate: float  #: rate of data collection (Hz)
     channels: List[str]  #: list of data channel names.
     data: pd.DataFrame  #: N columns x Time array of N x 1D data channels collected over Time at the same sampling rate
-    frame_times: Union[list, np.ndarray] = None  #: timestamps representing imaging frame times. must be of same time duration as imaging dataset.
-    sparse_data: Dict[str, np.ndarray] = None  #: dictionary of timeseries channels containing data keyed at imaging frames for each timeseries channel
+    frame_times: Union[
+        list, np.ndarray] = None  #: timestamps representing imaging frame times. must be of same time duration as imaging dataset.
+    sparse_data: Dict[
+        str, np.ndarray] = None  #: dictionary of timeseries channels containing data keyed at imaging frames for each timeseries channel
 
     def __post_init__(self):
         print(f"Created new TemporalData of {self.n_channels} x {self.n_timepoints} (sampled at {self.sampling_rate}")
@@ -298,7 +298,8 @@ class TemporalData:
 
         # todo insert test to check that original signal has been collected at a rate higher than imaging. if not then need to handle differently.
 
-        assert hasattr(self, 'frame_times') or frame_times, 'no frame_times given to retrieve data from those timestamps.'
+        assert hasattr(self,
+                       'frame_times') or frame_times, 'no frame_times given to retrieve data from those timestamps.'
 
         frame_times = self.frame_times if frame_times is None else frame_times
 
@@ -324,7 +325,8 @@ class CellAnnotations:
     annotations: Union[List[str], pd.Index]  #: list of names of annotations.
     cellsdata: Union[
         pd.DataFrame, pd.Series]  #: N x Cells array of an arbritrary number (N) 1D annotations channels collected for all Cells. must contain same number of cells as cells_array.
-    multidimdata: Dict[str, List[Any]] = None  #: annotations with data of unconstrained dimensions for all cells. Structured as dictionary with keys corresponding to annotation name and a list of the length of cells containing data in any format.
+    multidimdata: Dict[str, List[
+        Any]] = None  #: annotations with data of unconstrained dimensions for all cells. Structured as dictionary with keys corresponding to annotation name and a list of the length of cells containing data in any format.
 
     def __post_init__(self):
         if self.multidimdata:
@@ -363,7 +365,8 @@ class CellAnnotations:
 @dataclass
 class ImagingData:
     """Imaging dataset."""
-    data: Dict[str, Union[np.ndarray, pd.DataFrame, Any]]  #: dictionary of data labels, where each key corresponds to a N x Frames table of imaging data of cells (N) collected over time (Frames) for each data label.
+    data: Dict[str, Union[
+        np.ndarray, pd.DataFrame, Any]]  #: dictionary of data labels, where each key corresponds to a N x Frames table of imaging data of cells (N) collected over time (Frames) for each data label.
 
     @property
     def data_labels(self):
@@ -380,7 +383,6 @@ class ImagingMetadata:
     """Metadata about imaging system parameters."""
 
     def __init__(self, microscope, n_frames, fps, frame_x, frame_y, n_planes, pix_sz_x, pix_sz_y, **kwargs):
-
         self.microscope = microscope  #: given name of microscope
         self.n_frames = n_frames  #: number of imaging frames in the current trial
         self.fps = fps  #: rate of imaging acquisition (frames per second)
@@ -434,7 +436,6 @@ class ImagingTrial:
     def __repr__(self):
         # todo test repr
         return repr(f"{self.t_series_name} (ImagingTrial)")
-
 
     # todo maybe ? - add alternative constructor to handle construction if temporal data or cell annotations or imaging data is provided
     # might be useful for providing like submodules (especially things like Suite2p)
@@ -561,7 +562,6 @@ class ImagingTrial:
             Warning(
                 f"NO imaging microscope parameters set. follow imagingMetadata to create a custom imagingMicroscopeMetadata class.")
 
-
     ## below properties/methods have pre-requisite processing steps
     @property
     def n_frames(self):
@@ -609,40 +609,40 @@ class ImagingTrial:
         from packerlabimaging.utils.utils import SaveDownsampledTiff
         SaveDownsampledTiff(stack=stack, save_as=f"{self.saveDir}/{self.date}_{self.trialID}_downsampled.tif")
 
-
     def create_anndata(self, imdata_type: str = None, layers=False):
         """
         Creates annotated data (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial.
 
         """
-        if self.imdata and self.cells and self.tmdata:
-
-            # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
-            obs_meta = self.cells.cellsdata
-
-            # SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata
-            var_meta = self.tmdata.data
-
-            print(f"\n\----- CREATING annotated data object using AnnData:")
-            _data_type = [*self.imdata.data][0] if not imdata_type else imdata_type
-            primary_data = self.imdata.data[_data_type]
-
-            if layers and self.imdata.n_data > 0:
-                layers = {}
-                for layer in self.imdata.data_labels:
-                    if layer == _data_type:
-                        layers[layer] = self.imdata.data[layer]
-            else: layers = None
-
-
-            anndata_setup = {'X': primary_data, 'data_label': _data_type, 'obs': obs_meta, 'var': var_meta,
-                             'obs_m': self.cells.multidimdata if self.cells.multidimdata else None, 'layers': layers}
-
-            adata = AnnotatedData(**anndata_setup)
-
-            print(f"\n{adata}")
-            return adata
-
-        else:
+        if not self.imdata and self.cells and self.tmdata:
             raise ValueError(
                 'cannot create anndata table. anndata creation only available if experiments have ImagingData (.imdata), CellAnnotations (.cells) and TemporalData (.tmdata)')
+
+        # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
+        assert hasattr(self.cells, 'cellsdata'), 'missing cellsdata attr from .cells'
+        obs_meta = self.cells.cellsdata
+
+        # SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata
+        assert hasattr(self.tmdata, 'data'), 'missing data attr from .tmdata'
+        var_meta = self.tmdata.data
+
+        print(f"\n\----- CREATING annotated data object using AnnData:")
+        assert hasattr(self.imdata, 'data'), 'missing data attr from .imdata'
+        _data_type = [*self.imdata.data][0] if not imdata_type else imdata_type
+        primary_data = self.imdata.data[_data_type]
+
+        if layers and self.imdata.n_data > 0:
+            layers = {}
+            for layer in self.imdata.data_labels:
+                if layer == _data_type:
+                    layers[layer] = self.imdata.data[layer]
+        else:
+            layers = None
+
+        anndata_setup = {'X': primary_data, 'data_label': _data_type, 'obs': obs_meta, 'var': var_meta,
+                         'obs_m': self.cells.multidimdata if self.cells.multidimdata else None, 'layers': layers}
+
+        adata = AnnotatedData(**anndata_setup)
+
+        print(f"\n{adata}")
+        return adata

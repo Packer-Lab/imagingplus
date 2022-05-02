@@ -343,7 +343,14 @@ class PaqData(TemporalData):
         sns.despine()
         plt.show()
 
-        paq_data_obj.stim_start_times = stim_start_times
+        stim_starts_ = []
+        for time, v in enumerate(paq_data_obj.data[stim_channel]):
+            if time in stim_start_times:
+                stim_starts_.append(True)
+            else:
+                stim_starts_.append(False)
+
+        paq_data_obj.data['stim_start_times'] = stim_starts_
 
         # self.stim_start_frames.append(np.array(stim_start_frames))  # recoded with slight improvement
 
