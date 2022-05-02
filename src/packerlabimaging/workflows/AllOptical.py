@@ -74,7 +74,6 @@ class AllOpticalTrial(TwoPhotonImaging):
         self.stim_start_times = None
         self.nomulti_sig_units = None
 
-
         # attr's for statistical analysis of photostim trials responses
         self.photostimResponsesData = None  # anndata object for collecting photostim responses and associated metadata for experiment and cells
 
@@ -109,7 +108,7 @@ class AllOpticalTrial(TwoPhotonImaging):
 
         # 3) process 2p stim protocol
         # set naparm path
-        self.Targets, stim_start_frames = self._stimProcessing(naparm_path=naparm_path)
+        self.Targets, stim_start_frames = self._photostimProcessing(naparm_path=naparm_path)
 
         # 4) determine bad frames in imaging data that correspond to photostim frames
         photostim_frames = self._find_photostim_add_bad_framesnpy()  # TODO <--  debug this - need to figure out where to assign stim_duration_frames
@@ -220,20 +219,19 @@ class AllOpticalTrial(TwoPhotonImaging):
     def stim_duration_frames(self):
         """Duration of photostimulation as number of frames."""
         if not hasattr(self, 'targets'):
-            raise ValueError('cannot get stim duration frames because cannot find photostimulation analysis module under .Targets')
+            raise ValueError(
+                'cannot get stim duration frames because cannot find photostimulation analysis module under .Targets')
         else:
             duration_ms = self.Targets.stim_dur
             frame_rate = self.imparams.fps
             duration_frames = np.ceil((duration_ms / 1000) * frame_rate)
             return int(duration_frames)
 
-
     # ALLOPTICAL EXPERIMENT PHOTOSTIM PROTOCOL PROCESSING ##############################################################
-    def _stimProcessing(self, naparm_path):
+    def _photostimProcessing(self, naparm_path):
         targets = Targets(naparm_path=naparm_path, frame_x=self.imparams.frame_x,
                           frame_y=self.imparams.frame_y,
                           pix_sz_x=self.imparams.pix_sz_x, pix_sz_y=self.imparams.pix_sz_y)
-
 
         # find stim frames and add to anndata
         stim_start_frames = []
@@ -242,9 +240,7 @@ class AllOpticalTrial(TwoPhotonImaging):
             stim_start_frame = next(i - 1 for i, sample in enumerate(self.tmdata.frame_times) if sample - stim >= 0)
             stim_start_frames.append(stim_start_frame)
 
-
         return targets, stim_start_frames
-
 
     def _findTargetedS2pROIs(self, plot: bool = True):
         """finding s2p cell ROIs that were also SLM targets (or more specifically within the target areas as specified by _findTargetAreas - include 15um radius from center coordinate of spiral)

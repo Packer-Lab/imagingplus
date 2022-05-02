@@ -256,9 +256,7 @@ class PaqData(TemporalData):
             raise KeyError(f'{frame_times_channel} not found in .Paq channels. Specify channel containing frame signals.')
 
         # find frame times
-        # clock_idx = paq_data['chan_names'].index(frame_times_channel)
-        # clock_voltage = paq_data['data'][clock_idx, :]
-        clock_voltage = getattr(self, frame_times_channel)
+        clock_voltage = self.data[frame_times_channel].to_numpy()
 
         __frame_clock = threshold_detect(clock_voltage, 1)
         __frame_clock = __frame_clock
@@ -331,7 +329,7 @@ class PaqData(TemporalData):
         assert stim_channel in paq_data_obj.channels, f"stim_channel argument: '{stim_channel}', not found in channels in .paq data."
 
         # find stim times
-        stim_volts = getattr(paq_data_obj, stim_channel)
+        stim_volts = paq_data_obj.data[stim_channel]
         stim_start_times = threshold_detect(stim_volts, 1)
         print('# of stims found on %s: %s' % (stim_channel, len(stim_start_times)))
 

@@ -278,7 +278,7 @@ class TemporalData:
     @property
     def n_timepoints(self):
         """number of data collection timepoints"""
-        return len(self.data.rows)
+        return len(self.data.index)
 
     @property
     def n_channels(self):
@@ -308,8 +308,11 @@ class TemporalData:
         sparse_data = {}
         for idx, chan in enumerate(self.channels):
             print(f'\t\t\- Adding sparse data for channel: {chan} ')
-            data = getattr(self, chan)
-            sparse_data[chan] = data[frame_times]
+            data = self.data.iloc[frame_times, idx]
+            sparse_data[chan] = data
+
+        sparse_data = pd.DataFrame(sparse_data)
+
         return sparse_data
 
 
