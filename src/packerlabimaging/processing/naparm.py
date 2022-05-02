@@ -10,9 +10,9 @@ import xml.etree.ElementTree as ET
 
 from packerlabimaging.utils.utils import path_finder, points_in_circle_np
 
+
 @dataclass
 class naparm:
-
     path: str  #: path to output from NAPARM used for photostimulation protocol of current imaging trial
 
     def __post_init__(self):
@@ -93,7 +93,8 @@ class naparm:
             raise ValueError(f"could not set spiral_size, unable to get from NAPARM gpl")
         # self.single_stim_dur = single_stim_dur  # not sure why this was previously getting this value from here, but I'm now getting it from the xml file above
 
-    def _photostimProcessing(self):  # TODO need to figure out how to handle different types of photostimulation experiment setups - think through in detail with Rob at a later date?
+    def _photostimProcessing(
+            self):  # TODO need to figure out how to handle different types of photostimulation experiment setups - think through in detail with Rob at a later date?
 
         """
         remember that this is currently configured for only the interleaved photostim, not the really fast photostim of multi-groups
@@ -121,7 +122,6 @@ class naparm:
         self.stim_dur = total_single_stim
         self.stim_freq = self.n_shots / self.stim_dur  # TODO Rob is this correct?
 
-
         print('Single stim. Duration (ms): ', self.single_stim_dur)
         print('Total stim. Duration per trial (ms): ', self.stim_dur)
 
@@ -145,13 +145,13 @@ class Targets(naparm):
         self.__pix_sz_x = pix_sz_x
         self.__pix_sz_y = pix_sz_y
 
-        self.target_coords_all, self.target_coords, self.n_targets, self.n_targets_total = self._readTargetsImage(self.__frame_x, self.__frame_y)
+        self.target_coords_all, self.target_coords, self.n_targets, self.n_targets_total = self._readTargetsImage(
+            self.__frame_x, self.__frame_y)
         self.target_areas, self.target_areas_exclude = self._findTargetsAreas(self.__frame_x, self.__pix_sz_x)
         self.euclid_dist = self._euclidDist(resp_positions=self.target_coords)
 
     def __repr__(self):
         print(f"naparm.Targets analysis submodule. Loaded from: {self.path}")
-
 
     def _readTargetsImage(self, frame_x, frame_y):
         scale_factor_x = frame_x / 512  ## TODO need to get this from the NAPARM OUTPUT somehow...
@@ -200,15 +200,14 @@ class Targets(naparm):
 
         return target_coords_all, target_coords, n_targets, n_targets_total
 
-    def _findTargetsAreas(self, frame_x, pix_sz_x, frame_y=None, pix_sz_y=None):  # TODO needs review by Rob - any bits of code missing under here? for e.g. maybe for target coords under multiple SLM groups?
+    def _findTargetsAreas(self, frame_x, pix_sz_x, frame_y=None,
+                          pix_sz_y=None):  # TODO needs review by Rob - any bits of code missing under here? for e.g. maybe for target coords under multiple SLM groups?
 
         """
         Finds cells that have been targeted for optogenetic photostimulation using Naparm in all-optical type experiments.
         output: coordinates of targets, and circular areas of targets
         Note this is not done by target groups however. So all of the targets are just in one big ls.
         """
-
-
 
         # targets_1 = np.where(target_image_scaled_1 > 0)
         # targets_2 = np.where(target_image_scaled_2 > 0)
@@ -289,8 +288,6 @@ class Targets(naparm):
 
         return euclid_dist
 
-
-
     ## extra code from Rob - not entirely sure that we need to include?
     # def getTargetImage(obj, frame_x, frame_y):
     #     targ_img = np.zeros((frame_x, frame_y), dtype='uint8')
@@ -350,7 +347,3 @@ class Targets(naparm):
     #
     #     # crop the target image using the offset bounding box to put the targets in imaging space
     #     return target_image_scaled[y1:y2, x1:x2]
-
-
-
-

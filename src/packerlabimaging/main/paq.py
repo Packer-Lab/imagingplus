@@ -329,10 +329,9 @@ class PaqData(TemporalData):
         assert stim_channel in paq_data_obj.channels, f"stim_channel argument: '{stim_channel}', not found in channels in .paq data."
 
         # find stim times
-        stim_volts = paq_data_obj.data[stim_channel]
+        stim_volts = paq_data_obj.data[stim_channel].to_numpy()
         stim_start_times = threshold_detect(stim_volts, 1)
         print('# of stims found on %s: %s' % (stim_channel, len(stim_start_times)))
-
 
         fig, ax = plt.subplots(figsize=(10, 5))
         ax.plot(stim_volts)
@@ -351,11 +350,6 @@ class PaqData(TemporalData):
                 stim_starts_.append(False)
 
         paq_data_obj.data['stim_start_times'] = stim_starts_
-
-        # self.stim_start_frames.append(np.array(stim_start_frames))  # recoded with slight improvement
-
-        # # sanity check
-        # assert max(self.stim_start_frames[0]) < self.raw[plane].shape[1] * self.n_planes
 
         return paq_data_obj
 

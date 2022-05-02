@@ -28,10 +28,6 @@ PLANE = 0
 BADFRAMESLOC = '/home/pshah/Documents/code/packerlabimaging/tests/'
 
 
-def getTargetImage():  # TODO write this function and probably add to the Targets class
-    pass
-
-
 class AllOpticalTrial(TwoPhotonImaging):
     """All Optical Experimental Data Analysis Workflow."""
     prestim_sec: float = 1.0  #: length of pre stim trace collected (in frames)
@@ -41,7 +37,8 @@ class AllOpticalTrial(TwoPhotonImaging):
 
     def __init__(self, naparm_path, dataPath: str, saveDir: str, date: str, trialID: str, expID: str,
                  expGroup: str = '',
-                 comment: str = '', imparams: ImagingMetadata = None, cells: CellAnnotations = None, imdata: ImagingData = None,
+                 comment: str = '', imparams: ImagingMetadata = None, cells: CellAnnotations = None,
+                 imdata: ImagingData = None,
                  tmdata: PaqData = None):
 
         """
@@ -108,7 +105,8 @@ class AllOpticalTrial(TwoPhotonImaging):
 
         # 3) process 2p stim protocol and collect imaging frames at stim starts and during photostimulation
         # set naparm path
-        self.twopstim, self.twopstim.stim_start_frames, self.twopstim.photostim_frames = self._photostimProcessing(naparm_path=naparm_path)
+        self.twopstim, self.twopstim.stim_start_frames, self.twopstim.photostim_frames = self._photostimProcessing(
+            naparm_path=naparm_path)
 
         # 5) collect Flu traces from SLM targets
         if hasattr(self, 'Suite2p'):
@@ -228,7 +226,7 @@ class AllOpticalTrial(TwoPhotonImaging):
 
     # ALLOPTICAL EXPERIMENT PHOTOSTIM PROTOCOL PROCESSING ##############################################################
     def _photostimProcessing(self, naparm_path):
-        targets = Targets(naparm_path=naparm_path, frame_x=self.imparams.frame_x,
+        self.twopstim = Targets(naparm_path=naparm_path, frame_x=self.imparams.frame_x,
                           frame_y=self.imparams.frame_y,
                           pix_sz_x=self.imparams.pix_sz_x, pix_sz_y=self.imparams.pix_sz_y)
 
@@ -254,9 +252,10 @@ class AllOpticalTrial(TwoPhotonImaging):
         print('\t|- # of Photostim frames:', len(self.photostim_frames), 'frames')
         print('\t|- Minus photostim. frames total:', self.imparams.n_frames - len(photostim_frames), 'frames')
 
-        return targets, stim_start_frames, photostim_frames
+        return self.twopstim, stim_start_frames, photostim_frames
 
-    def _findTargetedS2pROIs(self, plot: bool = True):
+    # TODO review below:
+    def _findTargetedCells(self, plot: bool = True):
         """finding s2p cell ROIs that were also SLM targets (or more specifically within the target areas as specified by _findTargetAreas - include 15um radius from center coordinate of spiral)
         Make a binary mask of the targets and multiply by an image of the cells
         to find cells that were targeted
@@ -264,7 +263,7 @@ class AllOpticalTrial(TwoPhotonImaging):
         --- LAST UPDATED NOV 6 2021 - copied over from Vape ---
         """
 
-        print('\n\----- Searching for targeted cells in Suite2p ROIs... [Vape version]')
+        print('\n\----- Searching for targeted cells in annotated cells...')
 
         ## TODO add necessary edits for multi-plane experiments
 
@@ -532,7 +531,7 @@ class AllOpticalTrial(TwoPhotonImaging):
             # stack = np.append(stack, ps_sta_img, axis=0)
 
             # target images
-            targ_img = getTargetImage()
+            targ_img = self.twopstim._readTargetsImage(frame_y=self.imparams.frame_y, frame_x=self.imparams.frame_x)
             targ_img = np.expand_dims(targ_img, axis=0)
             stack = np.append(stack, targ_img, axis=0)
 
