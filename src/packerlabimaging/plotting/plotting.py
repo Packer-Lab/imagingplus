@@ -19,7 +19,7 @@ from packerlabimaging.workflows.AllOptical import AllOpticalTrial
 from packerlabimaging._archive.TwoPhotonImagingMain import TwoPhotonImagingTrial
 from packerlabimaging.plotting._utils import plotting_decorator, make_random_color_array, _add_scalebar, \
     image_frame_options, dataplot_frame_options, dataplot_ax_options, plot_coordinates, heatmap_options, image_frame_ops
-from packerlabimaging.processing.paq import PaqData
+from packerlabimaging.main.paq import PaqData
 from packerlabimaging.utils.classes import ObjectClassError
 
 
@@ -178,7 +178,7 @@ def plot__paq_channel(paqData: PaqData, channel: str, **kwargs):
         x_tick_secs: int, interval to plot x axis ticks
         ax: matplotlib axis object to use for plotting.
     """
-    assert channel in paqData.paq_channels, f'{channel} not found in .Paq module data.'
+    assert channel in paqData.channels, f'{channel} not found in .Paq module data.'
 
     # set any kwargs provided
     ax = kwargs['ax']
@@ -190,15 +190,15 @@ def plot__paq_channel(paqData: PaqData, channel: str, **kwargs):
     color = 'black' if 'color' not in kwargs else kwargs['color']
 
     # collect data to plot
-    data = getattr(paqData, channel)
+    data = paqData.data[channel].to_numpy()
 
     # make plot
-    x = np.linspace(0, len(data)/paqData.paq_rate, len(data))
+    x = np.linspace(0, len(data)/paqData.sampling_rate, len(data))
     ax.plot(x, data, lw=lw, color=color)
     ax.set_title(f"{channel}")
     ax.set_ylim(kwargs['y_lims']) if 'y_lims' in kwargs else None
     ax.set_xlabel('Time (secs)')
-    ax.set_xticks([label for label in range(0, int(len(data) / paqData.paq_rate), kwargs['x_tick_secs'])])
+    ax.set_xticks([label for label in range(0, int(len(data) / paqData.sampling_rate), kwargs['x_tick_secs'])])
     ax.set_xlabel(kwargs['x_axis'])
     ax.grid(True)
 

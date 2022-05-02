@@ -243,7 +243,7 @@ class AllOpticalTrial(TwoPhotonImaging):
 
         photostim_frames = []
 
-        for j in self.twopstim.stim_start_frames:
+        for j in stim_start_frames:
             for i in range(
                     self.stim_duration_frames):
                 photostim_frames.append(j + i)

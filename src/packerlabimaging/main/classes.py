@@ -51,7 +51,8 @@ class Experiment:
             str, TrialMetainfo] = {}  #: dictionary of metadata information about each trial. Gets filled while adding each trial.
 
         # suite2p related attrs initialization
-        self.Suite2p = None
+        from packerlabimaging.processing.suite2p import Suite2pExperiment
+        self.Suite2p: Suite2pExperiment = None
         self._suite2p_save_path = None
         # self._trialsTiffsSuite2p = {}  #: dictionary of trial IDs and their respective .tiff paths for each trial that will be used in Suite2p processing for current experiment
         # self._s2pResultExists = False  #: flag for whether suite2p results exist for current experiment
