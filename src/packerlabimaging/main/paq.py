@@ -318,24 +318,80 @@ class PaqData(TemporalData):
 
 
     @classmethod
-    def paqProcessingTwoPhotonImaging(cls, paq_path, frame_channel):
+    def paqProcessingTwoPhotonImaging(cls, paq_path, frame_channel, plot: bool = False):
         """
         Alternative constructor for paq module for working with two photon imaging trials.
 
+        :param plot:
         :param paq_path: path to .paq file
         :param frame_channel: channel to use for measuring frame times from .paq data
 
         :return: PAQ data object
         """
 
-        paq_data_obj = cls.import_paqdata(file_path=paq_path, plot=False)
+        paq_data_obj = cls.import_paqdata(file_path=paq_path, plot=plot)
         assert frame_channel in paq_data_obj.channels, f"frame_channel argument: '{frame_channel}', not found in channels in .paq data."
-        paq_data_obj.frame_times_channame = frame_channel
         paq_data_obj.frame_times = paq_data_obj.getPaqFrameTimes(frame_times_channel=frame_channel)
         paq_data_obj.sparse_paq_data = paq_data_obj.get_sparse_data(frame_times=paq_data_obj.frame_times)
 
         return paq_data_obj
 
+
+    @classmethod
+    def paqProcessingAllOptical(cls, paq_path: str, stim_channel: str, frame_channel: str, plot: bool =False):
+        """
+        Alternative constructor for paq module for working with all optical trials.
+
+        :param plot:
+        :param stim_channel:
+        :param paq_path: path to .paq file
+        :param frame_channel: channel to use for measuring frame times from .paq data
+
+        :return: PAQ data object
+        """
+
+        paq_data_obj = cls.paqProcessingTwoPhotonImaging(paq_path=paq_path, frame_channel=frame_channel, plot=plot)
+
+        assert stim_channel in paq_data_obj.channels, f"stim_channel argument: '{stim_channel}', not found in channels in .paq data."
+
+
+        # find stim times
+        stim_volts = getattr(paq_data_obj, stim_channel)
+        stim_start_times = threshold_detect(stim_volts, 1)
+        print('# of stims found on %s: %s' % (stim_channel, len(stim_start_times)))
+
+        # correct this based on txt file
+        # PLUG INTO NAPARM PARAM'S
+        duration_ms = self.stim_dur
+        frame_rate = self.fps / self.n_planes
+        duration_frames = np.ceil((duration_ms / 1000) * frame_rate)
+        self.stim_duration_frames = int(duration_frames)
+
+        plt.figure(figsize=(10, 5))
+        plt.plot(stim_volts)
+        plt.plot(stim_start_times, np.ones(len(stim_start_times)), '.')
+        plt.suptitle('photostim start times')
+        sns.despine()
+        plt.show()
+
+        # find stim frames
+        stim_start_frames = []
+
+        for stim in stim_start_times:
+            # the index of the frame immediately preceeding stim
+            stim_start_frame = next(
+                i - 1 for i, sample in enumerate(paq_data_obj.frame_times) if sample - stim >= 0)
+            stim_start_frames.append(stim_start_frame)
+
+        # self.stim_start_frames.append(np.array(stim_start_frames))  # recoded with slight improvement
+
+        # # sanity check
+        # assert max(self.stim_start_frames[0]) < self.raw[plane].shape[1] * self.n_planes
+
+        paq_data_obj.stim_start_frames = stim_start_frames  #: frame numbers from the start of each photostimulation trial
+        paq_data_obj.photostim_frames = []  #: imaging frames during photostimulation
+
+        return paq_data_obj
 
 
     # # TODO review code
