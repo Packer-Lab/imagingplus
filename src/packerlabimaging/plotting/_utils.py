@@ -275,7 +275,7 @@ def dataplot_ax_options(ax, data_length: int, **kwargs):
 
     """
     if ax:
-        ax.margins(0.1)
+        ax.margins(0)
         ax.grid(True)
 
         # set x_axis label

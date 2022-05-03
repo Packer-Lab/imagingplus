@@ -193,14 +193,13 @@ def plot__tmdata_channel(tmdata: TemporalData, channel: str, **kwargs):
     data = tmdata.data[channel].to_numpy()
 
     # make plot
-    x = np.linspace(0, len(data)/tmdata.sampling_rate, len(data))
-    ax.plot(x, data, lw=lw, color=color)
+    ax.plot(data, lw=lw, color=color)
     ax.set_title(f"{channel}")
-    ax.set_ylim(kwargs['y_lims']) if 'y_lims' in kwargs else None
-    ax.set_xlabel('Time (secs)')
-    ax.set_xticks([label for label in range(0, int(len(data) / tmdata.sampling_rate), kwargs['x_tick_secs'])])
-    ax.set_xlabel(kwargs['x_axis'])
-    ax.grid(True)
+
+    ax.set_xlabel('tmdata clock')
+
+    # set axis options
+    dataplot_ax_options(ax=ax, data_length=len(data), collection_hz=tmdata.sampling_rate, **kwargs)
 
 
 def makeAverageTiff(tiff_path: str = None, frames: tuple = None, save_path: str = None, to_plot=False, imstack: np.ndarray=None):
@@ -366,6 +365,7 @@ def plotMeanFovFluTrace(trialobj: TwoPhotonImagingTrial, **kwargs):
         ax.set_xlabel('frame #s')
         ax.set_ylabel('Flu (a.u.)')
 
+        # set axis options
         dataplot_ax_options(ax=ax, data_length=len(data_to_plot), collection_hz=trialobj.imparams.fps, **kwargs)
 
 
@@ -442,118 +442,6 @@ def plot_s2p_raw(trialobj, cell_id):
     plt.plot(trialobj.baseline_raw[trialobj.cell_id.index(cell_id)], linewidth=0.5, c='black')
     plt.xlim(0, len(trialobj.baseline_raw[0]))
     plt.show()
-
-
-# suite2p data
-
-
-# LFP
-@plotting_decorator(figsize=(10, 3))
-def plotLfpSignal(trialobj: TwoPhotonImagingTrial, stim_span_color='powderblue', downsample: bool = True,
-                  stim_lines: bool = True, sz_markings: bool = False,
-                  title='LFP trace', x_axis='time', hide_xlabel=False, fig=None, ax=None, **kwargs):
-    """make plot of LFP with also showing stim locations
-    NOTE: ONLY PLOTTING LFP SIGNAL CROPPED TO 2P IMAGING FRAME START AND END TIMES - SO CUTTING OUT THE LFP SIGNAL BEFORE AND AFTER
-
-    :param trialobj:
-    :param stim_span_color:
-    :param downsample:
-    :param stim_lines:
-    :param sz_markings:
-    :param title:
-    :param x_axis:
-    :param hide_xlabel:
-    :param fig: a matplotlib.Figure instance, if provided use this fig for plotting
-    :param ax: a matplotlib.Axes.axes instance, if provided use this ax for plotting
-    :param show: if False, do not display plot (used when the necessity is to return the fig and ax objects to futher manipulation)
-    :returns fig, ax: returns fig and ax object, if show is False
-
-    """
-
-    print(f"\t \- PLOTTING LFP Signal trace ... ")
-
-    if not hasattr(trialobj.Paq, 'voltage'):
-        raise AttributeError(f"no voltage data found in .Paq submodule. Please add to .Paq file")
-
-    if 'alpha' in kwargs:
-        alpha = kwargs['alpha']
-    else:
-        alpha = 1
-
-    # plot LFP signal
-    if 'color' in kwargs:
-        color = kwargs['color']
-    else:
-        color = 'steelblue'
-
-    # option for downsampling of data plot trace
-    x = range(len(trialobj.Paq.voltage[trialobj.Paq.frame_times[0]: trialobj.Paq.frame_times[-1]]))
-    signal = trialobj.Paq.voltage[trialobj.Paq.frame_times[0]: trialobj.Paq.frame_times[-1]]
-    if downsample:
-        labels = list(range(0, int(len(signal) / trialobj.Paq.paq_rate * 1), 15))[::2]  # set x ticks at every 30 secs
-        down = 1000
-        signal = signal[::down]
-        x = x[::down]
-        assert len(x) == len(signal), print('something went wrong with the downsampling')
-
-    # change linewidth
-    if 'linewidth' in kwargs:
-        lw = kwargs['linewidth']
-    else:
-        lw = 0.4
-
-    ax.plot(x, signal, c=color, zorder=1, linewidth=lw)  ## NOTE: ONLY PLOTTING LFP SIGNAL RELATED TO
-    ax.margins(0.02)
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    # ax.spines['left'].set_visible(False)
-
-    # change x axis ticks to seconds
-    labels_ = kwargs['labels'] if 'labels' in kwargs else ax.get_xticklabels()
-    labels_ = [int(i) for i in labels_]
-    if 'time' in x_axis or 'Time' in x_axis:
-        ax.set_xticks(ticks=[(label * trialobj.Paq.paq_rate) for label in labels_])
-        ax.set_xticklabels(labels_)
-        ax.tick_params(axis='both', which='both', length=3)
-        if not hide_xlabel:
-            ax.set_xlabel('Time (secs)')
-    # elif 'frame' or "key_frames" or "Frames" or "Frame" in x_axis:
-    #     x_ticks = range(0, trialobj.n_frames, 2000)
-    #     x_clocks = [x_fr*trialobj.paq_rate for x_fr in x_ticks]  ## convert to Paq clock dimension
-    #     ax.set_xticks(x_clocks)
-    #     ax.set_xticklabels(x_ticks)
-    #     if not hide_xlabel:
-    #         ax.set_xlabel('Frames')
-    else:
-        ax.set_xlabel('Paq clock')
-    ax.set_ylabel('Voltage')
-    # ax.set_xlim([trialobj.imparams.frame_start_time_actual, trialobj.imparams.frame_end_time_actual])  ## this should be limited to the 2p acquisition duration only
-
-    # set ylimits:
-    if 'ylims' in kwargs:
-        ax.set_ylim(kwargs['ylims'])
-    else:
-        ax.set_ylim([np.mean(trialobj.Paq.voltage) - 10, np.mean(trialobj.Paq.voltage) + 10])
-
-    # set xlimits:
-    if 'xlims' in kwargs and kwargs['xlims'] is not None:
-        ax.set_xlim(kwargs['xlims'])
-
-    # add title
-    ax.set_title(f"{trialobj.t_series_name}")
-
-    # return None
-    # if not 'fig' in kwargs.keys():
-    #     ax.set_title(
-    #         '%s - %s %s %s' % (title, trialobj.metainfo['exptype'], trialobj.metainfo['exp_id'], trialobj.metainfo['trial_id']))
-    #
-    # # options for showing plot or returning plot
-    # if 'show' in kwargs.keys():
-    #     plt.show() if kwargs['show'] else None
-    # else:
-    #     plt.show()
-
-    # return fig, ax if 'fig' in kwargs.keys() else None
 
 
 # LFP
