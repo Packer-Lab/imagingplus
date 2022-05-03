@@ -284,8 +284,12 @@ def dataplot_ax_options(ax, data_length: int, **kwargs):
             x_axis = kwargs['x_axis']
             if ('time' in x_axis or 'Time' in x_axis) and 'collection_hz' in [*kwargs]:
                 x_tick_secs = 30 if 'x_tick_secs' not in [*kwargs] else kwargs['x_tick_secs']
-                # change x axis ticks to every 30 seconds
-                labels = list(range(0, int(data_length // kwargs['collection_hz']), x_tick_secs))
+                # change x axis ticks to the appropriate interval
+                # labels = list(range(0, int(data_length // kwargs['collection_hz']), x_tick_secs))
+
+                start, end = ax.get_xticks()[0], ax.get_xticks()[-1]
+                labels = list(range(int(start // kwargs['collection_hz']), int(end // kwargs['collection_hz']), x_tick_secs))
+
                 x_tick_locations = [(label * kwargs['collection_hz']) for label in labels]
                 print('labels: ', labels)
                 print('x tick locs: ', x_tick_locations)
@@ -300,8 +304,8 @@ def dataplot_ax_options(ax, data_length: int, **kwargs):
         ax.set_ylabel(kwargs['y_axis']) if 'y_axis' in [*kwargs] else None
 
         # set x and y axis limits
-        if 'xlims' in [*kwargs]: ax.set_xlim(kwargs['xlims'])
-        if 'ylims' in [*kwargs]: ax.set_ylim(kwargs['ylims'])
+        if 'xlims' in [*kwargs]: ax.set_xlim([xlim * kwargs['collection_hz'] for xlim in kwargs['xlims']])
+        if 'ylims' in [*kwargs]: ax.set_ylim([ylim * kwargs['collection_hz'] for ylim in kwargs['ylims']])
 
     else:
         pass
