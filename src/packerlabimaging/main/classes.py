@@ -273,18 +273,18 @@ class TemporalData:
 
     @property
     def n_frames(self):
-        """number of timed key_frames"""
+        """number of timed imaging frames"""
         return len(self.frame_times)
 
     @property
     def n_timepoints(self):
         """number of data collection timepoints"""
-        return len(self.data.index)
+        return self.data.shape[0]
 
     @property
     def n_channels(self):
         """number of data collection channels"""
-        return len(self.data.columns)
+        return self.data.shape[1]
 
     def get_sparse_data(self, frame_times: Union[list, np.ndarray] = None):
         """
@@ -321,15 +321,16 @@ class TemporalData:
         """
         Crops saved temporal data channels to the timestamps of begin and end.
 
+        :param channels: channels to crop data, default is 'all' (all channels in dataset).
         :param begin: timestamp to begin cropping at
         :param end: timestamp to end cropping at
-        :param channels: channels to crop data.
+        :param replace: if True, then replace .data attribute with newly cropped data. if False, return the cropped dataframe.
         """
 
         channels = self.channels if channels == 'all' else channels
         print(f"\- cropping {channels} to {begin} and {end} paq clock times.")
 
-        assert self.data.shape[1] >= (end - begin), f'Not enough time series samples in data to crop between the provided times.'
+        assert self.data.shape[0] >= (end - begin), f'Not enough time series samples in data to crop between the provided times.'
         data_ = self.data.loc[begin: end, channels]
 
         if replace:

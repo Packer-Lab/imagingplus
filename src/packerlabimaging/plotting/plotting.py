@@ -12,6 +12,7 @@ import pandas as pd
 import tifffile as tf
 
 from packerlabimaging import Experiment
+from packerlabimaging.main.classes import TemporalData
 from packerlabimaging.utils.utils import save_to_csv
 
 from packerlabimaging.workflows.AllOptical import AllOpticalTrial
@@ -166,9 +167,8 @@ def plot_flu_trace(trialobj: TwoPhotonImagingTrial, cell, to_plot='raw', **kwarg
 
 
 @plotting_decorator()
-def plot__paq_channel(paqData: PaqData, channel: str, **kwargs):
+def plot__tmdata_channel(tmdata: TemporalData, channel: str, **kwargs):
     """
-    todo change to more general temporal series data plotting
     Plot the stored signal from the specified channel from a PaqData submodule.
 
     :param paqData: .Paq submodule data
@@ -178,7 +178,7 @@ def plot__paq_channel(paqData: PaqData, channel: str, **kwargs):
         x_tick_secs: int, interval to plot x axis ticks
         ax: matplotlib axis object to use for plotting.
     """
-    assert channel in paqData.channels, f'{channel} not found in .Paq module data.'
+    assert channel in tmdata.channels, f'{channel} not found in .Paq module data.'
 
     # set any kwargs provided
     ax = kwargs['ax']
@@ -190,15 +190,15 @@ def plot__paq_channel(paqData: PaqData, channel: str, **kwargs):
     color = 'black' if 'color' not in kwargs else kwargs['color']
 
     # collect data to plot
-    data = paqData.data[channel].to_numpy()
+    data = tmdata.data[channel].to_numpy()
 
     # make plot
-    x = np.linspace(0, len(data)/paqData.sampling_rate, len(data))
+    x = np.linspace(0, len(data)/tmdata.sampling_rate, len(data))
     ax.plot(x, data, lw=lw, color=color)
     ax.set_title(f"{channel}")
     ax.set_ylim(kwargs['y_lims']) if 'y_lims' in kwargs else None
     ax.set_xlabel('Time (secs)')
-    ax.set_xticks([label for label in range(0, int(len(data) / paqData.sampling_rate), kwargs['x_tick_secs'])])
+    ax.set_xticks([label for label in range(0, int(len(data) / tmdata.sampling_rate), kwargs['x_tick_secs'])])
     ax.set_xlabel(kwargs['x_axis'])
     ax.grid(True)
 

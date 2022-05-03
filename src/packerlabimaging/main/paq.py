@@ -223,23 +223,6 @@ class PaqData(TemporalData):
         print(f"\t|- adding '{chan_name}' channel data as attribute")
         setattr(self, chan_name, paq_data['data'][chan_name_idx])
 
-    def cropPaqData(self, begin: int, end: int, channels: List[str] = 'all'):
-        """
-        Crops saved paq data channels to the .paq clock timestamps of begin and end.
-
-        :param begin: paq clock time to begin cropping at
-        :param end: paq clock time to end cropping at
-        :param channels: channels to crop paq data.
-        """
-
-        channels = self.channels if channels == 'all' else channels
-        for channel in channels:
-            print(f"\- cropping {channel} to {begin} and {end} paq clock times.")
-            data = getattr(self, channel)
-            assert len(data) >= (end - begin), f'{channel} paq data is not long enough to crop between the provided clock times.'
-            cropdata = data[begin: end]
-            setattr(self, channel, cropdata)
-
     ## refactor these methods to their respective Trial code locations
     def getPaqFrameTimes(self, frame_times_channel: str):
         """
