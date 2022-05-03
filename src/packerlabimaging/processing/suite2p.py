@@ -116,8 +116,8 @@ def s2p_loader(s2p_path, subtract_neuropil=True, neuropil_coeff=0.7):
         raise FileNotFoundError('Could not find stat, '
                                 'this is likely not a suit2p folder, path: ', s2p_path)
 
-    for i, s in enumerate(stat):
-        s['original_index'] = i
+    # for i, s in enumerate(stat):
+    #     s['original_index'] = i
 
     all_cells = all_cells[is_cells, :]
     neuropil = neuropil[is_cells, :]
@@ -335,7 +335,7 @@ class Suite2pExperiment:
 
             # stat is an np array of dictionaries
             for cell, s in enumerate(stat):
-                cell_id.append(s['original_index'])
+                cell_id.append(cell)
                 cell_med.append(s['med'])
 
                 cell_x.append(s['xpix'])
@@ -609,7 +609,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
             raise ValueError('cannot create s2p results trial without existing results in the input s2pExperiment.')
 
         cells_data, cells_multidim = self.getCellsAnnotations()
-        CellAnnotations(cells_array=cells_data['original_index'], annotations=cells_data.columns, cellsdata=cells_data, multidimdata=cells_multidim)
+        CellAnnotations(cells_array=cells_data.index, annotations=cells_data.columns, cellsdata=cells_data, multidimdata=cells_multidim)
 
         imdata = {
             'raw': raw,

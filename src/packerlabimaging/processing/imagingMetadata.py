@@ -28,7 +28,6 @@ from packerlabimaging.main.classes import ImagingMetadata
 #         return f'ImagingMetadata for imaging data collected with {self.microscope}.'
 
 
-
 class PrairieViewMetadata(ImagingMetadata):
     """class for parsing metadata of imaging microscope system."""
 
@@ -42,16 +41,16 @@ class PrairieViewMetadata(ImagingMetadata):
         self.scan_x = pv_metadata['scan_x']  #: resonant scan center in x axis
         self.scan_y = pv_metadata['scan_y']  #: resonant scan center in y axis
         self.zoom: float = pv_metadata['zoom']  #: zoom level on Bruker microscope
-        self.last_good_frame = pv_metadata['last_good_frame']  #: indicates when the last good frame was during the t-series recording, if nothing was wrong the value is 0, otherwise it is >0 and that indicates that PV is not sure what happened after the frame listed, but it could be corrupt data
+        self.last_good_frame = pv_metadata[
+            'last_good_frame']  #: indicates when the last good frame was during the t-series recording, if nothing was wrong the value is 0, otherwise it is >0 and that indicates that PV is not sure what happened after the frame listed, but it could be corrupt data
         # for key, value in kwargs.items():  # todo removing kwargs
         #     setattr(self, key, value)
-
 
     def __repr__(self):
         return f'PrairieViewMetadata from: {self.pv_xml_dir}\n\tn planes: {self.n_planes} \n\tn frames: {self.n_frames}' \
                f'\n\tfps: {self.fps} \n\tframe size (px): {self.frame_x} x {self.frame_y}  \n\tzoom: {self.zoom} \n\t' \
-            f'pixel size (um): {self.pix_sz_x}, {self.pix_sz_y} ' \
-            f'\n\tscan centre (V): {self.scan_x}, {self.scan_y}'
+               f'pixel size (um): {self.pix_sz_x}, {self.pix_sz_y} ' \
+               f'\n\tscan centre (V): {self.scan_x}, {self.scan_y}'
 
     @staticmethod
     def _getPVStateShard(root, key) -> List:
@@ -104,7 +103,6 @@ class PrairieViewMetadata(ImagingMetadata):
         """
 
         print('\n\t\- Parsing PV Metadata for Bruker microscope...')
-
 
         xml_dir_path = self.pv_xml_dir  # starting path to search for the .xml PrairieView files
         xml_path = []  # searching for xml path
@@ -187,15 +185,15 @@ class PrairieViewMetadata(ImagingMetadata):
               )
 
         return_dict = {'fps': round(self.fps, 5),
-                'n_planes': self.n_planes,
-                'n_frames': self.n_frames,
-                'frame_x': self.frame_x,
-                'frame_y': self.frame_y,
-                'zoom': self.zoom,
-                'pix_sz_x': round(pix_sz_x, 5),
-                'pix_sz_y': round(pix_sz_y, 5),
-                'scan_x': scan_x,
-                'scan_y': scan_y,
-                'last_good_frame': last_good_frame}
+                       'n_planes': self.n_planes,
+                       'n_frames': self.n_frames,
+                       'frame_x': self.frame_x,
+                       'frame_y': self.frame_y,
+                       'zoom': self.zoom,
+                       'pix_sz_x': round(pix_sz_x, 5),
+                       'pix_sz_y': round(pix_sz_y, 5),
+                       'scan_x': scan_x,
+                       'scan_y': scan_y,
+                       'last_good_frame': last_good_frame}
 
         return return_dict

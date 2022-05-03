@@ -317,6 +317,34 @@ class TemporalData:
 
         return sparse_data
 
+    def cropData(self, begin: int, end: int, channels: List[str] = 'all', replace: bool = False):
+        """
+        Crops saved temporal data channels to the timestamps of begin and end.
+
+        :param begin: timestamp to begin cropping at
+        :param end: timestamp to end cropping at
+        :param channels: channels to crop data.
+        """
+
+        channels = self.channels if channels == 'all' else channels
+        print(f"\- cropping {channels} to {begin} and {end} paq clock times.")
+
+        assert self.data.shape[1] >= (end - begin), f'Not enough time series samples in data to crop between the provided times.'
+        data_ = self.data.loc[begin: end, channels]
+
+        if replace:
+            self.data = data_
+        else:
+            return data_
+
+        # older approach...
+        # for channel in channels:
+        #     print(f"\- cropping {channel} to {begin} and {end} paq clock times.")
+        #     data = self.data[channel].to_numpy()
+        #     assert len(data) >= (end - begin), f'{channel} paq data is not long enough to crop between the provided clock times.'
+        #     cropdata = data[begin: end]
+        #     setattr(self, channel, cropdata)
+
 
 @dataclass
 class CellAnnotations:
