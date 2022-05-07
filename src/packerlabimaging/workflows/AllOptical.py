@@ -318,7 +318,6 @@ class AllOpticalTrial(TwoPhotonImaging):
 
         return self.twopstim, stim_start_frames, photostim_frames
 
-    # TODO review below ########################################################################
     def _findTargetedCells(self, plot: bool = True):
         """finding s2p cell ROIs that were also SLM targets (or more specifically within the target areas as specified by _findTargetAreas - include 15um radius from center coordinate of spiral)
         Make a binary mask of the targets and multiply by an image of the cells
@@ -330,6 +329,9 @@ class AllOpticalTrial(TwoPhotonImaging):
         print('\n\----- Searching for targeted cells in annotated cells...')
 
         ## TODO add necessary edits for multi-plane experiments
+
+        targets = list(['non-target' for cell in
+                        range(self.cells.n_cells)])  # initialize all cells as non-target, add as annotation to .cells
 
         ##### IDENTIFYING S2P ROIs THAT ARE WITHIN THE SLM TARGET SPIRAL AREAS
         # make all target area coords in to a binary mask
@@ -352,11 +354,16 @@ class AllOpticalTrial(TwoPhotonImaging):
         targ_cell_ids = np.unique(targ_cell)[1:] - 1  # correct the cell id due to zero indexing
         self.targeted_cells = np.zeros([self.cells.n_cells], dtype='bool')
         self.targeted_cells[targ_cell_ids] = True
-        # self.s2p_cell_targets = [self.cell_id[i] for i, x in enumerate(self.targeted_cells) if x is True]  # get ls of s2p cells that were photostim targetted
-        self.s2p_cell_targets = [self.cells.cell_id[i] for i in
-                                 np.where(self.targeted_cells)[0]]  # get ls of s2p cells that were photostim targetted
+        self.cell_targets = [self.cells.cell_id[i] for i in np.where(self.targeted_cells)[
+            0]]  # get list of cells that were photostim targetted -- todo turn into property accessing targets annotations of .cells
 
-        self.n_targeted_cells = np.sum(self.targeted_cells)
+        self.n_targeted_cells = np.sum(
+            self.targeted_cells)  # todo turn into property accessing targets annotations of .cells
+
+        # add targeted cells to targets
+        for idx, cell in enumerate(self.cells.cell_id):
+            if cell in self.cell_targets:
+                targets[idx] = 'target'
 
         print('\t|- Search completed.')
         self.save()
@@ -371,8 +378,8 @@ class AllOpticalTrial(TwoPhotonImaging):
         # make an image of every cell area, filled with the index of that cell
         cell_img = np.zeros_like(targ_img)
 
-        cell_y = np.array(self.Suite2p.cell_x)
-        cell_x = np.array(self.Suite2p.cell_y)
+        cell_x = self.cells.cell_coords[:, 0]
+        cell_y = self.cells.cell_coords[:, 1]
 
         for i, coord in enumerate(zip(cell_x, cell_y)):
             cell_img[coord] = i + 1
@@ -381,26 +388,24 @@ class AllOpticalTrial(TwoPhotonImaging):
         targ_cell = cell_img * targ_img
 
         targ_cell_ids = np.unique(targ_cell)[1:] - 1  # correct the cell id due to zero indexing
-        self.exclude_cells = np.zeros([self.Suite2p.n_units], dtype='bool')
-        self.exclude_cells[targ_cell_ids] = True
-        self.s2p_cells_exclude = [self.Suite2p.cell_id[i] for i in
-                                  np.where(self.exclude_cells)[0]]  # get ls of s2p cells that were photostim targetted
+        exclude_cells = np.zeros([self.cells.n_cells], dtype='bool')
+        exclude_cells[targ_cell_ids] = True
+        cells_exclude = [self.cells.n_cells[i] for i in
+                                  np.where(exclude_cells)[0]]  # get ls of s2p cells that were photostim targetted
 
-        self.n_exclude_cells = np.sum(self.exclude_cells)
+        self.n_exclude_cells = np.sum(exclude_cells)
 
         print('\t|-Search completed.')
         self.save()
         print(f"\t|-Number of exclude Suite2p ROIs: {self.n_exclude_cells}")
 
         # define non targets from suite2p ROIs (exclude cells in the SLM targets exclusion - .s2p_cells_exclude)
-        self.Suite2p.s2p_nontargets = [cell for cell in self.Suite2p.cell_id if
-                                       cell not in self.s2p_cells_exclude]  ## exclusion of cells that are classified as s2p_cell_targets
-
-        print(f"\t|-Number of good, s2p non-target ROIs: {len(self.Suite2p.s2p_nontargets)}")
+        for idx, cell in enumerate(self.cells.cell_id):
+            if cell not in cells_exclude:
+                targets[idx] = 'exclude'
 
         if plot:
             fig, ax = plt.subplots(figsize=[6, 6])
-
             targ_img = np.zeros([self.imparams.frame_x, self.imparams.frame_y], dtype='uint16')
             target_areas = np.array(self.twopstim.target_areas)
             targ_img[target_areas[:, :, 1], target_areas[:, :, 0]] = 1
@@ -411,7 +416,11 @@ class AllOpticalTrial(TwoPhotonImaging):
             fig.show()
 
         # add targets classification as observations annotation to .data anndata
-        self.data.add_observation(self.data, 'photostim_target', values=list(self.targeted_cells))
+        self.data.add_obs(obs_name='photostim_class', values=targets)
+
+        self.cells.cellsdata['photostim_class'] = targets
+
+        print(f"\t|- Number of non-target ROIs: {len(self.cells.cellsdata['photostim_class'] == 'non-target')}")
 
     #### TODO review attr's and write docs from the following functions: // start
     # used for creating tiffs that remove artifacts from alloptical experiments with photostim artifacts
@@ -509,7 +518,7 @@ class AllOpticalTrial(TwoPhotonImaging):
         # s2p targets - all SLM targets
         targets_s2p_img = np.zeros((ops['Ly'], ops['Lx']), dtype='uint8')
         for n in range(0, len(iscell)):
-            if n in self.s2p_cell_targets:
+            if n in self.cell_targets:
                 ypix = stat[n]['ypix']
                 xpix = stat[n]['xpix']
                 targets_s2p_img[ypix, xpix] = 3000

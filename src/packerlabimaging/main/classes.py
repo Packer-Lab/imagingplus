@@ -395,7 +395,7 @@ class CellAnnotations:
     def cell_id(self):
         """ID of cells"""
         assert 'cell_id' in self.cellsdata, 'cell_id cannot be found in cells annotations under cellsdata'
-        return self.cellsdata['cell_id']
+        return list(self.cellsdata['cell_id'])
 
     @property
     def cell_coords(self):
