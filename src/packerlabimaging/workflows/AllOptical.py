@@ -37,7 +37,6 @@ post_stim_response_window: float = 0.500  #: time window for collecting post-sti
 class AllOpticalTrial(TwoPhotonImaging):
     """All Optical Experimental Data Analysis Workflow."""
 
-
     def __init__(self, naparm_path, dataPath: str, saveDir: str, date: str, trialID: str, expID: str,
                  expGroup: str = '',
                  comment: str = '', imparams: ImagingMetadata = None, cells: CellAnnotations = None,
@@ -313,12 +312,13 @@ class AllOpticalTrial(TwoPhotonImaging):
                     self.stim_duration_frames):
                 photostim_frames.append(j + i)
 
-        print('\t|- # of Imaging frames:', self.imparams.n_frames, 'frames')  #: todo set this to n_frames property from trialdata
+        print('\t|- # of Imaging frames:', self.imparams.n_frames,
+              'frames')  #: todo set this to n_frames property from trialdata
         print('\t|- # of Photostimulation frames:', len(self.photostim_frames), 'frames')
 
         return self.twopstim, stim_start_frames, photostim_frames
 
-    # TODO review below:
+    # TODO review below ########################################################################
     def _findTargetedCells(self, plot: bool = True):
         """finding s2p cell ROIs that were also SLM targets (or more specifically within the target areas as specified by _findTargetAreas - include 15um radius from center coordinate of spiral)
         Make a binary mask of the targets and multiply by an image of the cells
@@ -340,8 +340,8 @@ class AllOpticalTrial(TwoPhotonImaging):
         # make an image of every cell area, filled with the index of that cell
         cell_img = np.zeros_like(targ_img)
 
-        cell_y = np.array(self.Suite2p.cell_x)
-        cell_x = np.array(self.Suite2p.cell_y)
+        cell_x = self.cells.cell_coords[:, 0]
+        cell_y = self.cells.cell_coords[:, 1]
 
         for i, coord in enumerate(zip(cell_x, cell_y)):
             cell_img[coord] = i + 1
@@ -350,10 +350,10 @@ class AllOpticalTrial(TwoPhotonImaging):
         targ_cell = cell_img * targ_img
 
         targ_cell_ids = np.unique(targ_cell)[1:] - 1  # correct the cell id due to zero indexing
-        self.targeted_cells = np.zeros([self.Suite2p.n_units], dtype='bool')
+        self.targeted_cells = np.zeros([self.cells.n_cells], dtype='bool')
         self.targeted_cells[targ_cell_ids] = True
         # self.s2p_cell_targets = [self.cell_id[i] for i, x in enumerate(self.targeted_cells) if x is True]  # get ls of s2p cells that were photostim targetted
-        self.s2p_cell_targets = [self.Suite2p.cell_id[i] for i in
+        self.s2p_cell_targets = [self.cells.cell_id[i] for i in
                                  np.where(self.targeted_cells)[0]]  # get ls of s2p cells that were photostim targetted
 
         self.n_targeted_cells = np.sum(self.targeted_cells)
@@ -1148,8 +1148,6 @@ class AllOpticalTrial(TwoPhotonImaging):
 
         self.wilcoxons = AllOpticalStats.runWilcoxonsTest(array1=self.__pre_array, array2=self.__post_array)
         self.sig_units = AllOpticalStats.sigTestAvgResponse(self=self, p_vals=self.wilcoxons, alpha=0.1)
-
-
 
     ## NOT REVIEWED FOR USAGE YET
     def _probResponse(self, plane,

@@ -145,7 +145,8 @@ class Targets(naparm):
         # self.n_targets_total: int = 0  # total number of SLM targets
         self.target_areas_exclude = []  # similar to .target_areas, but area diameter expanded (used in excluding data from this expanded region)
 
-        super().__init__(path=naparm_path)
+        # super().__init__(path=naparm_path)
+        super().importNaparm(path=naparm_path)  # use constructor to call parent
         self.__frame_x = frame_x
         self.__frame_y = frame_y
         self.__pix_sz_x = pix_sz_x
@@ -154,7 +155,6 @@ class Targets(naparm):
         self.target_coords_all, self.target_coords, self.n_targets, self.n_targets_total = self._readTargetsImage(
             self.__frame_x, self.__frame_y)
         self.target_areas, self.target_areas_exclude = self._findTargetsAreas(self.__frame_x, self.__pix_sz_x)
-        self.euclid_dist = self._euclidDist(resp_positions=self.target_coords)
 
     def __repr__(self):
         print(f"naparm.Targets analysis submodule. Loaded from: {self.path}")
@@ -268,8 +268,8 @@ class Targets(naparm):
 
         return target_areas, target_areas_exclude
 
-    def _euclidDist(self, resp_positions):
-        '''
+    def euclidDist(self, resp_positions):
+        """
         Find the mean Euclidean distance of all cells from a central point
         as a measure of spread
 
@@ -277,7 +277,7 @@ class Targets(naparm):
             resp_positions - the median coordinates of cells
         Outputs:
             euclid_dist    - the mean Euclidean distance from central point
-        '''
+        """
         # find centroid of all responding cells
         resp_coords = list(zip(*resp_positions))
         centroidx = np.mean(resp_coords[0])

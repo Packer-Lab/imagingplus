@@ -352,15 +352,15 @@ class CellAnnotations:
     """Annotations of cells in an imaging trial."""
     cells_array: Union[List[
                            int], pd.Index, pd.RangeIndex, np.ndarray]  #: ID of all cells in imaging dataset. must be of same cell length as imaging dataset.
-    annotations: Union[List[str], pd.Index]  #: list of names of annotations.
+    annotations: Union[List[str], pd.Index]  #: list of names of annotations
     cellsdata: Union[
-        pd.DataFrame, pd.Series]  #: N x Cells array of an arbritrary number (N) 1D annotations channels collected for all Cells. must contain same number of cells as cells_array.
-    multidimdata: Dict[str, List[
+        pd.DataFrame, pd.Series]  #: M x Cells array of an arbritrary number (M) 1D annotations channels collected for all Cells. must contain same number of cells as cells_array.
+    multidim_data: Dict[str, List[
         Any]] = None  #: annotations with data of unconstrained dimensions for all cells. Structured as dictionary with keys corresponding to annotation name and a list of the length of cells containing data in any format.
 
     def __post_init__(self):
-        if self.multidimdata:
-            for label, data in self.multidimdata.items():
+        if self.multidim_data:
+            for label, data in self.multidim_data.items():
                 if not len(data) == self.n_cells:
                     raise ValueError(f"length of {label} of multidimdata does not match number of cells.")
 
@@ -388,6 +388,23 @@ class CellAnnotations:
     def n_annotations(self):
         """number of annotations"""
         return len(self.annotations)
+
+    # todo ?create properties for accessing individual annotations
+
+    @property
+    def cell_id(self):
+        """ID of cells"""
+        assert 'cell_id' in self.cellsdata, 'cell_id cannot be found in cells annotations under cellsdata'
+        return self.cellsdata['cell_id']
+
+    @property
+    def cell_coords(self):
+        """X and Y coordinates of cells"""
+        assert 'cell_x' in self.cellsdata and 'cell_y' in self.cellsdata, 'cell_x or cell_y cannot be found in cells annotations under cellsdata'
+        coordinates = np.empty(shape=[self.n_cells, 2])
+        coordinates[:, 0] = self.cellsdata['cell_x']
+        coordinates[:, 1] = self.cellsdata['cell_y']
+        return coordinates
 
     # functions:
 
@@ -668,7 +685,7 @@ class ImagingTrial:
             layers = None
 
         anndata_setup = {'X': primary_data, 'data_label': _data_type, 'obs': obs_meta, 'var': var_meta,
-                         'obs_m': self.cells.multidimdata if self.cells.multidimdata else None, 'layers': layers}
+                         'obs_m': self.cells.multidim_data if self.cells.multidim_data else None, 'layers': layers}
 
         adata = AnnotatedData(**anndata_setup)
 

@@ -155,6 +155,7 @@ def stats_dicts_to_3d_array_(stat_dict, output_ops):
         arrays.append(array)
     return np.stack(arrays)
 
+
 # todo have suite2p run return a cells annotations (and maybe even imaging data set??) that can get added to trials' cells and imdata attr's immediately
 
 class Suite2pExperiment:
@@ -382,7 +383,6 @@ class Suite2pExperiment:
         self.im = stats_dicts_to_3d_array_(stat_dict=self.stat, output_ops=self.output_ops)
         self.im[self.im == 0] = np.nan
 
-
     def stitch_reg_tiffs(self, first_frame: int, last_frame: int, reg_tif_folder: str = None, force_crop: bool = False,
                          s2p_run_batch: int = 2000):
         """
@@ -529,7 +529,6 @@ class Suite2pExperiment:
                           # TODO need to figure out how to more appropriately bring in the dataPath here
                           'save_folder': Suite2p_obj.s2pResultsPath}
 
-
     def s2pRun(self, expobj, trialsSuite2P: Union[list, str] = 'all'):
         s2pRun(expobj, trialsSuite2P=trialsSuite2P)
 
@@ -609,7 +608,8 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
             raise ValueError('cannot create s2p results trial without existing results in the input s2pExperiment.')
 
         cells_data, cells_multidim = self.getCellsAnnotations()
-        CellAnnotations(cells_array=cells_data.index, annotations=cells_data.columns, cellsdata=cells_data, multidimdata=cells_multidim)
+        CellAnnotations(cells_array=cells_data.index, annotations=cells_data.columns, cellsdata=cells_data,
+                        multidimdata=cells_multidim)
 
         imdata = {
             'raw': raw,
@@ -729,7 +729,6 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
                 plt.suptitle(f'{peri_frames} key_frames avg from s2p reg tif, frame: {frames[idx]}')
                 plt.show()  # just plot for now to make sure that you are doing things correctly so far
 
-
     def getCellsAnnotations(self):
         if self.s2pResultExists:
             # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
@@ -741,7 +740,6 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
                 for __column in [*__stat]:
                     if __column in obs_meta.columns:
                         obs_meta.loc[idx, __column] = __stat[__column]
-
 
             obs_m = {'ypix': [],
                      'xpix': []}
@@ -763,9 +761,9 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
         tif_path_save2 = save_path
 
-        start = self.trial_frames[0] // self.output_ops['batch_size']  # 2000 because that is the batch size for suite2p run
+        start = self.trial_frames[0] // self.output_ops[
+            'batch_size']  # 2000 because that is the batch size for suite2p run
         end = self.trial_frames[1] // self.output_ops['batch_size'] + 1
-
 
         if reg_tif_folder is None:
             if self.s2pResultsPath:
@@ -775,7 +773,6 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
             raise Exception(f"Must provide reg_tif_folder s2pResultsPath for loading registered tiffs")
         if not os.path.exists(reg_tif_folder):
             raise Exception(f"no registered tiffs found at s2pResultsPath: {reg_tif_folder}")
-
 
         # set tiff paths to save registered tiffs:
         tif_path_save = tif_path_save2
@@ -788,7 +785,6 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
 
         if os.path.exists(tif_path_save):
             data = make_tiff_stack(sorted_paths, save_as=tif_path_save)
-
 
         if not os.path.exists(tif_path_save2):
             with tf.TiffWriter(tif_path_save2, bigtiff=True) as tif:
@@ -803,7 +799,6 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
                                             self.trial_frames - start * self.output_ops['batch_size'])]
                 print('saving cropped tiff ', reg_tif_crop.shape)
                 tif.write(reg_tif_crop)
-
 
 
 #### archiving away for now - trying to switch to an approach that doesn't inherit from parent suite2p obj.
