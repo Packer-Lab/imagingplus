@@ -119,7 +119,7 @@ class AllOpticalTrial(TwoPhotonImaging):
         self.twopstim, self.twopstim.stim_start_frames, self.twopstim.photostim_frames = self.photostimProcessing(
             naparm_path=naparm_path)
 
-        # 5) collect Flu traces from SLM targets
+        # 5) todo collect Flu traces from SLM targets - probably leave out of the init right??
         if hasattr(self, 'Suite2p'):
             self.raw_SLMTargets, self.dFF_SLMTargets, self.meanFluImg_registered = self.collect_traces_from_targets(
                 curr_trial_frames=self.Suite2p.trial_frames, save=True)

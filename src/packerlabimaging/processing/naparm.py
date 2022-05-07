@@ -16,11 +16,10 @@ class naparm:
     path: str  #: path to output from NAPARM used for photostimulation protocol of current imaging trial
 
     def __post_init__(self):
-        self._NaparmProcessing()
-        self.stim_freq: float           #: frequency of photostim protocol (of a single photostim trial? or time between individual photostim trials?)
-        self.single_stim_dur: float     #: duration of a single photostim shot (ms)
-        self.inter_point_delay: float   #: duration of the delay between each photostim shot
-        self.n_shots: int               #: num of photostim shots in a single photostim trial
+        self.stim_freq: float  #: frequency of photostim protocol (of a single photostim trial? or time between individual photostim trials?)
+        self.single_stim_dur: float  #: duration of a single photostim shot (ms)
+        self.inter_point_delay: float  #: duration of the delay between each photostim shot
+        self.n_shots: int  #: num of photostim shots in a single photostim trial
         self.stim_duration_frames: int  #: num of imaging frames in a single photostim trial
 
     def __repr__(self):
@@ -114,7 +113,6 @@ class naparm:
 
         #         self.stim_dur = total_stim - self.inter_point_delay
 
-        ## PRAJAY EDITS HERE FOR PHOTOSTIMPROCESSING:
         # calculate duration (ms) of each individual trial (for a multi group stimulation trial)
         single_stim = self.single_stim_dur + self.inter_point_delay
         total_single_stim = single_stim * self.n_shots * self.n_groups * self.n_reps
@@ -125,14 +123,14 @@ class naparm:
         print('Single stim. Duration (ms): ', self.single_stim_dur)
         print('Total stim. Duration per trial (ms): ', self.stim_dur)
 
-
     @classmethod
-    def importNaparm(cls):
+    def importNaparm(cls, path):
         """Alternative constructor to be used to run pipeling for loading and parsing Naparm photostimulation protocol."""
+        npm = cls(path)
+        npm._NaparmProcessing()
 
 
 class Targets(naparm):
-
     """Data and processing for photostimulation targets"""
 
     def __init__(self, naparm_path, frame_x, frame_y, pix_sz_x, pix_sz_y):
