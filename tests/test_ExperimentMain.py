@@ -13,7 +13,6 @@ def test_Experiment(experiment_fixture):
     print(expobj)
 
 
-
 @pytest.mark.skip
 def test_add_suite2p(existing_expobj_nopredones2p_fixture):
     # todo run test

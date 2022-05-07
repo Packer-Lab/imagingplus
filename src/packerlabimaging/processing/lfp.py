@@ -15,7 +15,6 @@ from packerlabimaging.processing.paq import paq2py
 
 class LFP:
     def __init__(self, data, rate, **kwargs):
-        # self.lfp_from_tmdata(chan_name, kwargs['_paq_path']) if '_paq_path' in [*kwargs] else KeyError('no `paq_path` provided to load LFP from.')
         self.data = data  #: 1-D LFP data
         self.rate = rate  #: rate of sampling
 
@@ -52,7 +51,6 @@ class LFP:
         if 'colorbar' in kwargs.keys():
             if kwargs['colorbar']:
                 fig.colorbar(imageAxis, ax=ax)
-        # fig.show()
 
     def run_correlogram(self, signalA: Union[list, np.ndarray] = None, signalB: Union[list, np.ndarray] = None):
         signalA = self.detrend() if signalA is None else signalA

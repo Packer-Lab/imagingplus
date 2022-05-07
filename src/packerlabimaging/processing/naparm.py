@@ -16,11 +16,11 @@ class naparm:
     path: str  #: path to output from NAPARM used for photostimulation protocol of current imaging trial
 
     def __post_init__(self):
-        self._photostimProcessing()
-        self.stim_freq: float  #: frequency of photostim protocol (of a single photostim trial? or time between individual photostim trials?)
-        self.single_stim_dur: float  #: duration of a single photostim shot (ms)
-        self.inter_point_delay: float  #: duration of the delay between each photostim shot
-        self.n_shots: int  #: num of photostim shots in a single photostim trial
+        self._NaparmProcessing()
+        self.stim_freq: float           #: frequency of photostim protocol (of a single photostim trial? or time between individual photostim trials?)
+        self.single_stim_dur: float     #: duration of a single photostim shot (ms)
+        self.inter_point_delay: float   #: duration of the delay between each photostim shot
+        self.n_shots: int               #: num of photostim shots in a single photostim trial
         self.stim_duration_frames: int  #: num of imaging frames in a single photostim trial
 
     def __repr__(self):
@@ -93,11 +93,11 @@ class naparm:
             raise ValueError(f"could not set spiral_size, unable to get from NAPARM gpl")
         # self.single_stim_dur = single_stim_dur  # not sure why this was previously getting this value from here, but I'm now getting it from the xml file above
 
-    def _photostimProcessing(
+    def _NaparmProcessing(
             self):  # TODO need to figure out how to handle different types of photostimulation experiment setups - think through in detail with Rob at a later date?
 
         """
-        remember that this is currently configured for only the interleaved photostim, not the really fast photostim of multi-groups
+        remember that this is currently configured for only the interleaved photostim, not other types of photostim of multi-groups
         """
 
         self._parseNAPARMxml()
@@ -126,7 +126,15 @@ class naparm:
         print('Total stim. Duration per trial (ms): ', self.stim_dur)
 
 
+    @classmethod
+    def importNaparm(cls):
+        """Alternative constructor to be used to run pipeling for loading and parsing Naparm photostimulation protocol."""
+
+
 class Targets(naparm):
+
+    """Data and processing for photostimulation targets"""
+
     def __init__(self, naparm_path, frame_x, frame_y, pix_sz_x, pix_sz_y):
 
         # SLM target coords attr's

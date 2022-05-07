@@ -395,18 +395,17 @@ class CellAnnotations:
 @dataclass
 class ImagingData:
     """Imaging dataset."""
-    data: Dict[str, Union[
-        np.ndarray, pd.DataFrame, Any]]  #: dictionary of data labels, where each key corresponds to a N x Frames table of imaging data of cells (N) collected over time (Frames) for each data label.
+    data: Union[np.ndarray, pd.DataFrame, Any]  #: N rois x num_frames, table of imaging data of cells (N) collected over time (Frames)
 
     @property
-    def data_labels(self):
-        """labels contained in .data."""
-        return [*self.data]
+    def n_frames(self):
+        """number of imaging frames in imaging data"""
+        return self.data.shape[1]
 
     @property
-    def n_data(self):
-        """number of data labels contained in .data"""
-        return len([*self.data])
+    def n_rois(self):
+        """number of ROIs in imaging data"""
+        return self.data.shape[0]
 
 
 class ImagingMetadata:
@@ -435,7 +434,6 @@ class ImagingTrial:
     date: str
     trialID: str
     expID: str
-    # microscope: str = ''
     expGroup: str = ''
     comment: str = ''
     imparams: ImagingMetadata = None
@@ -595,13 +593,13 @@ class ImagingTrial:
     ## below properties/methods have pre-requisite processing steps
     @property
     def n_frames(self):
-        if not self.imparams:
-            UnavailableOptionError(f'add imaging metadata under imparams to access n_frames property.')
+        """number of frames in anndata imaging table.
 
-        try:
-            return self.imparams.n_frames
-        except AttributeError:
-            raise AttributeError('n_frames couldnot be retrieved from imaging metadata.')
+        """
+        if not self.data:
+            UnavailableOptionError(f'create anndata imaging table to retrieve n_frames.')
+
+        return self.data.n_vars
 
     def importTrialTiff(self) -> np.ndarray:
         """

@@ -4,6 +4,7 @@ import glob
 import os
 import signal
 import time
+from typing import Union
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -27,13 +28,15 @@ from packerlabimaging.processing.anndata import AnnotatedData
 PLANE = 0
 BADFRAMESLOC = '/home/pshah/Documents/code/packerlabimaging/tests/'
 
+prestim_sec: float = 1.0  #: length of pre stim trace collected (secs)
+poststim_sec: float = 3.0  #: length of post stim trace collected (secs)
+pre_stim_response_window: float = 0.500  #: time window for collecting pre-stim measurement (units: msec)
+post_stim_response_window: float = 0.500  #: time window for collecting post-stim measurement (units: msec)
+
 
 class AllOpticalTrial(TwoPhotonImaging):
     """All Optical Experimental Data Analysis Workflow."""
-    prestim_sec: float = 1.0  #: length of pre stim trace collected (in frames)
-    poststim_sec: float = 3.0  #: length of post stim trace collected (in frames)
-    pre_stim_response_window: float = 0.500  #: time window for collecting pre-stim measurement (units: msec)
-    post_stim_response_window: float = 0.500  #: time window for collecting post-stim measurement (units: msec)
+
 
     def __init__(self, naparm_path, dataPath: str, saveDir: str, date: str, trialID: str, expID: str,
                  expGroup: str = '',
@@ -71,6 +74,14 @@ class AllOpticalTrial(TwoPhotonImaging):
         self.stim_start_times = None
         self.nomulti_sig_units = None
 
+        # attr's for processing/analysis of photostim experiments
+        self.__prestim_sec: Union[float, int] = 1.0  #: length of pre stim trace collected (in secs)
+        self.__poststim_sec: Union[float, int] = 3.0  #: length of post stim trace collected (in secs)
+        self.__pre_stim_response_window: Union[
+            float, int] = 0.500  #: time window for collecting pre-stim measurement (units: msec)
+        self.__post_stim_response_window: Union[
+            float, int] = 0.500  #: time window for collecting post-stim measurement (units: msec)
+
         # attr's for statistical analysis of photostim trials responses
         self.photostimResponsesData = None  # anndata object for collecting photostim responses and associated metadata for experiment and cells
 
@@ -105,7 +116,7 @@ class AllOpticalTrial(TwoPhotonImaging):
 
         # 3) process 2p stim protocol and collect imaging frames at stim starts and during photostimulation
         # set naparm path
-        self.twopstim, self.twopstim.stim_start_frames, self.twopstim.photostim_frames = self._photostimProcessing(
+        self.twopstim, self.twopstim.stim_start_frames, self.twopstim.photostim_frames = self.photostimProcessing(
             naparm_path=naparm_path)
 
         # 5) collect Flu traces from SLM targets
@@ -164,37 +175,74 @@ class AllOpticalTrial(TwoPhotonImaging):
         return aotrial
 
     @property
-    def naparm_path(self):
+    def twopstim_path(self):
         """path to folder containing photostimulation protocols output by NAPARM"""
-        if self.__naparm_path[-1] == '/':
-            return self.__naparm_path
-        else:
-            return self.__naparm_path + '/'
+        if self.twopstim:
+            return self.twopstim.path
+
+    @property
+    def prestim_sec(self):
+        """length of pre stim trace collected (secs)"""
+        return self.__prestim_sec
+
+    @prestim_sec.setter
+    def prestim_sec(self, val):
+        assert type(val) == int or type(val) == float, 'can only set prestim_sec with int or float'
+        self.__prestim_sec = val
+
+    @property
+    def poststim_sec(self):
+        """length of post stim trace collected (secs)"""
+        return self.__poststim_sec
+
+    @poststim_sec.setter
+    def poststim_sec(self, val):
+        assert type(val) == int or type(val) == float, 'can only set poststim_sec with int or float'
+        self.__prestim_sec = val
+
+    @property
+    def pre_stim_response_window(self):
+        """time window for collecting pre-stim measurement (units: msec)"""
+        return self.__pre_stim_response_window
+
+    @pre_stim_response_window.setter
+    def pre_stim_response_window(self, val):
+        assert type(val) == int or type(val) == float, 'can only set pre_stim_response_window with int or float'
+        self.__pre_stim_response_window = val
 
     @property
     def pre_stim_response_frames_window(self):
         """num frames for measuring Flu trace before each photostimulation trial during photostim response measurement (units: frames)"""
-        return int(self.imparams.fps * self.pre_stim_response_window_msec)
+        return int(self.imparams.fps * self.pre_stim_response_window)
+
+    @property
+    def post_stim_response_window(self):
+        """time window for collecting post-stim measurement (units: msec)"""
+        return self.__post_stim_response_window
+
+    @post_stim_response_window.setter
+    def post_stim_response_window(self, val):
+        assert type(val) == int or type(val) == float, 'can only set post_stim_response_window with int or float'
+        self.__post_stim_response_window = val
+
+    @property
+    def post_stim_response_frames_window(self):
+        """num frames for measuring Flu response after each photostimulation trial during photostim response measurement (units: frames)"""
+        return int(self.imparams.fps * self.post_stim_response_window)
 
     @property
     def pre_stim_frames(self):
         """num frames for collecting Flu trace after each photostimulation trial (units: frames)"""
-        return int(self.prestim_sec * self.imparams.fps)
+        return int(self.__prestim_sec * self.imparams.fps)
 
     @property
     def post_stim_frames(self):
         """num frames for collecting Flu trace after each photostimulation trial (units: frames)"""
-        return int(self.poststim_sec * self.imparams.fps)
-
-    @property
-    def post_stim_response_frames_window(self):
-        """num frames for collecting Flu trace after each photostimulation trial (units: frames)"""
-        return int(
-            self.imparams.fps * self.post_stim_response_window_msec)  # length of the post stim response test window (in frames)
+        return int(self.__poststim_sec * self.imparams.fps)
 
     @property
     def n_stims(self):
-        #: TODO change to property assigning from array: cells x Flu frames x # of photostim trials
+        #: TODO set property using anndata responses shape property assigning from array: cells x Flu frames x # of photostim trials
         """number of photostimulation trials """
         return
 
@@ -217,18 +265,35 @@ class AllOpticalTrial(TwoPhotonImaging):
         """
         if not hasattr(self, 'twopstim'):
             raise ValueError(
-                'cannot get stim duration frames because cannot find photostimulation analysis module under .twopstim')
+                'cannot retrieve stim_duration_frames. photostimulation analysis module cannot be found under .twopstim')
         else:
             duration_ms = self.twopstim.stim_dur
             frame_rate = self.imparams.fps
             duration_frames = np.ceil((duration_ms / 1000) * frame_rate)
             return int(duration_frames) + 1
 
-    # ALLOPTICAL EXPERIMENT PHOTOSTIM PROTOCOL PROCESSING ##############################################################
-    def _photostimProcessing(self, naparm_path):
+    @property
+    def pre_stim_test_slice(self):
+        """slice representing prestim response frames"""
+        return np.s_[self.pre_stim_frames - self.pre_stim_response_frames_window: self.pre_stim_frames]
+
+    @property
+    def post_stim_test_slice(self):
+        """slice representing poststim response frames"""
+        stim_end = self.pre_stim_frames + self.stim_duration_frames
+        return np.s_[stim_end: stim_end + self.post_stim_response_frames_window]
+
+    def photostimProcessing(self, naparm_path):
+        """
+        Processing alloptical trial photostimulation protocol.
+        - parse NAPARM protocol and SLM Targets information under .twopstim
+        - collect stimulation timing synchronized to imaging data frame timings
+
+        """
+
         self.twopstim = Targets(naparm_path=naparm_path, frame_x=self.imparams.frame_x,
-                          frame_y=self.imparams.frame_y,
-                          pix_sz_x=self.imparams.pix_sz_x, pix_sz_y=self.imparams.pix_sz_y)
+                                frame_y=self.imparams.frame_y,
+                                pix_sz_x=self.imparams.pix_sz_x, pix_sz_y=self.imparams.pix_sz_y)
 
         # find stim frames
         stim_start_frames = []
@@ -248,9 +313,8 @@ class AllOpticalTrial(TwoPhotonImaging):
                     self.stim_duration_frames):
                 photostim_frames.append(j + i)
 
-        print('\t|- Original # of frames:', self.imparams.n_frames, 'frames')
-        print('\t|- # of Photostim frames:', len(self.photostim_frames), 'frames')
-        print('\t|- Minus photostim. frames total:', self.imparams.n_frames - len(photostim_frames), 'frames')
+        print('\t|- # of Imaging frames:', self.imparams.n_frames, 'frames')  #: todo set this to n_frames property from trialdata
+        print('\t|- # of Photostimulation frames:', len(self.photostim_frames), 'frames')
 
         return self.twopstim, stim_start_frames, photostim_frames
 
@@ -640,7 +704,7 @@ class AllOpticalTrial(TwoPhotonImaging):
         return raw_SLMTargets, dFF_SLMTargets, meanFluImg_registered
 
     def get_alltargets_stim_traces_norm(self, process: str, targets_idx: int = None, subselect_cells: list = None,
-                                        pre_stim=15, post_stim=200, stims: list = None):
+                                        pre_stim=0.5, post_stim=4.0, stims: list = None):
         """
         primary function to measure the dFF and dF/setdF trace SNIPPETS for photostimulated targets.
 
@@ -652,6 +716,9 @@ class AllOpticalTrial(TwoPhotonImaging):
         :param filter_sz: whether to filter out stims that are occuring seizures
         :return: lists of individual targets dFF traces, and averaged targets dFF over all stims for each target
         """
+
+        self.prestim_sec = pre_stim
+        self.poststim_sec = post_stim
 
         if stims is None:
             stim_timings = self.stim_start_frames
@@ -1082,16 +1149,7 @@ class AllOpticalTrial(TwoPhotonImaging):
         self.wilcoxons = AllOpticalStats.runWilcoxonsTest(array1=self.__pre_array, array2=self.__post_array)
         self.sig_units = AllOpticalStats.sigTestAvgResponse(self=self, p_vals=self.wilcoxons, alpha=0.1)
 
-    @property
-    def pre_stim_test_slice(self):
-        """num of prestim frames used for quantification of photostim responses"""
-        return np.s_[self.pre_stim_frames - self.pre_stim_response_frames_window: self.pre_stim_frames]
 
-    @property
-    def post_stim_test_slice(self):
-        """num of poststim frames used for quantification of photostim responses"""
-        stim_end = self.pre_stim_frames + self.stim_duration_frames
-        return np.s_[stim_end: stim_end + self.post_stim_response_frames_window]
 
     ## NOT REVIEWED FOR USAGE YET
     def _probResponse(self, plane,
