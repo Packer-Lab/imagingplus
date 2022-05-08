@@ -353,7 +353,7 @@ class CellAnnotations:
     cells_array: Union[List[
                            int], pd.Index, pd.RangeIndex, np.ndarray]  #: ID of all cells in imaging dataset. must be of same cell length as imaging dataset.
     annotations: Union[List[str], pd.Index]  #: list of names of annotations
-    cellsdata: Union[
+    data: Union[
         pd.DataFrame, pd.Series]  #: M x Cells array of an arbritrary number (M) 1D annotations channels collected for all Cells. must contain same number of cells as cells_array.
     multidim_data: Dict[str, List[
         Any]] = None  #: annotations with data of unconstrained dimensions for all cells. Structured as dictionary with keys corresponding to annotation name and a list of the length of cells containing data in any format.
@@ -375,7 +375,7 @@ class CellAnnotations:
     # def s2p_to_CellAnnotations(cls, s2pTrial):
     #     """alternative constructor for CellAnnotations from suite2p results."""
     #     data = s2pTrial.setCellsAnnotations()
-    #     obj = cls(cells_array=data['original_index'], annotations=data.columns, cellsdata=data)
+    #     obj = cls(cells_array=data['original_index'], annotations=data.columns, data=data)
     #     return obj
 
     # properties:
@@ -394,16 +394,16 @@ class CellAnnotations:
     @property
     def cell_id(self):
         """ID of cells"""
-        assert 'cell_id' in self.cellsdata, 'cell_id cannot be found in cells annotations under cellsdata'
-        return list(self.cellsdata['cell_id'])
+        assert 'cell_id' in self.data, 'cell_id cannot be found in cells annotations under data'
+        return list(self.data['cell_id'])
 
     @property
     def cell_coords(self):
         """X and Y coordinates of cells"""
-        assert 'cell_x' in self.cellsdata and 'cell_y' in self.cellsdata, 'cell_x or cell_y cannot be found in cells annotations under cellsdata'
+        assert 'cell_x' in self.data and 'cell_y' in self.data, 'cell_x or cell_y cannot be found in cells annotations under data'
         coordinates = np.empty(shape=[self.n_cells, 2])
-        coordinates[:, 0] = self.cellsdata['cell_x']
-        coordinates[:, 1] = self.cellsdata['cell_y']
+        coordinates[:, 0] = self.data['cell_x']
+        coordinates[:, 1] = self.data['cell_y']
         return coordinates
 
     # functions:
@@ -664,8 +664,8 @@ class ImagingTrial:
                 'cannot create anndata table. anndata creation only available if experiments have ImagingData (.imdata), CellAnnotations (.cells) and TemporalData (.tmdata)')
 
         # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
-        assert hasattr(self.cells, 'cellsdata'), 'missing cellsdata attr from .cells'
-        obs_meta = self.cells.cellsdata
+        assert hasattr(self.cells, 'data'), 'missing data attr from .cells'
+        obs_meta = self.cells.data
 
         # SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata
         assert hasattr(self.tmdata, 'data'), 'missing data attr from .tmdata'

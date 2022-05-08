@@ -19,10 +19,10 @@ def test_processing_targets_stims(existing_trialobj_alloptical_fixture):
     self = existing_trialobj_alloptical_fixture
     self.twopstim, self.stim_duration_frames = self.photostimProcessing()
 
-    self.raw_SLMTargets, self.dFF_SLMTargets, self.meanFluImg_registered = self.collect_traces_from_targets(
+    self.raw_SLMTargets, self.dFF_SLMTargets, self.meanFluImg_registered = self.collect_signal_from_coords(
         curr_trial_frames=self.Suite2p.trial_frames, save=True)
     self.targets_dff, self.targets_dff_avg, self.targets_dfstdF, self.targets_dfstdF_avg, \
-    self.targets_raw, self.targets_raw_avg = self.get_alltargets_stim_traces_norm(process='trace dFF')
+    self.targets_raw, self.targets_raw_avg = self.get_targets_stim_trace_snippets()
     self.save()
 
 # %%
