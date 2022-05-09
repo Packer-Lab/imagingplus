@@ -320,111 +320,6 @@ class AllOpticalTrial(TwoPhotonImaging):
 
         return self.twopstim, stim_start_frames, photostim_frames
 
-    # todo test
-    def _findTargetedCells(self, plot: bool = True):
-        """finding s2p cell ROIs that were also SLM targets (or more specifically within the target areas as specified by _findTargetAreas - include 15um radius from center coordinate of spiral)
-        Make a binary mask of the targets and multiply by an image of the cells
-        to find cells that were targeted
-
-        --- LAST UPDATED NOV 6 2021 - copied over from Vape ---
-        """
-
-        print('\n\----- Searching for targeted cells in annotated cells...')
-
-        ## TODO add necessary edits for multi-plane experiments
-
-        targets = list(['non-target' for cell in
-                        range(self.cells.n_cells)])  # initialize all cells as non-target, add as annotation to .cells
-
-        ##### IDENTIFYING S2P ROIs THAT ARE WITHIN THE SLM TARGET SPIRAL AREAS
-        # make all target area coords in to a binary mask
-        targ_img = np.zeros([self.imparams.frame_x, self.imparams.frame_y], dtype='uint16')
-        target_areas = np.array(self.twopstim.target_areas)
-        targ_img[target_areas[:, :, 1], target_areas[:, :, 0]] = 1
-
-        # make an image of every cell area, filled with the index of that cell
-        cell_img = np.zeros_like(targ_img)
-
-        cell_x = self.cells.cell_coords[:, 0]
-        cell_y = self.cells.cell_coords[:, 1]
-
-        for i, coord in enumerate(zip(cell_x, cell_y)):
-            cell_img[coord] = i + 1
-
-        # binary mask x cell image to get the cells that overlap with target areas
-        targ_cell = cell_img * targ_img
-
-        targ_cell_ids = np.unique(targ_cell)[1:] - 1  # correct the cell id due to zero indexing
-        self.targeted_cells = np.zeros([self.cells.n_cells], dtype='bool')
-        self.targeted_cells[targ_cell_ids] = True
-        self.cell_targets = [self.cells.cell_id[i] for i in np.where(self.targeted_cells)[
-            0]]  # get list of cells that were photostim targetted -- todo turn into property accessing targets annotations of .cells
-
-        self.n_targeted_cells = np.sum(
-            self.targeted_cells)  # todo turn into property accessing targets annotations of .cells
-
-        # add targeted cells to targets
-        for idx, cell in enumerate(self.cells.cell_id):
-            if cell in self.cell_targets:
-                targets[idx] = 'target'
-
-        print('\t|- Search completed.')
-        self.save()
-        print('\t|- Number of targeted cells: ', self.n_targeted_cells)
-
-        # IDENTIFYING S2P ROIs THAT ARE WITHIN THE EXCLUSION ZONES OF THE SLM TARGETS
-        # make all target area coords in to a binary mask
-        targ_img = np.zeros([self.imparams.frame_x, self.imparams.frame_y], dtype='uint16')
-        target_areas_exclude = np.array(self.twopstim.target_areas_exclude)
-        targ_img[target_areas_exclude[:, :, 1], target_areas_exclude[:, :, 0]] = 1
-
-        # make an image of every cell area, filled with the index of that cell
-        cell_img = np.zeros_like(targ_img)
-
-        cell_x = self.cells.cell_coords[:, 0]
-        cell_y = self.cells.cell_coords[:, 1]
-
-        for i, coord in enumerate(zip(cell_x, cell_y)):
-            cell_img[coord] = i + 1
-
-        # binary mask x cell image to get the cells that overlap with target areas
-        targ_cell = cell_img * targ_img
-
-        targ_cell_ids = np.unique(targ_cell)[1:] - 1  # correct the cell id due to zero indexing
-        exclude_cells = np.zeros([self.cells.n_cells], dtype='bool')
-        exclude_cells[targ_cell_ids] = True
-        cells_exclude = [self.cells.n_cells[i] for i in
-                         np.where(exclude_cells)[0]]  # get ls of s2p cells that were photostim targetted
-
-        self.n_exclude_cells = np.sum(exclude_cells)
-
-        print('\t|-Search completed.')
-        self.save()
-        print(f"\t|-Number of exclude Suite2p ROIs: {self.n_exclude_cells}")
-
-        # define non targets from suite2p ROIs (exclude cells in the SLM targets exclusion - .s2p_cells_exclude)
-        for idx, cell in enumerate(self.cells.cell_id):
-            if cell not in cells_exclude:
-                targets[idx] = 'exclude'
-
-        if plot:
-            fig, ax = plt.subplots(figsize=[6, 6])
-            targ_img = np.zeros([self.imparams.frame_x, self.imparams.frame_y], dtype='uint16')
-            target_areas = np.array(self.twopstim.target_areas)
-            targ_img[target_areas[:, :, 1], target_areas[:, :, 0]] = 1
-            ax.imshow(targ_img, cmap='Greys_r', zorder=0)
-            ax.set_title('SLM targets areas')
-            # for (x, y) in self.twopstim.target_coords_all:
-            #     ax.scatter(x=x, y=y, edgecolors='white', facecolors='none', linewidths=1.0)
-            fig.show()
-
-        # add targets classification as observations annotation to .data anndata
-        self.data.add_obs(obs_name='photostim_class', values=targets)
-
-        self.cells.data['photostim_class'] = targets
-
-        print(f"\t|- Number of non-target ROIs: {len(self.cells.data['photostim_class'] == 'non-target')}")
-
     #### TODO review attr's and write docs from the following functions: // start
 
     ### ALLOPTICAL PROCESSING OF TRACES
@@ -538,6 +433,155 @@ class AllOpticalTrial(TwoPhotonImaging):
         return flu
 
     # todo test
+    def _findTargetedCells(self, plot: bool = True):
+        """finding s2p cell ROIs that were also SLM targets (or more specifically within the target areas as specified by _findTargetAreas - include 15um radius from center coordinate of spiral)
+        Make a binary mask of the targets and multiply by an image of the cells
+        to find cells that were targeted
+
+        --- LAST UPDATED NOV 6 2021 - copied over from Vape ---
+        """
+
+        print('\n\----- Searching for targeted cells in annotated cells...')
+
+        ## TODO add necessary edits for multi-plane experiments
+
+        targets = list(['non-target' for cell in
+                        range(self.cells.n_cells)])  # initialize all cells as non-target, add as annotation to .cells
+
+        ##### IDENTIFYING S2P ROIs THAT ARE WITHIN THE SLM TARGET SPIRAL AREAS
+        # make all target area coords in to a binary mask
+        targ_img = np.zeros([self.imparams.frame_x, self.imparams.frame_y], dtype='uint16')
+        target_areas = np.array(self.twopstim.target_areas)
+        targ_img[target_areas[:, :, 1], target_areas[:, :, 0]] = 1
+
+        # make an image of every cell area, filled with the index of that cell
+        cell_img = np.zeros_like(targ_img)
+
+        cell_x = self.cells.cell_coords[:, 0]
+        cell_y = self.cells.cell_coords[:, 1]
+
+        for i, coord in enumerate(zip(cell_x, cell_y)):
+            cell_img[coord] = i + 1
+
+        # binary mask x cell image to get the cells that overlap with target areas
+        targ_cell = cell_img * targ_img
+
+        targ_cell_ids = np.unique(targ_cell)[1:] - 1  # correct the cell id due to zero indexing
+        self.targeted_cells = np.zeros([self.cells.n_cells], dtype='bool')
+        self.targeted_cells[targ_cell_ids] = True
+        self.cell_targets = [self.cells.cell_id[i] for i in np.where(self.targeted_cells)[
+            0]]  # get list of cells that were photostim targetted -- todo turn into property accessing targets annotations of .cells
+
+        self.n_targeted_cells = np.sum(
+            self.targeted_cells)  # todo turn into property accessing targets annotations of .cells
+
+        # add targeted cells to targets
+        for idx, cell in enumerate(self.cells.cell_id):
+            if cell in self.cell_targets:
+                targets[idx] = 'target'
+
+        print('\t|- Search completed.')
+        self.save()
+        print('\t|- Number of targeted cells: ', self.n_targeted_cells)
+
+        # IDENTIFYING S2P ROIs THAT ARE WITHIN THE EXCLUSION ZONES OF THE SLM TARGETS
+        # make all target area coords in to a binary mask
+        targ_img = np.zeros([self.imparams.frame_x, self.imparams.frame_y], dtype='uint16')
+        target_areas_exclude = np.array(self.twopstim.target_areas_exclude)
+        targ_img[target_areas_exclude[:, :, 1], target_areas_exclude[:, :, 0]] = 1
+
+        # make an image of every cell area, filled with the index of that cell
+        cell_img = np.zeros_like(targ_img)
+
+        cell_x = self.cells.cell_coords[:, 0]
+        cell_y = self.cells.cell_coords[:, 1]
+
+        for i, coord in enumerate(zip(cell_x, cell_y)):
+            cell_img[coord] = i + 1
+
+        # binary mask x cell image to get the cells that overlap with target areas
+        targ_cell = cell_img * targ_img
+
+        targ_cell_ids = np.unique(targ_cell)[1:] - 1  # correct the cell id due to zero indexing
+        exclude_cells = np.zeros([self.cells.n_cells], dtype='bool')
+        exclude_cells[targ_cell_ids] = True
+        cells_exclude = [self.cells.n_cells[i] for i in
+                         np.where(exclude_cells)[0]]  # get ls of s2p cells that were photostim targetted
+
+        self.n_exclude_cells = np.sum(exclude_cells)
+
+        print('\t|-Search completed.')
+        self.save()
+        print(f"\t|-Number of exclude Suite2p ROIs: {self.n_exclude_cells}")
+
+        # define non targets from suite2p ROIs (exclude cells in the SLM targets exclusion - .s2p_cells_exclude)
+        for idx, cell in enumerate(self.cells.cell_id):
+            if cell not in cells_exclude:
+                targets[idx] = 'exclude'
+
+        if plot:
+            fig, ax = plt.subplots(figsize=[6, 6])
+            targ_img = np.zeros([self.imparams.frame_x, self.imparams.frame_y], dtype='uint16')
+            target_areas = np.array(self.twopstim.target_areas)
+            targ_img[target_areas[:, :, 1], target_areas[:, :, 0]] = 1
+            ax.imshow(targ_img, cmap='Greys_r', zorder=0)
+            ax.set_title('SLM targets areas')
+            # for (x, y) in self.twopstim.target_coords_all:
+            #     ax.scatter(x=x, y=y, edgecolors='white', facecolors='none', linewidths=1.0)
+            fig.show()
+
+        # add targets classification as observations annotation to .data anndata
+        self.data.add_obs(obs_name='photostim_class', values=targets)
+
+        self.cells.data['photostim_class'] = targets
+
+        print(f"\t|- Number of non-target ROIs: {len(self.cells.data['photostim_class'] == 'non-target')}")
+
+    # todo code and test
+    def _makePhotostimTrialFluSnippets(self, plane_flu: np.ndarray, plane: int = 0,
+                                       stim_frames: list = None) -> np.ndarray:  # base code copied from Vape's _makeFluTrials
+        """
+        Make Flu snippets timed on photostimulation, for each cell, for each stim instance. [cells x Flu frames x stims]  # TODO triple check order of this array's dimensions
+
+        Inputs:
+            plane_flu   - array of dff traces for all cells for this plane only
+            plane       - imaging plane corresponding to plane_flu, default = 0 (for one plane datasets)
+            stim_frames - optional, if provided then only use these photostim frames to collect photostim_array
+        Outputs:
+            photostim_array     - dFF peri-photostim Flu array [cell x Flu frames x trial]
+        """
+
+        print('\n\- Collecting peri-stim traces ...')
+
+        trial_array = []
+        _stims = self.stim_start_frames if stim_frames is None else stim_frames
+
+        assert plane_flu.ndim == 2, 'plane_flu needs to be of ndim: 2'
+        assert _stims == self.stim_start_frames, "stims not found in the stim frames list of this plane"
+
+        for i, stim in enumerate(_stims):
+            # get frame indices of entire trial from pre-stim start to post-stim end
+            trial_frames = np.s_[stim - self.prestim_frames: stim + self.poststim_frames]
+
+            # use trial frames to extract this trial for every cell
+            flu_trial = plane_flu[:, trial_frames]
+            flu_trial_len = self.prestim_frames + self.stim_duration_frames + self.poststim_frames
+
+            # todo test if needed or better way to implement: catch timeseries which ended in the middle of an ongoing photostim instance
+            if flu_trial.shape[1] == flu_trial_len:
+                # only append trials of the correct length - will catch corrupt/incomplete data and not include
+                if len(trial_array) == 0:
+                    trial_array = flu_trial
+                else:
+                    trial_array = np.dstack((trial_array, flu_trial))
+            else:
+                print('**incomplete trial detected and not appended to trial_array**', end='\r')
+
+        print(f'\nFinished collecting peri-stim traces, out shape: {trial_array.shape}')
+
+        return trial_array
+
+    # todo test
     def normalize_snippets_prestim(self, snippets: np.ndarray = None):
         """
         Normalize each trace snippet to pre-stim period.
@@ -560,6 +604,7 @@ class AllOpticalTrial(TwoPhotonImaging):
         print(f"shape photostim. trials trace snippets array: {targets_dff.shape}")
         return targets_dff
 
+    # todo test
     def calculate_photoresponses(self, snippets: np.ndarray, stims_to_use: Union[list, str] = 'all'):
         """
         Calculations of responses (post-stim - pre-stim) to photostimulation of SLM Targets of the provided snippets array.
@@ -595,58 +640,13 @@ class AllOpticalTrial(TwoPhotonImaging):
 
         return df
 
+    # todo code up
     def _TargetsPhotostimResponsesAnndata(self):
         """
         Create an anndata table for photostimulation responses of Targets.
 
         :return:
         """
-
-    ### ALLOPTICAL ANALYSIS - FOR ALL ROIs  # good progress on this, almost done reviewing
-    def _makePhotostimTrialFluSnippets(self, plane_flu: np.ndarray, plane: int = 0,
-                                       stim_frames: list = None) -> np.ndarray:  # base code copied from Vape's _makeFluTrials
-        """
-        Make Flu snippets timed on photostimulation, for each cell, for each stim instance. [cells x Flu frames x stims]  # TODO triple check order of this array's dimensions
-
-        Inputs:
-            plane_flu   - array of dff traces for all cells for this plane only
-            plane       - imaging plane corresponding to plane_flu, default = 0 (for one plane datasets)
-            stim_frames - optional, if provided then only use these photostim frames to collect photostim_array
-        Outputs:
-            photostim_array     - dFF peri-photostim Flu array [cell x Flu frames x trial]
-        """
-
-        print('\n\- Collecting peri-stim traces ...')
-
-        trial_array = []
-        _stims = self.stim_start_frames if stim_frames is None else stim_frames
-
-        assert plane_flu.ndim == 2, 'plane_flu needs to be of ndim: 2'
-        assert _stims == self.stim_start_frames, "stims not found in the stim frames list of this plane"
-
-        for i, stim in enumerate(_stims):
-            # get frame indices of entire trial from pre-stim start to post-stim end
-            trial_frames = np.s_[stim - self.prestim_frames: stim + self.poststim_frames]
-
-            # use trial frames to extract this trial for every cell
-            flu_trial = plane_flu[:, trial_frames]
-            flu_trial_len = self.prestim_frames + self.poststim_frames
-            stim_end = self.prestim_frames + self.stim_duration_frames
-
-            # catch timeseries which ended in the middle of an ongoing photostim instance
-            if flu_trial.shape[1] == flu_trial_len:
-                flu_trial = self._baselineFluTrial(flu_trial, stim_end)
-                # only append trials of the correct length - will catch corrupt/incomplete data and not include
-                if len(trial_array) == 0:
-                    trial_array = flu_trial
-                else:
-                    trial_array = np.dstack((trial_array, flu_trial))
-            else:
-                print('**incomplete trial detected and not appended to trial_array**', end='\r')
-
-        print(f'\nFinished collecting peri-stim traces, out shape: {trial_array.shape}')
-
-        return trial_array
 
     def collectPhotostimResponses(self, photostimFluArray):
         """

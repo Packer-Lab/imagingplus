@@ -608,8 +608,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
             raise ValueError('cannot create s2p results trial without existing results in the input s2pExperiment.')
 
         cells_data, cells_multidim = self.getCellsAnnotations()
-        CellAnnotations(cells_array=cells_data.index, annotations=cells_data.columns, cellsdata=cells_data,
-                        multidimdata=cells_multidim)
+        CellAnnotations(cells_array=cells_data.index, annotations=cells_data.columns, data=cells_data, multidim_data=cells_multidim)
 
         imdata = {
             'raw': raw,
