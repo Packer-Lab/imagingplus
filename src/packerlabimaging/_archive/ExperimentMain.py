@@ -1,9 +1,9 @@
 ### MAIN SCRIPT
 """
-This is the main collection of functions for processing and analysis of calcium imaging data in the Packer lab.
+This is the main collection of functions for processing and analysis of calcium imaging cellsdata in the Packer lab.
 
-The fundamental object of data is one t-series of imaging, along with its associated .Paq file, accessory files generated
-from the microscope during data collection, and any user generated files associated with the experiment of this t-series.
+The fundamental object of cellsdata is one t-series of imaging, along with its associated .Paq file, accessory files generated
+from the microscope during cellsdata collection, and any user generated files associated with the experiment of this t-series.
 
 """
 
@@ -33,10 +33,10 @@ NEUROPIL_COEFF = 0.7
 
 @dataclass
 class Experiment:
-    """A class to initialize and store data of an imaging experiment. This class acts as a bucket to contain
+    """A class to initialize and store cellsdata of an imaging experiment. This class acts as a bucket to contain
     information about individual trial objects. """
-    date: str  #: date of experiment data collection
-    dataPath: str   #: main dir where the imaging data is contained
+    date: str  #: date of experiment cellsdata collection
+    dataPath: str   #: main dir where the imaging cellsdata is contained
     saveDir: str  #: main dir where the experiment object and the trial objects will be saved to
     expID: str  #: given identification name for experiment
     comment: str = ''  #: notes related to experiment

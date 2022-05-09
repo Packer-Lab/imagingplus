@@ -43,7 +43,7 @@ class TwoPhotonImagingTrial:
         :param analysis_save_path: path of where to save the experiment analysis object
         :param microscope: name of microscope used to record imaging (options: "Bruker" (default), "other")
         :param imagingMicroscopeMetadata: provide ImagingMetadata object (see ImagingMetadata class).
-        :param suite2p_experiment_obj: provide Suite2p Experiment Object as variable in order to process Suite2p data for current trial
+        :param suite2p_experiment_obj: provide Suite2p Experiment Object as variable in order to process Suite2p cellsdata for current trial
         :param total_frames_stitched: provide frame number on which current trial starts in Suite2p Experiment Object
         """
 
@@ -89,7 +89,7 @@ class TwoPhotonImagingTrial:
             frame_channel = PaqInfoTrial['frame_channel'] if 'frame_channel' in [*PaqInfoTrial] else KeyError(
                 'No frame_channel specified for .paq processing')  # channel on Paq file to read for determining stims
             self.Paq = self._paqProcessingTwoPhotonImaging(paq_path=PaqInfoTrial['paq_path'],
-                                                           frame_channel=frame_channel)  #: Paq data submodule for trial
+                                                           frame_channel=frame_channel)  #: Paq cellsdata submodule for trial
 
         # collect mean FOV Trace
         self.meanFluImg, self.meanFovFluTrace = self.meanRawFluTrace()  #: mean image and mean FOV fluorescence trace
@@ -105,10 +105,10 @@ class TwoPhotonImagingTrial:
             lastmod = time.ctime(os.path.getmtime(self.pkl_path))
         else:
             lastmod = "(unsaved pkl object)"
-        return repr(f"ID: {self.t_series_name} (TwoPhotonImagingTrial experimental data object, last saved: {lastmod})")
+        return repr(f"ID: {self.t_series_name} (TwoPhotonImagingTrial experimental cellsdata object, last saved: {lastmod})")
 
     def __repr__(self):
-        return repr(f"ID: {self.t_series_name} (TwoPhotonImagingTrial experimental data object)")
+        return repr(f"ID: {self.t_series_name} (TwoPhotonImagingTrial experimental cellsdata object)")
 
     # @property
     # def fig_save_path(self):
@@ -118,7 +118,7 @@ class TwoPhotonImagingTrial:
     #
     # @fig_save_path.setter
     # def fig_save_path(self, value: str):
-    #     """set new default fig save path for data object"""
+    #     """set new default fig save path for cellsdata object"""
     #     self.fig_save_path = value
 
     @property
@@ -128,7 +128,7 @@ class TwoPhotonImagingTrial:
 
     @property
     def microscope(self):
-        """name of imagign data acquisition microscope"""
+        """name of imagign cellsdata acquisition microscope"""
         return self._metainfo['microscope']
 
     @property
@@ -168,7 +168,7 @@ class TwoPhotonImagingTrial:
         self._pkl_path = path
 
     def _getImagingParameters(self, metadata: Optional[dict] = None, microscope: Optional[str] = 'Bruker'):
-        """retrieves imaging metadata parameters. If using Bruker microscope and PrairieView, then _prairieview module is used to collect this data.
+        """retrieves imaging metadata parameters. If using Bruker microscope and PrairieView, then _prairieview module is used to collect this cellsdata.
 
         :param microscope: name of the microscope, currently the only supported microscope for parsing metadata directly is Bruker/PrairieView imaging setup.
         """
@@ -196,15 +196,15 @@ class TwoPhotonImagingTrial:
 
     def _paqProcessingTwoPhotonImaging(self, paq_path, frame_channel):
         """
-        Add and further process paq data for current trial.
+        Add and further process paq cellsdata for current trial.
         :param paq_path: path to .paq file
-        :param frame_channel: channel to use for measuring frame times from .paq data
+        :param frame_channel: channel to use for measuring frame times from .paq cellsdata
 
-        :return: PAQ data object
+        :return: PAQ cellsdata object
         """
 
         paq_data_obj, paqdata = PaqData.import_paqdata(paq_path=paq_path)
-        assert frame_channel in paq_data_obj.paq_channels, f"frame_channel argument: '{frame_channel}', not found in channels in .paq data."
+        assert frame_channel in paq_data_obj.paq_channels, f"frame_channel argument: '{frame_channel}', not found in channels in .paq cellsdata."
         paq_data_obj.frame_times_channame = frame_channel
         paq_data_obj.frame_times = paq_data_obj.paq_frame_times(frame_channel=frame_channel)
         paq_data_obj.sparse_paq_data = paq_data_obj.get_sparse_paq(frame_clock=paq_data_obj.frame_times)
@@ -232,7 +232,7 @@ class TwoPhotonImagingTrial:
 
     def create_anndata(self):
         """
-        Creates annotated data (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial.
+        Creates annotated cellsdata (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial.
 
         """
         if self.Suite2p.s2pResultExists and self.Paq:
@@ -263,7 +263,7 @@ class TwoPhotonImagingTrial:
             layers = {'dFF': self.dFF
                       }
 
-            print(f"\n\----- CREATING annotated data object using AnnData:")
+            print(f"\n\----- CREATING annotated cellsdata object using AnnData:")
             _data_type = 'Suite2p Raw (neuropil substracted)' if self.Suite2p.subtract_neuropil else 'Suite2p Raw'
             adata = ad.AnnotatedData(X=self.Suite2p.raw, obs=obs_meta, var=var_meta.T, obsm=obs_m, layers=layers,
                                      data_label=_data_type)
@@ -276,7 +276,7 @@ class TwoPhotonImagingTrial:
                 'did not create anndata. anndata creation only available if experiments were processed with suite2p and .Paq file(s) provided for temporal synchronization')
 
     def dfof(self):
-        """(delta F)/F normalization of raw Suite2p data of trial."""
+        """(delta F)/F normalization of raw Suite2p cellsdata of trial."""
         assert hasattr(self, 'Suite2p'), 'no Suite2p module found. dfof function implemented to just normalize raw traces from Suite2p ROIs.'
         if self.Suite2p.s2pResultExists:
             dFF = self.normalize_dff(self.Suite2p.raw)
@@ -380,7 +380,7 @@ class TwoPhotonImagingTrial:
 
         with open(self.pkl_path, 'wb') as f:
             pickle.dump(self, f)
-        print("\n\t -- data object saved to %s -- " % self.pkl_path)
+        print("\n\t -- cellsdata object saved to %s -- " % self.pkl_path)
 
     def save(self):
         """

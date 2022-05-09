@@ -268,7 +268,7 @@ def dataplot_ax_options(ax, data_length: int, **kwargs):
     :param
         **kwargs:
             x_axis: x axis label, if specify Time or time in x_axis then convert x_axis to time domain
-            collection_hz: data collection rate (in Hz)
+            collection_hz: cellsdata collection rate (in Hz)
             x_tick_secs: interval (in secs) for plotting x ticks when converting x axis to time domain
             xlims: set xlimits for plot
             ylims: set ylimits for plot
@@ -357,7 +357,7 @@ def plot_coordinates(coords: list,  frame_x: int, frame_y: int, background: np.n
             pass
 
 
-# todo add utility to send a plot/data to a plotly server, or a basic flask SVG server
+# todo add utility to send a plot/cellsdata to a plotly server, or a basic flask SVG server
 
 
 

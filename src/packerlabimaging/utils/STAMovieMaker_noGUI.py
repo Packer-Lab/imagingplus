@@ -73,8 +73,8 @@ class STAMovieMaker():
         if sync_ext == '.Paq':
             try:
                 paq, _ = paq_utils.paq_read(self.p['syncPath'], plot=False)
-                frame_trace = paq['data'][paq['chan_names'].index(sync_frame_channel)]
-                stim_trace = paq['data'][paq['chan_names'].index(sync_stim_channel)]
+                frame_trace = paq['cellsdata'][paq['chan_names'].index(sync_frame_channel)]
+                stim_trace = paq['cellsdata'][paq['chan_names'].index(sync_stim_channel)]
                 rate = paq['rate']
 
             except Exception:
@@ -181,7 +181,7 @@ class STAMovieMaker():
                     for stim_frame_idx in frames_with_stim:
                         all_trials_sta_frames.append(sta_template + stim_frame_idx)
 
-                    # get data
+                    # get cellsdata
                     trials = np.zeros([len(sta_template), frame_dims[0], frame_dims[1], num_trials], dtype=np.float32)
                     for j, trial_sta_frames in enumerate(all_trials_sta_frames):
                         # print(trial_sta_frames)
@@ -288,13 +288,13 @@ class STAMovieMaker():
 
                             # hue
                             # from scipy.stats import vonmises
-                            # data = avg_img[method]
+                            # cellsdata = avg_img[method]
                             # blank = np.zeros(frame_dims)
                             # for y_px in range(frame_dims[0]):
                             # 	for x_px in range(frame_dims[1]):
-                            # 		this_data = data[:,y_px,x_px]
+                            # 		this_data = cellsdata[:,y_px,x_px]
                             # 		print(this_data)
-                            # 		kappa, loc, scale = vonmises.fit(data[:,y_px,x_px], fscale=1)
+                            # 		kappa, loc, scale = vonmises.fit(cellsdata[:,y_px,x_px], fscale=1)
                             # 		blank[y_px, x_px] = kappa
 
                             H = pref_stim.astype(np.float32) / num_diff_stims

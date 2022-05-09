@@ -26,7 +26,7 @@ from packerlabimaging.utils.classes import ObjectClassError
 
 # DATA ANALYSIS PLOTTING FUNCS
 
-# suite2p data
+# suite2p cellsdata
 # simple plot of the location of the given cell(s) against a black FOV
 @mpl.rc_context(image_frame_ops)
 @plotting_decorator(figsize=(5, 5))
@@ -157,7 +157,7 @@ def plot_flu_trace(trialobj: TwoPhotonImagingTrial, cell, to_plot='raw', **kwarg
         if to_plot in [*trialobj.data.layers]:
             data_to_plot = trialobj.data.layers[to_plot][idx, :]
         else:
-            raise KeyError(f"to_plot processed data is not found in trialobj.data.layers. ")
+            raise KeyError(f"to_plot processed cellsdata is not found in trialobj.cellsdata.layers. ")
 
     # make the plot either as just the raw trace or as a dFF trace with the std threshold line drawn as well.
     ax.plot(data_to_plot, linewidth=lw)
@@ -171,14 +171,14 @@ def plot__tmdata_channel(tmdata: TemporalData, channel: str, **kwargs):
     """
     Plot the stored signal from the specified channel from a PaqData submodule.
 
-    :param paqData: .Paq submodule data
+    :param paqData: .Paq submodule cellsdata
     :param channel:
     :param kwargs:
         x_axis: str, x axis label, if 'time' or "Time" found in x_axis label, will convert x axis to time domain.
         x_tick_secs: int, interval to plot x axis ticks
         ax: matplotlib axis object to use for plotting.
     """
-    assert channel in tmdata.channels, f'{channel} not found in .Paq module data.'
+    assert channel in tmdata.channels, f'{channel} not found in .Paq module cellsdata.'
 
     # set any kwargs provided
     ax = kwargs['ax']
@@ -189,7 +189,7 @@ def plot__tmdata_channel(tmdata: TemporalData, channel: str, **kwargs):
     lw = 0.5 if 'lw' not in kwargs else kwargs['lw']
     color = 'black' if 'color' not in kwargs else kwargs['color']
 
-    # collect data to plot
+    # collect cellsdata to plot
     data = tmdata.data[channel].to_numpy()
 
     # make plot
@@ -219,7 +219,7 @@ def makeAverageTiff(tiff_path: str = None, frames: tuple = None, save_path: str 
         im_stack = imstack
         assert im_stack.ndim == 3, 'can only average 3D image stacks (implicit dimensions are: Frames x Xpixels x Ypixels)'
     else:
-        raise ValueError('values provided for both tiff_path and imstack. Unclear where to source image data from. Provide only one please.')
+        raise ValueError('values provided for both tiff_path and imstack. Unclear where to source image cellsdata from. Provide only one please.')
 
     if frames:
         print(f'\t collecting average image for frames: {frames}')
@@ -276,7 +276,7 @@ def makeFrameAverageTiff(key_frames: Union[int, list], tiff_path: str = None, im
     elif imstack and tiff_path is None:
         im_stack = imstack
     else:
-        raise ValueError('values provided for both tiff_path and imstack. Unclear where to source image data from. Provide only one please.')
+        raise ValueError('values provided for both tiff_path and imstack. Unclear where to source image cellsdata from. Provide only one please.')
 
 
     for frame in key_frames:
@@ -539,7 +539,7 @@ def plot_periphotostim_avg2(dataset, fps=None, legend_labels=None, colors=None, 
         stdtraces.append(std)
         colors = ['black']
     else:
-        AttributeError('please provide the data to plot in a ls format, each different data group as a ls item...')
+        AttributeError('please provide the cellsdata to plot in a ls format, each different cellsdata group as a ls item...')
 
     if 'xlabel' not in kwargs or kwargs['xlabel'] is None or 'key_frames' not in kwargs['xlabel'] or 'Frames' not in kwargs[
         'xlabel']:
@@ -633,8 +633,8 @@ def plot_periphotostim_avg(arr: np.ndarray, trialobj: AllOpticalTrial, pre_stim_
 
     """
 
-    fps = trialobj.imparams.fps  # key_frames per second rate of the imaging data collection for the data to be plotted
-    exp_prestim = trialobj.pre_stim_frames  # key_frames of pre-stim data collected for each trace for this trialobj (should be same as what's under trialobj.pre_stim_sec)
+    fps = trialobj.imparams.fps  # key_frames per second rate of the imaging cellsdata collection for the cellsdata to be plotted
+    exp_prestim = trialobj.pre_stim_frames  # key_frames of pre-stim cellsdata collected for each trace for this trialobj (should be same as what's under trialobj.pre_stim_sec)
     if 'stim_duration' in kwargs.keys():
         stim_duration = kwargs['stim_duration']
     else:
@@ -798,7 +798,7 @@ def plot_s2pMasks():
 
 # todo need to find new place for this:
 def export_klicker_to_csv(klicker: mpl_point_clicker.clicker, csv_path):
-    """Save point data from mplpointclicker klicker to .csv
+    """Save point cellsdata from mplpointclicker klicker to .csv
     :param klicker: mplpointclicker klicker object
     :param csv_path: path to save csv file of klicker points
     """

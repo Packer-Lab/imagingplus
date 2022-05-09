@@ -25,7 +25,7 @@ class TwoPhotonImaging(ImagingTrial):
         :param analysis_save_path: path of where to save the experiment analysis object
         :param microscope: name of microscope used to record imaging (options: "Bruker" (default), "other")
         :param imagingMicroscopeMetadata: provide ImagingMetadata object (see ImagingMetadata class).
-        :param suite2p_experiment_obj: provide Suite2p Experiment Object as variable in order to process Suite2p data for current trial
+        :param suite2p_experiment_obj: provide Suite2p Experiment Object as variable in order to process Suite2p cellsdata for current trial
         :param total_frames_stitched: provide frame number on which current trial starts in Suite2p Experiment Object
         """
 
@@ -43,13 +43,13 @@ class TwoPhotonImaging(ImagingTrial):
             lastmod = time.ctime(os.path.getmtime(self.pkl_path))
         else:
             lastmod = "(unsaved pkl object)"
-        return repr(f"ID: {self.t_series_name} (TwoPhotonImagingTrial experimental data object, last saved: {lastmod})")
+        return repr(f"ID: {self.t_series_name} (TwoPhotonImagingTrial experimental cellsdata object, last saved: {lastmod})")
 
     def __repr__(self):
-        return repr(f"{self.t_series_name} (TwoPhotonImagingTrial experimental data object)")
+        return repr(f"{self.t_series_name} (TwoPhotonImagingTrial experimental cellsdata object)")
 
     # def _getImagingParameters(self, metadata: Optional[dict] = None, microscope: Optional[str] = 'Bruker'):
-    #     """retrieves imaging metadata parameters. If using Bruker microscope and PrairieView, then _prairieview module is used to collect this data.
+    #     """retrieves imaging metadata parameters. If using Bruker microscope and PrairieView, then _prairieview module is used to collect this cellsdata.
     #
     #     :param microscope: name of the microscope, currently the only supported microscope for parsing metadata directly is Bruker/PrairieView imaging setup.
     #     """
@@ -80,16 +80,16 @@ class TwoPhotonImaging(ImagingTrial):
     #         with tf.TiffWriter(tif_path_save2, bigtiff=True) as tif:
     #             with tf.TiffFile(self.Suite2p.reg_tiff_path, multifile=False) as input_tif:
     #                 print('cropping registered tiff')
-    #                 data = input_tif.asarray()
-    #                 print('shape of stitched tiff: ', data.shape)
-    #             reg_tif_crop = data[self.Suite2p.trial_frames[0] - start * self.Suite2p.s2p_run_batch:
+    #                 cellsdata = input_tif.asarray()
+    #                 print('shape of stitched tiff: ', cellsdata.shape)
+    #             reg_tif_crop = cellsdata[self.Suite2p.trial_frames[0] - start * self.Suite2p.s2p_run_batch:
     #                                 self.Suite2p.trial_frames[1] - (
     #                                         self.Suite2p.trial_frames - start * self.Suite2p.s2p_run_batch)]
     #             print('saving cropped tiff ', reg_tif_crop.shape)
     #             tif.write(reg_tif_crop)
 
     # def dfof(self):
-    #     """(delta F)/F normalization of raw Suite2p data of trial."""
+    #     """(delta F)/F normalization of raw Suite2p cellsdata of trial."""
     #     assert hasattr(self,
     #                    'Suite2p'), 'no Suite2p module found. dfof function implemented to just normalize raw traces from Suite2p ROIs.'
     #     if self.Suite2p._s2pResultExists:

@@ -25,7 +25,7 @@ from packerlabimaging.main.classes import ImagingMetadata
 #             setattr(self, key, value)
 #
 #     def __repr__(self):
-#         return f'ImagingMetadata for imaging data collected with {self.microscope}.'
+#         return f'ImagingMetadata for imaging cellsdata collected with {self.microscope}.'
 
 
 class PrairieViewMetadata(ImagingMetadata):
@@ -42,7 +42,7 @@ class PrairieViewMetadata(ImagingMetadata):
         self.scan_y = pv_metadata['scan_y']  #: resonant scan center in y axis
         self.zoom: float = pv_metadata['zoom']  #: zoom level on Bruker microscope
         self.last_good_frame = pv_metadata[
-            'last_good_frame']  #: indicates when the last good frame was during the t-series recording, if nothing was wrong the value is 0, otherwise it is >0 and that indicates that PV is not sure what happened after the frame listed, but it could be corrupt data
+            'last_good_frame']  #: indicates when the last good frame was during the t-series recording, if nothing was wrong the value is 0, otherwise it is >0 and that indicates that PV is not sure what happened after the frame listed, but it could be corrupt cellsdata
         # for key, value in kwargs.items():  # todo removing kwargs
         #     setattr(self, key, value)
 

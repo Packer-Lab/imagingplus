@@ -58,7 +58,7 @@ class OnePhotonStim(TwoPhotonImagingTrial):
 
         # find frame_times times
         clock_idx = paq['chan_names'].index('frame_times')
-        clock_voltage = paq['data'][clock_idx, :]
+        clock_voltage = paq['cellsdata'][clock_idx, :]
 
         frame_clock = pj.threshold_detect(clock_voltage, 1)
         self.frame_times = frame_clock
@@ -118,7 +118,7 @@ class OnePhotonStim(TwoPhotonImagingTrial):
 
         # find voltage channel and save as lfp_signal attribute
         voltage_idx = paq['chan_names'].index('voltage')
-        self.lfp_signal = paq['data'][voltage_idx]
+        self.lfp_signal = paq['cellsdata'][voltage_idx]
 
     def collect_seizures_info(self, seizures_lfp_timing_matarray=None, discard_all=True):
         print('\ncollecting information about seizures...')
@@ -127,7 +127,7 @@ class OnePhotonStim(TwoPhotonImagingTrial):
         # retrieve seizure onset and offset times from the seizures info array input
         paq = paq2py(file_path=self._paq_path, plot=False)
 
-        # print(Paq[0]['data'][0])  # print the frame clock signal from the .Paq file to make sure its being read properly
+        # print(Paq[0]['cellsdata'][0])  # print the frame clock signal from the .Paq file to make sure its being read properly
         # NOTE: the output of all of the following function is in dimensions of the FRAME CLOCK (not official Paq clock time)
         if seizures_lfp_timing_matarray is not None:
             print('-- using matlab array to collect seizures %s: ' % seizures_lfp_timing_matarray)

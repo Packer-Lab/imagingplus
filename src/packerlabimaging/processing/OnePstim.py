@@ -1,4 +1,4 @@
-## main module for parsing, processing and interacting with data/files of 1p-stim protocols (i.e. matlab .dat files that are used in PackIO)
+## main module for parsing, processing and interacting with cellsdata/files of 1p-stim protocols (i.e. matlab .dat files that are used in PackIO)
 ## - 1pstim module - just copied straight from allopticalseizure version so far..
 import os
 from datetime import time
@@ -43,7 +43,7 @@ class OnePstim(TwoPhotonImagingTrial):
         TwoPhotonImagingTrial.__init__(self, self.tiff_path, self.paq_path, metainfo=metainfo,
                                   analysis_save_path=analysis_save_path, save_downsampled_tiff=True, quick=False)
 
-        # using the Paq module for loading Paq data
+        # using the Paq module for loading Paq cellsdata
         self.paq_data = PaqData(paq_path=self.paq_path)
         self._1p_stims(plot=False, optoloopback_channel=paqInfoTrial['stim_channel'])
 
@@ -64,7 +64,7 @@ class OnePstim(TwoPhotonImagingTrial):
             information = f"{prep} {trial}, {self.exptype}"
         else:
             information = f"uninitialized"
-        return repr(f"({information}) TwoPhotonImaging.OnePhotonStim experimental data object, last saved: {lastmod}")
+        return repr(f"({information}) TwoPhotonImaging.OnePhotonStim experimental cellsdata object, last saved: {lastmod}")
 
     @property
     def pre_stim(self):
@@ -91,10 +91,10 @@ class OnePstim(TwoPhotonImagingTrial):
 
         opto_loopback_chan = self.paq_data['chan_names'].index(optoloopback_channel)
         
-        # load up Paq data
+        # load up Paq cellsdata
         _paq_data, _, _ = PaqData.paq_read(paq_path=self.paq_path)
         
-        stim_volts = _paq_data['data'][opto_loopback_chan, :]
+        stim_volts = _paq_data['cellsdata'][opto_loopback_chan, :]
         stim_times = threshold_detect(stim_volts, 1)
 
         self.stim_times = stim_times
@@ -135,7 +135,7 @@ class OnePstim(TwoPhotonImagingTrial):
         print(f"\nStim duration of 1photon stim: {self.stim_duration_frames} frames")
 
     def _shutter_times(self, shutter_channel: str = 'shutter_loopback'):
-        """find shutter loopback frames from .Paq data
+        """find shutter loopback frames from .Paq cellsdata
 
         :param shutter_channel:  Specify channel containing shutter signals.
         """
@@ -146,10 +146,10 @@ class OnePstim(TwoPhotonImagingTrial):
 
         shutter_idx = self.paq_data['chan_names'].index(shutter_channel)
 
-        # load up Paq data
+        # load up Paq cellsdata
         _paq_data, _, _ = PaqData.paq_read(paq_path=self.paq_path)
 
-        shutter_voltage = _paq_data['data'][shutter_idx, :]
+        shutter_voltage = _paq_data['cellsdata'][shutter_idx, :]
 
         shutter_times = np.where(shutter_voltage > 4)
         self.shutter_times = shutter_times[0]

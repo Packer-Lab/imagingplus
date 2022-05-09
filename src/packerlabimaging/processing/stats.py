@@ -1,4 +1,4 @@
-# class for collecting statistical tests for analysing data
+# class for collecting statistical tests for analysing cellsdata
 import numpy as np
 import scipy.stats as stats
 import statsmodels.api

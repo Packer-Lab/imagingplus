@@ -13,7 +13,7 @@ def test_Experiment(experiment_fixture):
     print(expobj)
 
 
-# @pytest.mark.skip
+@pytest.mark.skip
 def test_add_suite2p(existing_expobj_nopredones2p_fixture):
     # passing
     """test for adding suite2p trials without any results loaded."""

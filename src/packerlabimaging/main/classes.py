@@ -18,7 +18,7 @@ import tifffile as tf
 import pickle
 
 
-# add new class for temporal synchronization of additional 1d dataarrays with imaging data - parent of Paq
+# add new class for temporal synchronization of additional 1d dataarrays with imaging cellsdata - parent of Paq
 # todo - test new paqdata child class.
 
 # add new class for cell annotations
@@ -37,7 +37,7 @@ class Experiment:
     """Overall experiment. It can collate all imaging trials that are part of a single field-of-view (FOV) of imaging"""
 
     expID: str  #: given identification name for experiment
-    dataPath: str  #: main dir where the imaging data is contained
+    dataPath: str  #: main dir where the imaging cellsdata is contained
     saveDir: str  #: main dir where the experiment object and the trial objects will be saved to
     comment: str = ''  #: notes related to experiment
 
@@ -236,7 +236,8 @@ class Experiment:
         for trial in s2p_trials:
             trialobj = self.load_trial(trialID=trial)
             # print(f'n_frames', self.Suite2p.n_frames)
-            trialobj.Suite2p = Suite2pResultsTrial(s2pExp=self.Suite2p, trial_frames=(total_frames, total_frames + trialobj.n_frames))  # use trial obj's current trial key_frames
+            trialobj.Suite2p = Suite2pResultsTrial(s2pExp=self.Suite2p, trial_frames=(
+                total_frames, total_frames + trialobj.n_frames))  # use trial obj's current trial key_frames
             trialobj.save()
             total_frames += trialobj.n_frames
 
@@ -251,14 +252,14 @@ class Experiment:
 @dataclass
 class TemporalData:
     """1-D time series datsets corresponding with an imaging trial."""
-    file_path: str  #: path to data file
-    sampling_rate: float  #: rate of data collection (Hz)
-    channels: List[str]  #: list of data channel names.
-    data: pd.DataFrame  #: N columns x Time array of N x 1D data channels collected over Time at the same sampling rate
+    file_path: str  #: path to cellsdata file
+    sampling_rate: float  #: rate of cellsdata collection (Hz)
+    channels: List[str]  #: list of cellsdata channel names.
+    data: pd.DataFrame  #: N columns x Time array of N x 1D cellsdata channels collected over Time at the same sampling rate
     frame_times: Union[
         list, np.ndarray] = None  #: timestamps representing imaging frame times. must be of same time duration as imaging dataset.
     sparse_data: Dict[
-        str, np.ndarray] = None  #: dictionary of timeseries channels containing data keyed at imaging frames for each timeseries channel
+        str, np.ndarray] = None  #: dictionary of timeseries channels containing cellsdata keyed at imaging frames for each timeseries channel
 
     def __post_init__(self):
         print(f"Created new TemporalData of {self.n_channels} x {self.n_timepoints} (sampled at {self.sampling_rate}")
@@ -277,12 +278,12 @@ class TemporalData:
 
     @property
     def n_timepoints(self):
-        """number of data collection timepoints"""
+        """number of cellsdata collection timepoints"""
         return self.data.shape[0]
 
     @property
     def n_channels(self):
-        """number of data collection channels"""
+        """number of cellsdata collection channels"""
         return self.data.shape[1]
 
     def get_sparse_data(self, frame_times: Union[list, np.ndarray] = None):
@@ -299,16 +300,16 @@ class TemporalData:
         # todo insert test to check that original signal has been collected at a rate higher than imaging. if not then need to handle differently.
 
         assert hasattr(self,
-                       'frame_times') or frame_times, 'no frame_times given to retrieve data from those timestamps.'
+                       'frame_times') or frame_times, 'no frame_times given to retrieve cellsdata from those timestamps.'
 
         frame_times = self.frame_times if frame_times is None else frame_times
 
-        print(f"\n\t\- Getting imaging key frames timed data from {len(frame_times)} frames ... ")
+        print(f"\n\t\- Getting imaging key frames timed cellsdata from {len(frame_times)} frames ... ")
 
-        # read in and save sparse version of all data channels (only save data from timepoints at frame clock times)
+        # read in and save sparse version of all cellsdata channels (only save cellsdata from timepoints at frame clock times)
         sparse_data = {}
         for idx, chan in enumerate(self.channels):
-            print(f'\t\t\- Adding sparse data for channel: {chan} ')
+            print(f'\t\t\- Adding sparse cellsdata for channel: {chan} ')
             data = self.data.iloc[frame_times, idx]
             sparse_data[chan] = data
 
@@ -318,18 +319,19 @@ class TemporalData:
 
     def cropData(self, begin: int, end: int, channels: List[str] = 'all', replace: bool = False):
         """
-        Crops saved temporal data channels to the timestamps of begin and end.
+        Crops saved temporal cellsdata channels to the timestamps of begin and end.
 
-        :param channels: channels to crop data, default is 'all' (all channels in dataset).
+        :param channels: channels to crop cellsdata, default is 'all' (all channels in dataset).
         :param begin: timestamp to begin cropping at
         :param end: timestamp to end cropping at
-        :param replace: if True, then replace .data attribute with newly cropped data. if False, return the cropped dataframe.
+        :param replace: if True, then replace .cellsdata attribute with newly cropped cellsdata. if False, return the cropped dataframe.
         """
 
         channels = self.channels if channels == 'all' else channels
         print(f"\- cropping {channels} to {begin} and {end} paq clock times.")
 
-        assert self.data.shape[0] >= (end - begin), f'Not enough time series samples in data to crop between the provided times.'
+        assert self.data.shape[0] >= (
+                end - begin), f'Not enough time series samples in cellsdata to crop between the provided times.'
         data_ = self.data.loc[begin: end, channels]
 
         if replace:
@@ -340,25 +342,32 @@ class TemporalData:
         # older approach...
         # for channel in channels:
         #     print(f"\- cropping {channel} to {begin} and {end} paq clock times.")
-        #     data = self.data[channel].to_numpy()
-        #     assert len(data) >= (end - begin), f'{channel} paq data is not long enough to crop between the provided clock times.'
-        #     cropdata = data[begin: end]
+        #     cellsdata = self.cellsdata[channel].to_numpy()
+        #     assert len(cellsdata) >= (end - begin), f'{channel} paq cellsdata is not long enough to crop between the provided clock times.'
+        #     cropdata = cellsdata[begin: end]
         #     setattr(self, channel, cropdata)
 
 
 @dataclass
 class CellAnnotations:
     """Annotations of cells in an imaging trial."""
-    cells_array: Union[List[
-                           int], pd.Index, pd.RangeIndex, np.ndarray]  #: ID of all cells in imaging dataset. must be of same cell length as imaging dataset.
-    annotations: Union[List[str], pd.Index]  #: list of names of annotations
-    data: Union[
-        pd.DataFrame, pd.Series]  #: M x Cells array of an arbritrary number (M) 1D annotations channels collected for all Cells. must contain same number of cells as cells_array.
-    multidim_data: Dict[str, List[
-        Any]] = None  #: annotations with data of unconstrained dimensions for all cells. Structured as dictionary with keys corresponding to annotation name and a list of the length of cells containing data in any format.
 
-    def __post_init__(self):
-        print(f'adding CellAnnotations module. consisting of {self.n_annotations} annotations.')
+    def __init__(self, cells_array: Union[List[int], pd.Index, pd.RangeIndex, np.ndarray], annotations: Union[List[str], pd.Index],
+                 cellsdata: Union[pd.DataFrame, pd.Series], multidim_data: Dict[str, List[Any]] = None):
+        """
+
+        :param cells_array: ID of all cells in imaging dataset. must be of same cell length as imaging dataset.
+        :param annotations: list of names of annotations
+        :param cellsdata: M x Cells array of an arbritrary number (M) 1D annotations channels collected for all Cells. must contain same number of cells as cells_array.
+        :param multidim_data: annotations with cellsdata of unconstrained dimensions for all cells. Structured as dictionary with keys corresponding to annotation name and a list of the length of cells containing cellsdata in any format.
+        """
+
+        self.cells_array = cells_array
+        self.annotations = annotations
+        self.cellsdata = cellsdata
+        self.multidim_data = multidim_data
+
+        print(f'\- added CellAnnotations module. consisting of {self.n_annotations} annotations.')
         if self.multidim_data:
             for label, data in self.multidim_data.items():
                 if not len(data) == self.n_cells:
@@ -374,8 +383,8 @@ class CellAnnotations:
     # @classmethod
     # def s2p_to_CellAnnotations(cls, s2pTrial):
     #     """alternative constructor for CellAnnotations from suite2p results."""
-    #     data = s2pTrial.setCellsAnnotations()
-    #     obj = cls(cells_array=data['original_index'], annotations=data.columns, data=data)
+    #     cellsdata = s2pTrial.setCellsAnnotations()
+    #     obj = cls(cells_array=cellsdata['original_index'], annotations=cellsdata.columns, cellsdata=cellsdata)
     #     return obj
 
     # properties:
@@ -394,16 +403,16 @@ class CellAnnotations:
     @property
     def cell_id(self):
         """ID of cells"""
-        assert 'cell_id' in self.data, 'cell_id cannot be found in cells annotations under data'
-        return list(self.data['cell_id'])
+        assert 'cell_id' in self.cellsdata, 'cell_id cannot be found in cells annotations under cellsdata'
+        return list(self.cellsdata['cell_id'])
 
     @property
     def cell_coords(self):
         """X and Y coordinates of cells"""
-        assert 'cell_x' in self.data and 'cell_y' in self.data, 'cell_x or cell_y cannot be found in cells annotations under data'
+        assert 'cell_x' in self.cellsdata and 'cell_y' in self.cellsdata, 'cell_x or cell_y cannot be found in cells annotations under cellsdata'
         coordinates = np.empty(shape=[self.n_cells, 2])
-        coordinates[:, 0] = self.data['cell_x']
-        coordinates[:, 1] = self.data['cell_y']
+        coordinates[:, 0] = self.cellsdata['cell_x']
+        coordinates[:, 1] = self.cellsdata['cell_y']
         return coordinates
 
     # functions:
@@ -412,17 +421,28 @@ class CellAnnotations:
 @dataclass
 class ImagingData:
     """Imaging dataset."""
-    data: Union[np.ndarray, pd.DataFrame, Any]  #: N rois x num_frames, table of imaging data of cells (N) collected over time (Frames)
+
+    def __init__(self, imdata: Union[np.ndarray, pd.DataFrame], **kwargs):
+        """
+        Imaging dataset.
+
+        :param imdata: N rois x num_frames, table of imaging cellsdata of cells (N) collected over time (Frames)
+        """
+        self.imdata = imdata
+        for i, values in kwargs.items():
+            setattr(self, i, values)
+        print(f'\- added ImagingData module. consisting of {self.imdata.shape} ROIs x Frames.')
+
 
     @property
     def n_frames(self):
-        """number of imaging frames in imaging data"""
-        return self.data.shape[1]
+        """number of imaging frames in imaging cellsdata"""
+        return self.imdata.shape[1]
 
     @property
     def n_rois(self):
-        """number of ROIs in imaging data"""
-        return self.data.shape[0]
+        """number of ROIs in imaging cellsdata"""
+        return self.imdata.shape[0]
 
 
 class ImagingMetadata:
@@ -441,7 +461,7 @@ class ImagingMetadata:
             setattr(self, key, value)
 
     def __repr__(self):
-        return f'ImagingMetadata for imaging data collected with {self.microscope}.'
+        return f'ImagingMetadata for imaging cellsdata collected with {self.microscope}.'
 
 
 @dataclass
@@ -471,7 +491,8 @@ class ImagingTrial:
         # processing collect mean FOV Trace -- after collecting imaging params and Paq timing info
         im_stack = self.importTrialTiff()
         self._n_frames = im_stack.shape[0]
-        self.meanFluImg, self.meanFovFluTrace = self.meanRawFluTrace(im_stack)  #: mean image and mean FOV fluorescence trace
+        self.meanFluImg, self.meanFovFluTrace = self.meanRawFluTrace(
+            im_stack)  #: mean image and mean FOV fluorescence trace
 
         # set, create analysis save path directory and create pkl object
         os.makedirs(self.saveDir, exist_ok=True)
@@ -487,10 +508,10 @@ class ImagingTrial:
         # todo test repr
         return repr(f"{self.t_series_name} (ImagingTrial)")
 
-    # todo maybe ? - add alternative constructor to handle construction if temporal data or cell annotations or imaging data is provided
+    # todo maybe ? - add alternative constructor to handle construction if temporal cellsdata or cell annotations or imaging cellsdata is provided
     # might be useful for providing like submodules (especially things like Suite2p)
     @classmethod
-    def newImagingTrialfromExperiment(cls, experiment: Experiment, trialID, dataPath, date, group='', comment=''):
+    def newImagingTrialfromExperiment(cls, experiment: Experiment, trialID, dataPath, date, comment=''):
         """
         Creates a new ImagingTrial from an Experiment.
 
@@ -520,7 +541,7 @@ class ImagingTrial:
 
     # @property
     # def microscope(self):
-    #     """name of imaging data acquisition microscope system"""
+    #     """name of imaging cellsdata acquisition microscope system"""
     #     return self.metainfo['microscope']
 
     # @property
@@ -547,7 +568,7 @@ class ImagingTrial:
 
     @property
     def tiff_path_dir(self):
-        """Parent directory of .tiff data path"""
+        """Parent directory of .tiff cellsdata path"""
         return os.path.dirname(self.tiff_path)
 
     @property
@@ -575,7 +596,7 @@ class ImagingTrial:
 
         with open(self.pkl_path, 'wb') as f:
             pickle.dump(self, f)
-        print("\n\t -- data object saved to %s -- " % self.pkl_path)
+        print("\n\t -- cellsdata object saved to %s -- " % self.pkl_path)
 
     def save(self):
         """
@@ -614,7 +635,7 @@ class ImagingTrial:
     ## below properties/methods have pre-requisite processing steps
     @property
     def n_frames(self):
-        """number of imaging frames from tiff data.
+        """number of imaging frames from tiff cellsdata.
         """
         return self._n_frames
 
@@ -656,7 +677,7 @@ class ImagingTrial:
 
     def create_anndata(self, imdata_type: str = None, layers=False):
         """
-        Creates annotated data (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial.
+        Creates annotated cellsdata (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial.
 
         """
         if not self.imdata and self.cells and self.tmdata:
@@ -664,23 +685,23 @@ class ImagingTrial:
                 'cannot create anndata table. anndata creation only available if experiments have ImagingData (.imdata), CellAnnotations (.cells) and TemporalData (.tmdata)')
 
         # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
-        assert hasattr(self.cells, 'data'), 'missing data attr from .cells'
-        obs_meta = self.cells.data
+        assert hasattr(self.cells, 'cellsdata'), 'missing cellsdata attr from .cells'
+        obs_meta = self.cells.cellsdata
 
         # SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata
-        assert hasattr(self.tmdata, 'data'), 'missing data attr from .tmdata'
+        assert hasattr(self.tmdata, 'cellsdata'), 'missing cellsdata attr from .tmdata'
         var_meta = self.tmdata.data
 
-        print(f"\n\----- CREATING annotated data object using AnnData:")
-        assert hasattr(self.imdata, 'data'), 'missing data attr from .imdata'
-        _data_type = [*self.imdata.data][0] if not imdata_type else imdata_type
-        primary_data = self.imdata.data[_data_type]
+        print(f"\n\----- CREATING annotated cellsdata object using AnnData:")
+        assert hasattr(self.imdata, 'cellsdata'), 'missing cellsdata attr from .imdata'
+        _data_type = [*self.imdata.imdata][0] if not imdata_type else imdata_type
+        primary_data = self.imdata.imdata[_data_type]
 
         if layers and self.imdata.n_data > 0:
             layers = {}
             for layer in self.imdata.data_labels:
                 if layer == _data_type:
-                    layers[layer] = self.imdata.data[layer]
+                    layers[layer] = self.imdata.imdata[layer]
         else:
             layers = None
 

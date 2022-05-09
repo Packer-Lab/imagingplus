@@ -99,7 +99,7 @@ class AllOpticalTrial(TwoPhotonImaging):
         self.sta_sig_nomulti = []  # as above, no multiple comparisons correction
         ########
 
-        # initializing data processing, data analysis and/or results associated attr's
+        # initializing cellsdata processing, cellsdata analysis and/or results associated attr's
         self.n_trials = None  # number of photostimulation trials TODO change to assigning from array: cells x Flu frames x # of photostim trials
 
         # PHOTOSTIM SLM TARGETS
@@ -118,7 +118,7 @@ class AllOpticalTrial(TwoPhotonImaging):
             f"naparm path not found, naparm_path: {naparm_path}")
         self.Targets, self.stim_duration_frames = self._stimProcessing(protocol='naparm')
 
-        # 4) determine bad frames in imaging data that correspond to photostim frames
+        # 4) determine bad frames in imaging cellsdata that correspond to photostim frames
         self.photostim_frames = self._find_photostim_add_bad_framesnpy()
 
         # 5) collect Flu traces from SLM targets
@@ -137,7 +137,7 @@ class AllOpticalTrial(TwoPhotonImaging):
         #       3) save photostim response amplitudes to AnnotatedData
         self.photostimFluArray, self.photostimResponseAmplitudes, self.photostimResponsesData = self.photostimProcessingAllCells()
 
-        # extend annotated imaging data object with imaging frames in photostim and stim_start_frames as additional keys in vars
+        # extend annotated imaging cellsdata object with imaging frames in photostim and stim_start_frames as additional keys in vars
         __frames_in_stim = [False] * self.imparams.n_frames
         __stim_start_frame = [False] * self.imparams.n_frames
         for frame in self.photostim_frames: __frames_in_stim[frame] = True
@@ -147,7 +147,7 @@ class AllOpticalTrial(TwoPhotonImaging):
 
         # save final object
         self.save()
-        print(f'\----- CREATED AllOpticalTrial data object for {self.t_series_name}')
+        print(f'\----- CREATED AllOpticalTrial cellsdata object for {self.t_series_name}')
 
     def __str__(self):
         if self.pkl_path:
@@ -336,7 +336,7 @@ class AllOpticalTrial(TwoPhotonImaging):
             #     ax.scatter(x=x, y=y, edgecolors='white', facecolors='none', linewidths=1.0)
             fig.show()
 
-        # add targets classification as observations annotation to .data anndata
+        # add targets classification as observations annotation to .cellsdata anndata
         self.data.add_observation(self.data, 'photostim_target', values=list(self.targeted_cells))
 
     def _find_photostim_add_bad_framesnpy(self):
@@ -679,7 +679,7 @@ class AllOpticalTrial(TwoPhotonImaging):
         else:
             stim_timings = stims
 
-        if process == 'trace raw':  ## specify which data to process (i.e. do you want to process whole trace dFF traces?)
+        if process == 'trace raw':  ## specify which cellsdata to process (i.e. do you want to process whole trace dFF traces?)
             data_to_process = self.raw_SLMTargets
         elif process == 'trace dFF':
             data_to_process = self.dFF_SLMTargets
@@ -786,7 +786,7 @@ class AllOpticalTrial(TwoPhotonImaging):
         else:
             KeyError('no stims set to analyse [1]')
 
-        # choose between .SLMTargets_stims_dff and .SLMTargets_stims_tracedFF for data to process
+        # choose between .SLMTargets_stims_dff and .SLMTargets_stims_tracedFF for cellsdata to process
         if process == 'dF/prestimF':
             if hasattr(self, 'SLMTargets_stims_dff'):
                 targets_traces = self.SLMTargets_stims_dff
@@ -861,7 +861,7 @@ class AllOpticalTrial(TwoPhotonImaging):
 
         """
 
-        # choose between .SLMTargets_stims_dff and .SLMTargets_stims_tracedFF for data to process
+        # choose between .SLMTargets_stims_dff and .SLMTargets_stims_tracedFF for cellsdata to process
         if process == 'dF/prestimF':
             if hasattr(self, 'SLMTargets_stims_dff'):
                 targets_traces = self.SLMTargets_stims_dff
@@ -991,7 +991,7 @@ class AllOpticalTrial(TwoPhotonImaging):
             # catch timeseries which ended in the middle of an ongoing photostim instance
             if flu_trial.shape[1] == flu_trial_len:
                 flu_trial = self._baselineFluTrial(flu_trial, stim_end)
-                # only append trials of the correct length - will catch corrupt/incomplete data and not include
+                # only append trials of the correct length - will catch corrupt/incomplete cellsdata and not include
                 if len(trial_array) == 0:
                     trial_array = flu_trial
                 else:
@@ -1031,7 +1031,7 @@ class AllOpticalTrial(TwoPhotonImaging):
 
     def _allCellsPhotostimResponsesAnndata(self, photostimResponseAmplitudes: pd.DataFrame):  # NOT TESTED!
         """
-        Creates annotated data (see anndata library) object based around the Ca2+ matrix of the imaging trial.
+        Creates annotated cellsdata (see anndata library) object based around the Ca2+ matrix of the imaging trial.
 
         """
 
@@ -1062,7 +1062,7 @@ class AllOpticalTrial(TwoPhotonImaging):
                   # PLACEHOLDER NOT IMPLEMENTED YET
                   }
 
-        print(f"\n\----- CREATING annotated data object for photostim responses using AnnData:")
+        print(f"\n\----- CREATING annotated cellsdata object for photostim responses using AnnData:")
         adata = AnnotatedData(X=np.asarray(photostimResponseAmplitudes), obs=obs_meta, var=var_meta.T, layers=layers)
 
         print(f"\t{adata}")
@@ -1083,18 +1083,18 @@ class AllOpticalTrial(TwoPhotonImaging):
         print('running trial Processing for all cells ')
         print('----------------------------------------------------------------')
 
-        # make trial arrays from dff data shape: [cells x stims x frames]
+        # make trial arrays from dff cellsdata shape: [cells x stims x frames]
         if hasattr(self, 'Suite2p'):
             photostimFluArray = self._makePhotostimTrialFluSnippets(plane_flu=self.normalize_dff(self.Suite2p.raw))
             photostimResponseAmplitudes = self.collectPhotostimResponses(photostimFluArray)
 
-            ## create new anndata object for storing measured photostim responses from data, with other relevant data
+            ## create new anndata object for storing measured photostim responses from cellsdata, with other relevant cellsdata
             photostim_responses_adata = self._allCellsPhotostimResponsesAnndata(
                 photostimResponseAmplitudes=photostimResponseAmplitudes)
 
             return photostimFluArray, photostimResponseAmplitudes, photostim_responses_adata
         else:
-            NotImplementedError('Photostim processing cannot be performed without Suite2p data.')
+            NotImplementedError('Photostim processing cannot be performed without Suite2p cellsdata.')
 
     def statisticalProcessingAllCells(self):
         """Runs statistical processing on photostim response arrays"""
@@ -1452,7 +1452,7 @@ class AllOpticalTrial(TwoPhotonImaging):
         """
         qnap_path = os.path.expanduser('/home/pshah/mnt/qnap')
 
-        # data path
+        # cellsdata path
         movie_path = self.tiff_path
         sync_path = self._paq_path
 
@@ -1467,7 +1467,7 @@ class AllOpticalTrial(TwoPhotonImaging):
         assert os.path.exists(stam_save_path)
 
         print('QNAP_path:', qnap_path,
-              '\ndata path:', movie_path,
+              '\ncellsdata path:', movie_path,
               '\nsync path:', sync_path,
               '\nSTA movie save s2pResultsPath:', stam_save_path)
 
@@ -1588,7 +1588,7 @@ if __name__ == '__main__':
         paqs_loc = f'{BASE_PATH}/2020-12-19/2020-12-19_RL109_013.paq'  # path to the .paq files for the selected trials
         dataPath = alloptical_trial_fixture['dataPath']
 
-        # parses imaging system data
+        # parses imaging system cellsdata
         imparams = PrairieViewMetadata(pv_xml_dir=os.path.dirname(dataPath), microscope='Bruker 2pPlus')
 
         # sets the stim start frames

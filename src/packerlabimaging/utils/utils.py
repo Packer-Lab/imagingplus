@@ -25,10 +25,10 @@ from packerlabimaging.utils import io
 
 # UTILITIES
 
-# dictionary of terms, phrases, etc. that are used in the processing and analysis of imaging data
+# dictionary of terms, phrases, etc. that are used in the processing and analysis of imaging cellsdata
 terms_dictionary = {
     'dFF': "normalization of datatrace for a given imaging ROI by subtraction and division of a given baseline value",
-    'ROI': "a single ROI from the imaging data"
+    'ROI': "a single ROI from the imaging cellsdata"
 }
 
 
@@ -466,7 +466,7 @@ def clean_lfp_signal(paq, input_array: str, chan_name: str = 'voltage', plot=Fal
 
     measurements = io.loadmat(input_array)
 
-    lfp_series = paq['data'][paq['chan_names'].index(chan_name)]
+    lfp_series = paq['cellsdata'][paq['chan_names'].index(chan_name)]
     for set in range(len(measurements['PairedMeasures'])):
         # calculate the sample value for begin and end of the set
         begin = int(measurements['PairedMeasures'][set][3][0][0] * paq['rate'])
@@ -539,12 +539,12 @@ def d_prime(hit_rate, false_alarm_rate):
 
 def paq_data(paq, chan_name, threshold_ttl=False, plot=False):
     '''
-    returns the data in Paq (from paq_read) from channel: chan_names
+    returns the cellsdata in Paq (from paq_read) from channel: chan_names
     if threshold_tll: returns sample that trigger occured on
     '''
 
     chan_idx = paq['chan_names'].index(chan_name)
-    data = paq['data'][chan_idx, :]
+    data = paq['cellsdata'][chan_idx, :]
     if threshold_ttl:
         data = threshold_detect(data, 1)
 

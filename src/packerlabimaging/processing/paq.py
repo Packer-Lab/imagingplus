@@ -22,11 +22,11 @@ def paq2py(file_path=None, plot=False):
         full path to file to read in. if none is supplied a load file dialog
         is opened, buggy on mac osx - Tk/matplotlib. Default: None.
     plot : bool, optional
-        plot the data after reading? Default: False.
+        plot the cellsdata after reading? Default: False.
     Returns
     =======
-    data : ndarray
-        the data as a m-by-n array where m is the number of channels and n is
+    cellsdata : ndarray
+        the cellsdata as a m-by-n array where m is the number of channels and n is
         the number of datapoints
     chan_names : list of str
         the names of the channels provided in PackIO
@@ -83,7 +83,7 @@ def paq2py(file_path=None, plot=False):
             unit = unit + chr(np.fromfile(fid, dtype='>f', count=1)[0])
         units.append(unit)
 
-    # get data
+    # get cellsdata
     temp_data = np.fromfile(fid, dtype='>f', count=-1)
     num_datapoints = int(len(temp_data) / num_chans)
     data = np.reshape(temp_data, [num_datapoints, num_chans]).transpose()
@@ -120,10 +120,10 @@ def paq2py(file_path=None, plot=False):
         plt.tight_layout()
         plt.show()
 
-    # make pandas data frame using data in channels
+    # make pandas cellsdata frame using cellsdata in channels
     df = pd.DataFrame(data.T, columns=chan_names)
 
-    return {"data": data,
+    return {"cellsdata": data,
             "chan_names": chan_names,
             "hw_chans": hw_chans,
             "units": units,
@@ -134,7 +134,7 @@ def paq2py(file_path=None, plot=False):
 
 @dataclass
 class PaqData:
-    """access and storage of data from .paq files."""
+    """access and storage of cellsdata from .paq files."""
 
     paq_path: str
     paq_channels: List[str] = None
@@ -153,7 +153,7 @@ class PaqData:
 
         :param paq_path: path to .paq file
         :param plot: whether to plot output of reading .paq file
-        :return: PaqData object, and raw data from .paq file in numpy array
+        :return: PaqData object, and raw cellsdata from .paq file in numpy array
 
         todo add example in docstring
         """
@@ -165,8 +165,8 @@ class PaqData:
 
         for chan_name in paqData_obj.paq_channels:
             chan_name_idx = paq_channels.index(chan_name)
-            print(f"\t- adding '{chan_name}' channel data as attribute")
-            setattr(paqData_obj, chan_name, paq_data['data'][chan_name_idx])
+            print(f"\t- adding '{chan_name}' channel cellsdata as attribute")
+            setattr(paqData_obj, chan_name, paq_data['cellsdata'][chan_name_idx])
 
         return paqData_obj, paq_data
 
@@ -182,14 +182,14 @@ class PaqData:
     @staticmethod
     def paq_read(paq_path: str, plot: bool = False):
         """
-        Loads .Paq file and saves data from individual channels.
+        Loads .Paq file and saves cellsdata from individual channels.
 
-        :param paq_path: path to the .Paq file for this data object
+        :param paq_path: path to the .Paq file for this cellsdata object
         :param plot: (optional) whether to plot
         """
         assert os.path.exists(paq_path), f'File path not found {paq_path}'
 
-        print(f'\tloading Paq data from: {paq_path}')
+        print(f'\tloading Paq cellsdata from: {paq_path}')
         paq, _ = paq2py(paq_path, plot=plot)
         paq_rate = paq['rate']
         paq_channels = paq['chan_names']
@@ -198,7 +198,7 @@ class PaqData:
         return paq, paq_rate, paq_channels
 
     def storePaqChannel(self, chan_name):
-        """add a specific channel's (`chan_name`) data from the .paq file as attribute of the same name for
+        """add a specific channel's (`chan_name`) cellsdata from the .paq file as attribute of the same name for
         PaqData object.
 
         :param chan_name: name of paq channel to add.
@@ -206,23 +206,23 @@ class PaqData:
 
         paq_data, _, paq_channels = self.paq_read(paq_path=self.paq_path)
         chan_name_idx = paq_channels.index(chan_name)
-        print(f"\t|- adding '{chan_name}' channel data as attribute")
-        setattr(self, chan_name, paq_data['data'][chan_name_idx])
+        print(f"\t|- adding '{chan_name}' channel cellsdata as attribute")
+        setattr(self, chan_name, paq_data['cellsdata'][chan_name_idx])
 
     def cropPaqData(self, begin: int, end: int, channels: List[str] = 'all'):
         """
-        Crops saved paq data channels to the .paq clock timestamps of begin and end.
+        Crops saved paq cellsdata channels to the .paq clock timestamps of begin and end.
 
         :param begin: paq clock time to begin cropping at
         :param end: paq clock time to end cropping at
-        :param channels: channels to crop paq data.
+        :param channels: channels to crop paq cellsdata.
         """
 
         channels = self.paq_channels if channels == 'all' else channels
         for channel in channels:
             print(f"\- cropping {channel} to {begin} and {end} paq clock times.")
             data = getattr(self, channel)
-            assert len(data) >= (end - begin), f'{channel} paq data is not long enough to crop between the provided clock times.'
+            assert len(data) >= (end - begin), f'{channel} paq cellsdata is not long enough to crop between the provided clock times.'
             cropdata = data[begin: end]
             setattr(self, channel, cropdata)
 
@@ -232,7 +232,7 @@ class PaqData:
         """
         Retrieve two-photon imaging frame times from .paq signal found in frame_channel.
 
-        :param paq_data: data loaded from .paq file (use .paq_read method)
+        :param paq_data: cellsdata loaded from .paq file (use .paq_read method)
         :param frame_channel: channel to retrieve frame clock times from
         :return: numpy array of frame clock times
         """
@@ -244,7 +244,7 @@ class PaqData:
 
         # find frame times
         # clock_idx = paq_data['chan_names'].index(frame_channel)
-        # clock_voltage = paq_data['data'][clock_idx, :]
+        # clock_voltage = paq_data['cellsdata'][clock_idx, :]
         clock_voltage = getattr(self, frame_channel)
 
         __frame_clock = threshold_detect(clock_voltage, 1)
@@ -285,9 +285,9 @@ class PaqData:
         :param frame_clock:
         :return:
         """
-        print(f"\n\t\- Getting imaging frames timed .paq data from {len(frame_clock)} frames ... ")
+        print(f"\n\t\- Getting imaging frames timed .paq cellsdata from {len(frame_clock)} frames ... ")
 
-        # read in and save sparse version of all Paq channels (only save data from timepoints at frame clock times)
+        # read in and save sparse version of all Paq channels (only save cellsdata from timepoints at frame clock times)
         sparse_paq_data = {}
         for idx, chan in enumerate(self.paq_channels):
             data = getattr(self, chan)
@@ -301,7 +301,7 @@ class PaqData:
 
         # find stim times
         stim_idx = paq_data['chan_names'].index(stim_channel)
-        stim_volts = paq_data['data'][stim_idx, :]
+        stim_volts = paq_data['cellsdata'][stim_idx, :]
         stim_times = threshold_detect(stim_volts, 1)
         stim_start_times = stim_times
         print(f'# of stims found on {stim_channel}: {len(stim_start_times)}')
@@ -333,7 +333,7 @@ class PaqData:
                 f'{optoloopback_channel} not found in .Paq channels. Specify channel containing 1p stim TTL loopback signals.')
 
         opto_loopback_chan = paq_data['chan_names'].index('opto_loopback')
-        stim_volts = paq_data['data'][opto_loopback_chan, :]
+        stim_volts = paq_data['cellsdata'][opto_loopback_chan, :]
         stim_times = threshold_detect(stim_volts, 1)
 
         self.stim_times = stim_times
@@ -375,7 +375,7 @@ class PaqData:
         print(f"\nStim duration of 1photon stim: {self.stim_duration_frames} frames")
 
     def _shutter_times(self, paq_data, shutter_channel: str = 'shutter_loopback'):
-        """find shutter loopback frames from .Paq data
+        """find shutter loopback frames from .Paq cellsdata
         :param paq_data:
         :param shutter_channel:
         """
@@ -384,7 +384,7 @@ class PaqData:
             raise KeyError(f'{shutter_channel} not found in .Paq channels. Specify channel containing shutter signals.')
 
         shutter_idx = paq_data['chan_names'].index('shutter_loopback')
-        shutter_voltage = paq_data['data'][shutter_idx, :]
+        shutter_voltage = paq_data['cellsdata'][shutter_idx, :]
 
         shutter_times = np.where(shutter_voltage > 4)
         self.shutter_times = shutter_times[0]

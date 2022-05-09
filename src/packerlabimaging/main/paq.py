@@ -1,4 +1,4 @@
-# new copy of processing/paq.py to use for experimenting with and creating paq as child of temporal data.
+# new copy of processing/paq.py to use for experimenting with and creating paq as child of temporal cellsdata.
 
 import os.path
 from dataclasses import dataclass
@@ -24,11 +24,11 @@ def paq2py(file_path=None, plot=False):
         full path to file to read in. if none is supplied a load file dialog
         is opened, buggy on mac osx - Tk/matplotlib. Default: None.
     plot : bool, optional
-        plot the data after reading? Default: False.
+        plot the cellsdata after reading? Default: False.
     Returns
     =======
-    data : ndarray
-        the data as a m-by-n array where m is the number of channels and n is
+    cellsdata : ndarray
+        the cellsdata as a m-by-n array where m is the number of channels and n is
         the number of datapoints
     chan_names : list of str
         the names of the channels provided in PackIO
@@ -85,7 +85,7 @@ def paq2py(file_path=None, plot=False):
             unit = unit + chr(int(np.fromfile(fid, dtype='>f', count=1)[0]))
         units.append(unit)
 
-    # get data
+    # get cellsdata
     temp_data = np.fromfile(fid, dtype='>f', count=-1)
     num_datapoints = int(len(temp_data) / num_chans)
     data = np.reshape(temp_data, [num_datapoints, num_chans]).transpose()
@@ -122,10 +122,10 @@ def paq2py(file_path=None, plot=False):
         plt.tight_layout()
         plt.show()
 
-    # make pandas data frame using data in channels
+    # make pandas cellsdata frame using cellsdata in channels
     df = pd.DataFrame(data.T, columns=chan_names)
 
-    return {"data": data,
+    return {"cellsdata": data,
             "chan_names": chan_names,
             "hw_chans": hw_chans,
             "units": units,
@@ -135,11 +135,11 @@ def paq2py(file_path=None, plot=False):
 
 # noinspection DuplicatedCode
 class PaqData(TemporalData):
-    """access and storage of data from .paq files."""
+    """access and storage of cellsdata from .paq files."""
 
     def __init__(self, file_path, **kwargs):
         print(f"\n\- ADDING PAQ DATA from {file_path}... ")
-        self.sparse_paq_data = None  #: array of paq data that corresponds to
+        self.sparse_paq_data = None  #: array of paq cellsdata that corresponds to
 
         if 'channels' not in kwargs or 'sampling_rate' not in kwargs or 'paq_data' not in kwargs:
             paq_data, paq_rate, channels = self.paq_read(file_path=file_path, plot=True)
@@ -151,10 +151,10 @@ class PaqData(TemporalData):
         # # todo switch this out in favour of the pandas dataframes below:
         # for chan_name in channels:
         #     chan_name_idx = channels.index(chan_name)
-        #     print(f"\t- adding '{chan_name}' channel data as attribute")
-        #     setattr(self, chan_name, paq_data['data'][chan_name_idx])
+        #     print(f"\t- adding '{chan_name}' channel cellsdata as attribute")
+        #     setattr(self, chan_name, paq_data['cellsdata'][chan_name_idx])
 
-        data = pd.DataFrame(data=paq_data['data'].T, columns=channels, index=range(paq_data['data'].shape[1]))
+        data = pd.DataFrame(data=paq_data['cellsdata'].T, columns=channels, index=range(paq_data['cellsdata'].shape[1]))
         super(PaqData, self).__init__(file_path=file_path, channels=channels, sampling_rate=paq_rate, data=data)
 
         # init attr's
@@ -170,7 +170,7 @@ class PaqData(TemporalData):
         :param file_path: path to .paq file
         :param frame_times_channel: channel to retrieve frame clock times from
         :param plot: whether to plot output of reading .paq file
-        :return: PaqData object, and raw data from .paq file in numpy array
+        :return: PaqData object, and raw cellsdata from .paq file in numpy array
 
         todo add example in docstring
         """
@@ -196,14 +196,14 @@ class PaqData(TemporalData):
     @staticmethod
     def paq_read(file_path: str, plot: bool = False):
         """
-        Loads .Paq file and saves data from individual channels.
+        Loads .Paq file and saves cellsdata from individual channels.
 
-        :param file_path: path to the .Paq file for this data object
+        :param file_path: path to the .Paq file for this cellsdata object
         :param plot: (optional) whether to plot
         """
         assert os.path.exists(file_path), f'File path not found {file_path}'
 
-        print(f'\tloading Paq data from: {file_path}')
+        print(f'\tloading Paq cellsdata from: {file_path}')
         paq, _ = paq2py(file_path, plot=plot)
         paq_rate = paq['rate']
         channels = paq['chan_names']
@@ -212,7 +212,7 @@ class PaqData(TemporalData):
         return paq, paq_rate, channels
 
     def storePaqChannel(self, chan_name):
-        """add a specific channel's (`chan_name`) data from the .paq file as attribute of the same name for
+        """add a specific channel's (`chan_name`) cellsdata from the .paq file as attribute of the same name for
         PaqData object.
 
         :param chan_name: name of paq channel to add.
@@ -220,15 +220,15 @@ class PaqData(TemporalData):
 
         paq_data, _, channels = self.paq_read(file_path=self.file_path)
         chan_name_idx = channels.index(chan_name)
-        print(f"\t|- adding '{chan_name}' channel data as attribute")
-        setattr(self, chan_name, paq_data['data'][chan_name_idx])
+        print(f"\t|- adding '{chan_name}' channel cellsdata as attribute")
+        setattr(self, chan_name, paq_data['cellsdata'][chan_name_idx])
 
     ## refactor these methods to their respective Trial code locations
     def getPaqFrameTimes(self, frame_times_channel: str):
         """
         Retrieve two-photon imaging frame times from .paq signal found in frame_times_channel.
 
-        :param paq_data: data loaded from .paq file (use .paq_read method)
+        :param paq_data: cellsdata loaded from .paq file (use .paq_read method)
         :param frame_times_channel: channel to retrieve frame clock times from
         :return: numpy array of frame clock times
         """
@@ -272,7 +272,7 @@ class PaqData(TemporalData):
         return frame_clock_actual
 
     def plot__paq_channel(self):
-        """temp placeholder incase you need specific plotting code compared to plotting with the general temporal data function"""
+        """temp placeholder incase you need specific plotting code compared to plotting with the general temporal cellsdata function"""
         pass
 
     @classmethod
@@ -282,13 +282,13 @@ class PaqData(TemporalData):
 
         :param plot:
         :param paq_path: path to .paq file
-        :param frame_channel: channel to use for measuring frame times from .paq data
+        :param frame_channel: channel to use for measuring frame times from .paq cellsdata
 
-        :return: PAQ data object
+        :return: PAQ cellsdata object
         """
 
         paq_data_obj = cls.import_paqdata(file_path=paq_path, plot=plot)
-        assert frame_channel in paq_data_obj.channels, f"frame_channel argument: '{frame_channel}', not found in channels in .paq data."
+        assert frame_channel in paq_data_obj.channels, f"frame_channel argument: '{frame_channel}', not found in channels in .paq cellsdata."
         paq_data_obj.frame_times = paq_data_obj.getPaqFrameTimes(frame_times_channel=frame_channel)
         paq_data_obj.sparse_paq_data = paq_data_obj.get_sparse_data(frame_times=paq_data_obj.frame_times)
 
@@ -302,14 +302,14 @@ class PaqData(TemporalData):
         :param plot:
         :param stim_channel:
         :param paq_path: path to .paq file
-        :param frame_channel: channel to use for measuring frame times from .paq data
+        :param frame_channel: channel to use for measuring frame times from .paq cellsdata
 
-        :return: PAQ data object
+        :return: PAQ cellsdata object
         """
 
         paq_data_obj = cls.paqProcessingTwoPhotonImaging(paq_path=paq_path, frame_channel=frame_channel, plot=plot)
 
-        assert stim_channel in paq_data_obj.channels, f"stim_channel argument: '{stim_channel}', not found in channels in .paq data."
+        assert stim_channel in paq_data_obj.channels, f"stim_channel argument: '{stim_channel}', not found in channels in .paq cellsdata."
 
         # find stim times
         stim_volts = paq_data_obj.data[stim_channel].to_numpy()
@@ -345,7 +345,7 @@ class PaqData(TemporalData):
     #             f'{optoloopback_channel} not found in .Paq channels. Specify channel containing 1p stim TTL loopback signals.')
     #
     #     opto_loopback_chan = paq_data['chan_names'].index('opto_loopback')
-    #     stim_volts = paq_data['data'][opto_loopback_chan, :]
+    #     stim_volts = paq_data['cellsdata'][opto_loopback_chan, :]
     #     stim_times = threshold_detect(stim_volts, 1)
     #
     #     self.stim_times = stim_times
@@ -387,7 +387,7 @@ class PaqData(TemporalData):
     #     print(f"\nStim duration of 1photon stim: {self.stim_duration_frames} frames")
     #
     # def _shutter_times(self, paq_data, shutter_channel: str = 'shutter_loopback'):
-    #     """find shutter loopback frames from .Paq data
+    #     """find shutter loopback frames from .Paq cellsdata
     #     :param paq_data:
     #     :param shutter_channel:
     #     """
@@ -396,7 +396,7 @@ class PaqData(TemporalData):
     #         raise KeyError(f'{shutter_channel} not found in .Paq channels. Specify channel containing shutter signals.')
     #
     #     shutter_idx = paq_data['chan_names'].index('shutter_loopback')
-    #     shutter_voltage = paq_data['data'][shutter_idx, :]
+    #     shutter_voltage = paq_data['cellsdata'][shutter_idx, :]
     #
     #     shutter_times = np.where(shutter_voltage > 4)
     #     self.shutter_times = shutter_times[0]

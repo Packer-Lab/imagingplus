@@ -31,5 +31,5 @@ def test_processing_targets_stims(existing_trialobj_alloptical_fixture):
 # expobj = pkg.import_obj('/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
 # trial = expobj.load_trial('t-013')
 #
-# trial.data
+# trial.cellsdata
 #

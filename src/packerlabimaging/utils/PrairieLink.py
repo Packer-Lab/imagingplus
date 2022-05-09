@@ -24,7 +24,7 @@ def ReadRawFile(movie_path=None, start=1, stop=np.Inf, num_frames=np.Inf, verbos
 		choose whether to display output progress and stats
 	Output
 	------
-	data : np.ndarray
+	cellsdata : np.ndarray
 		frames x rows x cols array (dtype=np.uint16)
 	"""
 
@@ -40,7 +40,7 @@ def ReadRawFile(movie_path=None, start=1, stop=np.Inf, num_frames=np.Inf, verbos
 	# begin timer
 	time_started = time.time()
 
-	# open file and read data
+	# open file and read cellsdata
 	with open(movie_path, 'rb') as f:
 		# extract details from header
 		pixels_per_line = int(np.fromfile(f, dtype=np.uint16, count=1)[0])
@@ -66,13 +66,13 @@ def ReadRawFile(movie_path=None, start=1, stop=np.Inf, num_frames=np.Inf, verbos
 		if verbose:
 			print('Requested: ' + str(num_frames) + ' frames, from ' + str(start) + ' to ' + str(stop))
 
-		# Read data
+		# Read cellsdata
 		start_on_byte = (((start-1) * samples_per_frame)+2) *2  # plus 2 because header size, x2 because 1 uint16 is 2 bytes
 		num_chars_to_read = (num_frames * samples_per_frame)  # note size in bytes of char defined by fread function argument
 		f.seek(start_on_byte, 0)
 		data = np.fromfile(f, dtype=np.uint16, count=num_chars_to_read)
 
-	# Reshape data into frame array
+	# Reshape cellsdata into frame array
 	data = data.reshape(num_frames, lines_per_frame, pixels_per_line, order='C')
 
 	if verbose:
@@ -98,5 +98,5 @@ def WriteRawFile(data, file_name):
 		num_rows.tofile(raw_file)
 		num_cols.tofile(raw_file)
 
-		# write the data
+		# write the cellsdata
 		data.tofile(raw_file)

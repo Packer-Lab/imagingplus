@@ -1,4 +1,4 @@
-## main module for parsing, processing and interacting with data/files of 2p-stim protocols (i.e. NAPARM outputs)
+## main module for parsing, processing and interacting with cellsdata/files of 2p-stim protocols (i.e. NAPARM outputs)
 from __future__ import absolute_import
 from dataclasses import dataclass
 from typing import TypedDict, Optional, MutableMapping
@@ -143,7 +143,7 @@ class Targets(naparm):
         self.target_areas = []  # photostim targeted pixels area coordinates per SLM group
         # self.target_coords_all: list = []  # all SLM target coordinates
         # self.n_targets_total: int = 0  # total number of SLM targets
-        self.target_areas_exclude = []  # similar to .target_areas, but area diameter expanded (used in excluding data from this expanded region)
+        self.target_areas_exclude = []  # similar to .target_areas, but area diameter expanded (used in excluding cellsdata from this expanded region)
 
         # super().__init__(path=naparm_path)
         super().importNaparm(path=naparm_path)  # use constructor to call parent

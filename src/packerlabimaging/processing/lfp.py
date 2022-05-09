@@ -1,4 +1,4 @@
-# add electrophysiology data to the trial
+# add electrophysiology cellsdata to the trial
 
 # retrieving and processing on LFP recordings from the .Paq file
 import os.path
@@ -15,7 +15,7 @@ from packerlabimaging.processing.paq import paq2py
 
 class LFP:
     def __init__(self, data, rate, **kwargs):
-        self.data = data  #: 1-D LFP data
+        self.data = data  #: 1-D LFP cellsdata
         self.rate = rate  #: rate of sampling
 
     @classmethod
@@ -36,7 +36,7 @@ class LFP:
     def run_spectrogram(self, V, t, fs, start=None, stop=None, **kwargs):
         ax = kwargs['ax']
         fig = kwargs['fig']
-        # create a power spectrum of selected data
+        # create a power spectrum of selected cellsdata
         if start or stop:
             t_sub = np.where((t > start) & (t < stop))
             V = V[0][t_sub]

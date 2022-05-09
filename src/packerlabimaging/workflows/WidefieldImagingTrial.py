@@ -6,7 +6,7 @@ import time
 
 class WideFieldImaging:
     """
-    WideField imaging data object.
+    WideField imaging cellsdata object.
 
     """
 
@@ -32,7 +32,7 @@ class WideFieldImaging:
         else:
             information = self.t_series_name
 
-        return repr(f"({information}) WidefieldImaging experimental data object, last saved: {lastmod}")
+        return repr(f"({information}) WidefieldImaging experimental cellsdata object, last saved: {lastmod}")
 
     @property
     def t_series_name(self):
@@ -47,13 +47,13 @@ class WideFieldImaging:
                 pkl_path = self.pkl_path
             else:
                 raise ValueError(
-                    'pkl s2pResultsPath for saving was not found in data object attributes, please provide pkl_path to save to')
+                    'pkl s2pResultsPath for saving was not found in cellsdata object attributes, please provide pkl_path to save to')
         else:
             self.pkl_path = pkl_path
 
         with open(self.pkl_path, 'wb') as f:
             pickle.dump(self, f)
-        print("\n\t -- data object saved to %s -- " % pkl_path)
+        print("\n\t -- cellsdata object saved to %s -- " % pkl_path)
 
     def save(self):
         self.save_pkl()

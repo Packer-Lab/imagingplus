@@ -917,7 +917,7 @@
         'variable is not a bare identifier: ' + argument
       );
     } else {
-      // If a variable is not specified, place data values in local scope.
+      // If a variable is not specified, place cellsdata values in local scope.
       source = 'with(obj||{}){\n' + source + '}\n';
       argument = 'obj';
     }

@@ -7,7 +7,7 @@ import pandas as pd
 
 
 class AnnotatedData(ad.AnnData):
-    """Creates annotated data (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial."""
+    """Creates annotated cellsdata (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial."""
 
     def __init__(self, X, obs, var=None, data_label=None, **kwargs):
         adata_dict = {'X': X, 'obs': obs, 'var': var}
@@ -20,7 +20,7 @@ class AnnotatedData(ad.AnnData):
         print(f"Created AnnData object: \n\t{self.__repr__()}")
 
     def __str__(self):
-        "extensive information about the AnnotatedData data structure"
+        "extensive information about the AnnotatedData cellsdata structure"
         if self.filename:
             backed_at = f" backed at {str(self.filename)!r}"
         else:
@@ -47,7 +47,7 @@ class AnnotatedData(ad.AnnData):
 
 
     def _gen_repr(self, n_obs, n_vars) -> str:  # overriding base method from AnnData
-        """overrides the default anndata _gen_repr_() method for imaging data usage."""
+        """overrides the default anndata _gen_repr_() method for imaging cellsdata usage."""
 
         return f"Annotated Data of n_obs (# ROIs) × n_vars (# Frames) = {n_obs} × {n_vars}"
 
@@ -89,7 +89,7 @@ class AnnotatedData(ad.AnnData):
 
         """
 
-        print(f"\n\- converting anndata data matrix to long-form pandas dataframe ... [in progress]")
+        print(f"\n\- converting anndata cellsdata matrix to long-form pandas dataframe ... [in progress]")
 
         cols = [self.obs_keys()[0], self.var_keys()[0]]
         cols.extend(self.obs_keys()[1:])
@@ -111,7 +111,7 @@ class AnnotatedData(ad.AnnData):
                 df = pd.concat([df, pd.DataFrame(dict_, index=[index])])
                 index += 1
 
-        print(f"\n|- converting anndata data matrix to long-form pandas dataframe ... [finished]")
+        print(f"\n|- converting anndata cellsdata matrix to long-form pandas dataframe ... [finished]")
 
         return df
 
@@ -119,25 +119,25 @@ class AnnotatedData(ad.AnnData):
     # def create_anndata(cls, trial: ImagingTrial):
     #     """
     #     Alternative constructor to create anndata object using ImagingTrial as input.
-    #     Creates annotated data (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial.
+    #     Creates annotated cellsdata (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial.
     #
     #     """
     #     if trial.cells and trial.tmdata and trial.imdata:
     #         # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
     #         # build dataframe for obs_meta from suite2p stat information
-    #         obs_meta = trial.cells.data
+    #         obs_meta = trial.cells.cellsdata
     #
-    #         var_meta = trial.tmdata.data
+    #         var_meta = trial.tmdata.cellsdata
     #
-    #         assert obs_meta.shape[0] == trial.imdata.data.shape[1], '.cells.data shape does not match .imdata.data shape that are being set together.'
-    #         if var_meta.shape[0] == trial.imdata.data.shape[0]:
+    #         assert obs_meta.shape[0] == trial.imdata.cellsdata.shape[1], '.cells.cellsdata shape does not match .imdata.cellsdata shape that are being set together.'
+    #         if var_meta.shape[0] == trial.imdata.cellsdata.shape[0]:
     #             var_meta = var_meta.T
-    #         elif var_meta.shape[1] != trial.imdata.data.shape[0]:
-    #             raise ValueError('.tmdata.data shape does not match .imdata.data shape that are being set together.')
+    #         elif var_meta.shape[1] != trial.imdata.cellsdata.shape[0]:
+    #             raise ValueError('.tmdata.cellsdata shape does not match .imdata.cellsdata shape that are being set together.')
     #
     #
-    #         print(f"\n\----- CREATING annotated data object using AnnData:")
-    #         adata = cls(X=trial.imdata.data, obs=obs_meta, var=var_meta.T)
+    #         print(f"\n\----- CREATING annotated cellsdata object using AnnData:")
+    #         adata = cls(X=trial.imdata.cellsdata, obs=obs_meta, var=var_meta.T)
     #
     #         print(f"\n{adata}")
     #         return adata

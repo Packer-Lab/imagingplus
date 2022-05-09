@@ -156,10 +156,10 @@ def stats_dicts_to_3d_array_(stat_dict, output_ops):
     return np.stack(arrays)
 
 
-# todo have suite2p run return a cells annotations (and maybe even imaging data set??) that can get added to trials' cells and imdata attr's immediately
+# todo have suite2p run return a cells annotations (and maybe even imaging cellsdata set??) that can get added to trials' cells and imdata attr's immediately
 
 class Suite2pExperiment:
-    """used to run and further process suite2p processed data, and analysis associated with suite2p processed data."""
+    """used to run and further process suite2p processed cellsdata, and analysis associated with suite2p processed cellsdata."""
 
     # default ops dict for suite2p experiment run
     ops = {
@@ -180,7 +180,7 @@ class Suite2pExperiment:
         'num_workers': 0,  # 0 to select num_cores, -1 to disable parallelism, N to enforce value
         'num_workers_roi': 0,  # 0 to select number of planes, -1 to disable parallelism, N to enforce value
         # registration settings
-        'do_registration': True,  # whether to register data
+        'do_registration': True,  # whether to register cellsdata
         'nimg_init': 200,  # subsampled key_frames for finding reference image
         'maxregshift': 0.1,  # max allowed registration shift, as a fraction of frame max(width and height)
         'align_by_chan': 1,  # when multi-channel, you can align by non-functional channel (1-based)
@@ -276,7 +276,7 @@ class Suite2pExperiment:
                 self._retrieveSuite2pData(self.s2pResultsPath, neuropil_coeff=self.neuropil_coeff)
             except Exception:
                 raise Exception(
-                    f'Something went wrong while trying to load suite2p processed data from: {s2pResultsPath}')
+                    f'Something went wrong while trying to load suite2p processed cellsdata from: {s2pResultsPath}')
             self.s2pResultExists = True
 
         self.db: dict = {}
@@ -300,10 +300,10 @@ class Suite2pExperiment:
 
     # noinspection PyTypeChecker
     def _retrieveSuite2pData(self, s2p_path: str = None, neuropil_coeff: float = 0.7):
-        """processing of suite2p data from the current t-series
+        """processing of suite2p cellsdata from the current t-series
         :param s2p_path: s2pResultsPath to the directory containing suite2p outputs
         :param neuropil_coeff: choose to subtract neuropil or not when loading s2p traces
-        :param save: choose to save data object or not
+        :param save: choose to save cellsdata object or not
         """
 
         print(f'\----- Adding Suite2p results to .Suite2p module ...')
@@ -357,7 +357,7 @@ class Suite2pExperiment:
 
         # consider replacing this and use returning properties
         if self.n_planes == 1:
-            # print(f'*** plane 0 data ***')
+            # print(f'*** plane 0 cellsdata ***')
             self.raw = self.raw[0]
             self.spks = self.spks[0]
             self.neuropil = self.neuropil[0]
@@ -426,7 +426,7 @@ class Suite2pExperiment:
     def s2pMeanImage(self, plot: bool = True):
         """
         Return array of the s2p mean image.
-        :param s2p_path: (optional) s2pResultsPath to location of s2p data
+        :param s2p_path: (optional) s2pResultsPath to location of s2p cellsdata
         :param plot: (optional) option to plot the s2p mean image
         :return:
         """
@@ -573,7 +573,7 @@ class Suite2pExperiment:
 
 # noinspection DuplicatedCode
 class Suite2pResultsTrial(CellAnnotations, ImagingData):
-    """Class to collect and store suite2p processed data for one trial - out of overall experiment."""
+    """Class to collect and store suite2p processed cellsdata for one trial - out of overall experiment."""
 
     def __init__(self, s2pExp: Suite2pExperiment, trial_frames: tuple):
         """
@@ -608,14 +608,11 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
             raise ValueError('cannot create s2p results trial without existing results in the input s2pExperiment.')
 
         cells_data, cells_multidim = self.getCellsAnnotations()
-        CellAnnotations(cells_array=cells_data.index, annotations=cells_data.columns, data=cells_data, multidim_data=cells_multidim)
+        # super(Suite2pResultsTrial, self).__init__(cells_array=cells_data.index, annotations=cells_data.columns, cellsdata=cells_data, multidim_data=cells_multidim)
 
-        imdata = {
-            'raw': raw,
-            'spks': spks,
-            'neuropil': neuropil
-        }
-        ImagingData(data=imdata)
+        CellAnnotations.__init__(self, cells_array=cells_data.index, annotations=cells_data.columns, cellsdata=cells_data, multidim_data=cells_multidim)
+
+        ImagingData.__init__(self, imdata=raw, spks = spks, neuropil = neuropil)
 
         print(f"\n\----- ADDED .Suite2p module to trial. ", end='\r')
 
@@ -634,9 +631,9 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
         self.__s2pResultExists = val
 
     def _get_suite2pResults(self,
-                            s2pExp: Suite2pExperiment):
+                            s2pExp: Suite2pExperiment) -> np.ndarray:
         """
-        Get suite2p data for current trial's key_frames.
+        Get suite2p cellsdata for current trial's key_frames.
 
         :param s2pExp:
         :return:
@@ -802,7 +799,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
 
 #### archiving away for now - trying to switch to an approach that doesn't inherit from parent suite2p obj.
 class Suite2PTrial_(Suite2pExperiment):
-    """used to collect and store suite2p processed data for one trial - out of overall experiment."""
+    """used to collect and store suite2p processed cellsdata for one trial - out of overall experiment."""
 
     def __init__(self, trialsTiffsSuite2p: dict, trial_frames: tuple, s2pResultsPath: Optional[str] = None):
         """
@@ -846,7 +843,7 @@ class Suite2PTrial_(Suite2pExperiment):
             return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} key_frames. No Suite2p Results loaded.'
 
     def _get_suite2pResults(self):  # TODO complete code for getting suite2p results for trial
-        """crop suite2p data for key_frames only for the present trial"""
+        """crop suite2p cellsdata for key_frames only for the present trial"""
 
         # for attr in ['n_units', 'cell_id', 'cell_plane', 'cell_x', 'cell_y', 'xoff', 'yoff', 'raw', 'spks', 'neuropil', 'stat']:
         #     try:

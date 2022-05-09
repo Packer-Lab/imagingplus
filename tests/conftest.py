@@ -120,7 +120,7 @@ def alloptical_trial_fixture():
 @pytest.fixture(scope="session")
 def experiment_fixture():
     ExperimentMetainfo = {
-        'dataPath': '/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-data',
+        'dataPath': '/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-cellsdata',
         'saveDir': '/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis',
         "expID": 'HF113',
         'comment': 'two photon imaging + LFP dataset',
@@ -174,7 +174,7 @@ def anndata_trial_data():
 
     # number of observations
     n_obs = 1000
-    # say we measure the time of observing the data points
+    # say we measure the time of observing the cellsdata points
     # add them to a dataframe for storing some annotation
     obs = pd.DataFrame()
     obs['group'] = np.random.choice(['day 1', 'day 2', 'day 4', 'day 8'], n_obs)
@@ -189,7 +189,7 @@ def anndata_trial_data():
                  'var_group_2': np.random.choice(['group A', 'group B', 'group C', 'group D'], n_vars)}
     # dataframe for annotating the variables
     var = pd.DataFrame(var_group, index=var_names)
-    # the data matrix of shape n_obs x n_vars
+    # the cellsdata matrix of shape n_obs x n_vars
     # X = np.arange(n_obs * n_vars).reshape(n_obs, n_vars)
     X = np.random.random(n_obs * n_vars).reshape(n_obs, n_vars)
 
@@ -202,7 +202,7 @@ def existing_anndata():
         pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
     trialobj = expobj.load_trial(trialID=expobj.trialIDs[0])
 
-    print(trialobj.data)  # this is the anndata object for this trial
+    print(trialobj.cellsdata)  # this is the anndata object for this trial
 
     var_meta = pd.DataFrame({
         'exp_group': np.random.choice(['A', 'B', 'C'], trialobj.n_frames),
@@ -211,6 +211,6 @@ def existing_anndata():
     )
     # var_meta
 
-    trialobj.data.add_var(var_name='exp_group', values=list(var_meta['exp_group']))
+    trialobj.cellsdata.add_var(var_name='exp_group', values=list(var_meta['exp_group']))
 
-    print(trialobj.data)
+    print(trialobj.cellsdata)
