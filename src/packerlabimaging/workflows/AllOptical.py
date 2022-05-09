@@ -16,7 +16,6 @@ from packerlabimaging import TwoPhotonImaging
 from packerlabimaging.main.classes import ImagingMetadata, ImagingData, TemporalData, ImagingTrial, CellAnnotations, \
     Experiment
 from packerlabimaging.main.paq import PaqData
-from packerlabimaging.processing.stats import runWilcoxonsTest, sigTestAvgResponse
 from packerlabimaging.utils.io import import_obj
 from packerlabimaging.utils.utils import convert_to_8bit
 from packerlabimaging.processing.naparm import Targets
@@ -726,7 +725,9 @@ class AllOpticalTrial(TwoPhotonImaging):
     def statisticalProcessingAllCells(self):
         """Runs statistical processing on photostim response arrays"""
 
+        from packerlabimaging.processing.stats import runWilcoxonsTest
         self.wilcoxons = runWilcoxonsTest(array1=self.__pre_array, array2=self.__post_array)
+        from packerlabimaging.processing.stats import sigTestAvgResponse
         self.sig_units = sigTestAvgResponse(trial=self, p_vals=self.wilcoxons, alpha=0.1)
 
 

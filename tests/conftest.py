@@ -139,8 +139,10 @@ def existing_trialobj_twophotonimaging_fixture():
 @pytest.fixture(scope="session")
 def existing_expobj_fixture():
     expobj = import_obj(
-        pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis/HF113_analysis.pkl')
-    return expobj
+        pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/test-analysis/HF113_analysis.pkl')
+
+    date = '2021-01-31'
+    return expobj, date
 
 
 @pytest.fixture(scope="session")

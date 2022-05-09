@@ -255,12 +255,12 @@ class Suite2pExperiment:
         tiff_paths_to_use_s2p: dict = trialsTiffsSuite2p
         for trial, path in tiff_paths_to_use_s2p.items():
             if path is not None:
-                if os.path.exists(path):
-                    self.trials.append(trial)
+                self.trials.append(trial)
             else:
                 tiff_paths_to_use_s2p.pop(trial)
 
         # self.trials = [*trialsTiffsSuite2p]
+        # todo this is only necessary for running suite2p right?
         self.tiff_paths_to_use_s2p: dict = tiff_paths_to_use_s2p
         assert len(
             self.trials) > 0, "no trials found to run suite2p, option available to provide list of trial IDs in " \
@@ -594,7 +594,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
         self.n_units = None
         self.output_ops = None
         self.stat = None
-        self.cell_id = None
+        # self.cell_id = None
 
         print(f"\n\----- ADDING .Suite2p module to trial ... ", end='\r')
 
@@ -643,7 +643,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
         """
 
         if s2pExp.n_planes == 1:
-            self.cell_id = s2pExp.cell_id
+            # self.cell_id = s2pExp.cell_id
             self.stat = s2pExp.stat
             self.output_ops = s2pExp.output_ops
             self.n_units = s2pExp.n_units

@@ -34,8 +34,6 @@ class TwoPhotonImaging(ImagingTrial):
         super().__init__(date=date, trialID=trialID, expID=expID, dataPath=dataPath, expGroup=expGroup, comment=comment,
                          saveDir=saveDir, imparams=imparams, cells=cells, tmdata=tmdata)
 
-        # processing collect mean FOV Trace -- after collecting imaging params and Paq timing info
-        self.meanFluImg, self.meanFovFluTrace = self.meanRawFluTrace()  #: mean image and mean FOV fluorescence trace
 
         # SAVE two photon trial object
         self.save()

@@ -236,8 +236,7 @@ class Experiment:
         for trial in s2p_trials:
             trialobj = self.load_trial(trialID=trial)
             # print(f'n_frames', self.Suite2p.n_frames)
-            trialobj.Suite2p = Suite2pResultsTrial(s2pExp=self.Suite2p, trial_frames=(
-                total_frames, total_frames + trialobj.n_frames))  # use trial obj's current trial key_frames
+            trialobj.Suite2p = Suite2pResultsTrial(s2pExp=self.Suite2p, trial_frames=(total_frames, total_frames + trialobj.n_frames))  # use trial obj's current trial key_frames
             trialobj.save()
             total_frames += trialobj.n_frames
 
@@ -359,6 +358,7 @@ class CellAnnotations:
         Any]] = None  #: annotations with data of unconstrained dimensions for all cells. Structured as dictionary with keys corresponding to annotation name and a list of the length of cells containing data in any format.
 
     def __post_init__(self):
+        print(f'adding CellAnnotations module. consisting of {self.n_annotations} annotations.')
         if self.multidim_data:
             for label, data in self.multidim_data.items():
                 if not len(data) == self.n_cells:
@@ -468,6 +468,11 @@ class ImagingTrial:
         else:
             raise FileNotFoundError(f"dataPath does not exist: {self.dataPath}")
 
+        # processing collect mean FOV Trace -- after collecting imaging params and Paq timing info
+        im_stack = self.importTrialTiff()
+        self._n_frames = im_stack.shape[0]
+        self.meanFluImg, self.meanFovFluTrace = self.meanRawFluTrace(im_stack)  #: mean image and mean FOV fluorescence trace
+
         # set, create analysis save path directory and create pkl object
         os.makedirs(self.saveDir, exist_ok=True)
         self.metainfo['paths']['pkl_path'] = f"{self.saveDir}{self.date}_{self.trialID}.pkl"
@@ -504,7 +509,6 @@ class ImagingTrial:
                                      date=date,
                                      trialID=trialID,
                                      expID=experiment.expID,
-                                     group=group,
                                      comment=comment)
         experiment.add_trial(trialID=trialID, trialobj=trialobj)
         return trialobj
@@ -610,13 +614,9 @@ class ImagingTrial:
     ## below properties/methods have pre-requisite processing steps
     @property
     def n_frames(self):
-        """number of frames in anndata imaging table.
-
+        """number of imaging frames from tiff data.
         """
-        if not self.data:
-            UnavailableOptionError(f'create anndata imaging table to retrieve n_frames.')
-
-        return self.data.n_vars
+        return self._n_frames
 
     def importTrialTiff(self) -> np.ndarray:
         """
@@ -625,19 +625,19 @@ class ImagingTrial:
         :return: imaging tiff as numpy array
         """
         print(f"\n\- loading raw TIFF file from: {self.tiff_path}", end='\r')
-        im_stack = tf.imread(self.tiff_path, key=range(self.n_frames))
+        im_stack = tf.imread(self.tiff_path)
         print('|- Loaded experiment tiff of shape: ', im_stack.shape)
 
         return im_stack
 
-    def meanRawFluTrace(self):
+    def meanRawFluTrace(self, im_stack: np.ndarray = None):
         """
         Collects the raw mean of FOV fluorescence trace across the t-series.
 
         :return: mean fluorescence trace
         """
         try:
-            im_stack = self.importTrialTiff()
+            im_stack = self.importTrialTiff() if im_stack is None else im_stack
 
             print('\n-----collecting mean raw flu trace from tiff file...')
             mean_flu_img = np.mean(im_stack, axis=0)
