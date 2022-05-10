@@ -5,9 +5,12 @@ from typing import Optional, MutableMapping, Union, TypedDict, List, Dict, Any
 
 import numpy as np
 import pandas as pd
+
+from packerlabimaging.main.subcore import ImagingMetadata, ImagingData, CellAnnotations, TemporalData
 from packerlabimaging.processing.anndata import AnnotatedData
 
 # from packerlabimaging.processing.imagingMetadata import ImagingMetadata
+from packerlabimaging.processing.suite2p import Suite2pResultsTrial
 from packerlabimaging.utils.classes import UnavailableOptionError, TrialMetainfo
 
 import os
@@ -250,212 +253,6 @@ class Experiment:
 
 
 @dataclass
-class TemporalData:
-    """1-D time series datsets corresponding with an imaging trial."""
-    file_path: str  #: path to cellsdata file
-    sampling_rate: float  #: rate of cellsdata collection (Hz)
-    channels: List[str]  #: list of cellsdata channel names.
-    data: pd.DataFrame  #: N columns x Time array of N x 1D cellsdata channels collected over Time at the same sampling rate
-    frame_times: Union[
-        list, np.ndarray] = None  #: timestamps representing imaging frame times. must be of same time duration as imaging dataset.
-    sparse_data: Dict[
-        str, np.ndarray] = None  #: dictionary of timeseries channels containing cellsdata keyed at imaging frames for each timeseries channel
-
-    def __post_init__(self):
-        print(f"Created new TemporalData of {self.n_channels} x {self.n_timepoints} (sampled at {self.sampling_rate}")
-        pass
-
-    def __repr__(self):
-        return f"TemporalData module, containing {self.n_timepoints} timepoints and {self.n_channels} channels."
-
-    def __str__(self):
-        return f"TemporalData module, containing {self.n_timepoints} timepoints and {self.n_channels} channels: \n{self.channels}"
-
-    @property
-    def n_frames(self):
-        """number of timed imaging frames"""
-        return len(self.frame_times)
-
-    @property
-    def n_timepoints(self):
-        """number of cellsdata collection timepoints"""
-        return self.data.shape[0]
-
-    @property
-    def n_channels(self):
-        """number of cellsdata collection channels"""
-        return self.data.shape[1]
-
-    def get_sparse_data(self, frame_times: Union[list, np.ndarray] = None):
-        """
-        todo: need to probably average the original signal between key_frames if collected at a higher rate than frame_times.
-            - why not just use a downsampling algorithm to downsample to the same frame rate and num datapoints as the imaging key_frames????
-        Returns dictionary of numpy array keyed on channels from paq_data timed to 2photon imaging frame_times.
-        In effect this works as a downsampling algorithm.
-
-        :param frame_times:
-        :return:
-        """
-
-        # todo insert test to check that original signal has been collected at a rate higher than imaging. if not then need to handle differently.
-
-        assert hasattr(self,
-                       'frame_times') or frame_times, 'no frame_times given to retrieve cellsdata from those timestamps.'
-
-        frame_times = self.frame_times if frame_times is None else frame_times
-
-        print(f"\n\t\- Getting imaging key frames timed cellsdata from {len(frame_times)} frames ... ")
-
-        # read in and save sparse version of all cellsdata channels (only save cellsdata from timepoints at frame clock times)
-        sparse_data = {}
-        for idx, chan in enumerate(self.channels):
-            print(f'\t\t\- Adding sparse cellsdata for channel: {chan} ')
-            data = self.data.iloc[frame_times, idx]
-            sparse_data[chan] = data
-
-        sparse_data = pd.DataFrame(sparse_data)
-
-        return sparse_data
-
-    def cropData(self, begin: int, end: int, channels: List[str] = 'all', replace: bool = False):
-        """
-        Crops saved temporal cellsdata channels to the timestamps of begin and end.
-
-        :param channels: channels to crop cellsdata, default is 'all' (all channels in dataset).
-        :param begin: timestamp to begin cropping at
-        :param end: timestamp to end cropping at
-        :param replace: if True, then replace .cellsdata attribute with newly cropped cellsdata. if False, return the cropped dataframe.
-        """
-
-        channels = self.channels if channels == 'all' else channels
-        print(f"\- cropping {channels} to {begin} and {end} paq clock times.")
-
-        assert self.data.shape[0] >= (
-                end - begin), f'Not enough time series samples in cellsdata to crop between the provided times.'
-        data_ = self.data.loc[begin: end, channels]
-
-        if replace:
-            self.data = data_
-        else:
-            return data_
-
-        # older approach...
-        # for channel in channels:
-        #     print(f"\- cropping {channel} to {begin} and {end} paq clock times.")
-        #     cellsdata = self.cellsdata[channel].to_numpy()
-        #     assert len(cellsdata) >= (end - begin), f'{channel} paq cellsdata is not long enough to crop between the provided clock times.'
-        #     cropdata = cellsdata[begin: end]
-        #     setattr(self, channel, cropdata)
-
-
-@dataclass
-class CellAnnotations:
-    """Annotations of cells in an imaging trial."""
-
-    def __init__(self, cells_array: Union[List[int], pd.Index, pd.RangeIndex, np.ndarray], annotations: Union[List[str], pd.Index],
-                 cellsdata: Union[pd.DataFrame, pd.Series], multidim_data: Dict[str, List[Any]] = None):
-        """
-
-        :param cells_array: ID of all cells in imaging dataset. must be of same cell length as imaging dataset.
-        :param annotations: list of names of annotations
-        :param cellsdata: M x Cells array of an arbritrary number (M) 1D annotations channels collected for all Cells. must contain same number of cells as cells_array.
-        :param multidim_data: annotations with cellsdata of unconstrained dimensions for all cells. Structured as dictionary with keys corresponding to annotation name and a list of the length of cells containing cellsdata in any format.
-        """
-
-        self.cells_array = cells_array
-        self.annotations = annotations
-        self.cellsdata = cellsdata
-        self.multidim_data = multidim_data
-
-        print(f'\- added CellAnnotations module. consisting of {self.n_annotations} annotations.')
-        if self.multidim_data:
-            for label, data in self.multidim_data.items():
-                if not len(data) == self.n_cells:
-                    raise ValueError(f"length of {label} of multidimdata does not match number of cells.")
-
-    def __repr__(self):
-        return f"CellAnnotations module, containing {self.n_cells} cells and {self.n_annotations} annotations."
-
-    def __str__(self):
-        return f"CellAnnotations module, containing {self.n_cells} cells and {self.n_annotations} annotations: \n{self.annotations}"
-
-    # constructors:
-    # @classmethod
-    # def s2p_to_CellAnnotations(cls, s2pTrial):
-    #     """alternative constructor for CellAnnotations from suite2p results."""
-    #     cellsdata = s2pTrial.setCellsAnnotations()
-    #     obj = cls(cells_array=cellsdata['original_index'], annotations=cellsdata.columns, cellsdata=cellsdata)
-    #     return obj
-
-    # properties:
-    @property
-    def n_cells(self):
-        """number of cells"""
-        return len(self.cells_array)
-
-    @property
-    def n_annotations(self):
-        """number of annotations"""
-        return len(self.annotations)
-
-    # todo ?create properties for accessing individual annotations
-
-    @property
-    def cell_id(self):
-        """ID of cells"""
-        assert 'cell_id' in self.cellsdata, 'cell_id cannot be found in cells annotations under cellsdata'
-        return list(self.cellsdata['cell_id'])
-
-    # functions:
-
-
-@dataclass
-class ImagingData:
-    """Imaging dataset."""
-
-    def __init__(self, imdata: Union[np.ndarray, pd.DataFrame], **kwargs):
-        """
-        Imaging dataset.
-
-        :param imdata: N rois x num_frames, table of imaging cellsdata of cells (N) collected over time (Frames)
-        """
-        self.imdata = imdata
-        for i, values in kwargs.items():
-            setattr(self, i, values)
-        print(f'\- added ImagingData module. consisting of {self.imdata.shape} ROIs x Frames.')
-
-
-    @property
-    def n_frames(self):
-        """number of imaging frames in imaging cellsdata"""
-        return self.imdata.shape[1]
-
-    @property
-    def n_rois(self):
-        """number of ROIs in imaging cellsdata"""
-        return self.imdata.shape[0]
-
-
-class ImagingMetadata:
-    """Metadata about imaging system parameters."""
-
-    def __init__(self, microscope, n_frames, fps, frame_x, frame_y, n_planes, pix_sz_x, pix_sz_y, **kwargs):
-        self.microscope = microscope  #: given name of microscope
-        self.n_frames = n_frames  #: number of imaging frames in the current trial
-        self.fps = fps  #: rate of imaging acquisition (frames per second)
-        self.frame_x = frame_x  #: num of pixels in the x direction of a single frame
-        self.frame_y = frame_y  #: num of pixels in the y direction of a single frame
-        self.n_planes = n_planes  #: num of FOV planes in imaging acquisition
-        self.pix_sz_x = pix_sz_x  #: size of a single imaging pixel in x direction (microns)
-        self.pix_sz_y = pix_sz_y  #: size of a single imaging pixel in y direction (microns)
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-
-    def __repr__(self):
-        return f'ImagingMetadata for imaging cellsdata collected with {self.microscope}.'
-
-
-@dataclass
 class ImagingTrial:
     dataPath: str
     saveDir: str  #: main dir where the experiment object and the trial objects will be saved to
@@ -469,7 +266,7 @@ class ImagingTrial:
     imdata: ImagingData = None
     cells: CellAnnotations = None
     tmdata: TemporalData = None
-    Suite2p = None
+    Suite2p: Suite2pResultsTrial = None
 
     def __post_init__(self):
         self.metainfo = TrialMetainfo(date=self.date, trialID=self.trialID, expID=self.expID, expGroup=self.expGroup,

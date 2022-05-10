@@ -6,7 +6,8 @@ import time
 import numpy as np
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from packerlabimaging.main.classes import ImagingTrial, CellAnnotations, ImagingData
+from packerlabimaging.main.core import ImagingTrial
+from packerlabimaging.main.subcore import CellAnnotations, ImagingData
 from packerlabimaging.main.paq import PaqData
 from packerlabimaging.processing.imagingMetadata import ImagingMetadata
 
@@ -34,7 +35,6 @@ class TwoPhotonImaging(ImagingTrial):
         super().__init__(date=date, trialID=trialID, expID=expID, dataPath=dataPath, expGroup=expGroup, comment=comment,
                          saveDir=saveDir, imparams=imparams, cells=cells, tmdata=tmdata)
 
-
         # SAVE two photon trial object
         self.save()
 
@@ -43,10 +43,10 @@ class TwoPhotonImaging(ImagingTrial):
             lastmod = time.ctime(os.path.getmtime(self.pkl_path))
         else:
             lastmod = "(unsaved pkl object)"
-        return repr(f"ID: {self.t_series_name} (TwoPhotonImagingTrial experimental cellsdata object, last saved: {lastmod})")
+        return repr(f"ID: {self.t_series_name} (TwoPhotonImagingTrial experimental object, last saved: {lastmod})")
 
     def __repr__(self):
-        return repr(f"{self.t_series_name} (TwoPhotonImagingTrial experimental cellsdata object)")
+        return repr(f"{self.t_series_name} (TwoPhotonImagingTrial experimental object)")
 
     # def _getImagingParameters(self, metadata: Optional[dict] = None, microscope: Optional[str] = 'Bruker'):
     #     """retrieves imaging metadata parameters. If using Bruker microscope and PrairieView, then _prairieview module is used to collect this cellsdata.

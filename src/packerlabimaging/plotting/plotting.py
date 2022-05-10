@@ -370,21 +370,16 @@ def plotMeanFovFluTrace(trialobj: TwoPhotonImagingTrial, **kwargs):
 
 
 @plotting_decorator(figsize=(10, 6))
-def plot_photostim_traces_overlap(array, trialobj: AllOpticalTrial, exclude_id=[], y_spacing_factor=1, title='',
+def plot_photostim_traces_overlap(array, trialobj: AllOpticalTrial, exclude_id: list = None, y_spacing_factor=1, title='',
                                   x_axis='Time (seconds)', **kwargs):
     """
     :param array:
     :param trialobj:
-    :param spacing: a multiplication factor that will be used when setting the spacing between each trace in the final plot
+    :param exclude_id:
+    :param y_spacing_factor:
     :param title:
-    :param y_min:
-    :param y_max:
-    :param x_label:
-    :param save_fig:
-    :param fig: a matplotlib.Figure instance, if provided use this fig for plotting
-    :param ax: a matplotlib.Axes.axes instance, if provided use this ax for plotting
-    :param show: if False, do not display plot (used when the necessity is to return the fig and ax objects to futher manipulation)
-    :returns fig, ax: returns fig and ax object, if show is False
+    :param x_axis:
+    :param kwargs:
 
     """
 

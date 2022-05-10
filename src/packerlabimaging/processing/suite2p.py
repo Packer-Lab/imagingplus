@@ -1,7 +1,7 @@
 import os
 import time
 from pathlib import Path
-from typing import Dict, Any, Optional, List, Union
+from typing import Dict, Any, Optional, List, Union, Tuple
 
 import numpy as np
 import pandas as pd
@@ -222,7 +222,7 @@ class Suite2pExperiment:
         :param subtract_neuropil:
         :param dataPath:
         """
-
+        self.__s2pResultExists = False
         self.bad_frames: list = []  #: list of key_frames to discard during Suite2p ROI detection procedure
         print(f"\- ADDING .Suite2p module to Experiment object ... ", end='\r')
 
@@ -612,7 +612,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
 
         CellAnnotations.__init__(self, cells_array=cells_data.index, annotations=cells_data.columns, cellsdata=cells_data, multidim_data=cells_multidim)
 
-        ImagingData.__init__(self, imdata=raw, spks = spks, neuropil = neuropil)
+        ImagingData.__init__(self, imdata=raw, spks=spks, neuropil=neuropil)
 
         print(f"\n\----- ADDED .Suite2p module to trial. ", end='\r')
 
@@ -630,8 +630,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
     def s2pResultExists(self, val):
         self.__s2pResultExists = val
 
-    def _get_suite2pResults(self,
-                            s2pExp: Suite2pExperiment) -> np.ndarray:
+    def _get_suite2pResults(self, s2pExp: Suite2pExperiment) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         """
         Get suite2p cellsdata for current trial's key_frames.
 
@@ -670,7 +669,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
         self.im[self.im == 0] = np.nan
         self.s2pResultsPath = s2pExp.s2pResultsPath
 
-        return raw, spks, neuropil
+        return np.asarray(raw), np.asarray(spks), np.asarray(neuropil)
 
     def makeFrameAverageTiff(self, reg_tif_dir: str, frames: Union[int, list], peri_frames: int = 100,
                              save_dir: str = None, to_plot=False):
@@ -796,136 +795,146 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
                 print('saving cropped tiff ', reg_tif_crop.shape)
                 tif.write(reg_tif_crop)
 
+    @property
+    def cell_coords(self):
+        """X and Y coordinates of cells"""
+        assert 'med' in self.cellsdata, 'med cannot be found in cells annotations under cellsdata'
+        coordinates = np.empty(shape=[self.n_cells, 2])
+        for cell, value in enumerate(self.cellsdata['med']):
+            coordinates[cell, 0] = value[1]
+            coordinates[cell, 1] = value[0]
+        return coordinates
+
 
 #### archiving away for now - trying to switch to an approach that doesn't inherit from parent suite2p obj.
-class Suite2PTrial_(Suite2pExperiment):
-    """used to collect and store suite2p processed cellsdata for one trial - out of overall experiment."""
-
-    def __init__(self, trialsTiffsSuite2p: dict, trial_frames: tuple, s2pResultsPath: Optional[str] = None):
-        """
-        Connecting Suite2p results from a specific trial (which spans trial_frames out of the overall Suite2p run) to that trial.
-
-        :param trialsTiffsSuite2p:
-        :param dataPath:
-        :param trial_frames:
-        :param s2pResultsPath:
-        :param subtract_neuropil:
-        """
-        # todo need to reconsider this heirarchy; it saves in the entire suite2p result for every trial....
-        super().__init__(trialsTiffsSuite2p,
-                         s2pResultsPath)  # - TODO it really is confusing to be passing in all trials for a s2p results obj that should be restricted to just one trial
-
-        print(f"\n\----- ADDING .Suite2p module to trial ... ", end='\r')
-
-        ## initializing attributes to collect Suite2p results for this specific trial
-        # self.dfof: list(np.ndarray) = []  # array of dFF normalized Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
-        # self.__raw: List[np.ndarray] = self.raw
-        # self.__spks: List[np.ndarray] = self.spks
-        # self.__neuropil: List[np.ndarray] = self.neuropil
-
-        self.trial_frames = trial_frames  # tuple of first and last frame (out of the overall suite2p run) corresponding to the present trial
-
-        # self.suite2p_overall = suite2p_experiment_obj
-        print(
-            f"\t|- current trial key_frames: {trial_frames} out of {self.n_frames} total key_frames processed through suite2p")
-        self._get_suite2pResults() if self.s2pResultsPath else None
-
-        # s2pResultsPath = suite2p_experiment_obj.s2pResultsPath if hasattr(suite2p_experiment_obj, 's2pResultsPath') else None
-        # Suite2pExperiment.__init__(self, trialsSuite2p = suite2p_experiment_obj.trials, s2pResultsPath=s2pResultsPath,
-        #                                   subtract_neuropil=suite2p_experiment_obj.subtract_neuropil)
-
-        print(f"\n\----- ADDED .Suite2p module to trial. ", end='\r')
-
-    def __repr__(self):
-        if self.s2pResultExists:
-            return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} key_frames x {self.n_units} s2p ROIs'
-        else:
-            return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} key_frames. No Suite2p Results loaded.'
-
-    def _get_suite2pResults(self):  # TODO complete code for getting suite2p results for trial
-        """crop suite2p cellsdata for key_frames only for the present trial"""
-
-        # for attr in ['n_units', 'cell_id', 'cell_plane', 'cell_x', 'cell_y', 'xoff', 'yoff', 'raw', 'spks', 'neuropil', 'stat']:
-        #     try:
-        #         setattr(self, attr, getattr(self.suite2p_overall, attr))
-        #     except AttributeError:
-        #         pass
-
-        if self.n_planes == 1:
-            self.cell_id = self.cell_id
-            self.stat = self.stat[0]
-
-            self.raw = self.raw[:, self.trial_frames[0]:self.trial_frames[
-                1]]  # array of raw Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
-            self.spks = self.spks[:, self.trial_frames[0]:self.trial_frames[
-                1]]  # array of deconvolved spks values from suite2p output [num cells x length of imaging acquisition], one per plane
-            self.neuropil = self.neuropil[:, self.trial_frames[0]:self.trial_frames[
-                1]]  # array of neuropil Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
-
-            self.s2pResultExists = True
-
-        else:
-            for plane in range(self.n_planes):
-                self.raw.append(self.raw[plane][:, self.trial_frames[0]:self.trial_frames[1]])
-                self.spks.append(self.spks[plane][:, self.trial_frames[0]:self.trial_frames[1]])
-                self.neuropil.append(self.neuropil[plane][:, self.trial_frames[0]:self.trial_frames[1]])
-
-                # self.dfof.append(normalize_dff(self.raw[plane]))  # calculate df/f based on relevant key_frames
-                self.s2pResultExists = True
-
-    def makeFrameAverageTiff(self, reg_tif_dir: str, frames: Union[int, list], peri_frames: int = 100,
-                             save_dir: str = None,
-                             to_plot=False):
-        """Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from the suite2p registered TIFF file.
-        """
-
-        # read in registered tiff
-        reg_tif_folder = reg_tif_dir
-        assert os.path.exists(reg_tif_dir), '`reg_tif_dir` could not be found.'
-        reg_tif_list = os.listdir(reg_tif_dir)
-        reg_tif_list.sort()
-
-        if type(frames) == int:
-            frames = [frames]
-
-        frames_s2prun_num = [(frame + self.trial_frames[0]) for frame in frames]
-
-        for idx, frame in enumerate(frames_s2prun_num):
-            batch_num = frame // self.ops['batch_size']
-
-            tif_path = reg_tif_folder + reg_tif_list[batch_num]
-
-            im_batch_reg = tf.imread(tif_path, key=range(0, self.ops['batch_size']))
-
-            frame_num_batch = frame - (batch_num * self.ops['batch_size'])
-
-            if frame_num_batch < peri_frames // 2:
-                peri_frames_low = frame_num_batch
-            else:
-                peri_frames_low = peri_frames // 2
-            peri_frames_high = peri_frames // 2
-            im_sub_reg = im_batch_reg[frame_num_batch - peri_frames_low: frame_num_batch + peri_frames_high]
-
-            avg_sub = np.mean(im_sub_reg, axis=0)
-
-            # convert to 8-bit
-            from packerlabimaging.utils.utils import convert_to_8bit
-            avg_sub = convert_to_8bit(avg_sub, 0, 255)
-
-            if save_dir:
-                if '.tif' in save_dir:
-                    from packerlabimaging.utils.utils import return_parent_dir
-                    save_dir = return_parent_dir(save_dir) + '/'
-                save_path = save_dir + f'/{frames[idx]}_s2preg_frame_avg.tif'
-                os.makedirs(save_dir, exist_ok=True)
-
-                print(f"\t\- Saving averaged s2p registered tiff for frame: {frames[idx]}, to: {save_path}")
-                tf.imwrite(save_path, avg_sub, photometric='minisblack')
-
-            if to_plot:
-                plt.imshow(avg_sub, cmap='gray')
-                plt.suptitle(f'{peri_frames} key_frames avg from s2p reg tif, frame: {frames[idx]}')
-                plt.show()  # just plot for now to make sure that you are doing things correctly so far
+# class Suite2PTrial_(Suite2pExperiment):
+#     """used to collect and store suite2p processed cellsdata for one trial - out of overall experiment."""
+#
+#     def __init__(self, trialsTiffsSuite2p: dict, trial_frames: tuple, s2pResultsPath: Optional[str] = None):
+#         """
+#         Connecting Suite2p results from a specific trial (which spans trial_frames out of the overall Suite2p run) to that trial.
+#
+#         :param trialsTiffsSuite2p:
+#         :param dataPath:
+#         :param trial_frames:
+#         :param s2pResultsPath:
+#         :param subtract_neuropil:
+#         """
+#         # todo need to reconsider this heirarchy; it saves in the entire suite2p result for every trial....
+#         super().__init__(trialsTiffsSuite2p,
+#                          s2pResultsPath)  # - TODO it really is confusing to be passing in all trials for a s2p results obj that should be restricted to just one trial
+#
+#         print(f"\n\----- ADDING .Suite2p module to trial ... ", end='\r')
+#
+#         ## initializing attributes to collect Suite2p results for this specific trial
+#         # self.dfof: list(np.ndarray) = []  # array of dFF normalized Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
+#         # self.__raw: List[np.ndarray] = self.raw
+#         # self.__spks: List[np.ndarray] = self.spks
+#         # self.__neuropil: List[np.ndarray] = self.neuropil
+#
+#         self.trial_frames = trial_frames  # tuple of first and last frame (out of the overall suite2p run) corresponding to the present trial
+#
+#         # self.suite2p_overall = suite2p_experiment_obj
+#         print(
+#             f"\t|- current trial key_frames: {trial_frames} out of {self.n_frames} total key_frames processed through suite2p")
+#         self._get_suite2pResults() if self.s2pResultsPath else None
+#
+#         # s2pResultsPath = suite2p_experiment_obj.s2pResultsPath if hasattr(suite2p_experiment_obj, 's2pResultsPath') else None
+#         # Suite2pExperiment.__init__(self, trialsSuite2p = suite2p_experiment_obj.trials, s2pResultsPath=s2pResultsPath,
+#         #                                   subtract_neuropil=suite2p_experiment_obj.subtract_neuropil)
+#
+#         print(f"\n\----- ADDED .Suite2p module to trial. ", end='\r')
+#
+#     def __repr__(self):
+#         if self.s2pResultExists:
+#             return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} key_frames x {self.n_units} s2p ROIs'
+#         else:
+#             return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} key_frames. No Suite2p Results loaded.'
+#
+#     def _get_suite2pResults(self):  # TODO complete code for getting suite2p results for trial
+#         """crop suite2p cellsdata for key_frames only for the present trial"""
+#
+#         # for attr in ['n_units', 'cell_id', 'cell_plane', 'cell_x', 'cell_y', 'xoff', 'yoff', 'raw', 'spks', 'neuropil', 'stat']:
+#         #     try:
+#         #         setattr(self, attr, getattr(self.suite2p_overall, attr))
+#         #     except AttributeError:
+#         #         pass
+#
+#         if self.n_planes == 1:
+#             self.cell_id = self.cell_id
+#             self.stat = self.stat[0]
+#
+#             self.raw = self.raw[:, self.trial_frames[0]:self.trial_frames[
+#                 1]]  # array of raw Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
+#             self.spks = self.spks[:, self.trial_frames[0]:self.trial_frames[
+#                 1]]  # array of deconvolved spks values from suite2p output [num cells x length of imaging acquisition], one per plane
+#             self.neuropil = self.neuropil[:, self.trial_frames[0]:self.trial_frames[
+#                 1]]  # array of neuropil Flu values from suite2p output [num cells x length of imaging acquisition], one per plane
+#
+#             self.s2pResultExists = True
+#
+#         else:
+#             for plane in range(self.n_planes):
+#                 self.raw.append(self.raw[plane][:, self.trial_frames[0]:self.trial_frames[1]])
+#                 self.spks.append(self.spks[plane][:, self.trial_frames[0]:self.trial_frames[1]])
+#                 self.neuropil.append(self.neuropil[plane][:, self.trial_frames[0]:self.trial_frames[1]])
+#
+#                 # self.dfof.append(normalize_dff(self.raw[plane]))  # calculate df/f based on relevant key_frames
+#                 self.s2pResultExists = True
+#
+#     def makeFrameAverageTiff(self, reg_tif_dir: str, frames: Union[int, list], peri_frames: int = 100,
+#                              save_dir: str = None,
+#                              to_plot=False):
+#         """Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from the suite2p registered TIFF file.
+#         """
+#
+#         # read in registered tiff
+#         reg_tif_folder = reg_tif_dir
+#         assert os.path.exists(reg_tif_dir), '`reg_tif_dir` could not be found.'
+#         reg_tif_list = os.listdir(reg_tif_dir)
+#         reg_tif_list.sort()
+#
+#         if type(frames) == int:
+#             frames = [frames]
+#
+#         frames_s2prun_num = [(frame + self.trial_frames[0]) for frame in frames]
+#
+#         for idx, frame in enumerate(frames_s2prun_num):
+#             batch_num = frame // self.ops['batch_size']
+#
+#             tif_path = reg_tif_folder + reg_tif_list[batch_num]
+#
+#             im_batch_reg = tf.imread(tif_path, key=range(0, self.ops['batch_size']))
+#
+#             frame_num_batch = frame - (batch_num * self.ops['batch_size'])
+#
+#             if frame_num_batch < peri_frames // 2:
+#                 peri_frames_low = frame_num_batch
+#             else:
+#                 peri_frames_low = peri_frames // 2
+#             peri_frames_high = peri_frames // 2
+#             im_sub_reg = im_batch_reg[frame_num_batch - peri_frames_low: frame_num_batch + peri_frames_high]
+#
+#             avg_sub = np.mean(im_sub_reg, axis=0)
+#
+#             # convert to 8-bit
+#             from packerlabimaging.utils.utils import convert_to_8bit
+#             avg_sub = convert_to_8bit(avg_sub, 0, 255)
+#
+#             if save_dir:
+#                 if '.tif' in save_dir:
+#                     from packerlabimaging.utils.utils import return_parent_dir
+#                     save_dir = return_parent_dir(save_dir) + '/'
+#                 save_path = save_dir + f'/{frames[idx]}_s2preg_frame_avg.tif'
+#                 os.makedirs(save_dir, exist_ok=True)
+#
+#                 print(f"\t\- Saving averaged s2p registered tiff for frame: {frames[idx]}, to: {save_path}")
+#                 tf.imwrite(save_path, avg_sub, photometric='minisblack')
+#
+#             if to_plot:
+#                 plt.imshow(avg_sub, cmap='gray')
+#                 plt.suptitle(f'{peri_frames} key_frames avg from s2p reg tif, frame: {frames[idx]}')
+#                 plt.show()  # just plot for now to make sure that you are doing things correctly so far
 
 
 # noinspection DuplicatedCode
