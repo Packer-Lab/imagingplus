@@ -191,6 +191,15 @@ def threshold_detect(signal, threshold):
     return frames[0]
 
 
+def ImportTiff(tiff_path, frames: Union[tuple, int] = None):
+    if frames and type(frames) == tuple:
+        im_stack = tf.imread(tiff_path, key=range(frames[0], frames[1]))
+    elif frames and type(frames) == int:
+        im_stack = tf.imread(tiff_path, key=frames)
+    else:
+        im_stack = tf.imread(tiff_path)
+    return im_stack
+
 # simple ZProfile function for any sized square in the frame (equivalent to ZProfile function in Fiji)
 def ZProfile(movie, area_center_coords: tuple = None, area_size: int = -1, plot_trace: bool = True,
              plot_image: bool = True, plot_frame: int = 1, vasc_image: np.array = None, **kwargs):

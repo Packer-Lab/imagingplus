@@ -14,7 +14,7 @@ from packerlabimaging.workflows.TwoPhotonImaging import TwoPhotonImaging
 
 from packerlabimaging import Experiment
 from packerlabimaging.main.subcore import TemporalData
-from packerlabimaging.utils.utils import save_to_csv
+from packerlabimaging.utils.utils import save_to_csv, ImportTiff
 
 from packerlabimaging.workflows.AllOptical import AllOpticalTrial
 
@@ -215,10 +215,12 @@ def MeanProject(tiff_path: str = None, frames: tuple = None, save_path: str = No
     if imstack is None and tiff_path is not None:
         # read tiff
         print(f'\t\- Creating mean projection, from tiff: {tiff_path}')
-        if frames:
-            im_stack = tf.imread(tiff_path, key=range(frames[0], frames[1]))
-        else:
-            im_stack = tf.imread(tiff_path)
+        im_stack = ImportTiff(tiff_path=tiff_path, frames=frames)
+
+        # if frames:
+        #     im_stack = tf.imread(tiff_path, key=range(frames[0], frames[1]))
+        # else:
+        #     im_stack = tf.imread(tiff_path)
     elif imstack is not None and tiff_path is None:
         im_stack = imstack
         assert im_stack.ndim == 3, 'can only project 3D image stacks (implicit dimensions are: Frames x Xpixels x Ypixels)'
@@ -273,10 +275,12 @@ def MaxProject(tiff_path: str = None, frames: tuple = None, save_path: str = Non
     if imstack is None and tiff_path is not None:
         # read tiff
         print(f'\t\- Creating max projection, from tiff: {tiff_path}')
-        if frames:
-            im_stack = tf.imread(tiff_path, key=range(frames[0], frames[1]))
-        else:
-            im_stack = tf.imread(tiff_path)
+        im_stack = ImportTiff(tiff_path=tiff_path, frames=frames)
+
+        # if frames:
+        #     im_stack = tf.imread(tiff_path, key=range(frames[0], frames[1]))
+        # else:
+        #     im_stack = tf.imread(tiff_path)
 
     elif imstack is not None and tiff_path is None:
         im_stack = imstack
@@ -332,10 +336,11 @@ def StdevProject(tiff_path: str = None, frames: tuple = None, save_path: str = N
     if imstack is None and tiff_path is not None:
         # read tiff
         print(f'\t\- Creating std projection, from tiff: {tiff_path}')
-        if frames:
-            im_stack = tf.imread(tiff_path, key=range(frames[0], frames[1]))
-        else:
-            im_stack = tf.imread(tiff_path)
+        im_stack = ImportTiff(tiff_path=tiff_path, frames=frames)
+        # if frames:
+        #     im_stack = tf.imread(tiff_path, key=range(frames[0], frames[1]))
+        # else:
+        #     im_stack = tf.imread(tiff_path)
     elif imstack is not None and tiff_path is None:
         im_stack = imstack
         assert im_stack.ndim == 3, 'can only project 3D image stacks (implicit dimensions are: Frames x Xpixels x Ypixels)'
@@ -381,10 +386,12 @@ def InspectTiff(tiff_path: str = None, frames: tuple = None, imstack: np.ndarray
         # read tiff
         print(f'\t\- Creating projections from tiff: {tiff_path}')
         print(f'\t\- Collecting average image for frames: {frames}')
-        if frames:
-            loaded = tf.imread(tiff_path, key=range(frames[0], frames[1]))
-        else:
-            loaded = tf.imread(tiff_path)
+        loaded = ImportTiff(tiff_path=tiff_path, frames=frames)
+
+        # if frames:
+        #     loaded = tf.imread(tiff_path, key=range(frames[0], frames[1]))
+        # else:
+        #     loaded = tf.imread(tiff_path)
     elif imstack and tiff_path is None:
         loaded = imstack
         assert loaded.ndim == 3, 'can only project 3D image stacks (implicit dimensions are: Frames x Xpixels x Ypixels)'
@@ -403,7 +410,7 @@ def InspectTiff(tiff_path: str = None, frames: tuple = None, imstack: np.ndarray
 
 
 def makeFrameAverageTiff(key_frames: Union[int, list], tiff_path: str = None, imstack: np.ndarray = None,
-                         peri_frames: int = 100, save_path: str = None, to_plot=False, **kwargs):
+                         peri_frames: int = 100, save_path: str = None, plot=False, **kwargs):
     """
     Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from a multipage imaging TIFF file.
 
@@ -424,7 +431,7 @@ def makeFrameAverageTiff(key_frames: Union[int, list], tiff_path: str = None, im
     if imstack is None and tiff_path:
         # read tiff
         print(f'\t\- Creating avg img for frame: {key_frames}, from tiff: {tiff_path}')
-        im_stack = tf.imread(tiff_path)
+        im_stack = ImportTiff(tiff_path=tiff_path, frames=None)
     elif imstack and tiff_path is None:
         im_stack = imstack
     else:
@@ -434,7 +441,10 @@ def makeFrameAverageTiff(key_frames: Union[int, list], tiff_path: str = None, im
     figs = []
     axs = []
     for frame in key_frames:
-        fig, ax = plt.subplots(figsize=(6,6))
+        if frame not in range(im_stack.shape[0]):
+            raise ValueError(f'{frame} not in range of loaded tiff.')
+
+        fig, ax = plt.subplots(figsize=(6, 6))
         if frame < peri_frames // 2:
             peri_frames_low = frame
         else:
@@ -453,9 +463,9 @@ def makeFrameAverageTiff(key_frames: Union[int, list], tiff_path: str = None, im
             avg_sub = MeanProject(save_path=save_path, imstack=im_sub)
 
         else:
-            avg_sub = MeanProject(imstack=im_sub)
+            avg_sub = MeanProject(imstack=im_sub, plot=False)
 
-        if to_plot:
+        if plot:
             ax.imshow(avg_sub, cmap='gray')
             fig.suptitle(f'{peri_frames} peri-key_frames avg from frame {frame}')
             fig.tight_layout(pad=0.2)
@@ -468,7 +478,6 @@ def makeFrameAverageTiff(key_frames: Union[int, list], tiff_path: str = None, im
             fig.show()  # just plot for now to make sure that you are doing things correctly so far
             figs.append(fig)
             axs.append(ax)
-
 
 
 @plotting_decorator(figsize=(6, 6))
@@ -485,7 +494,7 @@ def SingleTiffFrame(tiff_path, frame_num: int = 0, title: str = None, **kwargs):
     ax = kwargs['ax']
     fig = kwargs['fig']
 
-    stack = tf.imread(tiff_path, key=frame_num)
+    stack = ImportTiff(tiff_path=tiff_path, frames=frame_num)
     ax.imshow(stack, cmap='gray')
     fig.suptitle(title) if title is not None else fig.suptitle(f'frame num: {frame_num}')
     fig.tight_layout(pad=0.2)

@@ -223,5 +223,7 @@ def s_tiff_path_fixture():
 
 @pytest.fixture(scope='session')
 def tiff_path_fixture():
-    return '/home/pshah/mnt/qnap/Data/2020-03a/2020-03-03/2020-03-03_t-001/2020-03-03_t-001_Cycle00001_Ch3_downsampled.tif'
+    return '/home/pshah/mnt/qnap/Data/2021-01-31/2021-01-31_t-007/2021-01-31_t-007_Cycle00001_Ch3.tif'
+
+
 

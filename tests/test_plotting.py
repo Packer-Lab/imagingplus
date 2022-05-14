@@ -60,4 +60,6 @@ def test_plot_SLMtargets_Locs(existing_trialobj_alloptical_fixture):
 
 
 def test_makeFrameAverageTiff(tiff_path_fixture, existing_trialobj_twophotonimaging_fixture):
-    makeFrameAverageTiff(tiff_path=tiff_path_fixture, key_frames=1000, peri_frames=100, scalebar_um=100, to_plot=True, trialobj=existing_trialobj_twophotonimaging_fixture)
+    makeFrameAverageTiff(tiff_path=tiff_path_fixture, key_frames=[500, 1000, 1500, 2000, 3000], peri_frames=100, scalebar_um=100, plot=True, trialobj=existing_trialobj_twophotonimaging_fixture)
+
+
