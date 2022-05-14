@@ -214,3 +214,14 @@ def existing_anndata():
     trialobj.cellsdata.add_var(var_name='exp_group', values=list(var_meta['exp_group']))
 
     print(trialobj.cellsdata)
+
+
+@pytest.fixture(scope='session')
+def s_tiff_path_fixture():
+    return '/home/pshah/mnt/qnap/Data/2021-01-31/2021-01-31_s-007/2021-01-31_s-007_Cycle00001_Ch2_000001.ome.tif'
+
+
+@pytest.fixture(scope='session')
+def tiff_path_fixture():
+    return '/home/pshah/mnt/qnap/Data/2020-03a/2020-03-03/2020-03-03_t-001/2020-03-03_t-001_Cycle00001_Ch3_downsampled.tif'
+

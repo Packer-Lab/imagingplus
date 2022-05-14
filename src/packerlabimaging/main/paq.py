@@ -10,7 +10,7 @@ import seaborn as sns
 import matplotlib.ticker as mticker
 import matplotlib.pyplot as plt
 
-from packerlabimaging.main.classes import TemporalData
+from packerlabimaging.main.subcore import TemporalData
 from packerlabimaging.utils.utils import threshold_detect
 
 

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 # need to implement alternative class constructor using cls.method
 from typing import List, Union, Any
-from packerlabimaging.main.classes import ImagingMetadata
+from packerlabimaging.main.subcore import ImagingMetadata
 
 
 # class ImagingMetadata:

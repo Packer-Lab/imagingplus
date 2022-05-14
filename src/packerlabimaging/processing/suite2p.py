@@ -6,10 +6,9 @@ from typing import Dict, Any, Optional, List, Union, Tuple
 import numpy as np
 import pandas as pd
 import suite2p
-# from packerlabimaging.main.classes import Experiment
 # todo add type hinting controls for expobj
 import matplotlib.pyplot as plt
-from packerlabimaging.main.classes import CellAnnotations, ImagingData
+from packerlabimaging.main.subcore import CellAnnotations, ImagingData
 from suite2p import run_s2p
 import tifffile as tf
 

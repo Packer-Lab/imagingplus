@@ -13,13 +13,11 @@ import scipy.stats as stats
 import tifffile as tf
 
 from packerlabimaging import TwoPhotonImaging
-from packerlabimaging.main.classes import ImagingMetadata, ImagingData, TemporalData, ImagingTrial, CellAnnotations, \
-    Experiment
+from packerlabimaging.main.subcore import ImagingMetadata, ImagingData, CellAnnotations
+from packerlabimaging.main.core import Experiment, ImagingTrial
 from packerlabimaging.main.paq import PaqData
-from packerlabimaging.utils.io import import_obj
-from packerlabimaging.utils.utils import convert_to_8bit
 from packerlabimaging.processing.naparm import Targets
-from packerlabimaging.utils.classes import UnavailableOptionError
+
 # %%
 from packerlabimaging.processing.anndata import AnnotatedData
 
@@ -39,11 +37,8 @@ post_stim_response_window: float = 0.500  #: time window for collecting post-sti
 class AllOpticalTrial(TwoPhotonImaging):
     """All Optical Experimental Data Analysis Workflow."""
 
-    def __init__(self, naparm_path, dataPath: str, saveDir: str, date: str, trialID: str, expID: str,
-                 expGroup: str = '',
-                 comment: str = '', imparams: ImagingMetadata = None, cells: CellAnnotations = None,
-                 imdata: ImagingData = None,
-                 tmdata: PaqData = None):
+    def __init__(self, naparm_path, dataPath: str, saveDir: str, date: str, trialID: str, expID: str, expGroup: str = '',
+                 comment: str = '', imparams: ImagingMetadata = None, cells: CellAnnotations = None, tmdata: PaqData = None):
 
         """
         :param metainfo: TypedDict containing meta-information field needed for this experiment. Please see TwoPhotonImagingMetainfo for type hints on accepted keys.
@@ -95,10 +90,8 @@ class AllOpticalTrial(TwoPhotonImaging):
 
         self.prob_response = None  # probability of response of cell to photostim trial; obtained from single trial significance (ROB suggestion)
         self.t_tests = []  # result from related samples t-test between dff test periods
-        self.wilcoxons = []  # ROB to update
-        self.sig_units = None  # ROB to update
-        self.trial_sig_dff = []  # based on dff increase above std of baseline
-        self.trial_sig_dfsf = []  # based on df/std(f) increase in test period post-stim
+        self.wilcoxons = []  #:
+        self.sig_units = None  #:
         self.sta_sig = []  # based on t-test between dff test periods
         self.sta_sig_nomulti = []  # as above, no multiple comparisons correction
         ########
@@ -122,9 +115,9 @@ class AllOpticalTrial(TwoPhotonImaging):
 
         # 5) todo collect Flu traces from SLM targets - probably leave out of the init right??
         if hasattr(self, 'Suite2p'):
-            self.raw_SLMTargets, self.dFF_SLMTargets, self.meanFluImg_registered = self.collect_signal_from_coords(
+            self.raw_SLMTargets, self.dFF_SLMTargets, self.meanFluImg_registered = self.collectSignalFromCoords(
                 curr_trial_frames=self.Suite2p.trial_frames, save=True)
-            self.targets_snippets = self.get_targets_stim_trace_snippets()
+            self.targets_snippets = self.getTargetsStimTraceSnippets()
         else:
             Warning('NO Flu traces collected from any SLM targets because Suite2p not found for trial.')
 
@@ -326,7 +319,7 @@ class AllOpticalTrial(TwoPhotonImaging):
 
     ### ALLOPTICAL ANALYSIS - FOCUS ON SLM TARGETS RELATED METHODS - TEST all methods below
     # todo test
-    def collect_signal_from_coords(self, curr_trial_frames: list, reg_tif_folder: str = None, save: bool = True):
+    def collectSignalFromCoords(self, curr_trial_frames: Union[tuple, list], reg_tif_folder: str = None, save: bool = True):
         """uses registered tiffs to collect raw traces from SLM target areas
 
         :param curr_trial_frames:
@@ -388,9 +381,8 @@ class AllOpticalTrial(TwoPhotonImaging):
         return raw_SLMTargets, dFF_SLMTargets, meanFluImg_registered
 
     # todo test
-    def get_targets_stim_trace_snippets(self, targets_idx: Union[list, str] = 'all',
-                                        pre_stim: Union[float, int] = 0.5, post_stim: Union[float, int] = 4.0,
-                                        stims: list = None):
+    def getTargetsStimTraceSnippets(self, targets_idx: Union[list, str] = 'all', pre_stim: Union[float, int] = 0.5,
+                                    post_stim: Union[float, int] = 4.0, stims: list = None):
         """
         Collect photostimulation timed snippets of signal from selected targets.
 
@@ -432,7 +424,7 @@ class AllOpticalTrial(TwoPhotonImaging):
         return flu
 
     # todo test
-    def _findTargetedCells(self, plot: bool = True):
+    def findTargetedCells(self, plot: bool = True):
         """finding s2p cell ROIs that were also SLM targets (or more specifically within the target areas as specified by _findTargetAreas - include 15um radius from center coordinate of spiral)
         Make a binary mask of the targets and multiply by an image of the cells
         to find cells that were targeted
@@ -537,8 +529,7 @@ class AllOpticalTrial(TwoPhotonImaging):
         print(f"\t|- Number of non-target ROIs: {len(self.cells.cellsdata['photostim_class'] == 'non-target')}")
 
     # todo code and test
-    def _makePhotostimTrialFluSnippets(self, plane_flu: np.ndarray, plane: int = 0,
-                                       stim_frames: list = None) -> np.ndarray:  # base code copied from Vape's _makeFluTrials
+    def _makePhotostimTrialFluSnippets(self, plane_flu: np.ndarray, stim_frames: list = None) -> np.ndarray:  # base code copied from Vape's _makeFluTrials
         """
         Make Flu snippets timed on photostimulation, for each cell, for each stim instance. [cells x Flu frames x stims]  # TODO triple check order of this array's dimensions
 
@@ -581,7 +572,7 @@ class AllOpticalTrial(TwoPhotonImaging):
         return trial_array
 
     # todo test
-    def normalize_snippets_prestim(self, snippets: np.ndarray = None):
+    def _normalize_snippets_prestim(self, snippets: np.ndarray = None):
         """
         Normalize each trace snippet to pre-stim period.
 
@@ -604,7 +595,7 @@ class AllOpticalTrial(TwoPhotonImaging):
         return targets_dff
 
     # todo test
-    def calculate_photoresponses(self, snippets: np.ndarray, stims_to_use: Union[list, str] = 'all'):
+    def calculatePhotoresponses(self, snippets: np.ndarray, stims_to_use: Union[list, str] = 'all'):
         """
         Calculations of responses (post-stim - pre-stim) to photostimulation of SLM Targets of the provided snippets array.
 
@@ -618,7 +609,7 @@ class AllOpticalTrial(TwoPhotonImaging):
         else:
             stims_idx = [self.stim_start_frames.index(stim) for stim in stims_to_use]
 
-        # initializing pandas df that collects responses of stimulations
+        # method 1) initializing pandas df that collects responses of stimulations
         d = {}
         for stim in stims_idx:
             d[stim] = [None] * snippets.shape[0]
@@ -637,29 +628,8 @@ class AllOpticalTrial(TwoPhotonImaging):
 
                 df.loc[target_idx, stim_idx] = response_result
 
-        return df
-
-    # todo code up
-    def _TargetsPhotostimResponsesAnndata(self):
-        """
-        Create an anndata table for photostimulation responses of Targets.
-
-        :return:
-        """
-
-    def collectPhotostimResponses(self, photostimFluArray):
-        """
-        TODO docstring
-
-        :param photostimFluArray:
-        :return:
-        """
-        # create parameters, slices, and subsets for making pre-stim and post-stim arrays to use in stats comparison
-        # test_period = self.prestim_response_window / 1000  # sec
-        # self.test_frames = int(self.imparams.fps * test_period)  # test period for stats
-
-        # mean pre and post stimulus (within post-stim response window) flu trace values for all cells, all trials
-        self.__analysis_array = photostimFluArray
+        # method 2) alternate method for calculating photostim responses
+        self.__analysis_array = snippets
         self.__pre_array = np.mean(self.__analysis_array[:, self.prestim_test_slice, :],
                                    axis=1)  # [cells x prestim frames] (avg'd taken over all stims)
         self.__post_array = np.mean(self.__analysis_array[:, self.poststim_test_slice, :],
@@ -671,7 +641,18 @@ class AllOpticalTrial(TwoPhotonImaging):
 
         df = pd.DataFrame(index=range(self.Suite2p.n_units), columns=self.stim_start_frames, data=all_amplitudes)
 
+        # todo compare two methods
+
         return df
+
+    # todo code up
+    def _TargetsPhotostimResponsesAnndata(self):
+        """
+        Create an anndata table for photostimulation responses of Targets.
+
+        :return:
+        """
+
 
     # todo test
     def _CellsPhotostimResponsesAnndata(self, photostimResponseAmplitudes: pd.DataFrame):
@@ -729,8 +710,6 @@ class AllOpticalTrial(TwoPhotonImaging):
         self.wilcoxons = runWilcoxonsTest(array1=self.__pre_array, array2=self.__post_array)
         from packerlabimaging.processing.stats import sigTestAvgResponse
         self.sig_units = sigTestAvgResponse(trial=self, p_vals=self.wilcoxons, alpha=0.1)
-
-
 
     def staSignificance(self, test):
         """
@@ -872,47 +851,9 @@ class AllOpticalTrial(TwoPhotonImaging):
         img = glob.glob(stam_save_path + '/*MaxResponseImage.tif')[0]
         # plot_single_tiff(img, frame_num=0)
 
-    def _targetSpread(self):
-        '''
-        Find the mean Euclidean distance of responding targeted cells (trial-wise and trial average)
-        '''
-        # for each trial find targeted cells that responded
-        trial_responders = self.trial_sig_dff[0]
-        targeted_cells = np.repeat(self.targeted_cells[..., None],
-                                   trial_responders.shape[1], 1)  # [..., None] is a quick way to expand_dims
-        targeted_responders = targeted_cells & trial_responders
-
-        cell_positions = np.array(self.Suite2p.cell_med[0])
-
-        dists = np.empty(self.n_trials)
-
-        # for each trial, find the spread of responding targeted cells
-        for i, trial in enumerate(range(self.n_trials)):
-            resp_cell = np.where(targeted_responders[:, trial])
-            resp_positions = cell_positions[resp_cell]
-
-            if resp_positions.shape[0] > 1:  # need more than 1 cell to measure spread...
-                dists[i] = self._euclidDist(resp_positions)
-            else:
-                dists[i] = np.nan
-
-        self.trial_euclid_dist = dists
-
-        # find spread of targets that statistically significantly responded over all trials
-        responder = self.sta_sig[0]
-        targeted_responders = responder & self.targeted_cells
-
-        resp_cell = np.where(targeted_responders)
-        resp_positions = cell_positions[resp_cell]
-
-        if resp_positions.shape[0] > 1:  # need more than 1 cell to measure spread...
-            dist = self._euclidDist(resp_positions)
-        else:
-            dist = np.nan
-
-        self.sta_euclid_dist = dist
-
     ####                                                                    // end
+
+
 
 
 if __name__ == '__main__':
@@ -964,3 +905,35 @@ if __name__ == '__main__':
 
     idict = alloptical_trial_fixture()
     aotrial = test_AllOpticalClass(idict)
+
+
+
+
+
+# archive
+
+# def collectPhotostimResponses(self, photostimFluArray):
+#     """
+#     TODO docstring
+#
+#     :param photostimFluArray:
+#     :return:
+#     """
+#     # create parameters, slices, and subsets for making pre-stim and post-stim arrays to use in stats comparison
+#     # test_period = self.prestim_response_window / 1000  # sec
+#     # self.test_frames = int(self.imparams.fps * test_period)  # test period for stats
+#
+#     # mean pre and post stimulus (within post-stim response window) flu trace values for all cells, all trials
+#     self.__analysis_array = photostimFluArray
+#     self.__pre_array = np.mean(self.__analysis_array[:, self.prestim_test_slice, :],
+#                                axis=1)  # [cells x prestim frames] (avg'd taken over all stims)
+#     self.__post_array = np.mean(self.__analysis_array[:, self.poststim_test_slice, :],
+#                                 axis=1)  # [cells x poststim frames] (avg'd taken over all stims)
+#
+#     # Vape's version for collection photostim response amplitudes
+#     # calculate amplitude of response for all cells, all trials
+#     all_amplitudes = self.__post_array - self.__pre_array
+#
+#     df = pd.DataFrame(index=range(self.Suite2p.n_units), columns=self.stim_start_frames, data=all_amplitudes)
+#
+#     return df

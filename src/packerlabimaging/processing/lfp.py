@@ -8,7 +8,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 from scipy import signal
 
-from packerlabimaging.main.classes import TemporalData, ImagingTrial
+from packerlabimaging.main.subcore import TemporalData, ImagingTrial
+from packerlabimaging.main.core import ImagingTrial
 from packerlabimaging.plotting._utils import plotting_decorator
 from packerlabimaging.processing.paq import paq2py
 

@@ -34,6 +34,21 @@ import pickle
 # TODO [ ]  thinking about restructuring TwoPhotonImaging trial methods to more general trial type
 #    [ ]  then making TwoPhotonImaging as an independent workflow, allowing the general trial type to retain the methods that are *currently* in TwoPhotonImaging
 
+
+@dataclass
+class SingleImage:
+    dataPath: str
+    saveDir: str  #: main dir where the experiment object and the trial objects will be saved to
+    date: str
+    imgID: str
+    expGroup: str = ''
+    comment: str = ''
+    imparams: ImagingMetadata = None
+
+    def __post_init__(self):
+        self.data = tf.imread(self.dataPath)
+
+
 # noinspection DuplicatedCode
 @dataclass
 class Experiment:
@@ -43,11 +58,14 @@ class Experiment:
     dataPath: str  #: main dir where the imaging cellsdata is contained
     saveDir: str  #: main dir where the experiment object and the trial objects will be saved to
     comment: str = ''  #: notes related to experiment
+    singleImages: Dict[str, SingleImage] = None  #: contains single image frames from each experiment
 
     def __post_init__(self):
         print(f'***********************')
         print(f'CREATING new Experiment: (expID: {self.expID})')
         print(f'***********************\n\n')
+
+        self.singleImages = {}
 
         # self.TrialsInformation: MutableMapping[str, Union[str, TrialsInformation, PaqInfo]] = {}  #: dictionary of metadata information about each trial. Gets filled while adding each trial.
         self.TrialsInformation: MutableMapping[
@@ -125,6 +143,7 @@ class Experiment:
         """
         Add trial object to the experiment. This will add metainformation about the trial to the experiment.
 
+        :param trialID:
         :param trialobj: ImagingTrial instance.
         """
 
@@ -141,6 +160,14 @@ class Experiment:
 
         self.save()
         print(f"|- ADDED trial: {trialobj.trialID} to {self.expID} experiment")
+
+    def add_single(self, singleimg: SingleImage, **kwargs):
+        """
+
+        :param singleimg:
+        :param kwargs:
+        """
+        setattr(self, singleimg.imgID, singleimg)
 
     def combine_trials(self):
         """todo: Combine anndata table of trials with same cells."""
@@ -184,7 +211,14 @@ class Experiment:
         self.save_pkl()
 
     def load_trial(self, trialID: str):
-        """method for importing individual trial objects from Experiment instance using the trial id for a given trial"""
+        """
+        method for importing individual trial objects from Experiment instance using the trial id for a given trial
+
+        :param trialID:
+        :return:
+
+
+        """
         try:
             trial_pkl_path = self.TrialsInformation[trialID]['paths']['pkl_path']
             from packerlabimaging import import_obj
@@ -400,8 +434,8 @@ class ImagingTrial:
         :param title: (optional) give a string to use as title
         :return: matplotlib imshow plot
         """
-        from packerlabimaging.plotting.plotting import showSingleTiffFrame
-        stack = showSingleTiffFrame(tiff_path=self.tiff_path, frame_num=frame_num, title=title)
+        from packerlabimaging.plotting.plotting import SingleTiffFrame
+        stack = SingleTiffFrame(tiff_path=self.tiff_path, frame_num=frame_num, title=title)
 
         # stack = tf.imread(self.tiff_path, key=frame_num)
         # plt.imshow(stack, cmap='gray')
@@ -501,3 +535,7 @@ class ImagingTrial:
 
         print(f"\n{adata}")
         return adata
+
+
+
+

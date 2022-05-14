@@ -294,6 +294,47 @@ class Targets(naparm):
 
         return euclid_dist
 
+    def _targetSpread(self):
+        '''
+        Find the mean Euclidean distance of responding targeted cells (trial-wise and trial average)
+        '''
+        # for each trial find targeted cells that responded
+        trial_responders = self.trial_sig_dff[0]
+        targeted_cells = np.repeat(self.targeted_cells[..., None],
+                                   trial_responders.shape[1], 1)  # [..., None] is a quick way to expand_dims
+        targeted_responders = targeted_cells & trial_responders
+
+        cell_positions = np.array(self.Suite2p.cell_med[0])
+
+        dists = np.empty(self.n_trials)
+
+        # for each trial, find the spread of responding targeted cells
+        for i, trial in enumerate(range(self.n_trials)):
+            resp_cell = np.where(targeted_responders[:, trial])
+            resp_positions = cell_positions[resp_cell]
+
+            if resp_positions.shape[0] > 1:  # need more than 1 cell to measure spread...
+                dists[i] = self._euclidDist(resp_positions)
+            else:
+                dists[i] = np.nan
+
+        self.trial_euclid_dist = dists
+
+        # find spread of targets that statistically significantly responded over all trials
+        responder = self.sta_sig[0]
+        targeted_responders = responder & self.targeted_cells
+
+        resp_cell = np.where(targeted_responders)
+        resp_positions = cell_positions[resp_cell]
+
+        if resp_positions.shape[0] > 1:  # need more than 1 cell to measure spread...
+            dist = self._euclidDist(resp_positions)
+        else:
+            dist = np.nan
+
+        self.sta_euclid_dist = dist
+
+
     ## extra code from Rob - not entirely sure that we need to include?
     # def getTargetImage(obj, frame_x, frame_y):
     #     targ_img = np.zeros((frame_x, frame_y), dtype='uint8')

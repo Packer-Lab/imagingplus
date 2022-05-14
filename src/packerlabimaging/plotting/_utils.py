@@ -9,6 +9,7 @@ import random
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import seaborn as sns
+from packerlabimaging.main.core import ImagingTrial
 
 from packerlabimaging.workflows.AllOptical import AllOpticalTrial
 from packerlabimaging._archive.TwoPhotonImagingMain import TwoPhotonImagingTrial
@@ -162,7 +163,7 @@ def make_random_color_array(n_colors):
     return colors
 
 
-def _add_scalebar(trialobj: Union[TwoPhotonImagingTrial, AllOpticalTrial], ax: plt.Axes, scale_bar_um: float = 100, **kwargs):
+def _add_scalebar(trialobj: ImagingTrial, ax: plt.Axes, **kwargs):
     """add scalebar to the image being plotted on the a single matplotlib.axes.Axes object using the TwoPhotonImaging object information.
     Option to specify scale bar um length to add to plot.
 
@@ -172,6 +173,8 @@ def _add_scalebar(trialobj: Union[TwoPhotonImagingTrial, AllOpticalTrial], ax: p
     # if type(trialobj) not in [TwoPhotonImagingTrial, AllOpticalTrial]:
     #     raise ObjectClassError(function='_add_scalebar', valid_class=[TwoPhotonImagingTrial, AllOpticalTrial], invalid_class=type(trialobj))
     # else:
+    assert trialobj.imparams, 'could not find imaging metadata (.imparams) for trialobj.'
+    scale_bar_um = 100 if 'scale_bar_um' not in kwargs else kwargs['scale_bar_um']
     numpx = scale_bar_um/trialobj.imparams.pix_sz_x
 
     lw = 5 if 'lw' not in [*kwargs] else kwargs['lw']
@@ -179,9 +182,11 @@ def _add_scalebar(trialobj: Union[TwoPhotonImagingTrial, AllOpticalTrial], ax: p
     right_offset = 50 if 'right_offset' not in [*kwargs] else kwargs['right_offset']
     bottom_offset = 50 if 'bottom_offset' not in [*kwargs] else kwargs['bottom_offset']
 
+    print(f'\- adding scalebar of length {scale_bar_um} microns.')
+
     ax.plot(np.linspace(trialobj.imparams.frame_x - right_offset - numpx, trialobj.imparams.frame_x - right_offset, 40),
-            [trialobj.imparams.frame_y - bottom_offset]*40,
-            color=color, lw=lw, solid_capstyle='butt')
+            [trialobj.imparams.frame_y - bottom_offset]*40, color=color, lw=lw, solid_capstyle='butt')
+
     return ax
 
 

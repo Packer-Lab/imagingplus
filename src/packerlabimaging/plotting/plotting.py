@@ -10,17 +10,16 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
 import tifffile as tf
+from packerlabimaging.workflows.TwoPhotonImaging import TwoPhotonImaging
 
 from packerlabimaging import Experiment
-from packerlabimaging.main.classes import TemporalData
+from packerlabimaging.main.subcore import TemporalData
 from packerlabimaging.utils.utils import save_to_csv
 
 from packerlabimaging.workflows.AllOptical import AllOpticalTrial
 
-from packerlabimaging._archive.TwoPhotonImagingMain import TwoPhotonImagingTrial
 from packerlabimaging.plotting._utils import plotting_decorator, make_random_color_array, _add_scalebar, \
     image_frame_options, dataplot_frame_options, dataplot_ax_options, plot_coordinates, heatmap_options, image_frame_ops
-from packerlabimaging.main.paq import PaqData
 from packerlabimaging.utils.classes import ObjectClassError
 
 
@@ -30,7 +29,7 @@ from packerlabimaging.utils.classes import ObjectClassError
 # simple plot of the location of the given cell(s) against a black FOV
 @mpl.rc_context(image_frame_ops)
 @plotting_decorator(figsize=(5, 5))
-def plotRoiLocations(trialobj: TwoPhotonImagingTrial, suite2p_rois: Union[list, str] = 'all',
+def plotRoiLocations(trialobj: TwoPhotonImaging, suite2p_rois: Union[list, str] = 'all',
                      background: np.ndarray = None, **kwargs):
     """
     plots an image of the FOV to show the locations of cells given in cells ls.
@@ -87,7 +86,7 @@ def plotRoiLocations(trialobj: TwoPhotonImagingTrial, suite2p_rois: Union[list, 
 
 @mpl.rc_context(image_frame_ops)
 @plotting_decorator(figsize=(15, 5), nrows=1, ncols=4)
-def makeSuite2pPlots(obj: Union[Experiment, TwoPhotonImagingTrial], **kwargs):
+def makeSuite2pPlots(obj: Union[Experiment, TwoPhotonImaging], **kwargs):
     """
     Makes four plots that are created by Suite2p output.
 
@@ -128,7 +127,7 @@ def makeSuite2pPlots(obj: Union[Experiment, TwoPhotonImagingTrial], **kwargs):
 
 
 @plotting_decorator(figsize=(20, 3))
-def plot_flu_trace(trialobj: TwoPhotonImagingTrial, cell, to_plot='raw', **kwargs):
+def plot_flu_trace(trialobj: TwoPhotonImaging, cell, to_plot='raw', **kwargs):
     """
     plot individual cell's flu or dFF trace, with photostim. timings for that cell
 
@@ -202,35 +201,41 @@ def plot__tmdata_channel(tmdata: TemporalData, channel: str, **kwargs):
     dataplot_ax_options(ax=ax, data_length=len(data), collection_hz=tmdata.sampling_rate, **kwargs)
 
 
-def makeAverageTiff(tiff_path: str = None, frames: tuple = None, save_path: str = None, to_plot=False, imstack: np.ndarray=None):
+def MeanProject(tiff_path: str = None, frames: tuple = None, save_path: str = None, plot=True,
+                imstack: np.ndarray = None, **kwargs):
     """
-    Creates, plots and (optionally) saves an average image of the loaded tiff. Note: saves as 8-bit grayscale image.
+    Creates, plots and (optionally) saves an average image of the loaded tiff. If frames are provided, tiff is cropped to those frames.
+
+    Note: saves as 8-bit grayscale image.
 
     :param frames:
-    :param tiff_path: key_frames: Union[int, list]
     :return:
     """
 
-    if imstack is None and tiff_path:
+    if imstack is None and tiff_path is not None:
         # read tiff
-        print(f'\t\- Creating avg img, from tiff: {tiff_path}')
-        im_stack = tf.imread(tiff_path)
-    elif imstack and tiff_path is None:
+        print(f'\t\- Creating mean projection, from tiff: {tiff_path}')
+        if frames:
+            im_stack = tf.imread(tiff_path, key=range(frames[0], frames[1]))
+        else:
+            im_stack = tf.imread(tiff_path)
+    elif imstack is not None and tiff_path is None:
         im_stack = imstack
-        assert im_stack.ndim == 3, 'can only average 3D image stacks (implicit dimensions are: Frames x Xpixels x Ypixels)'
+        assert im_stack.ndim == 3, 'can only project 3D image stacks (implicit dimensions are: Frames x Xpixels x Ypixels)'
     else:
-        raise ValueError('values provided for both tiff_path and imstack. Unclear where to source image cellsdata from. Provide only one please.')
+        raise ValueError(
+            'values provided for both tiff_path and imstack. Unclear where to source image cellsdata from. Provide only one please.')
 
     if frames:
         print(f'\t collecting average image for frames: {frames}')
         im_stack = im_stack[frames[0]: frames[1]]
 
     print(f'\t\- Averaging {len(im_stack)} total frames.')
-    avg_sub = np.mean(im_stack, axis=0)
+    img = np.mean(im_stack, axis=0)
 
     # convert to 8-bit
     from packerlabimaging.utils.utils import convert_to_8bit
-    avg_sub = convert_to_8bit(avg_sub, 0, 255)
+    img = convert_to_8bit(img, 0, 255)
 
     if save_path:
         if '.tif' in save_path:
@@ -240,18 +245,165 @@ def makeAverageTiff(tiff_path: str = None, frames: tuple = None, save_path: str 
         else:
             raise ValueError(f'please provide full .tif path to save to. provided value was: {tiff_path}')
         print(f"\t\- Writing tiff to: {save_path}")
-        tf.imwrite(save_path, avg_sub, photometric='minisblack')
+        tf.imwrite(save_path, img, photometric='minisblack')
 
-    if to_plot:
-        plt.imshow(avg_sub, cmap='gray')
-        plt.suptitle(f'Average Image')
-        plt.show()  # just plot for now to make sure that you are doing things correctly so far
+    if plot:
+        fig, ax = plt.subplots(figsize=(6, 6))
+        ax.imshow(img, cmap='gray')
+        fig.suptitle(f'Mean Project')
+        fig.show()  # just plot for now to make sure that you are doing things correctly so far
+        if 'scalebar' in kwargs and kwargs['scalebar']:
+            if 'trialobj' in kwargs:
+                _add_scalebar(trialobj=kwargs['trialobj'], ax=ax, **kwargs)
 
-    return avg_sub
+    return img
 
 
+def MaxProject(tiff_path: str = None, frames: tuple = None, save_path: str = None, plot=True,
+               imstack: np.ndarray = None, **kwargs):
+    """
+    Creates, plots and (optionally) saves an average image of the loaded tiff. If frames are provided, tiff is cropped to those frames.
 
-def makeFrameAverageTiff(key_frames: Union[int, list], tiff_path: str = None, imstack: np.ndarray = None, peri_frames: int = 100, save_path: str = None, to_plot=False):
+    Note: saves as 8-bit grayscale image.
+
+    :param frames:
+    :return:
+    """
+
+    if imstack is None and tiff_path is not None:
+        # read tiff
+        print(f'\t\- Creating max projection, from tiff: {tiff_path}')
+        if frames:
+            im_stack = tf.imread(tiff_path, key=range(frames[0], frames[1]))
+        else:
+            im_stack = tf.imread(tiff_path)
+
+    elif imstack is not None and tiff_path is None:
+        im_stack = imstack
+        assert im_stack.ndim == 3, 'can only project 3D image stacks (implicit dimensions are: Frames x Xpixels x Ypixels)'
+    else:
+        raise ValueError(
+            'values provided for both tiff_path and imstack. Unclear where to source image cellsdata from. Provide only one please.')
+
+    if frames:
+        print(f'\t collecting average image for frames: {frames}')
+        im_stack = im_stack[frames[0]: frames[1]]
+
+    print(f'\t\- Max Project {len(im_stack)} total frames.')
+    img = np.sum(im_stack, axis=0)
+
+    # convert to 8-bit
+    from packerlabimaging.utils.utils import convert_to_8bit
+    img = convert_to_8bit(img, 0, 255)
+
+    if save_path:
+        if '.tif' in save_path:
+            from packerlabimaging.utils.utils import return_parent_dir
+            save_dir = return_parent_dir(save_path) + '/'
+            os.makedirs(save_dir, exist_ok=True)
+        else:
+            raise ValueError(f'please provide full .tif path to save to. provided value was: {tiff_path}')
+        print(f"\t\- Writing tiff to: {save_path}")
+        tf.imwrite(save_path, img, photometric='minisblack')
+
+    if plot:
+        fig, ax = plt.subplots(figsize=(6, 6))
+        ax.imshow(img, cmap='gray')
+        fig.suptitle(f'Max Project')
+        fig.show()  # just plot for now to make sure that you are doing things correctly so far
+        if 'scalebar' in kwargs and kwargs['scalebar']:
+            if 'trialobj' in kwargs:
+                _add_scalebar(trialobj=kwargs['trialobj'], ax=ax, **kwargs)
+
+    return img
+
+
+def StdevProject(tiff_path: str = None, frames: tuple = None, save_path: str = None, plot=True,
+                 imstack: np.ndarray = None, **kwargs):
+    """
+    Creates, plots and (optionally) saves an average image of the loaded tiff. If frames are provided, tiff is cropped to those frames.
+
+    Note: saves as 8-bit grayscale image.
+
+    :param frames:
+    :return:
+    """
+
+    if imstack is None and tiff_path is not None:
+        # read tiff
+        print(f'\t\- Creating std projection, from tiff: {tiff_path}')
+        if frames:
+            im_stack = tf.imread(tiff_path, key=range(frames[0], frames[1]))
+        else:
+            im_stack = tf.imread(tiff_path)
+    elif imstack is not None and tiff_path is None:
+        im_stack = imstack
+        assert im_stack.ndim == 3, 'can only project 3D image stacks (implicit dimensions are: Frames x Xpixels x Ypixels)'
+    else:
+        raise ValueError(
+            'values provided for both tiff_path and imstack. Unclear where to source image cellsdata from. Provide only one please.')
+
+    if frames:
+        print(f'\t collecting image for frames: {frames}')
+        im_stack = im_stack[frames[0]: frames[1]]
+
+    print(f'\t\- Std Project {len(im_stack)} total frames.')
+    img = np.std(im_stack, axis=0)
+
+    # convert to 8-bit
+    from packerlabimaging.utils.utils import convert_to_8bit
+    img = convert_to_8bit(img, 0, 255)
+
+    if save_path:
+        if '.tif' in save_path:
+            from packerlabimaging.utils.utils import return_parent_dir
+            save_dir = return_parent_dir(save_path) + '/'
+            os.makedirs(save_dir, exist_ok=True)
+        else:
+            raise ValueError(f'please provide full .tif path to save to. provided value was: {tiff_path}')
+        print(f"\t\- Writing tiff to: {save_path}")
+        tf.imwrite(save_path, img, photometric='minisblack')
+
+    if plot:
+        fig, ax = plt.subplots(figsize=(6, 6))
+        ax.imshow(img, cmap='gray')
+        fig.suptitle(f'Std Project')
+        fig.show()  # just plot for now to make sure that you are doing things correctly so far
+        if 'scalebar' in kwargs and kwargs['scalebar']:
+            if 'trialobj' in kwargs:
+                _add_scalebar(trialobj=kwargs['trialobj'], ax=ax, **kwargs)
+
+    return img
+
+
+def InspectTiff(tiff_path: str = None, frames: tuple = None, imstack: np.ndarray = None, **kwargs):
+    if imstack is None and tiff_path is not None:
+        # read tiff
+        print(f'\t\- Creating projections from tiff: {tiff_path}')
+        print(f'\t\- Collecting average image for frames: {frames}')
+        if frames:
+            loaded = tf.imread(tiff_path, key=range(frames[0], frames[1]))
+        else:
+            loaded = tf.imread(tiff_path)
+    elif imstack and tiff_path is None:
+        loaded = imstack
+        assert loaded.ndim == 3, 'can only project 3D image stacks (implicit dimensions are: Frames x Xpixels x Ypixels)'
+    else:
+        raise ValueError(
+            'values provided for both tiff_path and imstack. Unclear where to source image cellsdata from. Provide only one please.')
+
+    if frames:
+        image = loaded[frames[0]: frames[1]]
+    else:
+        image = loaded
+
+    _ = StdevProject(imstack=image, **kwargs)
+    _ = MaxProject(imstack=image, **kwargs)
+    _ = MeanProject(imstack=image, **kwargs)
+
+
+def makeFrameAverageTiff(key_frames: Union[int, list], tiff_path: str = None, imstack: np.ndarray = None,
+                         peri_frames: int = 100, save_path: str = None, to_plot=False, **kwargs):
     """
     Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from a multipage imaging TIFF file.
 
@@ -276,25 +428,19 @@ def makeFrameAverageTiff(key_frames: Union[int, list], tiff_path: str = None, im
     elif imstack and tiff_path is None:
         im_stack = imstack
     else:
-        raise ValueError('values provided for both tiff_path and imstack. Unclear where to source image cellsdata from. Provide only one please.')
+        raise ValueError(
+            'values provided for both tiff_path and imstack. Unclear where to source image cellsdata from. Provide only one please.')
 
-
+    figs = []
+    axs = []
     for frame in key_frames:
+        fig, ax = plt.subplots(figsize=(6,6))
         if frame < peri_frames // 2:
             peri_frames_low = frame
         else:
             peri_frames_low = peri_frames // 2
         peri_frames_high = peri_frames // 2
         im_sub = im_stack[frame - peri_frames_low: frame + peri_frames_high]
-
-
-
-        # # refactored to makeAverageTiff function
-        # avg_sub = np.mean(im_sub, axis=0)
-        #
-        # # convert to 8-bit
-        # from packerlabimaging.utils.utils import convert_to_8bit
-        # avg_sub = convert_to_8bit(avg_sub, 0, 255)
 
         if save_path:
             if '.tif' in save_path:
@@ -304,20 +450,29 @@ def makeFrameAverageTiff(key_frames: Union[int, list], tiff_path: str = None, im
             os.makedirs(save_path, exist_ok=True)
 
             print(f"\t\- Saving averaged tiff for frame: {frame}")
-            avg_sub = makeAverageTiff(imstack=im_sub, to_plot=False, save_path=save_path)
+            avg_sub = MeanProject(save_path=save_path, imstack=im_sub)
 
-            # tf.imwrite(save_path, avg_sub, photometric='minisblack')
         else:
-            avg_sub = makeAverageTiff(imstack=im_sub, to_plot=False)
-
+            avg_sub = MeanProject(imstack=im_sub)
 
         if to_plot:
-            plt.imshow(avg_sub, cmap='gray')
-            plt.suptitle(f'{peri_frames} peri-key_frames avg from frame {frame}')
-            plt.show()  # just plot for now to make sure that you are doing things correctly so far
+            ax.imshow(avg_sub, cmap='gray')
+            fig.suptitle(f'{peri_frames} peri-key_frames avg from frame {frame}')
+            fig.tight_layout(pad=0.2)
+            if 'scalebar_um' in kwargs:
+                if 'trialobj' in kwargs:
+                    _add_scalebar(scale_bar_um=kwargs['scalebar_um'], ax=ax, **kwargs)
+                else:
+                    raise ValueError('must provide trialobj parameter to access for making scalebar.')
+
+            fig.show()  # just plot for now to make sure that you are doing things correctly so far
+            figs.append(fig)
+            axs.append(ax)
 
 
-def showSingleTiffFrame(tiff_path, frame_num: int = 0, title: str = None):
+
+@plotting_decorator(figsize=(6, 6))
+def SingleTiffFrame(tiff_path, frame_num: int = 0, title: str = None, **kwargs):
     """
     plots an image of a single specified tiff frame after reading using tifffile.
 
@@ -326,22 +481,33 @@ def showSingleTiffFrame(tiff_path, frame_num: int = 0, title: str = None):
     :param title: (optional) give a string to use as title
     :return: matplotlib imshow plot
     """
+    # set any kwargs provided
+    ax = kwargs['ax']
+    fig = kwargs['fig']
+
     stack = tf.imread(tiff_path, key=frame_num)
-    plt.imshow(stack, cmap='gray')
-    plt.suptitle(title) if title is not None else plt.suptitle(f'frame num: {frame_num}')
-    plt.show()
-    return stack
+    ax.imshow(stack, cmap='gray')
+    fig.suptitle(title) if title is not None else fig.suptitle(f'frame num: {frame_num}')
+    fig.tight_layout(pad=0.2)
+
+    if 'scalebar_um' in kwargs:
+        if 'trialobj' in kwargs:
+            _add_scalebar(scale_bar_um=kwargs['scalebar_um'], **kwargs)
+        else:
+            raise ValueError('must provide trialobj parameter to access for making scalebar.')
+
+    fig.show()
+
+    return stack, fig, ax
 
 
 # plots the raw trace for the Flu mean of the FOV (similar to the ZProject in Fiji)
 @plotting_decorator(figsize=(10, 3))
-def plotMeanFovFluTrace(trialobj: TwoPhotonImagingTrial, **kwargs):
+def plotMeanFovFluTrace(trialobj: TwoPhotonImaging, **kwargs):
     """make plot of mean Ca trace averaged over the whole FOV
 
-    :param fig: a matplotlib.Figure instance, if provided use this fig for plotting
-    :param ax: a matplotlib.Axes.axes instance, if provided use this ax for plotting
-    :param show: if False, do not display plot (used when the necessity is to return the fig and ax objects to futher manipulation)
-    :returns fig, ax: returns fig and ax object, if show is False
+    :param trialobj:
+    :param kwargs:
     """
 
     if not hasattr(trialobj, 'meanFovFluTrace'):
@@ -370,7 +536,8 @@ def plotMeanFovFluTrace(trialobj: TwoPhotonImagingTrial, **kwargs):
 
 
 @plotting_decorator(figsize=(10, 6))
-def plot_photostim_traces_overlap(array, trialobj: AllOpticalTrial, exclude_id: list = None, y_spacing_factor=1, title='',
+def plot_photostim_traces_overlap(array, trialobj: AllOpticalTrial, exclude_id: list = None, y_spacing_factor=1,
+                                  title='',
                                   x_axis='Time (seconds)', **kwargs):
     """
     :param array:
@@ -534,10 +701,12 @@ def plot_periphotostim_avg2(dataset, fps=None, legend_labels=None, colors=None, 
         stdtraces.append(std)
         colors = ['black']
     else:
-        AttributeError('please provide the cellsdata to plot in a ls format, each different cellsdata group as a ls item...')
+        AttributeError(
+            'please provide the cellsdata to plot in a ls format, each different cellsdata group as a ls item...')
 
-    if 'xlabel' not in kwargs or kwargs['xlabel'] is None or 'key_frames' not in kwargs['xlabel'] or 'Frames' not in kwargs[
-        'xlabel']:
+    if 'xlabel' not in kwargs or kwargs['xlabel'] is None or 'key_frames' not in kwargs['xlabel'] or 'Frames' not in \
+            kwargs[
+                'xlabel']:
         ## change xaxis to time (secs)
         if fps is not None:
             if pre_stim_sec is not None:
@@ -786,10 +955,11 @@ def plot_SLMtargets_Locs(trialobj: AllOpticalTrial, targets_coords: Union[list, 
 
 
 def plot_s2pMasks():
-    """ Creates some images of SLM targets to suite2p.
+    """ Creates some images of SLM targets to suite2p cells.
 
     """
     pass
+
 
 # todo need to find new place for this:
 def export_klicker_to_csv(klicker: mpl_point_clicker.clicker, csv_path):
@@ -800,6 +970,7 @@ def export_klicker_to_csv(klicker: mpl_point_clicker.clicker, csv_path):
     _columns = [*klicker.get_positions()]
     data = {}
     for i in [*klicker.get_positions()]:
-        data[i] = klicker.get_positions()[i][:, 0]  # take just the x coord of the clicked point from klicker (i.e. time value)
+        data[i] = klicker.get_positions()[i][:,
+                  0]  # take just the x coord of the clicked point from klicker (i.e. time value)
     df = pd.DataFrame(data)
     save_to_csv(df, savepath=csv_path)
