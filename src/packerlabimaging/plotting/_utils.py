@@ -9,7 +9,7 @@ import random
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import seaborn as sns
-from packerlabimaging.main.core import ImagingTrial
+from packerlabimaging.main.core import ImagingTrial, SingleImage
 
 from packerlabimaging.workflows.AllOptical import AllOpticalTrial
 from packerlabimaging._archive.TwoPhotonImagingMain import TwoPhotonImagingTrial
@@ -163,7 +163,7 @@ def make_random_color_array(n_colors):
     return colors
 
 
-def _add_scalebar(trialobj: ImagingTrial, ax: plt.Axes, **kwargs):
+def _add_scalebar(trialobj: Union[ImagingTrial, SingleImage], ax: plt.Axes, **kwargs):
     """add scalebar to the image being plotted on the a single matplotlib.axes.Axes object using the TwoPhotonImaging object information.
     Option to specify scale bar um length to add to plot.
 

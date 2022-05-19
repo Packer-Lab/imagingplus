@@ -481,7 +481,7 @@ def makeFrameAverageTiff(key_frames: Union[int, list], tiff_path: str = None, im
 
 
 @plotting_decorator(figsize=(6, 6))
-def SingleTiffFrame(tiff_path, frame_num: int = 0, title: str = None, **kwargs):
+def SingleTiffFrame(tiff_path: str = None, frame_num: int = 0, title: str = None, imstack: np.array = None, **kwargs):
     """
     plots an image of a single specified tiff frame after reading using tifffile.
 
@@ -494,9 +494,12 @@ def SingleTiffFrame(tiff_path, frame_num: int = 0, title: str = None, **kwargs):
     ax = kwargs['ax']
     fig = kwargs['fig']
 
-    stack = ImportTiff(tiff_path=tiff_path, frames=frame_num)
+    if imstack is None:
+        assert tiff_path is not None, 'please provide a tiff path or input to imstack to use for plotting image.'
+        stack = ImportTiff(tiff_path=tiff_path, frames=frame_num)
+    else: stack = imstack
     ax.imshow(stack, cmap='gray')
-    fig.suptitle(title) if title is not None else fig.suptitle(f'frame num: {frame_num}')
+    ax.set_title(title) if title is not None else ax.set_title(f'frame num: {frame_num}')
     fig.tight_layout(pad=0.2)
 
     if 'scalebar_um' in kwargs:

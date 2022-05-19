@@ -198,8 +198,7 @@ def anndata_trial_data():
 
 @pytest.fixture(scope='session')
 def existing_anndata():
-    expobj = import_obj(
-        pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
+    expobj = import_obj(pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
     trialobj = expobj.load_trial(trialID=expobj.trialIDs[0])
 
     print(trialobj.cellsdata)  # this is the anndata object for this trial
@@ -209,7 +208,6 @@ def existing_anndata():
     },
         index=np.arange(trialobj.n_frames, dtype=int).astype(str),  # these are the same IDs of observations as above!
     )
-    # var_meta
 
     trialobj.cellsdata.add_var(var_name='exp_group', values=list(var_meta['exp_group']))
 
@@ -223,7 +221,7 @@ def s_tiff_path_fixture():
 
 @pytest.fixture(scope='session')
 def tiff_path_fixture():
-    return '/home/pshah/mnt/qnap/Data/2021-01-31/2021-01-31_t-007/2021-01-31_t-007_Cycle00001_Ch3.tif'
+    return '/home/pshah/mnt/qnap/Data/2021-01-31/2021-01-31_t-006/2021-01-31_t-006_Cycle00001_Ch3.tif'
 
 
 

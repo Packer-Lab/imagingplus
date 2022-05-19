@@ -96,34 +96,3 @@ class TwoPhotonImaging(ImagingTrial):
     #         dFF = self.normalize_dff(self.Suite2p.raw)
     #         return dFF
 
-    @staticmethod
-    def normalize_dff(arr, threshold_pct=20, threshold_val=None):
-        """normalize given array (cells x time) to the mean of the fluorescence values below given threshold. Threshold
-        will refer to the that lower percentile of the given trace."""
-
-        if arr.ndim == 1:
-            if threshold_val is None:
-                a = np.percentile(arr, threshold_pct)
-                mean_ = arr[arr < a].mean()
-            else:
-                mean_ = threshold_val
-            new_array = ((arr - mean_) / mean_) * 100
-            if np.isnan(new_array).any() == True:
-                Warning('Cell (unknown) contains nan, normalization factor: %s ' % mean_)
-
-        else:
-            new_array = np.empty_like(arr)
-            for i in range(len(arr)):
-                if threshold_val is None:
-                    a = np.percentile(arr[i], threshold_pct)
-                else:
-                    a = threshold_val
-                mean_ = np.mean(arr[i][arr[i] < a])
-                new_array[i] = ((arr[i] - mean_) / abs(mean_)) * 100
-
-                if np.isnan(new_array[i]).any() == True:
-                    print('Warning:')
-                    print('Cell %d: contains nan' % (i + 1))
-                    print('      Mean of the sub-threshold for this cell: %s' % mean_)
-
-        return new_array

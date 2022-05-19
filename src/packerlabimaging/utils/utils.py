@@ -73,6 +73,7 @@ def save_figure(fig, save_path_full: str = None):
     fig.savefig(save_path_full)
     print(f'\n|- saved figure to: {save_path_full}')
 
+
 def save_to_csv(df: pd.DataFrame, savepath: Path = None):
     """
     Save pandas dataframe to csv at savepath.
@@ -98,19 +99,19 @@ def filterDfBoolCol(df, true_cols=[], false_cols=[]):
     Outputs:
         indices of the dataframe where the logical operation is true
     '''
-    if true_cols: 
+    if true_cols:
         true_rows = df[true_cols].all(axis='columns')
-    
+
     if false_cols:
         false_rows = (~df[false_cols]).all(axis='columns')
-    
+
     if true_cols and false_cols:
         filtered_df = df[true_rows & false_rows]
     elif true_cols:
         filtered_df = df[true_rows]
     elif false_cols:
         filtered_df = df[false_rows]
-    
+
     return filtered_df.index
 
 
@@ -199,6 +200,14 @@ def ImportTiff(tiff_path, frames: Union[tuple, int] = None):
     else:
         im_stack = tf.imread(tiff_path)
     return im_stack
+
+
+# def read_csv(csvpath):
+#     """read csv from the provided csv path"""
+#     with open(csvpath) as csv_file:
+#         csv_file = csv.DictReader(csv_file, fieldnames=None, dialect='excel')
+#     return csv_file
+
 
 # simple ZProfile function for any sized square in the frame (equivalent to ZProfile function in Fiji)
 def ZProfile(movie, area_center_coords: tuple = None, area_size: int = -1, plot_trace: bool = True,
@@ -299,6 +308,7 @@ def save_array_to_tiff(save_path, data: np.array):
     tf.imwrite(file=save_path, data=data, photometric='minisblack')
     print(f"\n|- saved array of shape {data.shape} to: {save_path}")
 
+
 def SaveDownsampledTiff(tiff_path: str = None, stack: np.array = None, group_by: int = 4, save_as: str = None,
                         plot_zprofile: bool = True):
     """
@@ -364,7 +374,6 @@ def SaveDownsampledTiff(tiff_path: str = None, stack: np.array = None, group_by:
     # tf.imwrite(save_as, final_stack, photometric='minisblack')
     save_array_to_tiff(save_path=save_as, data=final_stack)
 
-
     return final_stack
 
 
@@ -384,6 +393,7 @@ def subselect_tiff(tiff_path: str = None, tiff_stack: np.array = None, select_fr
         tf.imwrite(save_as, stack_cropped, photometric='minisblack')
 
     return stack_cropped
+
 
 def make_tiff_stack(sorted_paths: list, save_as: str) -> np.ndarray:
     """
@@ -405,6 +415,7 @@ def make_tiff_stack(sorted_paths: list, save_as: str) -> np.ndarray:
             tif.save(data)
     return data
 
+
 def convert_to_8bit(img, target_type_min=0, target_type_max=255):
     """
     :param img:
@@ -421,6 +432,7 @@ def convert_to_8bit(img, target_type_min=0, target_type_max=255):
     new_img = (a * img + b).astype(np.uint8)
     return new_img
 
+
 def get_tiff_paths(path):
     """finds files with .tif or .tiff within the given directory."""
     tiff_files = []
@@ -430,6 +442,7 @@ def get_tiff_paths(path):
     print(f"found {len(tiff_files)} tif paths.")
 
     return tiff_files
+
 
 def read_fiji(csv_path):
     '''reads the csv file saved through plot z axis profile in fiji'''
@@ -445,9 +458,11 @@ def read_fiji(csv_path):
 
     return np.array(data)
 
+
 def save_fiji(arr):
     '''saves numpy array in current folder as fiji friendly tiff'''
     tf.imsave('Vape_array.tiff', arr.astype('int16'))
+
 
 def _check_path_exists(path_arg: str, path: str):
     try:
@@ -532,6 +547,7 @@ def dfof2(flu):
     flu_mean = np.mean(flu, 1)
     flu_mean = np.reshape(flu_mean, (len(flu_mean), 1))
     return (flu - flu_mean) / flu_mean
+
 
 def pade_approx_norminv(p):
     q = math.sqrt(2 * math.pi) * (p - 1 / 2) - (157 / 231) * math.sqrt(2) * \

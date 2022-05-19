@@ -37,8 +37,10 @@ post_stim_response_window: float = 0.500  #: time window for collecting post-sti
 class AllOpticalTrial(TwoPhotonImaging):
     """All Optical Experimental Data Analysis Workflow."""
 
-    def __init__(self, naparm_path, dataPath: str, saveDir: str, date: str, trialID: str, expID: str, expGroup: str = '',
-                 comment: str = '', imparams: ImagingMetadata = None, cells: CellAnnotations = None, tmdata: PaqData = None):
+    def __init__(self, naparm_path, dataPath: str, saveDir: str, date: str, trialID: str, expID: str,
+                 expGroup: str = '',
+                 comment: str = '', imparams: ImagingMetadata = None, cells: CellAnnotations = None,
+                 tmdata: PaqData = None):
 
         """
         :param metainfo: TypedDict containing meta-information field needed for this experiment. Please see TwoPhotonImagingMetainfo for type hints on accepted keys.
@@ -116,7 +118,7 @@ class AllOpticalTrial(TwoPhotonImaging):
         # 5) todo collect Flu traces from SLM targets - probably leave out of the init right??
         if hasattr(self, 'Suite2p'):
             self.raw_SLMTargets, self.dFF_SLMTargets, self.meanFluImg_registered = self.collectSignalFromCoords(
-                curr_trial_frames=self.Suite2p.trial_frames, save=True)
+                curr_trial_frames=self.Suite2p.trial_frames, save=True, target_coords_masks=np.array(self.twopstim.target_areas))
             self.targets_snippets = self.getTargetsStimTraceSnippets()
         else:
             Warning('NO Flu traces collected from any SLM targets because Suite2p not found for trial.')
@@ -319,68 +321,6 @@ class AllOpticalTrial(TwoPhotonImaging):
 
     ### ALLOPTICAL ANALYSIS - FOCUS ON SLM TARGETS RELATED METHODS - TEST all methods below
     # todo test
-    def collectSignalFromCoords(self, curr_trial_frames: Union[tuple, list], reg_tif_folder: str = None, save: bool = True):
-        """uses registered tiffs to collect raw traces from SLM target areas
-
-        :param curr_trial_frames:
-        :param reg_tif_folder:
-        :param save:
-        :return:
-        """
-
-        if reg_tif_folder is None:
-            if self.Suite2p.s2pResultsPath:
-                reg_tif_folder = self.Suite2p.s2pResultsPath + '/reg_tif/'
-                print(f"\- trying to load registerred tiffs from: {reg_tif_folder}")
-        else:
-            raise Exception(f"Must provide reg_tif_folder path for loading registered tiffs")
-        if not os.path.exists(reg_tif_folder):
-            raise Exception(f"no registered tiffs found at path: {reg_tif_folder}")
-
-        print(
-            f'\n\ncollecting raw Flu traces from SLM target coord. areas from registered TIFFs from: {reg_tif_folder}')
-        # read in registered tiff
-        reg_tif_list = os.listdir(reg_tif_folder)
-        reg_tif_list.sort()
-        start = curr_trial_frames[0] // 2000  # 2000 because that is the batch size for suite2p run
-        end = curr_trial_frames[1] // 2000 + 1
-
-        mean_img_stack = np.zeros([end - start, self.imparams.frame_x, self.imparams.frame_y])
-        # collect mean traces from target areas of each target coordinate by reading in individual registered tiffs that contain frames for current trial
-        targets_trace_full = np.zeros([len(self.twopstim.target_coords_all), (end - start) * 2000], dtype='float32')
-        counter = 0
-        for i in range(start, end):
-            tif_path_save2 = self.Suite2p.s2pResultsPath + '/reg_tif/' + reg_tif_list[i]
-            with tf.TiffFile(tif_path_save2, multifile=False) as input_tif:
-                print('|- reading tiff: %s' % tif_path_save2)
-                data = input_tif.asarray()
-
-            targets_trace = np.zeros([len(self.twopstim.target_coords_all), data.shape[0]], dtype='float32')
-            for coord in range(len(self.twopstim.target_coords_all)):
-                target_areas = np.array(
-                    self.twopstim.target_areas)  # TODO update this so that it doesn't include the extra exclusion zone
-                x = data[:, target_areas[coord, :, 1], target_areas[coord, :, 0]]  # = 1
-                targets_trace[coord] = np.mean(x, axis=1)
-
-            targets_trace_full[:, (i - start) * 2000: ((i - start) * 2000) + data.shape[
-                0]] = targets_trace  # iteratively write to each successive segment of the targets_trace array based on the length of the reg_tiff that is read in.
-
-            mean_img_stack[counter] = np.mean(data, axis=0)
-            counter += 1
-
-        # final part, crop to the *exact* frames for current trial
-        raw_SLMTargets = targets_trace_full[:,
-                         curr_trial_frames[0] - start * 2000: curr_trial_frames[1] - (start * 2000)]
-
-        dFF_SLMTargets = self.normalize_dff(raw_SLMTargets, threshold_pct=10)
-
-        meanFluImg_registered = np.mean(mean_img_stack, axis=0)
-
-        self.save() if save else None
-
-        return raw_SLMTargets, dFF_SLMTargets, meanFluImg_registered
-
-    # todo test
     def getTargetsStimTraceSnippets(self, targets_idx: Union[list, str] = 'all', pre_stim: Union[float, int] = 0.5,
                                     post_stim: Union[float, int] = 4.0, stims: list = None):
         """
@@ -529,7 +469,8 @@ class AllOpticalTrial(TwoPhotonImaging):
         print(f"\t|- Number of non-target ROIs: {len(self.cells.cellsdata['photostim_class'] == 'non-target')}")
 
     # todo code and test
-    def _makePhotostimTrialFluSnippets(self, plane_flu: np.ndarray, stim_frames: list = None) -> np.ndarray:  # base code copied from Vape's _makeFluTrials
+    def _makePhotostimTrialFluSnippets(self, plane_flu: np.ndarray,
+                                       stim_frames: list = None) -> np.ndarray:  # base code copied from Vape's _makeFluTrials
         """
         Make Flu snippets timed on photostimulation, for each cell, for each stim instance. [cells x Flu frames x stims]  # TODO triple check order of this array's dimensions
 
@@ -652,7 +593,6 @@ class AllOpticalTrial(TwoPhotonImaging):
 
         :return:
         """
-
 
     # todo test
     def _CellsPhotostimResponsesAnndata(self, photostimResponseAmplitudes: pd.DataFrame):
@@ -854,8 +794,6 @@ class AllOpticalTrial(TwoPhotonImaging):
     ####                                                                    // end
 
 
-
-
 if __name__ == '__main__':
     LOCAL_DATA_PATH = '/Users/prajayshah/data/oxford-data-to-process/'
     REMOTE_DATA_PATH = '/home/pshah/mnt/qnap/Data/'
@@ -905,10 +843,6 @@ if __name__ == '__main__':
 
     idict = alloptical_trial_fixture()
     aotrial = test_AllOpticalClass(idict)
-
-
-
-
 
 # archive
 

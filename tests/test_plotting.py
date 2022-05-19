@@ -13,10 +13,6 @@ from packerlabimaging.plotting.plotting import makeSuite2pPlots, plot_flu_trace,
 # trialobj: TwoPhotonImagingTrial = expobj.load_trial(trialID='t-005')
 
 
-def test_SingleTiffFrame(s_tiff_path_fixture, existing_trialobj_twophotonimaging_fixture):
-    SingleTiffFrame(tiff_path=s_tiff_path_fixture,
-                    trialobj=existing_trialobj_twophotonimaging_fixture,
-                    scalebar_um=100)
 
 
 def test_plotRoiLocations(existing_trialobj_twophotonimaging_fixture):
@@ -61,5 +57,11 @@ def test_plot_SLMtargets_Locs(existing_trialobj_alloptical_fixture):
 
 def test_makeFrameAverageTiff(tiff_path_fixture, existing_trialobj_twophotonimaging_fixture):
     makeFrameAverageTiff(tiff_path=tiff_path_fixture, key_frames=[500, 1000, 1500, 2000, 3000], peri_frames=100, scalebar_um=100, plot=True, trialobj=existing_trialobj_twophotonimaging_fixture)
+
+
+def test_SingleTiffFrame(s_tiff_path_fixture, existing_trialobj_twophotonimaging_fixture):
+    SingleTiffFrame(tiff_path=s_tiff_path_fixture,
+                    trialobj=existing_trialobj_twophotonimaging_fixture,
+                    scalebar_um=100)
 
 

@@ -197,3 +197,4 @@ class PrairieViewMetadata(ImagingMetadata):
                        'last_good_frame': last_good_frame}
 
         return return_dict
+
