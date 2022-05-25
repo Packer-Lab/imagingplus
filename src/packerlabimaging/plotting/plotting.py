@@ -166,7 +166,7 @@ def plot_flu_trace(trialobj: TwoPhotonImaging, cell, to_plot='raw', **kwargs):
 
 
 @plotting_decorator()
-def plot__tmdata_channel(tmdata: TemporalData, channel: str, **kwargs):
+def plot__channel(tmdata: TemporalData, channel: str, **kwargs):
     """
     Plot the stored signal from the specified channel from a PaqData submodule.
 
@@ -409,8 +409,8 @@ def InspectTiff(tiff_path: str = None, frames: tuple = None, imstack: np.ndarray
     _ = MeanProject(imstack=image, **kwargs)
 
 
-def makeFrameAverageTiff(key_frames: Union[int, list], tiff_path: str = None, imstack: np.ndarray = None,
-                         peri_frames: int = 100, save_path: str = None, plot=False, **kwargs):
+def FrameAverage(key_frames: Union[int, list], tiff_path: str = None, imstack: np.ndarray = None,
+                 peri_frames: int = 100, save_path: str = None, plot=False, **kwargs):
     """
     Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from a multipage imaging TIFF file.
 
@@ -431,18 +431,22 @@ def makeFrameAverageTiff(key_frames: Union[int, list], tiff_path: str = None, im
     if imstack is None and tiff_path:
         # read tiff
         print(f'\t\- Creating avg img for frame: {key_frames}, from tiff: {tiff_path}')
-        im_stack = ImportTiff(tiff_path=tiff_path, frames=None)
+        frame_range = ((key_frames[0] - peri_frames // 2), (key_frames[-1] + peri_frames // 2))
+        im_stack = ImportTiff(tiff_path=tiff_path, frames=frame_range)
     elif imstack and tiff_path is None:
         im_stack = imstack
     else:
         raise ValueError(
             'values provided for both tiff_path and imstack. Unclear where to source image cellsdata from. Provide only one please.')
 
+    key_frames_adjusted = [frame - (key_frames[0] - peri_frames // 2) for frame in key_frames]
+
     figs = []
     axs = []
-    for frame in key_frames:
-        if frame not in range(im_stack.shape[0]):
-            raise ValueError(f'{frame} not in range of loaded tiff.')
+    for frame in key_frames_adjusted:
+        if len(key_frames_adjusted) > 1:
+            if frame not in range(im_stack.shape[0]):
+                raise ValueError(f'{frame} not in range of loaded tiff.')
 
         fig, ax = plt.subplots(figsize=(6, 6))
         if frame < peri_frames // 2:
@@ -481,7 +485,7 @@ def makeFrameAverageTiff(key_frames: Union[int, list], tiff_path: str = None, im
 
 
 @plotting_decorator(figsize=(6, 6))
-def SingleTiffFrame(tiff_path: str = None, frame_num: int = 0, title: str = None, imstack: np.array = None, **kwargs):
+def SingleFrame(tiff_path: str = None, frame_num: int = 0, title: str = None, imstack: np.array = None, **kwargs):
     """
     plots an image of a single specified tiff frame after reading using tifffile.
 
@@ -497,7 +501,8 @@ def SingleTiffFrame(tiff_path: str = None, frame_num: int = 0, title: str = None
     if imstack is None:
         assert tiff_path is not None, 'please provide a tiff path or input to imstack to use for plotting image.'
         stack = ImportTiff(tiff_path=tiff_path, frames=frame_num)
-    else: stack = imstack
+    else:
+        stack = imstack
     ax.imshow(stack, cmap='gray')
     ax.set_title(title) if title is not None else ax.set_title(f'frame num: {frame_num}')
     fig.tight_layout(pad=0.2)

@@ -604,8 +604,8 @@ class ImagingTrial:
         :param title: (optional) give a string to use as title
         :return: matplotlib imshow plot
         """
-        from packerlabimaging.plotting.plotting import SingleTiffFrame
-        stack = SingleTiffFrame(tiff_path=self.tiff_path, frame_num=frame_num, title=title)
+        from packerlabimaging.plotting.plotting import SingleFrame
+        stack = SingleFrame(tiff_path=self.tiff_path, frame_num=frame_num, title=title)
 
         # stack = tf.imread(self.tiff_path, key=frame_num)
         # plt.imshow(stack, cmap='gray')

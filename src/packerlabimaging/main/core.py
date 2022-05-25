@@ -20,7 +20,6 @@ import tifffile as tf
 
 import pickle
 
-
 # add new class for temporal synchronization of additional 1d dataarrays with imaging cellsdata - parent of Paq
 # todo - test new paqdata child class.
 
@@ -33,6 +32,7 @@ import pickle
 
 # TODO [ ]  thinking about restructuring TwoPhotonImaging trial methods to more general trial type
 #    [ ]  then making TwoPhotonImaging as an independent workflow, allowing the general trial type to retain the methods that are *currently* in TwoPhotonImaging
+from packerlabimaging.utils.utils import ImportTiff
 
 
 @dataclass
@@ -48,8 +48,8 @@ class SingleImage:
         self.data = tf.imread(self.dataPath)
 
     def plotImg(self, **kwargs):
-        from packerlabimaging.plotting.plotting import SingleTiffFrame
-        SingleTiffFrame(imstack=self.data, **kwargs)
+        from packerlabimaging.plotting.plotting import SingleFrame
+        SingleFrame(imstack=self.data, **kwargs)
 
 
 # noinspection DuplicatedCode
@@ -380,6 +380,9 @@ class ImagingTrial:
     #     """trial ID of current trial object"""
     #     return self.metainfo['trialID']
 
+    def frameNum(self, time):
+        return round(time * self.imparams.fps)
+
     @property
     def tiff_path(self):
         """tiff path of current trial object"""
@@ -437,8 +440,8 @@ class ImagingTrial:
         :param title: (optional) give a string to use as title
         :return: matplotlib imshow plot
         """
-        from packerlabimaging.plotting.plotting import SingleTiffFrame
-        stack = SingleTiffFrame(tiff_path=self.tiff_path, frame_num=frame_num, title=title)
+        from packerlabimaging.plotting.plotting import SingleFrame
+        stack = SingleFrame(tiff_path=self.tiff_path, frame_num=frame_num, title=title)
 
         # stack = tf.imread(self.tiff_path, key=frame_num)
         # plt.imshow(stack, cmap='gray')
@@ -539,70 +542,49 @@ class ImagingTrial:
         print(f"\n{adata}")
         return adata
 
-    # todo test
-    def collectSignalFromCoords(self, curr_trial_frames: Union[tuple, list], target_coords_masks: np.ndarray,
-                                reg_tif_folder: str = None, save: bool = True):
-        """uses registered tiffs to collect raw traces from provided target masks target areas
+    @staticmethod
+    def collectSignalFromCoords(tiff_paths: Union[tuple, list], target_coords_masks: np.ndarray):
+        """
+        Collect average signal from target mask areas from provided tiffs.
 
-        :param curr_trial_frames:
-        :param reg_tif_folder:
-        :param save:
+        :param tiff_paths:
+        :param target_coords_masks:
         :return:
         """
-
-        if reg_tif_folder is None:
-            if self.Suite2p.s2pResultsPath:
-                reg_tif_folder = self.Suite2p.s2pResultsPath + '/reg_tif/'
-                print(f"\- trying to load registerred tiffs from: {reg_tif_folder}")
-        else:
-            raise Exception(f"Must provide reg_tif_folder path for loading registered tiffs")
-        if not os.path.exists(reg_tif_folder):
-            raise Exception(f"no registered tiffs found at path: {reg_tif_folder}")
 
         num_coords = len(target_coords_masks)
         target_areas = target_coords_masks
 
-        print(
-            f'\n\ncollecting raw Flu traces from SLM target coord. areas from registered TIFFs from: {reg_tif_folder}')
-        # read in registered tiff
-        reg_tif_list = os.listdir(reg_tif_folder)
-        reg_tif_list.sort()
-        start = curr_trial_frames[0] // 2000  # 2000 because that is the batch size for suite2p run
-        end = curr_trial_frames[1] // 2000 + 1
+        targets_trace_full = np.zeros([num_coords, 0], dtype='float32')
 
-        mean_img_stack = np.zeros([end - start, self.imparams.frame_x, self.imparams.frame_y])
-        # collect mean traces from target areas of each target coordinate by reading in individual registered tiffs that contain frames for current trial
-        targets_trace_full = np.zeros([num_coords, (end - start) * 2000], dtype='float32')
-        counter = 0
-        for i in range(start, end):
-            tif_path_save2 = self.Suite2p.s2pResultsPath + '/reg_tif/' + reg_tif_list[i]
-            with tf.TiffFile(tif_path_save2, multifile=False) as input_tif:
-                print('|- reading tiff: %s' % tif_path_save2)
-                data = input_tif.asarray()
+        for tiff_path in tiff_paths:
+            print(f'|- reading tiff: {tiff_path}')
+
+            #### doesn't work
+            # import skimage.io as skio
+            # imstack1 = skio.imread(tiff_path, plugin="tifffile")
+
+            #### works
+            # import cv2
+            # ret, images = cv2.imreadmulti(tiff_path, [], cv2.IMREAD_ANYCOLOR)
+            # data = np.asarray(images)
+
+            # works
+            from packerlabimaging.utils.utils import ImportTiff
+            data = ImportTiff(tiff_path)
+            print(f'\t\- shape: {data.shape}')
+
+            #### works
+            # im_stack = tf.imread(tiff_path, key=range(batch_size))
 
             targets_trace = np.zeros([num_coords, data.shape[0]], dtype='float32')
             for coord in range(num_coords):
-                x = data[:, target_areas[coord, :, 1], target_areas[coord, :, 0]]
+                x = data[:, target_areas[coord, 1], target_areas[coord, 0]]
                 targets_trace[coord] = np.mean(x, axis=1)
 
-            targets_trace_full[:, (i - start) * 2000: ((i - start) * 2000) + data.shape[
-                0]] = targets_trace  # iteratively write to each successive segment of the targets_trace array based on the length of the reg_tiff that is read in.
+            targets_trace_full = np.concatenate((targets_trace_full, targets_trace), axis=1)
 
-            mean_img_stack[counter] = np.mean(data, axis=0)
-            counter += 1
-
-        # final part, crop to the *exact* frames for current trial
-        raw_coords_signal = targets_trace_full[:,
-                         curr_trial_frames[0] - start * 2000: curr_trial_frames[1] - (start * 2000)]
-
-        dFF_coords_signal = self.normalize_dff(raw_coords_signal, threshold_pct=10)
-
-        meanFluImg_registered = np.mean(mean_img_stack, axis=0)
-
-        self.save() if save else None
-
-        return raw_coords_signal, dFF_coords_signal, meanFluImg_registered
-
+        return targets_trace_full
 
     @staticmethod
     def normalize_dff(arr, threshold_pct=20, threshold_val=None):

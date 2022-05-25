@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
-from packerlabimaging.processing.paq import PaqData, paq2py
+from packerlabimaging._archive.paq import PaqData, paq2py
 
 from packerlabimaging._archive.TwoPhotonImagingMain import TwoPhotonImagingTrial
 

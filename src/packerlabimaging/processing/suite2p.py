@@ -13,7 +13,7 @@ from suite2p import run_s2p
 import tifffile as tf
 
 from packerlabimaging.utils.classes import UnavailableOptionError
-from packerlabimaging.utils.utils import make_tiff_stack, save_array_to_tiff
+from packerlabimaging.utils.utils import make_tiff_stack, save_array_to_tiff, ImportTiff
 
 # TEMP VARIABLES FOR DEVELOPMENT USAGES
 N_PLANES = 1
@@ -609,7 +609,8 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
         cells_data, cells_multidim = self.getCellsAnnotations()
         # super(Suite2pResultsTrial, self).__init__(cells_array=cells_data.index, annotations=cells_data.columns, cellsdata=cells_data, multidim_data=cells_multidim)
 
-        CellAnnotations.__init__(self, cells_array=cells_data.index, annotations=cells_data.columns, cellsdata=cells_data, multidim_data=cells_multidim)
+        CellAnnotations.__init__(self, cells_array=cells_data.index, annotations=cells_data.columns,
+                                 cellsdata=cells_data, multidim_data=cells_multidim)
 
         ImagingData.__init__(self, imdata=raw, spks=spks, neuropil=neuropil)
 
@@ -804,8 +805,34 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
             coordinates[cell, 1] = value[0]
         return coordinates
 
+    def collectTiffList(self, curr_trial_frames: Union[tuple, list], reg_tif_folder: str = None):
+        """
+        Collects list of tiffs from registered tiff output folder for current trial of suite2p processed dataset.
 
-#### archiving away for now - trying to switch to an approach that doesn't inherit from parent suite2p obj.
+        :param curr_trial_frames:
+        :param reg_tif_folder:
+        :return:
+        """
+
+        if not os.path.exists(reg_tif_folder):
+            raise Exception(f"no registered tiffs found at path: {reg_tif_folder}")
+
+        # collect list of registered tiffs associated with current trial
+        reg_tif_list = os.listdir(reg_tif_folder)
+        reg_tif_list.sort()
+        start = curr_trial_frames[0] // self.output_ops['batch_size']
+        end = curr_trial_frames[1] // self.output_ops['batch_size'] + 1
+
+        tiffs_list = []
+        for i in range(start, end):
+            tiff_path = reg_tif_folder + reg_tif_list[i]
+            tiffs_list.append(tiff_path)
+
+        return tiffs_list
+
+    #### archiving away for now - trying to switch to an approach that doesn't inherit from parent suite2p obj.
+
+
 # class Suite2PTrial_(Suite2pExperiment):
 #     """used to collect and store suite2p processed cellsdata for one trial - out of overall experiment."""
 #

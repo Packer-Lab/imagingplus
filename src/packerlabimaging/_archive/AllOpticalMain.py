@@ -1,5 +1,4 @@
 # TODO update all 2p stim related attr's to naparm submodule
-from dataclasses import dataclass
 import glob
 import os
 import signal
@@ -12,9 +11,8 @@ import scipy.stats as stats
 import tifffile as tf
 
 from packerlabimaging import TwoPhotonImaging
-from packerlabimaging.main.classes import ImagingMetadata, ImagingData, TemporalData, ImagingTrial, CellAnnotations, \
+from packerlabimaging.main.classes import ImagingMetadata, TemporalData, ImagingTrial, CellAnnotations, \
     Experiment
-from packerlabimaging.utils.io import import_obj
 from packerlabimaging.utils.utils import convert_to_8bit
 from packerlabimaging.processing.naparm import Targets
 from packerlabimaging.utils.classes import UnavailableOptionError
@@ -1583,7 +1581,7 @@ if __name__ == '__main__':
 
     def test_AllOpticalClass(alloptical_trial_fixture):
         from packerlabimaging.processing.imagingMetadata import PrairieViewMetadata
-        from packerlabimaging.main.paq import PaqData
+        from packerlabimaging.processing.paq import PaqData
 
         paqs_loc = f'{BASE_PATH}/2020-12-19/2020-12-19_RL109_013.paq'  # path to the .paq files for the selected trials
         dataPath = alloptical_trial_fixture['dataPath']

@@ -1,21 +1,17 @@
 # TODO update all 2p stim related attr's to naparm submodule
-from dataclasses import dataclass
 import glob
 import os
-import signal
 import time
 from typing import Union
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import scipy.stats as stats
-import tifffile as tf
 
 from packerlabimaging import TwoPhotonImaging
-from packerlabimaging.main.subcore import ImagingMetadata, ImagingData, CellAnnotations
+from packerlabimaging.main.subcore import ImagingMetadata, CellAnnotations
 from packerlabimaging.main.core import Experiment, ImagingTrial
-from packerlabimaging.main.paq import PaqData
+from packerlabimaging.processing.paq import PaqData
 from packerlabimaging.processing.naparm import Targets
 
 # %%
@@ -117,7 +113,7 @@ class AllOpticalTrial(TwoPhotonImaging):
 
         # 5) todo collect Flu traces from SLM targets - probably leave out of the init right??
         if hasattr(self, 'Suite2p'):
-            self.raw_SLMTargets, self.dFF_SLMTargets, self.meanFluImg_registered = self.collectSignalFromCoords(
+            self.raw_SLMTargets, self.meanFluImg_registered = self.collectSignalFromCoords(
                 curr_trial_frames=self.Suite2p.trial_frames, save=True, target_coords_masks=np.array(self.twopstim.target_areas))
             self.targets_snippets = self.getTargetsStimTraceSnippets()
         else:
@@ -824,7 +820,7 @@ if __name__ == '__main__':
 
     def test_AllOpticalClass(alloptical_trial_fixture):
         from packerlabimaging.processing.imagingMetadata import PrairieViewMetadata
-        from packerlabimaging.main.paq import PaqData
+        from packerlabimaging.processing.paq import PaqData
 
         paqs_loc = f'{BASE_PATH}/2020-12-19/2020-12-19_RL109_013.paq'  # path to the .paq files for the selected trials
         dataPath = alloptical_trial_fixture['dataPath']

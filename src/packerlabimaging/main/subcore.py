@@ -74,7 +74,7 @@ class TemporalData:
 
         return sparse_data
 
-    def cropData(self, begin: int, end: int, channels: List[str] = 'all', replace: bool = False):
+    def cropData(self, begin: int, end: int, channels: Union[str, List[str]] = 'all', replace: bool = False):
         """
         Crops saved temporal cellsdata channels to the timestamps of begin and end.
 

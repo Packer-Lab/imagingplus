@@ -192,13 +192,15 @@ def threshold_detect(signal, threshold):
     return frames[0]
 
 
-def ImportTiff(tiff_path, frames: Union[tuple, int] = None):
+def ImportTiff(tiff_path, frames: Union[tuple, list, int] = None):
     if frames and type(frames) == tuple:
         im_stack = tf.imread(tiff_path, key=range(frames[0], frames[1]))
     elif frames and type(frames) == int:
         im_stack = tf.imread(tiff_path, key=frames)
     else:
-        im_stack = tf.imread(tiff_path)
+        import cv2
+        ret, images = cv2.imreadmulti(tiff_path, [], cv2.IMREAD_ANYCOLOR)
+        im_stack = np.asarray(images)
     return im_stack
 
 

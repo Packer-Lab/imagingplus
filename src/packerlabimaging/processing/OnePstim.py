@@ -7,7 +7,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from packerlabimaging._archive.TwoPhotonImagingMain import TwoPhotonImagingTrial
-from .paq import PaqData
+from packerlabimaging._archive.paq import PaqData
 from packerlabimaging.utils.utils import threshold_detect
 from packerlabimaging.utils.classes import PaqInfoTrial
 

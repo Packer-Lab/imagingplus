@@ -1,17 +1,14 @@
 # add electrophysiology cellsdata to the trial
 
 # retrieving and processing on LFP recordings from the .Paq file
-import os.path
 from typing import Union
 
 import numpy as np
 from matplotlib import pyplot as plt
 from scipy import signal
 
-from packerlabimaging.main.subcore import TemporalData, ImagingTrial
 from packerlabimaging.main.core import ImagingTrial
 from packerlabimaging.plotting._utils import plotting_decorator
-from packerlabimaging.processing.paq import paq2py
 
 
 class LFP:

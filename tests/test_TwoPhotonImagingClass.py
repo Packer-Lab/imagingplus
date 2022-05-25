@@ -1,10 +1,9 @@
 import os
 
 import pytest
-from packerlabimaging import Experiment
 
 from packerlabimaging._archive import TwoPhotonImagingMain
-from packerlabimaging.main.paq import PaqData
+from packerlabimaging.processing.paq import PaqData
 from packerlabimaging.processing.imagingMetadata import PrairieViewMetadata
 from packerlabimaging.workflows.TwoPhotonImaging import TwoPhotonImaging
 

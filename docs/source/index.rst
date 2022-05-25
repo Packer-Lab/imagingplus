@@ -19,8 +19,12 @@ Please open an issue or pull request on the project's `Github <https://github.co
 Introduction
 ++++++++++++
 
-packerlabimaging is a Python package for essential processing and analysis of 2photon imaging data collected in the Packer Lab.
-Especially, there is a fully implemented pipeline for data structuring, processing, analysis and plotting of 2photon Ca2+ imaging experiments, and experiments based around 2photon imaging such as all optical experiments (i.e. 2photon optogenetic stim or 1photon optogenetic stim, with combined 2photon Ca2+ imaging).
+`packerlabimaging` is a Python package for essential processing and analysis of 2photon imaging data collected in the Packer Lab.
+
+`packerlabimaging` was first designed to provide a toolbox of data processing methods and a structured data analysis framework for all-optical experiments, which combine 2-photon imaging, 2-photon stimulation and multiple other time-synced data streams (Packer et al., 2015, Nat Meth). However, the packerlabimaging toolbox can be more broadly applied to other configurations of imaging+ neuroscience experiments, such as any combination of imaging + behaviour tracking + sensory stimulation + electrophysiology, etc.
+Especially, there are workflows for analysis and visualisation of standard Ca2+ imaging data, and of standard all-optical experiments. Out-of-the-box, the package is designed to work best with imaging experiments performed using a Bruker 2pPlus microscope system, PACKIO (REF) for experimental hardware temporal synchronisation and utilises Suite2p (REF) for processing of Ca2+ imaging data.
+Packerlabimaging implements a structure of data storage and processing that is designed to be modular, highly intuitive and readily extendable to serve the end-user’s unique analytic needs. This framework gives the user a single framework to integrate the data processing and analyses needs of a variety of multi-modal experiments.
+
 
 
 .. sidebar:: Schematic of overall package flow

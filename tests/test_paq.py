@@ -1,5 +1,5 @@
 from packerlabimaging.plotting.plotting import plot__paq_channel
-from packerlabimaging.processing.paq import PaqData
+from packerlabimaging._archive.paq import PaqData
 
 from packerlabimaging._archive.TwoPhotonImagingMain import TwoPhotonImagingTrial
 

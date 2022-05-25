@@ -127,8 +127,8 @@ def test_makeFrameAverageTiff():
     expobj = import_obj(pkl_path='/home/pshah/mnt/qnap/Analysis/2021-01-25/PS12/PS12_analysis.pkl')
     trialobj = expobj.load_trial(trialID=expobj.trialIDs[0])
 
-    trialobj.Suite2p.makeFrameAverageTiff(key_frames=[110, 510], peri_frames=100,
-                                          save_path=trialobj.saveDir + f'/export/avg_frames/', to_plot=True)
+    trialobj.Suite2p.FrameAverage(key_frames=[110, 510], peri_frames=100,
+                                  save_path=trialobj.saveDir + f'/export/avg_frames/', to_plot=True)
 
 # test_makeFrameAverageTiff()
 

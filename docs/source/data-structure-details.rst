@@ -4,9 +4,6 @@
 Data Structure Inside Trial objects
 ===================================
 
-Numpy arrays are heavily used to collect/store raw and processed data inside each Trial object.
-There are multiple Trial object attributes which store data, with each attribute dedicated to a specific method of data processing.
-
 Annotated data object for storing multi-functional data
 -------------------------------------------------------
 

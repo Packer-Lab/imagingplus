@@ -3,12 +3,10 @@
 import os
 import time
 
-import numpy as np
-
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
 from packerlabimaging.main.core import ImagingTrial
 from packerlabimaging.main.subcore import CellAnnotations, ImagingData
-from packerlabimaging.main.paq import PaqData
+from packerlabimaging.processing.paq import PaqData
 from packerlabimaging.processing.imagingMetadata import ImagingMetadata
 
 

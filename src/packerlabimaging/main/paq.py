@@ -1,4 +1,4 @@
-# new copy of processing/paq.py to use for experimenting with and creating paq as child of temporal cellsdata.
+# TEMP copy of processing/paq.py to use for experimenting with and creating paq as child of temporal cellsdata.
 
 import os.path
 from dataclasses import dataclass

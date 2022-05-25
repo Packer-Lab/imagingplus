@@ -24,7 +24,8 @@ setup(
         'scipy',
         'statsmodels',
         'scikit-image',
-        'suite2p'
+        'suite2p',
+        'cv2'
     ],
     tests_require=TESTS_REQUIRE,
     zip_safe=False
