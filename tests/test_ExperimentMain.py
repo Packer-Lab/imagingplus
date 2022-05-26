@@ -26,6 +26,7 @@ def test_add_suite2p_results(existing_expobj_fixture):
 
     expobj, date = existing_expobj_fixture
     s2p_path = f'/home/pshah/mnt/qnap/Analysis/{date}/{expobj.expID}//suite2p//plane0/'
+
     expobj.add_suite2p(s2p_trials=[expobj.trialIDs[0]], s2pResultsPath=s2p_path)
     # t005 = expobj.load_trial(trialID='t-005')
 

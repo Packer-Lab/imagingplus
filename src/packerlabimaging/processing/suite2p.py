@@ -249,22 +249,6 @@ class Suite2pExperiment:
 
         self.neuropil_coeff = 0
 
-        # set trials to run together in suite2p for Experiment
-        self.trials = []
-        tiff_paths_to_use_s2p: dict = trialsTiffsSuite2p
-        for trial, path in tiff_paths_to_use_s2p.items():
-            if path is not None:
-                self.trials.append(trial)
-            else:
-                tiff_paths_to_use_s2p.pop(trial)
-
-        # self.trials = [*trialsTiffsSuite2p]
-        # todo this is only necessary for running suite2p right?
-        self.tiff_paths_to_use_s2p: dict = tiff_paths_to_use_s2p
-        assert len(
-            self.trials) > 0, "no trials found to run suite2p, option available to provide list of trial IDs in " \
-                              "`trialsSuite2P` "
-
         if s2pResultsPath is None:
             # initialize needed variables and attr's for future calling of s2pRun
             self.s2pResultsPath = None
@@ -277,6 +261,27 @@ class Suite2pExperiment:
                 raise Exception(
                     f'Something went wrong while trying to load suite2p processed cellsdata from: {s2pResultsPath}')
             self.s2pResultExists = True
+
+        # set trials to run together in suite2p for Experiment
+        self.trials = []
+        tiff_paths_to_use_s2p: dict = trialsTiffsSuite2p
+        for trial, path in tiff_paths_to_use_s2p.items():
+            if path is not None:
+                if self.s2pResultExists and hasattr(self, 'output_ops'):
+                    if path in self.output_ops['filelist']:
+                        self.trials.append(trial)
+                    else:
+                        print(f'WARNING: {trial}, {path} not found in suite2p results filelist. Not added to Suite2p object.')
+            else:
+                tiff_paths_to_use_s2p.pop(trial)
+
+        # self.trials = [*trialsTiffsSuite2p]
+        # todo this is only necessary for running suite2p right?
+        self.tiff_paths_to_use_s2p: dict = tiff_paths_to_use_s2p
+        assert len(
+            self.trials) > 0, "no trials found to run suite2p, option available to provide list of trial IDs in " \
+                              "`trialsSuite2P` "
+
 
         self.db: dict = {}
 
@@ -692,7 +697,8 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
 
             tif_path = reg_tif_folder + reg_tif_list[batch_num]
 
-            im_batch_reg = tf.imread(tif_path, key=range(0, self.output_ops['batch_size']))
+            # im_batch_reg = tf.imread(tif_path, key=range(0, self.output_ops['batch_size']))
+            im_batch_reg = ImportTiff(tif_path, frames=(0, self.output_ops['batch_size']))
 
             frame_num_batch = frame - (batch_num * self.output_ops['batch_size'])
 
@@ -829,6 +835,77 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
             tiffs_list.append(tiff_path)
 
         return tiffs_list
+
+    def collectSignalFromCoords(self, target_coords_masks: np.ndarray, reg_tif_folder: str = None):
+        """
+        TODO: update to use the tiff list and method in core.
+
+        uses registered tiffs to collect raw traces from provided target masks target areas
+
+        :param curr_trial_frames:
+        :param reg_tif_folder: folder containing .tiff
+        :param save:
+        :return:
+        """
+
+        reg_tif_folder = reg_tif_folder if reg_tif_folder else self.s2pResultsPath
+        batch_size = self.output_ops['batch_size']
+
+        if not os.path.exists(reg_tif_folder):
+            raise Exception(f"no registered tiffs found at path: {reg_tif_folder}")
+
+        num_coords = len(target_coords_masks)
+        target_areas = target_coords_masks
+
+        print(
+            f'\n\ncollecting raw Flu traces from SLM target coord. areas from registered TIFFs from: {reg_tif_folder}')
+        # read in registered tiff
+        reg_tif_list = os.listdir(reg_tif_folder)
+        reg_tif_list.sort()
+        tif_list = [file for file in reg_tif_list if '.tif' in file]
+        start = self.trial_frames[0] // batch_size
+        end = self.trial_frames[1] // batch_size
+
+        # collect mean traces from target areas of each target coordinate by reading in individual registered tiffs that contain frames for current trial
+        # targets_trace_full = np.zeros([num_coords, (end - start) * batch_size], dtype='float32')
+        targets_trace_full = np.zeros([num_coords, 0], dtype='float32')
+
+        for i in range(start, end):
+            try:
+                tiff_path = reg_tif_folder + tif_list[i]
+                print(f'|- reading tiff: {tiff_path}')
+            except IndexError:
+                break
+
+            ### works
+            import cv2
+            ret, images = cv2.imreadmulti(tiff_path, [], cv2.IMREAD_ANYCOLOR)
+            data = np.asarray(images)
+
+            # # works
+            # from packerlabimaging.utils.utils import ImportTiff
+            # data = ImportTiff(tiff_path, frames=(0, batch_size))
+
+            #### works
+            # im_stack = tf.imread(tiff_path, key=range(batch_size))
+
+            print(f'\t\- shape: {data.shape}')
+            targets_trace = np.zeros([num_coords, data.shape[0]], dtype='float32')
+            for coord in range(num_coords):
+                x = data[:, target_areas[coord, 1], target_areas[coord, 0]]
+                targets_trace[coord] = np.mean(x, axis=1)
+
+            targets_trace_full = np.concatenate((targets_trace_full, targets_trace), axis=1)
+
+            # targets_trace_full[:, (i - start) * batch_size: ((i - start) * batch_size) + data.shape[
+            #     0]] = targets_trace  # iteratively write to each successive segment of the targets_trace array based on the length of the reg_tiff that is read in.
+
+        # final part, crop to the *exact* frames for current trial
+        start_crop = self.trial_frames[0] - (start * batch_size)
+        end_crop = self.trial_frames[0] - (start * batch_size) + (self.trial_frames[1] - self.trial_frames[0])
+        raw_coords_signal = targets_trace_full[:, start_crop: end_crop]
+
+        return raw_coords_signal
 
     #### archiving away for now - trying to switch to an approach that doesn't inherit from parent suite2p obj.
 

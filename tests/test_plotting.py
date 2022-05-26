@@ -56,11 +56,11 @@ def test_plot_SLMtargets_Locs(existing_trialobj_alloptical_fixture):
     trialobj: AllOpticalTrial = existing_trialobj_alloptical_fixture
     plot_SLMtargets_Locs(trialobj=trialobj)
 
-@pytest.skip('pass')
+# @pytest.skip('pass')
 def test_FrameAverageTiff(tiff_path_fixture, existing_trialobj_twophotonimaging_fixture):
     # FrameAverage(key_frames=[500, 1000, 1500, 2000, 3000], tiff_path=tiff_path_fixture, peri_frames=100, plot=True,
     #              scalebar_um=100, trialobj=existing_trialobj_twophotonimaging_fixture)
-    FrameAverage(key_frames=[5000], tiff_path=tiff_path_fixture, peri_frames=100, plot=True)
+    FrameAverage(key_frames=27520, tiff_path=tiff_path_fixture, peri_frames=100, plot=True, title='custom title')
 
 
 def test_SingleTiffFrame(s_tiff_path_fixture, existing_trialobj_twophotonimaging_fixture):

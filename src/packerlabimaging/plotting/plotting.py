@@ -410,7 +410,7 @@ def InspectTiff(tiff_path: str = None, frames: tuple = None, imstack: np.ndarray
 
 
 def FrameAverage(key_frames: Union[int, list], tiff_path: str = None, imstack: np.ndarray = None,
-                 peri_frames: int = 100, save_path: str = None, plot=False, **kwargs):
+                 peri_frames: int = 100, save_path: str = None, plot=True, **kwargs):
     """
     Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from a multipage imaging TIFF file.
 
@@ -431,8 +431,8 @@ def FrameAverage(key_frames: Union[int, list], tiff_path: str = None, imstack: n
     if imstack is None and tiff_path:
         # read tiff
         print(f'\t\- Creating avg img for frame: {key_frames}, from tiff: {tiff_path}')
-        frame_range = ((key_frames[0] - peri_frames // 2), (key_frames[-1] + peri_frames // 2))
-        im_stack = ImportTiff(tiff_path=tiff_path, frames=frame_range)
+        frames_collect = ((key_frames[0] - peri_frames // 2), (key_frames[-1] + peri_frames // 2))
+        im_stack = ImportTiff(tiff_path=tiff_path, frames=frames_collect)
     elif imstack and tiff_path is None:
         im_stack = imstack
     else:
@@ -441,14 +441,12 @@ def FrameAverage(key_frames: Union[int, list], tiff_path: str = None, imstack: n
 
     key_frames_adjusted = [frame - (key_frames[0] - peri_frames // 2) for frame in key_frames]
 
-    figs = []
-    axs = []
+    images = []
     for frame in key_frames_adjusted:
         if len(key_frames_adjusted) > 1:
             if frame not in range(im_stack.shape[0]):
                 raise ValueError(f'{frame} not in range of loaded tiff.')
 
-        fig, ax = plt.subplots(figsize=(6, 6))
         if frame < peri_frames // 2:
             peri_frames_low = frame
         else:
@@ -470,18 +468,22 @@ def FrameAverage(key_frames: Union[int, list], tiff_path: str = None, imstack: n
             avg_sub = MeanProject(imstack=im_sub, plot=False)
 
         if plot:
-            ax.imshow(avg_sub, cmap='gray')
-            fig.suptitle(f'{peri_frames} peri-key_frames avg from frame {frame}')
-            fig.tight_layout(pad=0.2)
-            if 'scalebar_um' in kwargs:
-                if 'trialobj' in kwargs:
-                    _add_scalebar(scale_bar_um=kwargs['scalebar_um'], ax=ax, **kwargs)
-                else:
-                    raise ValueError('must provide trialobj parameter to access for making scalebar.')
+            kwargs['title'] = f'{peri_frames} peri-key_frames avg from frame {frame}' if 'title' not in kwargs else kwargs['title']
+            @plotting_decorator(figsize=(6, 6))
+            def make_plot(**kwargs):
+                fig, ax = kwargs['fig'], kwargs['ax']
+                ax.imshow(avg_sub, cmap='gray')
+                if 'scalebar_um' in kwargs:
+                    fig.tight_layout(pad=0.2)
+                    if 'trialobj' in kwargs:
+                        _add_scalebar(ax=ax, **kwargs)
+                    else:
+                        raise ValueError('must provide trialobj parameter to access for making scalebar.')
 
-            fig.show()  # just plot for now to make sure that you are doing things correctly so far
-            figs.append(fig)
-            axs.append(ax)
+            make_plot(**kwargs)
+        images.append(avg_sub)
+
+    return images
 
 
 @plotting_decorator(figsize=(6, 6))

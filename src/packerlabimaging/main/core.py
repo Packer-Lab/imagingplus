@@ -35,6 +35,17 @@ import pickle
 from packerlabimaging.utils.utils import ImportTiff
 
 
+
+"""
+
+NOTES:
+- need to figure out how to handle temporal data that is collected at a different sampling rate!!!!
+    - could have cases where you have different hardware collecitng temporal data!
+
+
+"""
+
+
 @dataclass
 class SingleImage:
     dataPath: str
@@ -45,7 +56,8 @@ class SingleImage:
     imparams: ImagingMetadata = None
 
     def __post_init__(self):
-        self.data = tf.imread(self.dataPath)
+        # self.data = tf.imread(self.dataPath)
+        self.data = ImportTiff(self.dataPath)
 
     def plotImg(self, **kwargs):
         from packerlabimaging.plotting.plotting import SingleFrame
@@ -255,13 +267,13 @@ class Experiment:
         if s2pResultsPath:  # if s2pResultsPath provided then try to find and pre-load results from provided s2pResultsPath, raise error if cannot find results
             # search for suite2p results items in self.suite2pPath, and auto-assign s2pRunComplete --> True if found successfully
             __suite2p_path_files = os.listdir(s2pResultsPath)
-            self._s2pResultExists = False
+            __s2pResultExists = False
             for filepath in __suite2p_path_files:
                 if 'ops.npy' in filepath:
-                    self._s2pResultExists = True
+                    __s2pResultExists = True
                     break
-            if self._s2pResultExists:
-                self._suite2p_save_path = s2pResultsPath
+            if __s2pResultExists:
+                # self._suite2p_save_path = s2pResultsPath
                 self.Suite2p = Suite2pExperiment(trialsTiffsSuite2p=_trialsTiffsSuite2p,
                                                  s2pResultsPath=s2pResultsPath)
             else:
@@ -270,16 +282,19 @@ class Experiment:
         else:  # no s2pResultsPath provided, so initialize without pre-loading any results
             self.Suite2p = Suite2pExperiment(trialsTiffsSuite2p=_trialsTiffsSuite2p)
 
+        # print(f"SHAPE OF LOADED SUITE2P DATA: {self.Suite2p.raw.shape}")
+
         # print(self.Suite2p)
         # adding of suite2p trial level as well in this function as well
         total_frames = 0
-        for trial in s2p_trials:
+        for trial in self.Suite2p.trials:
             trialobj = self.load_trial(trialID=trial)
-            # print(f'n_frames', self.Suite2p.n_frames)
             trialobj.Suite2p = Suite2pResultsTrial(s2pExp=self.Suite2p, trial_frames=(
                 total_frames, total_frames + trialobj.n_frames))  # use trial obj's current trial key_frames
+            assert trialobj.n_frames == (trialobj.Suite2p.imdata.shape[1]), f'mismatch of trial frames lengths in loading Suite2p results for trial: {trialobj.trialID}'
+            total_frames += trialobj.Suite2p.imdata.shape[1]
+            # print(f'frame count: ', total_frames)
             trialobj.save()
-            total_frames += trialobj.n_frames
 
         print(f'|- Finished adding suite2p module to experiment and trials. Located under .Suite2p')
         self.save()
@@ -475,7 +490,8 @@ class ImagingTrial:
         :return: imaging tiff as numpy array
         """
         print(f"\n\- loading raw TIFF file from: {self.tiff_path}", end='\r')
-        im_stack = tf.imread(self.tiff_path)
+        im_stack = ImportTiff(tiff_path=self.tiff_path)
+        # im_stack = tf.imread(self.tiff_path)
         print('|- Loaded experiment tiff of shape: ', im_stack.shape)
 
         return im_stack

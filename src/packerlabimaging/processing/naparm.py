@@ -8,7 +8,7 @@ import os
 import numpy as np
 import xml.etree.ElementTree as ET
 
-from packerlabimaging.utils.utils import path_finder, points_in_circle_np
+from packerlabimaging.utils.utils import path_finder, points_in_circle_np, ImportTiff
 
 
 @dataclass
@@ -179,7 +179,8 @@ class Targets(naparm):
         if target_file == '':
             raise FileNotFoundError('AllFOVTargets image not found')
 
-        target_image = tf.imread(os.path.join(naparm_path, target_file))
+        # target_image = tf.imread(os.path.join(naparm_path, target_file))
+        target_image = ImportTiff(os.path.join(naparm_path, target_file))
         targets = np.where(target_image > 0)
 
         # find targets by stim groups
@@ -192,7 +193,8 @@ class Targets(naparm):
         n_targets = []
         counter = 0
         for slmgroup in target_files:
-            target_image = tf.imread(os.path.join(naparm_path, slmgroup))
+            # target_image = tf.imread(os.path.join(naparm_path, slmgroup))
+            target_image = ImportTiff((os.path.join(naparm_path, slmgroup)))
             targets = np.where(target_image > 0)
             targetCoordinates = list(zip(targets[1] * scale_factor_x, targets[0] * scale_factor_x))
             target_coords.append(targetCoordinates)

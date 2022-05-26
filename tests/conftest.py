@@ -222,7 +222,8 @@ def s_tiff_path_fixture():
 @pytest.fixture(scope='session')
 def tiff_path_fixture():
     # return '/home/pshah/mnt/qnap/Data/2021-01-31/2021-01-31_t-006/2021-01-31_t-006_Cycle00001_Ch3.tif'
-    return '/home/pshah/mnt/qnap/Data/2021-01-28/2021-01-28_PS14_t-004/2021-01-28_PS14_t-004_Cycle00001_Ch3.tif'
+    # return '/home/pshah/mnt/qnap/Data/2021-01-28/2021-01-28_PS14_t-004/2021-01-28_PS14_t-004_Cycle00001_Ch3.tif'
+    return '/home/pshah/mnt/qnap/Data/2020-03a/2020-03-03/2020-03-03_t-001/2020-03-03_t-001_Cycle00001_Ch3.tif'
 
 
 

@@ -320,7 +320,7 @@ def SaveDownsampledTiff(tiff_path: str = None, stack: np.array = None, group_by:
     :param tiff_path: path to the tiff to downsample
     :param stack: numpy array stack of the tiff file already read in
     :param group_by: specified interval for grouped averaging of the TIFF
-    :param save_as: path to save the downsampled tiff to, if none provided it will save to the same directory as the provided tiff_path
+    :param save_as: .tif path to save the downsampled tiff to, if none provided it will save to the same parent directory as the provided tiff_path
     :param plot_zprofile: if True, plot the zaxis profile using the full TIFF stack provided.
     :return: numpy array containing the downsampled TIFF stack
     """
@@ -328,18 +328,18 @@ def SaveDownsampledTiff(tiff_path: str = None, stack: np.array = None, group_by:
 
     if save_as is None:
         assert tiff_path is not None, "please provide a save path to save_as"
-        save_as = tiff_path[:-4] + '_downsampled.tif'
+        save_as = tiff_path[:-4] + f'{group_by}x_downsampled.tif'
 
-    if stack is None:
+    if stack is None and tiff_path is not None:
         # open tiff file
         print('|- working on... %s' % tiff_path)
-        stack = tf.imread(tiff_path)
+        stack = ImportTiff(tiff_path)
 
     resolution = stack.shape[1]
 
     # plot zprofile of full TIFF stack
     if plot_zprofile:
-        ZProfile(movie=stack, plot_image=True, title=tiff_path)
+        ZProfile(movie=stack, plot_image=True)
 
     # downsample to 8-bit
     stack8 = np.full_like(stack, fill_value=0)
@@ -359,7 +359,7 @@ def SaveDownsampledTiff(tiff_path: str = None, stack: np.array = None, group_by:
 
     avgd_stack = avgd_stack.astype(np.uint8)
 
-    # bin down to 512 x 512 resolution if higher resolution
+    # bin down to 512 x 512 resolution if higher resolution - not functional so far
     shape = np.shape(avgd_stack)
     if shape[1] != 512:
         # input_size = avgd_stack.shape[1]
@@ -372,8 +372,7 @@ def SaveDownsampledTiff(tiff_path: str = None, stack: np.array = None, group_by:
         final_stack = avgd_stack
 
     # write output
-    # print("\nsaving %s to... %s" % (final_stack.shape, save_as))
-    # tf.imwrite(save_as, final_stack, photometric='minisblack')
+    print(f"\nsaving {final_stack.shape} tiff to... {save_as}")
     save_array_to_tiff(save_path=save_as, data=final_stack)
 
     return final_stack
@@ -385,11 +384,9 @@ def subselect_tiff(tiff_path: str = None, tiff_stack: np.array = None, select_fr
         # open tiff file
         print('running subselecting tiffs')
         print('|- working on... %s' % tiff_path)
-        tiff_stack = tf.imread(tiff_path)
+        tiff_stack = ImportTiff(tiff_path)
 
     stack_cropped = tiff_stack[select_frames[0]:select_frames[1]]
-
-    # stack8 = convert_to_8bit(stack_cropped)
 
     if save_as is not None:
         tf.imwrite(save_as, stack_cropped, photometric='minisblack')

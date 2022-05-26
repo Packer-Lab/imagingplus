@@ -17,6 +17,7 @@ class TemporalData:
         list, np.ndarray] = None  #: timestamps representing imaging frame times. must be of same time duration as imaging dataset.
     sparse_data: Dict[
         str, np.ndarray] = None  #: dictionary of timeseries channels containing cellsdata keyed at imaging frames for each timeseries channel
+    crop_offset_time: int = 0  #: length of time (secs) of the offset when cropping temporal data
 
     def __post_init__(self):
         print(f"Created new TemporalData of {self.n_channels} x {self.n_timepoints} (sampled at {self.sampling_rate}")
@@ -95,6 +96,8 @@ class TemporalData:
             self.data = data_
         else:
             return data_
+
+        self.crop_offset_time = begin / self.sampling_rate
 
         # older approach...
         # for channel in channels:
