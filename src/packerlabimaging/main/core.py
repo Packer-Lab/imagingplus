@@ -42,6 +42,7 @@ NOTES:
 - need to figure out how to handle temporal data that is collected at a different sampling rate!!!!
     - could have cases where you have different hardware collecitng temporal data!
 
+- merging of multiple ImagingTrials + TemporalData across the same CellAnnotations into a single ImagingTrial
 
 """
 
@@ -397,6 +398,9 @@ class ImagingTrial:
 
     def frameNum(self, time):
         return round(time * self.imparams.fps)
+
+    def timePoint(self, frame):
+        return np.round(frame / self.imparams.fps, 2)
 
     @property
     def tiff_path(self):

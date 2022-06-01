@@ -225,5 +225,11 @@ def tiff_path_fixture():
     # return '/home/pshah/mnt/qnap/Data/2021-01-28/2021-01-28_PS14_t-004/2021-01-28_PS14_t-004_Cycle00001_Ch3.tif'
     return '/home/pshah/mnt/qnap/Data/2020-03a/2020-03-03/2020-03-03_t-001/2020-03-03_t-001_Cycle00001_Ch3.tif'
 
+@pytest.fixture(scope='session')
+def image_registration_fixture():
+    ref_image_path = '/home/pshah/mnt/qnap/Data/2021-01-28/2021-01-28_PS14_s-013/2021-01-28_PS14_s-013_Cycle00001_Ch2_000001.ome.tif'
+    multi_tiff_path = '/home/pshah/mnt/qnap/Data/2021-01-28/2021-01-28_PS14_t-004/2021-01-28_PS14_t-004_Cycle00001_Ch3.tif'
+    return (ref_image_path, multi_tiff_path)
+
 
 

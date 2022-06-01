@@ -677,7 +677,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
         return np.asarray(raw), np.asarray(spks), np.asarray(neuropil)
 
     def makeFrameAverageTiff(self, reg_tif_dir: str, frames: Union[int, list], peri_frames: int = 100,
-                             save_dir: str = None, to_plot=False):
+                             save_dir: str = None, to_plot=False, **kwargs):
         """Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from the suite2p registered TIFF file.
         """
 
@@ -692,6 +692,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
 
         frames_s2prun_num = [(frame + self.trial_frames[0]) for frame in frames]
 
+        imgs = []
         for idx, frame in enumerate(frames_s2prun_num):
             batch_num = frame // self.output_ops['batch_size']
 
@@ -725,10 +726,14 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
                 print(f"\t\- Saving averaged s2p registered tiff for frame: {frames[idx]}, to: {save_path}")
                 tf.imwrite(save_path, avg_sub, photometric='minisblack')
 
-            if to_plot:
-                plt.imshow(avg_sub, cmap='gray')
-                plt.suptitle(f'{peri_frames} key_frames avg from s2p reg tif, frame: {frames[idx]}')
-                plt.show()  # just plot for now to make sure that you are doing things correctly so far
+            if to_plot:  # todo replace with proper plotting average tiff frame code
+                kwargs['title'] = f'{peri_frames} key_frames avg from s2p reg tif, frame: {frames[idx]}' if not kwargs['title'] else kwargs['title']
+                from packerlabimaging.plotting.plotting import plotImg
+                plotImg(img=avg_sub, **kwargs)
+
+            imgs.append(avg_sub)
+
+        return np.asarray(imgs)
 
     def getCellsAnnotations(self):
         if self.s2pResultExists:

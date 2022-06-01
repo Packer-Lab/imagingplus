@@ -30,7 +30,7 @@ sns.set_style('white')
 # wrapper for piping plots in and out of figures
 
 
-def plotting_decorator(figsize=(3, 3), nrows=1, ncols=1, apply_image_frame_options=False, apply_heatmap_options=False):
+def plotting_decorator(figsize=(3, 3), nrows=1, ncols=1, dpi = 300, apply_image_frame_options=False, apply_heatmap_options=False):
     def plotting_decorator(plotting_func):
         """
         Wrapper to help simplify creating plots from matplotlib.pyplot
@@ -80,9 +80,9 @@ def plotting_decorator(figsize=(3, 3), nrows=1, ncols=1, apply_image_frame_optio
                     kwargs['fig'], kwargs['axs'] = plt.subplots(nrows=nrows_, ncols=ncols_, figsize=figsize_)
                 else: pass
             elif ncols_ > 1 or nrows_ > 1:
-                kwargs['fig'], kwargs['axs'] = plt.subplots(nrows=nrows_, ncols=ncols_, figsize=figsize_)
+                kwargs['fig'], kwargs['axs'] = plt.subplots(nrows=nrows_, ncols=ncols_, figsize=figsize_, dpi=dpi)
             else:
-                kwargs['fig'], kwargs['ax'] = plt.subplots(figsize=figsize_)
+                kwargs['fig'], kwargs['ax'] = plt.subplots(figsize=figsize_, dpi=dpi)
 
 
             print(f'\- executing plotting function: {plotting_func.__name__}')
@@ -296,8 +296,8 @@ def dataplot_ax_options(ax, data_length: int, **kwargs):
                 labels = list(range(int(start // kwargs['collection_hz']), int(end // kwargs['collection_hz']), x_tick_secs))
 
                 x_tick_locations = [(label * kwargs['collection_hz']) for label in labels]
-                print('labels: ', labels)
-                print('x tick locs: ', x_tick_locations)
+                # print('labels: ', labels)
+                # print('x tick locs: ', x_tick_locations)
                 ax.set_xticks(ticks=x_tick_locations)
 
                 ax.set_xticklabels(labels)

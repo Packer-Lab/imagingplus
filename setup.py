@@ -25,7 +25,8 @@ setup(
         'statsmodels',
         'scikit-image',
         'suite2p',
-        'cv2'
+        'cv2',
+        'pystackreg'
     ],
     tests_require=TESTS_REQUIRE,
     zip_safe=False

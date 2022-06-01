@@ -198,10 +198,21 @@ def ImportTiff(tiff_path, frames: Union[tuple, list, int] = None):
     elif frames and type(frames) == int:
         im_stack = tf.imread(tiff_path, key=frames)
     else:
-        import cv2
-        ret, images = cv2.imreadmulti(tiff_path, [], cv2.IMREAD_ANYCOLOR)
-        im_stack = np.asarray(images)
+        # import cv2
+        # ret, images = cv2.imreadmulti(tiff_path, [], cv2.IMREAD_ANYCOLOR)
+        # if len(images) > 0:
+        #     im_stack = np.asarray(images)
+        im_stack = tf.imread(tiff_path)
+
     return im_stack
+
+
+def WriteTiff(save_path: str, stack: np.ndarray):
+    """write numpy array stack to tiff"""
+    print(f"\t\- Saving stack: {stack.shape}, to: {save_path}")
+    if save_path[-4:] is not '.tif':
+        save_path += '.tif'
+    tf.imwrite(save_path, stack, photometric='minisblack')
 
 
 # def read_csv(csvpath):

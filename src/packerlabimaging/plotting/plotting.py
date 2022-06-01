@@ -25,6 +25,20 @@ from packerlabimaging.utils.classes import ObjectClassError
 
 # DATA ANALYSIS PLOTTING FUNCS
 
+@plotting_decorator(figsize=(6, 6))
+def plotImg(img: np.ndarray, **kwargs):
+    """plot image in grayscale."""
+    assert img.ndim == 2, 'img to plot must only have 2 dimensions.'
+    fig, ax = kwargs['fig'], kwargs['ax']
+    ax.imshow(img, cmap='gray')
+    if 'scalebar_um' in kwargs:
+        fig.tight_layout(pad=0.2)
+        if 'trialobj' in kwargs:
+            _add_scalebar(ax=ax, **kwargs)
+        else:
+            raise ValueError('must provide trialobj parameter to access for making scalebar.')
+
+
 # suite2p cellsdata
 # simple plot of the location of the given cell(s) against a black FOV
 @mpl.rc_context(image_frame_ops)
@@ -480,7 +494,8 @@ def FrameAverage(key_frames: Union[int, list], tiff_path: str = None, imstack: n
                     else:
                         raise ValueError('must provide trialobj parameter to access for making scalebar.')
 
-            make_plot(**kwargs)
+            # make_plot(**kwargs)
+            plotImg(img=avg_sub, **kwargs)
         images.append(avg_sub)
 
     return images
