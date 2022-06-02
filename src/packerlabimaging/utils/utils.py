@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Union
 
 import io
+from skimage import io as skio
 
 import numpy as np
 import pandas as pd
@@ -69,7 +70,7 @@ def return_parent_dir(file_path: str):
 
 def save_figure(fig, save_path_full: str = None):
     print(f'\n\- saving figure to: {save_path_full}', end="\r")
-    os.makedirs(return_parent_dir(save_path_full), exist_ok=True)
+    os.makedirs(os.path.dirname(save_path_full), exist_ok=True)
     fig.savefig(save_path_full)
     print(f'\n|- saved figure to: {save_path_full}')
 
@@ -202,17 +203,18 @@ def ImportTiff(tiff_path, frames: Union[tuple, list, int] = None):
         # ret, images = cv2.imreadmulti(tiff_path, [], cv2.IMREAD_ANYCOLOR)
         # if len(images) > 0:
         #     im_stack = np.asarray(images)
-        im_stack = tf.imread(tiff_path)
+        # im_stack = tf.imread(tiff_path)
+        im_stack = skio.imread(tiff_path, plugin='pil')
 
     return im_stack
 
 
-def WriteTiff(save_path: str, stack: np.ndarray):
-    """write numpy array stack to tiff"""
-    print(f"\t\- Saving stack: {stack.shape}, to: {save_path}")
-    if save_path[-4:] is not '.tif':
-        save_path += '.tif'
-    tf.imwrite(save_path, stack, photometric='minisblack')
+# def WriteTiff(save_path: str, stack: np.ndarray):
+#     """write numpy array stack to tiff"""
+#     print(f"\t\- Saving stack: {stack.shape}, to: {save_path}")
+#     if save_path[-4:] is not '.tif':
+#         save_path += '.tif'
+#     tf.imwrite(save_path, stack, photometric='minisblack')
 
 
 # def read_csv(csvpath):
@@ -313,17 +315,16 @@ def listdirFullpath(directory, string=''):
             if string in file]
 
 
-def save_array_to_tiff(save_path, data: np.array):
+def WriteTiff(save_path, stack: np.array):
     """use Tifffile imwrite function to save a numpy array to tiff file"""
-    print(f"\n\- saving array of shape {data.shape} to: {save_path}", end="\r")
-    if not os.path.exists(return_parent_dir(save_path)):
-        os.makedirs(return_parent_dir(save_path), exist_ok=True)
-    tf.imwrite(file=save_path, data=data, photometric='minisblack')
-    print(f"\n|- saved array of shape {data.shape} to: {save_path}")
+    print(f"\n\- saving array [{stack.shape}] to: {save_path}", end="\r")
+    if not os.path.exists(os.path.dirname(save_path)):
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+    tf.imwrite(file=save_path, data=stack, photometric='minisblack')
+    print(f"\n|- saved array [{stack.shape}] to: {save_path}")
 
 
-def SaveDownsampledTiff(tiff_path: str = None, stack: np.array = None, group_by: int = 4, save_as: str = None,
-                        plot_zprofile: bool = True):
+def SaveDownsampledTiff(tiff_path: str = None, stack: np.array = None, group_by: int = 4, save_as: str = None):
     """
     Create and save a downsampled version of the original tiff file. Original tiff file can be given as a numpy array stack
     or a str path to the tiff.
@@ -335,7 +336,7 @@ def SaveDownsampledTiff(tiff_path: str = None, stack: np.array = None, group_by:
     :param plot_zprofile: if True, plot the zaxis profile using the full TIFF stack provided.
     :return: numpy array containing the downsampled TIFF stack
     """
-    print('downsampling of tiff stack...')
+    print(f'\- downsampling tiff stack {stack.shape}...') if stack is not None else None
 
     if save_as is None:
         assert tiff_path is not None, "please provide a save path to save_as"
@@ -345,12 +346,9 @@ def SaveDownsampledTiff(tiff_path: str = None, stack: np.array = None, group_by:
         # open tiff file
         print('|- working on... %s' % tiff_path)
         stack = ImportTiff(tiff_path)
+        print(f'\- downsampling tiff stack [{stack.shape}]...') if stack else None
 
     resolution = stack.shape[1]
-
-    # plot zprofile of full TIFF stack
-    if plot_zprofile:
-        ZProfile(movie=stack, plot_image=True)
 
     # downsample to 8-bit
     stack8 = np.full_like(stack, fill_value=0)
@@ -383,8 +381,8 @@ def SaveDownsampledTiff(tiff_path: str = None, stack: np.array = None, group_by:
         final_stack = avgd_stack
 
     # write output
-    print(f"\nsaving {final_stack.shape} tiff to... {save_as}")
-    save_array_to_tiff(save_path=save_as, data=final_stack)
+    # print(f"\n\- saving [{final_stack.shape}] tiff to... {save_as}")
+    WriteTiff(save_path=save_as, stack=final_stack) if save_as else None
 
     return final_stack
 
@@ -405,7 +403,7 @@ def subselect_tiff(tiff_path: str = None, tiff_stack: np.array = None, select_fr
     return stack_cropped
 
 
-def make_tiff_stack(sorted_paths: list, save_as: str) -> np.ndarray:
+def make_tiff_stack(tiff_paths: list, save_as: str = None) -> np.ndarray:
     """
     read in a bunch of tiffs and stack them together, and save the output as the save_as
 
@@ -413,16 +411,20 @@ def make_tiff_stack(sorted_paths: list, save_as: str) -> np.ndarray:
     :param save_as: .tif file path to where the tif should be saved
     """
 
-    num_tiffs = len(sorted_paths)
+    num_tiffs = len(tiff_paths)
+    TEST_TIFFS = tiff_paths[:5]
+    tiff_paths = TEST_TIFFS
     print('working on tifs to stack: ', num_tiffs)
 
-    with tf.TiffWriter(save_as, bigtiff=True) as tif:
-        for i, tif_ in enumerate(sorted_paths):
-            with tf.TiffFile(tif_, multifile=True) as input_tif:
-                data = input_tif.asarray()
-            msg = ' -- Writing tiff: ' + str(i + 1) + ' out of ' + str(num_tiffs)
-            print(msg, end='\r')
-            tif.save(data)
+    data = []
+    for i, tif_ in enumerate(tiff_paths):
+        # from skimage import io
+        # img = io.imread(tif_, plugin='pil')
+        img = ImportTiff(tiff_path=tif_)
+        data.extend(img)
+    data = np.array(data)
+    print(f'\- made tiff stack: {data.shape}')
+    WriteTiff(save_path=save_as, stack=data) if save_as else None
     return data
 
 

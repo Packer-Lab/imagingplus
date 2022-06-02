@@ -256,7 +256,7 @@ def MeanProject(tiff_path: str = None, frames: tuple = None, save_path: str = No
     if save_path:
         if '.tif' in save_path:
             from packerlabimaging.utils.utils import return_parent_dir
-            save_dir = return_parent_dir(save_path) + '/'
+            save_dir = os.path.dirname(save_path) + '/'
             os.makedirs(save_dir, exist_ok=True)
         else:
             raise ValueError(f'please provide full .tif path to save to. provided value was: {tiff_path}')
@@ -317,7 +317,7 @@ def MaxProject(tiff_path: str = None, frames: tuple = None, save_path: str = Non
     if save_path:
         if '.tif' in save_path:
             from packerlabimaging.utils.utils import return_parent_dir
-            save_dir = return_parent_dir(save_path) + '/'
+            save_dir = os.path.dirname(save_path) + '/'
             os.makedirs(save_dir, exist_ok=True)
         else:
             raise ValueError(f'please provide full .tif path to save to. provided value was: {tiff_path}')
@@ -376,7 +376,7 @@ def StdevProject(tiff_path: str = None, frames: tuple = None, save_path: str = N
     if save_path:
         if '.tif' in save_path:
             from packerlabimaging.utils.utils import return_parent_dir
-            save_dir = return_parent_dir(save_path) + '/'
+            save_dir = os.path.dirname(save_path) + '/'
             os.makedirs(save_dir, exist_ok=True)
         else:
             raise ValueError(f'please provide full .tif path to save to. provided value was: {tiff_path}')
@@ -471,7 +471,7 @@ def FrameAverage(key_frames: Union[int, list], tiff_path: str = None, imstack: n
         if save_path:
             if '.tif' in save_path:
                 from packerlabimaging.utils.utils import return_parent_dir
-                save_path = return_parent_dir(save_path) + '/'
+                save_path = os.path.dirname(save_path) + '/'
             save_path = save_path + f'/{frame}_frame_avg.tif'
             os.makedirs(save_path, exist_ok=True)
 

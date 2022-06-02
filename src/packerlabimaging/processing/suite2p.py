@@ -13,7 +13,7 @@ from suite2p import run_s2p
 import tifffile as tf
 
 from packerlabimaging.utils.classes import UnavailableOptionError
-from packerlabimaging.utils.utils import make_tiff_stack, save_array_to_tiff, ImportTiff
+from packerlabimaging.utils.utils import make_tiff_stack, WriteTiff, ImportTiff, SaveDownsampledTiff
 
 # TEMP VARIABLES FOR DEVELOPMENT USAGES
 N_PLANES = 1
@@ -553,7 +553,7 @@ class Suite2pExperiment:
                 xpix = self.stat[n]['xpix']
                 mask_img[ypix, xpix] = np.random.randint(10, 255)
 
-        save_array_to_tiff(save_path=save_path, data=mask_img)
+        WriteTiff(save_path=save_path, stack=mask_img)
 
     # PROCESSING OF SUITE2P OUTPUT
     def filterROIs(self, overlapthreshold: int = None, skewthreshold: float = None, footprintthreshold: float = None,
@@ -719,7 +719,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
             if save_dir:
                 if '.tif' in save_dir:
                     from packerlabimaging.utils.utils import return_parent_dir
-                    save_dir = return_parent_dir(save_dir) + '/'
+                    save_dir = os.path.dirname(save_dir) + '/'
                 save_path = save_dir + f'/{frames[idx]}_s2preg_frame_avg.tif'
                 os.makedirs(save_dir, exist_ok=True)
 
@@ -734,6 +734,53 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
             imgs.append(avg_sub)
 
         return np.asarray(imgs)
+
+    def makeDownSampledTiff(self, save_as: str, group_by: int = 4, reg_tif_folder=None):
+        """makes downsampled TIFF of current suite2p trial imaging series"""
+        reg_tif_folder = reg_tif_folder if reg_tif_folder else self.s2pResultsPath + '/reg_tif/'
+
+        sorted_paths, first_tiff_offset, last_tiff_offset = self.getRegTiffPaths(reg_tif_folder=reg_tif_folder)
+        data = make_tiff_stack(sorted_paths, save_as=None)
+        trial_frames_cropped = data[first_tiff_offset: -last_tiff_offset]
+        SaveDownsampledTiff(stack=trial_frames_cropped, group_by=group_by, save_as=save_as)
+
+    def getRegTiffPaths(self, reg_tif_folder=None, frameNum: Union[str, int] = 'all'):
+        """get trial's gcamp signals tiff path at a certain frame number"""
+        reg_tif_folder = reg_tif_folder if reg_tif_folder else self.s2pResultsPath + '/reg_tif/'
+        reg_tif_list = os.listdir(reg_tif_folder)
+        reg_tif_list.sort()
+        tif_list = [file for file in reg_tif_list if '.tif' in file]
+
+        curr_trial_frames = self.trial_frames
+        batch_size = self.output_ops['batch_size']
+
+        if type(frameNum) is int:
+            s2p_frame = curr_trial_frames[0] + frameNum
+
+            idx = s2p_frame // batch_size
+            tiff_path = reg_tif_folder + tif_list[idx]
+
+            offsetFrameNum = int(s2p_frame % batch_size)
+
+            return tiff_path, offsetFrameNum
+        elif frameNum == 'all':
+            reg_tif_list = os.listdir(reg_tif_folder)
+            reg_tif_list.sort()
+            tif_list = [file for file in reg_tif_list if '.tif' in file]
+            start = curr_trial_frames[0] // batch_size
+            end = curr_trial_frames[1] // batch_size
+
+            tiff_paths_list = [reg_tif_folder + tif_list[i] for i in range(start, end)]
+
+            first_tiff_offset = int(curr_trial_frames[0]) - (start * batch_size)
+            last_tiff_offset = int(curr_trial_frames[1] % batch_size)
+
+            # print(tiff_paths_list, first_tiff_offset, last_tiff_offset)
+
+            return tiff_paths_list, first_tiff_offset, last_tiff_offset
+
+        else:
+            raise ValueError(f'frameNum must be `all` or an int of a frame number.')
 
     def getCellsAnnotations(self):
         if self.s2pResultExists:
@@ -759,13 +806,13 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
         else:
             raise ValueError('cannot set cell annotations. no s2p results found in trial.')
 
-    def stitch_s2p_reg_tiff(self, save_path: str, reg_tif_folder=None):
+    def stitch_s2p_reg_tiff(self, save_path: str = None, reg_tif_folder=None):
         # TODO test out
 
         assert self.s2pResultExists, UnavailableOptionError('stitch_s2p_reg_tiff')
 
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
-        tif_path_save2 = save_path
+        tif_path_save2 = save_path if save_path else None
 
         start = self.trial_frames[0] // self.output_ops[
             'batch_size']  # 2000 because that is the batch size for suite2p run

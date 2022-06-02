@@ -122,12 +122,22 @@ def test_s2pRun():
 # test_s2pRun()
 
 
-def test_makeFrameAverageTiff():
+def test_FrameAverage():
     from packerlabimaging.utils.io import import_obj
     expobj = import_obj(pkl_path='/home/pshah/mnt/qnap/Analysis/2021-01-25/PS12/PS12_analysis.pkl')
     trialobj = expobj.load_trial(trialID=expobj.trialIDs[0])
 
     trialobj.Suite2p.FrameAverage(key_frames=[110, 510], peri_frames=100,
+                                  save_path=trialobj.saveDir + f'/export/avg_frames/', to_plot=True)
+
+
+def test_makeDownSampledTiff():
+    from packerlabimaging.utils.io import import_obj
+    expobj = import_obj(pkl_path='/home/pshah/mnt/qnap/Analysis/2021-01-25/PS12/PS12_analysis.pkl')
+    reg_tiff_folder = '/home/pshah/mnt/qnap/Analysis/2021-01-25/PS12/suite2p/reg_tif'
+    trialobj = expobj.load_trial(trialID=expobj.trialIDs[0])
+
+    trialobj.Suite2p.makeDownSampledTiff(key_frames=[110, 510], peri_frames=100,
                                   save_path=trialobj.saveDir + f'/export/avg_frames/', to_plot=True)
 
 # test_makeFrameAverageTiff()

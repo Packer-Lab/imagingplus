@@ -30,7 +30,8 @@ sns.set_style('white')
 # wrapper for piping plots in and out of figures
 
 
-def plotting_decorator(figsize=(3, 3), nrows=1, ncols=1, dpi = 300, apply_image_frame_options=False, apply_heatmap_options=False):
+def plotting_decorator(figsize=(3, 3), nrows=1, ncols=1, dpi=300, apply_image_frame_options=False,
+                       apply_heatmap_options=False):
     def plotting_decorator(plotting_func):
         """
         Wrapper to help simplify creating plots from matplotlib.pyplot
@@ -78,15 +79,16 @@ def plotting_decorator(figsize=(3, 3), nrows=1, ncols=1, dpi = 300, apply_image_
                 if kwargs['fig'] is None or kwargs['ax'] is None:
                     # print('\-creating fig, ax [1]')
                     kwargs['fig'], kwargs['axs'] = plt.subplots(nrows=nrows_, ncols=ncols_, figsize=figsize_)
-                else: pass
+                else:
+                    pass
             elif ncols_ > 1 or nrows_ > 1:
                 kwargs['fig'], kwargs['axs'] = plt.subplots(nrows=nrows_, ncols=ncols_, figsize=figsize_, dpi=dpi)
             else:
                 kwargs['fig'], kwargs['ax'] = plt.subplots(figsize=figsize_, dpi=dpi)
 
-
             print(f'\- executing plotting function: {plotting_func.__name__}')
-            res = plotting_func(**kwargs)  # these kwargs are the original kwargs defined at the respective plotting_func call + any additional kwargs defined in inner()
+            res = plotting_func(
+                **kwargs)  # these kwargs are the original kwargs defined at the respective plotting_func call + any additional kwargs defined in inner()
 
             kwargs['ax'].set_title(kwargs['title'], wrap=True) if 'title' in [*kwargs] else None
 
@@ -106,10 +108,14 @@ def plotting_decorator(figsize=(3, 3), nrows=1, ncols=1, dpi = 300, apply_image_
                 return res
 
         return inner
+
     return plotting_decorator
+
 
 # custom colorbar for heatmaps
 from matplotlib.colors import LinearSegmentedColormap
+
+
 def _make_colormap(seq):
     """Return a LinearSegmentedColormap
     seq: a sequence of floats and RGB-tuples. The floats should be increasing
@@ -175,7 +181,7 @@ def _add_scalebar(trialobj: Union[ImagingTrial, SingleImage], ax: plt.Axes, **kw
     # else:
     assert trialobj.imparams, 'could not find imaging metadata (.imparams) for trialobj.'
     scale_bar_um = 100 if 'scale_bar_um' not in kwargs else kwargs['scale_bar_um']
-    numpx = scale_bar_um/trialobj.imparams.pix_sz_x
+    numpx = scale_bar_um / trialobj.imparams.pix_sz_x
 
     lw = 5 if 'lw' not in [*kwargs] else kwargs['lw']
     color = 'white' if 'color' not in [*kwargs] else kwargs['color']
@@ -185,26 +191,26 @@ def _add_scalebar(trialobj: Union[ImagingTrial, SingleImage], ax: plt.Axes, **kw
     print(f'\- adding scalebar of length {scale_bar_um} microns.')
 
     ax.plot(np.linspace(trialobj.imparams.frame_x - right_offset - numpx, trialobj.imparams.frame_x - right_offset, 40),
-            [trialobj.imparams.frame_y - bottom_offset]*40, color=color, lw=lw, solid_capstyle='butt')
+            [trialobj.imparams.frame_y - bottom_offset] * 40, color=color, lw=lw, solid_capstyle='butt')
 
     return ax
 
 
 image_frame_ops = {
-        'axes.spines.left': False,
-        'axes.spines.bottom': False,
-        'axes.spines.top': False,
-        'axes.spines.right': False,
-        'legend.frameon': False,
-        'figure.subplot.wspace': .01,
-        'figure.subplot.hspace': .01,
-        'figure.figsize': (18, 13),
-        'ytick.major.left': False,
-        'xtick.major.bottom': False}
+    'axes.spines.left': False,
+    'axes.spines.bottom': False,
+    'axes.spines.top': False,
+    'axes.spines.right': False,
+    'legend.frameon': False,
+    'figure.subplot.wspace': .01,
+    'figure.subplot.hspace': .01,
+    'figure.figsize': (18, 13),
+    'ytick.major.left': False,
+    'xtick.major.bottom': False}
+
 
 # Figure Style settings for notebook.
 def image_frame_options(fig, ax):
-
     # mpl.pyplot.rcdefaults()
 
     # mpl.rcParams.update({
@@ -220,7 +226,6 @@ def image_frame_options(fig, ax):
     #     'xtick.major.bottom': False
     #
     # })
-
 
     #
     # mpl.rcParams.update({
@@ -283,6 +288,10 @@ def dataplot_ax_options(ax, data_length: int, **kwargs):
         ax.margins(0)
         ax.grid(True)
 
+        # set x and y axis limits
+        if 'xlims' in [*kwargs]: ax.set_xlim([xlim * kwargs['collection_hz'] for xlim in kwargs['xlims']])
+        if 'ylims' in [*kwargs]: ax.set_ylim([ylim * kwargs['collection_hz'] for ylim in kwargs['ylims']])
+
         # set x_axis label
         # change x-axis to time (secs) if time is requested
         if 'x_axis' in [*kwargs]:
@@ -293,7 +302,8 @@ def dataplot_ax_options(ax, data_length: int, **kwargs):
                 # labels = list(range(0, int(data_length // kwargs['collection_hz']), x_tick_secs))
 
                 start, end = ax.get_xticks()[0], ax.get_xticks()[-1]
-                labels = list(range(int(start // kwargs['collection_hz']), int(end // kwargs['collection_hz']), x_tick_secs))
+                labels = list(
+                    range(int(start // kwargs['collection_hz']), int(end // kwargs['collection_hz']), x_tick_secs))
 
                 x_tick_locations = [(label * kwargs['collection_hz']) for label in labels]
                 # print('labels: ', labels)
@@ -308,9 +318,6 @@ def dataplot_ax_options(ax, data_length: int, **kwargs):
         # set y_axis label
         ax.set_ylabel(kwargs['y_axis']) if 'y_axis' in [*kwargs] else None
 
-        # set x and y axis limits
-        if 'xlims' in [*kwargs]: ax.set_xlim([xlim * kwargs['collection_hz'] for xlim in kwargs['xlims']])
-        if 'ylims' in [*kwargs]: ax.set_ylim([ylim * kwargs['collection_hz'] for ylim in kwargs['ylims']])
 
     else:
         pass
@@ -323,14 +330,11 @@ def heatmap_options():
     jet.set_bad(color='k')
 
 
-
-
-
-
 # %% PLOTTING UTILITIES
 
 @plotting_decorator(figsize=(5, 5))
-def plot_coordinates(coords: list,  frame_x: int, frame_y: int, background: np.ndarray = None, fig=None, ax=None, **kwargs):
+def plot_coordinates(coords: list, frame_x: int, frame_y: int, background: np.ndarray = None, fig=None, ax=None,
+                     **kwargs):
     """
     Plot coordinate locations using matplotlib's imshow function.
 
@@ -361,9 +365,4 @@ def plot_coordinates(coords: list,  frame_x: int, frame_y: int, background: np.n
         else:
             pass
 
-
 # todo add utility to send a plot/cellsdata to a plotly server, or a basic flask SVG server
-
-
-
-

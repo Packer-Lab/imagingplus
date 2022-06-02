@@ -152,7 +152,7 @@ def suite2p_results_fixture():
     assert os.path.exists(s2p_path), 's2p path not found...'
     from packerlabimaging.processing.suite2p import s2p_loader
     FminusFneu, spks, stat, neuropil = s2p_loader(s2p_path=s2p_path)
-    return FminusFneu, spks, stat, neuropil
+    return FminusFneu, spks, stat, neuropil@pytest.fixture(scope="session")
 
 
 @pytest.fixture(scope="session")
