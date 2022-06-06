@@ -412,8 +412,8 @@ def make_tiff_stack(tiff_paths: list, save_as: str = None) -> np.ndarray:
     """
 
     num_tiffs = len(tiff_paths)
-    TEST_TIFFS = tiff_paths[:5]
-    tiff_paths = TEST_TIFFS
+    # TEST_TIFFS = tiff_paths[:5]
+    # tiff_paths = TEST_TIFFS
     print('working on tifs to stack: ', num_tiffs)
 
     data = []

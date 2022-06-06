@@ -17,7 +17,7 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Data Analysis Flow and Organization" href="overview.html" />
+    <link rel="next" title="Core structures" href="overview.html" />
     <link rel="prev" title="Installation instructions" href="installation.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -27,7 +27,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="overview.html" title="Data Analysis Flow and Organization"
+          <a href="overview.html" title="Core structures"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="installation.html" title="Installation instructions"
@@ -45,12 +45,29 @@
   <section id="quick-start-guide">
 <span id="id1"></span><h1>Quick Start Guide<a class="headerlink" href="#quick-start-guide" title="Permalink to this headline">¶</a></h1>
 <p>The easiest way to get started with using <code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code> is to follow <a class="reference internal" href="Tutorials/Tutorial-1-Initializing-an-Experiment.html"><span class="doc">Tutorial 1 - Initializing an Experiment</span></a>.
-This tutorial demonstrates how to setup a new experiment inside <code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code> for data processing and analysis.
-The <code class="docutils literal notranslate"><span class="pre">Experiment</span></code> class is built from information provided for each constituent trial of the overall Experiment.</p>
-<p>Then, to get started with plotting and data exploration, check out <a class="reference internal" href="Tutorials/Tutorial-3-Making-useful-plots.html"><span class="doc">Tutorial 3 - Making useful plots</span></a>.</p>
+This tutorial demonstrates how to setup a new experiment inside <code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code> for data processing and analysis.</p>
+<p>To get started with plotting and data exploration, check out <a class="reference external" href="Tutorials/Tutorial-3-Making-useful-plots.ipynb">Tutorial 3 - Making useful plots</a>.</p>
+</section>
+<section id="key-structures">
+<h1>Key Structures<a class="headerlink" href="#key-structures" title="Permalink to this headline">¶</a></h1>
+<p>There are two core data objects for storing experimental data:</p>
+<ol class="arabic simple">
+<li><p><cite>Experiment</cite> and</p></li>
+<li><p><cite>ImagingTrial</cite> objects</p></li>
+</ol>
+<ul class="simple">
+<li><p>The <cite>Experiment</cite> class is built from information provided for each constituent trial of the overall Experiment.</p></li>
+</ul>
+<p>And, there 3 sub-core data types to handle multi-modal data within each imaging trial:</p>
+<ol class="arabic simple">
+<li><p><cite>ImagingData</cite> - live imaging data</p></li>
+<li><p><cite>TemporalData</cite> - 1D time series data temporally synchronized to live imaging data</p></li>
+<li><p><cite>CellAnnotations</cite> - Annotations and cellular/ROI segmentations of the live imaging tissue sample</p></li>
+</ol>
+<p>An more detailed overview of these modules and other key structures of <code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code> can be found at <a class="reference internal" href="overview.html#overview"><span class="std std-ref">Core structures</span></a>.</p>
 <section id="next">
 <h2>Next<a class="headerlink" href="#next" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="overview.html#overview"><span class="std std-ref">Data Analysis Flow and Organization</span></a></p>
+<p><a class="reference internal" href="overview.html#overview"><span class="std std-ref">Core structures</span></a></p>
 <p><a class="reference internal" href="data-structure-details.html#data-structure-details"><span class="std std-ref">Data Structure Inside Trial objects</span></a></p>
 <p><a class="reference internal" href="Tutorials-reference.html#tutorials"><span class="std std-ref">Tutorials</span></a></p>
 <p><a class="reference internal" href="making-plots.html#making-plots"><span class="std std-ref">Plotting of data/analysis</span></a></p>
@@ -67,7 +84,8 @@ The <code class="docutils literal notranslate"><span class="pre">Experiment</spa
   <div>
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
-<li><a class="reference internal" href="#">Quick Start Guide</a><ul>
+<li><a class="reference internal" href="#">Quick Start Guide</a></li>
+<li><a class="reference internal" href="#key-structures">Key Structures</a><ul>
 <li><a class="reference internal" href="#next">Next</a></li>
 </ul>
 </li>
@@ -82,7 +100,7 @@ The <code class="docutils literal notranslate"><span class="pre">Experiment</spa
   <div>
     <h4>Next topic</h4>
     <p class="topless"><a href="overview.html"
-                          title="next chapter"><strong>Data Analysis Flow and Organization</strong></a></p>
+                          title="next chapter"><strong>Core structures</strong></a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -112,7 +130,7 @@ The <code class="docutils literal notranslate"><span class="pre">Experiment</spa
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="overview.html" title="Data Analysis Flow and Organization"
+          <a href="overview.html" title="Core structures"
              >next</a> |</li>
         <li class="right" >
           <a href="installation.html" title="Installation instructions"

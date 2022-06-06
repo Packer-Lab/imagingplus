@@ -1,103 +1,26 @@
 .. _overview:
 
-**Data Analysis Flow and Organization**
-=======================================
+**Core structures**
+===================
 
-The structure of the package follows object-oriented programming principles. This design philosophy is used to enable modularity of data analysis and most importantly easy extensibility by the end-user towards their own data analysis needs for custom experiments.
-
-There are two primary types of objects within ``packerlabimaging``: the ``Experiment`` class and the ``Trial`` object. The ``Experiment`` class is the primary entry-point into the ``packerlabimaging`` pipeline and is the super-class under which any number/types of individual ``Trial`` objects can be collected. In general, this follows a typical imaging experiment design which might contain an arbitrary number of imaging trials and an arbitrary mixture of trial types.
-
-The definition of an *"experiment"* is purposefully loose to allow accommodation across different experimental designs. However, abstractly, one ``Experiment`` object can be thought of as a collection of trials that are processed together in Suite2p. On the other hand, a *"trial"* is strictly a single time series of 2photon imaging data collection.
-
-The trials types that ``packerlabimaging`` is currently built for are: ``TwoPhotonImagingTrial`` (which represents 2photon imaging only trials) and ``AllOpticalTrial`` (which represents 2photon imaging + 2photon stimulation trials).
+There are two core types of objects that are used to store experimental data: `Experiment` and `ImagingTrial` objects. `ImagingTrial` objects represent a single, continuous imaging+ trial. The `Experiment` acts as a container to collect any number/types of individual `ImagingTrial` objects. Together, the `Experiment` and `ImagingTrial` are the primary entry points to analysis with the package. In general, this follows a typical imaging experiment design which might contain an arbitrary number and mixture of imaging+ trials. The definition of an "experiment" is loose but, abstractly, can be thought of as a collection of imaging+ trials across a common imaging field-of-view. On the other hand, a "trial" is strictly a single time series of imaging+ data collection.
+Each `ImagingTrial` is built out-of three sub-types - `TemporalData`, `ImagingData` and `CellAnnotations` - which represent the three general modes of data outputs of an imaging+ data collection trial (Figure 2). Ultimately, the goal of this data processing flow is to organise data of an imaging+ experiment trial into an anndata data structure table that closely and intuitively represents and integrates multi-modal experimental data in a single Pythonic object (Figure 3). The natively functionality of the anndata library also allows for efficient on-disk and on-memory data access solution for imaging+ data.
 
 
+**Modular Data Processing, Analysis and Visualisation**
+=======================================================
 
-Submodules: Experiment
-----------------------
+Packerlabimaging is designed to be highly modular. This allows an as-per-need data analysis workflow utilising a mixture of pre-built analysis submodules and custom user-built modules. We provide a sub-module to integrate the use of Suite2p, which is currently the most popular calcium imaging region-of-interest segmentation library to generate `ImagingData` and `CellsAnnotations` structures from microscope .tiff fluorescence calcium imaging data. We provide a sub-module for .paq data generated from PackIO which is used for temporal synchronisation of multiple hardware components during an experiment, including for instance electrophysiological data from an electrode collecting data from a sample. We also provide pre-built support for parsing microscope acquisition metadata from Bruker microscopes. Non-Bruker imaging acquisition can be readily handled using a general imaging acquisition metadata class or creation of a custom class for the desired microscope system. An additional sub-module provides support for parsing holographic 2-photon SLM stimulation protocols generated using NAPARM (ref) for all-optical imaging+ trials, and for running the STAMovieMaker algorithm for quick analysis of all-optical experiments.
 
-**Experiment class**
+Finally, we also provide a plotting module which contains a number of convenient methods for typical plotting of imaging+ data.
 
-Each imaging experiment is associated with a super-class Experiment object. Each Experiment object has optional access to Suite2p processing associated with that Experiment. Given this structure, each Experiment is meant to be built from all individual imaging trials that are closely related to each other based on their imaging characteristics. Most presciently, all imaging trials that are run together in Suite2p can be part of a single Experiment.
+**Extensibility**
+=================
 
-
-
-Submodules: Trial types
------------------------
-
-**TwoPhotonImagingTrial class**
-
-``trialobj: TwoPhotonImagingTrial`` - packerlabimaging —> ``TwoPhotonImagingTrial`` trial class
-
-
-*Attributes:*
-
-    ``trialobj.imparams`` - stores metadata retrieved from microscope regarding imaging collection
-
-    ``trialobj.paq`` - stores data from PackIO .paq files
-
-    ``trialobj.suite2p`` - stores data and methods related to Suite2p (library for processing calcium imaging data)
-
-    ``trialobj.lfp`` - stores local field potential data (read in from .paq files)
-
-    ``trialobj.data`` - annotated data object (based on AnnData library) for centralized storage of raw and processed data related to the experiment. contains methods for further modifying the stored annotated data object.
+The design structure of packerlabimaging is purposefully meant to enable direct extensibility on top of the core built-in structures of the package that allow end-users to create custom data processing/analysis workflows while benefiting from pre-engineered structures and workflows. For instance, packerlabimaging comes pre-built with a fully built-out workflow for AllOptical imaging+ trials which extends the core `ImagingTrial`. This workflow integrates individual data processing sub-modules to create a custom type of imaging+ trial designed for an all-optical experiment. Additionally methods for typical analysis of AllOptical data are provided herein.
 
 
 
-
-**AllOpticalTrial class**
-
-``trialobj: AllOpticalTrial`` - packerlabimaging —> ``TwoPhotonImagingTrial`` —> ``AllOpticalTrial`` trial class
-
-
-*Attributes:*
-
-* this class is a child of the ``TwoPhotonImagingTrial`` (i.e. inherits all attributes and methods of ``TwoPhotonImagingTrial``)
-
-    ``trialobj._2pstim`` - stores data and methods related to processing of 2p stim protocols
-
-    ``trialobj.data`` - additional 2p stim related variables (e.g. ``photostim_frame`` and ``stim_start_frame`` ) to ``.data``
-
-    ``OnePstimTrial class``
-
-
-
-Submodules: Data Processing
----------------------------
-
-``anndata.py``
-
-``OnePstim.py``
-
-``paq.py``
-
-``stats.py``
-
-``suite2p.py``
-
-``TwoPstim.py``
-
-- ``_readTargetsImage``
-- ``_findTargetsAreas``
-    - Loads target coordinates, and organizes target coordinates per SLM groups
-    - creates target_areas - circle of pixels outward from the center of the target
-    - creates target_areas_exclude - expanded circle of pixels outward from the center of the target that includes the region for excluding nontarget cells
-    - creates images of targets // scaled somehow?? not totally sure - dont remember, has been commented out for a while now for myself - maybe check what Rob suggests adding here?
-
-
-
-Submodules: Experiment Utils
-----------------------------
-
-``imagingMetadata.py``
-
-``PrairieLink.py``
-
-``STAMovieMaker_noGUI.py``
-
-``ThorLink.py``
-
-``utils.py``
 
 
 Next

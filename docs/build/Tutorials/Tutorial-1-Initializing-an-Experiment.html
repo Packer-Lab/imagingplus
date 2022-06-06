@@ -29,9 +29,6 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
           <a href="Tutorial-2-Organization-of-data-in-package-objects.html" title="Tutorial 2 - Data organization inside packerlabimaging"
              accesskey="N">next</a> |</li>
         <li class="right" >
@@ -351,11 +348,11 @@ div.rendered_html tbody tr:hover {
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">packerlabimaging</span> <span class="k">as</span> <span class="nn">pli</span>
 
 <span class="n">ExperimentMetainfo</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;dataPath&#39;</span><span class="p">:</span> <span class="s1">&#39;/home/pshah/mnt/qnap/Data/2020-12-19&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;analysisSavePath&#39;</span><span class="p">:</span> <span class="s1">&#39;/home/pshah/Documents/code/packerlabimaging/tests/&#39;</span><span class="p">,</span>
-    <span class="s2">&quot;expID&quot;</span><span class="p">:</span> <span class="s1">&#39;RL109&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="s1">&#39;2020-12-19&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;comments&#39;</span><span class="p">:</span> <span class="s1">&#39;testing out analysis workflow&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;dataPath&#39;</span><span class="p">:</span> <span class="s1">&#39;/home/pshah/mnt/qnap/Data/2020-12-19&#39;</span><span class="p">,</span>  <span class="c1">#: main dir where the imaging data is contained</span>
+    <span class="s1">&#39;saveDir&#39;</span><span class="p">:</span> <span class="s1">&#39;/home/pshah/Documents/code/packerlabimaging/tests/&#39;</span><span class="p">,</span>  <span class="c1">#: main dir where the experiment object and the trial objects will be saved to</span>
+    <span class="s2">&quot;expID&quot;</span><span class="p">:</span> <span class="s1">&#39;RL109&#39;</span><span class="p">,</span>  <span class="c1">#: given identification name for experiment</span>
+    <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="s1">&#39;2020-12-19&#39;</span><span class="p">,</span>  <span class="c1">#: date of experiment data collection</span>
+    <span class="s1">&#39;comments&#39;</span><span class="p">:</span> <span class="s1">&#39;testing out analysis workflow&#39;</span><span class="p">,</span>  <span class="c1">#: notes related to experiment</span>
 <span class="p">}</span>
 
 <span class="c1"># create Experiment</span>
@@ -408,6 +405,9 @@ imported packerlabimaging successfully
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># to save the Experiment to disk using pickle from `expobj.save()`:</span>
 <span class="n">expobj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+<span class="c1"># to save the Experiment with a custom path, simply provide a custom .pkl path and use the .save_pkl() method:</span>
+<span class="n">expobj</span><span class="o">.</span><span class="n">save_pkl</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="s1">&#39;/home/pshah/mnt/qnap/Analysis/2021-01-25/PS12/PS12_new_path.pkl&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -436,12 +436,13 @@ imported packerlabimaging successfully
 
 <span class="n">trials_list_spont</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;t-005&#39;</span><span class="p">,</span> <span class="s1">&#39;t-006&#39;</span><span class="p">]</span>
 <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">trial</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">trials_list_spont</span><span class="p">):</span>
-    <span class="n">data_path_base</span> <span class="o">=</span> <span class="s1">&#39;/home/pshah/mnt/qnap/Data/2020-12-19&#39;</span>
-    <span class="n">animal_prep</span> <span class="o">=</span> <span class="n">ExperimentMetainfo</span><span class="p">[</span><span class="s1">&#39;expID&#39;</span><span class="p">]</span>
-    <span class="n">date</span> <span class="o">=</span> <span class="n">data_path_base</span><span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">:]</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="n">expobj</span><span class="o">.</span><span class="n">date</span>
+    <span class="n">prep</span> <span class="o">=</span> <span class="n">expobj</span><span class="o">.</span><span class="n">expID</span>
+    <span class="n">data_path_base</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/home/pshah/mnt/qnap/Data/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">&#39;</span>  <span class="c1"># same as above, unclear what this is supposed to be.. (need more clear argument name)</span>
+
 
     <span class="c1">## everything below should autopopulate</span>
-    <span class="n">paqs_loc</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">.paq&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">data_path_base</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">animal_prep</span><span class="p">,</span> <span class="n">trial</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>  <span class="c1"># path to the .paq files for the selected trials</span>
+    <span class="n">paqs_loc</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">data_path_base</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">trial</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span><span class="si">}</span><span class="s1">.paq&#39;</span>  <span class="c1"># path to the .paq files for the selected trials</span>
     <span class="n">tiffs_loc</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">data_path_base</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">trial</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">trial</span><span class="si">}</span><span class="s1">_Cycle00001_Ch3.tif&#39;</span>
 
 
@@ -451,7 +452,7 @@ imported packerlabimaging successfully
         <span class="s1">&#39;exp_id&#39;</span><span class="p">:</span> <span class="n">expobj</span><span class="o">.</span><span class="n">expID</span><span class="p">,</span>
         <span class="s1">&#39;microscope&#39;</span><span class="p">:</span> <span class="s1">&#39;Bruker 2pPlus&#39;</span><span class="p">,</span>
         <span class="s1">&#39;tiff_path&#39;</span><span class="p">:</span> <span class="n">tiffs_loc</span><span class="p">,</span>
-        <span class="s1">&#39;save_dir&#39;</span><span class="p">:</span> <span class="n">expobj</span><span class="o">.</span><span class="n">analysisSavePath</span><span class="p">,</span>
+        <span class="s1">&#39;saveDir&#39;</span><span class="p">:</span> <span class="n">expobj</span><span class="o">.</span><span class="n">analysisSavePath</span><span class="p">,</span>
         <span class="s1">&#39;expGroup&#39;</span><span class="p">:</span> <span class="s2">&quot;pre 4ap 2p spont imaging&quot;</span><span class="p">,</span>
         <span class="s1">&#39;PaqInfoTrial&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;paq_path&#39;</span><span class="p">:</span> <span class="n">paqs_loc</span><span class="p">,</span>
                           <span class="s1">&#39;frame_channel&#39;</span><span class="p">:</span> <span class="s1">&#39;frame_clock&#39;</span><span class="p">}</span>
@@ -1068,9 +1069,6 @@ trials in Experiment object:
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
              >index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
         <li class="right" >
           <a href="Tutorial-2-Organization-of-data-in-package-objects.html" title="Tutorial 2 - Data organization inside packerlabimaging"
              >next</a> |</li>

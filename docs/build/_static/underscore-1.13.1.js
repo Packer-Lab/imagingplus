@@ -419,7 +419,7 @@
       if (typeof a != 'object' || typeof b != 'object') return false;
 
       // Objects with different constructors are not equivalent, but `Object`s or `Array`s
-      // from different key_frames are.
+      // from different frames are.
       var aCtor = a.constructor, bCtor = b.constructor;
       if (aCtor !== bCtor && !(isFunction$1(aCtor) && aCtor instanceof aCtor &&
                                isFunction$1(bCtor) && bCtor instanceof bCtor)
@@ -917,7 +917,7 @@
         'variable is not a bare identifier: ' + argument
       );
     } else {
-      // If a variable is not specified, place cellsdata values in local scope.
+      // If a variable is not specified, place data values in local scope.
       source = 'with(obj||{}){\n' + source + '}\n';
       argument = 'obj';
     }

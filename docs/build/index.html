@@ -26,9 +26,6 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
           <a href="installation.html" title="Installation instructions"
              accesskey="N">next</a> |</li>
         <li class="nav-item nav-item-0"><a href="#">packerlabimaging 0.1-alpha documentation</a> &#187;</li>
@@ -51,28 +48,31 @@ There are instructions for installation and guides to get you started with utili
 </section>
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>packerlabimaging is a Python package for essential processing and analysis of 2photon imaging data collected in the Packer Lab.
-Especially, there is a fully implemented pipeline for data structuring, processing, analysis and plotting of 2photon Ca2+ imaging experiments, and experiments based around 2photon imaging such as all optical experiments (i.e. 2photon optogenetic stim or 1photon optogenetic stim, with combined 2photon Ca2+ imaging).</p>
+<p><code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code> is designed as a tool-suite for many essential processing, analysis and data visualization steps for 2photon imaging+ experiments in Python.
+In particular, <code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code> was first designed to serve a structured data analysis framework for all-optical experiments, which combine 2-photon imaging, 2-photon stimulation and multiple other time-synced data signals (Packer et al., 2015, Nat Methods).
+However, the <code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code> framework is more broadly useful for multi-modal imaging+ neuroscience experiments, in which calcium imaging data is collected with other time-synchronized signals.
+Especially, there are functions for analysis and visualisation of standard Ca2+ imaging data, and of standard all-optical experiments.</p>
 <aside class="sidebar">
 <p class="sidebar-title">Schematic of overall package flow</p>
 <figure class="align-default">
 <a class="reference internal image-reference" href="_images/OverallPackageFlowDiagram.png"><img alt="_images/OverallPackageFlowDiagram.png" src="_images/OverallPackageFlowDiagram.png" style="width: 600px;" /></a>
 </figure>
 </aside>
-<p>This package is designed to work best with imaging experiments performed using PackIO, a Bruker 2pPlus microscope and Suite2p for Ca2+ imaging data processing for ROI detection.
-Ultimately, the goal of this package is to jump-start your own analysis of your awesome experiment.
-It should be completely usable and understandable for anyone with the correct data in hand and basic knowledge of Python. There are <a class="reference internal" href="Tutorials-reference.html#tutorials"><span class="std std-ref">Tutorials</span></a> to help along the way.
-We hope that it provides a useful structure to organize your experimental data, and some functionality to interact and process your data in an efficient manner.</p>
+<p>Currently, <code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code> is designed to work best with experiments performed using PackIO (REF) for temporal synchronization, a Bruker 2pPlus microscope for imaging and utilizing Suite2p (REF) for ROI segmentation.</p>
+<p>Follow <span class="xref std std-ref">installation</span> for installation.
+Please refer to <a class="reference internal" href="overview.html#overview"><span class="std std-ref">Core structures</span></a> and <a class="reference internal" href="Tutorials-reference.html#tutorials"><span class="std std-ref">Tutorials</span></a> to get started and learn the toolbox.</p>
 </section>
 <section id="table-of-contents">
 <h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quick-start-guide.html">Quick start guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick-start-guide.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick-start-guide.html#key-structures">Key Structures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html"><strong>Core structures</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html#modular-data-processing-analysis-and-visualisation"><strong>Modular Data Processing, Analysis and Visualisation</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html#extensibility"><strong>Extensibility</strong></a></li>
 <li class="toctree-l1"><a class="reference internal" href="Tutorials-reference.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="main-modules.html">Main Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data-structure-details.html">Data Structure details</a></li>
 <li class="toctree-l1"><a class="reference internal" href="making-plots.html">Making plots</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a></li>
@@ -141,9 +141,6 @@ We hope that it provides a useful structure to organize your experimental data, 
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
         <li class="right" >
           <a href="installation.html" title="Installation instructions"
              >next</a> |</li>
