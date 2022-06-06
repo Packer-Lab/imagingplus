@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Quick Start Guide &#8212; packerlabimaging 0.1-alpha documentation</title>
+    <title>Quick Start Guide &#8212; packerlabimaging 0.2-alpha documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css" />
@@ -32,7 +32,7 @@
         <li class="right" >
           <a href="installation.html" title="Installation instructions"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">packerlabimaging 0.1-alpha documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">packerlabimaging 0.2-alpha documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Quick Start Guide</a></li> 
       </ul>
     </div>  
@@ -47,30 +47,28 @@
 <p>The easiest way to get started with using <code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code> is to follow <a class="reference internal" href="Tutorials/Tutorial-1-Initializing-an-Experiment.html"><span class="doc">Tutorial 1 - Initializing an Experiment</span></a>.
 This tutorial demonstrates how to setup a new experiment inside <code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code> for data processing and analysis.</p>
 <p>To get started with plotting and data exploration, check out <a class="reference external" href="Tutorials/Tutorial-3-Making-useful-plots.ipynb">Tutorial 3 - Making useful plots</a>.</p>
-</section>
 <section id="key-structures">
-<h1>Key Structures<a class="headerlink" href="#key-structures" title="Permalink to this headline">¶</a></h1>
+<h2>Key Structures<a class="headerlink" href="#key-structures" title="Permalink to this headline">¶</a></h2>
 <p>There are two core data objects for storing experimental data:</p>
 <ol class="arabic simple">
-<li><p><cite>Experiment</cite> and</p></li>
-<li><p><cite>ImagingTrial</cite> objects</p></li>
+<li><p><cite>Experiment</cite> - built from constituent <cite>ImagingTrial</cite> objects, and represents the overall experiment.</p></li>
+<li><p><cite>ImagingTrial</cite> - a calcium imaging trial at a single field of view.</p></li>
 </ol>
-<ul class="simple">
-<li><p>The <cite>Experiment</cite> class is built from information provided for each constituent trial of the overall Experiment.</p></li>
-</ul>
 <p>And, there 3 sub-core data types to handle multi-modal data within each imaging trial:</p>
 <ol class="arabic simple">
 <li><p><cite>ImagingData</cite> - live imaging data</p></li>
 <li><p><cite>TemporalData</cite> - 1D time series data temporally synchronized to live imaging data</p></li>
 <li><p><cite>CellAnnotations</cite> - Annotations and cellular/ROI segmentations of the live imaging tissue sample</p></li>
 </ol>
-<p>An more detailed overview of these modules and other key structures of <code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code> can be found at <a class="reference internal" href="overview.html#overview"><span class="std std-ref">Core structures</span></a>.</p>
+<p>A more detailed overview of these modules and other key structures of <code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code> can be found at <a class="reference internal" href="overview.html#overview"><span class="std std-ref">Core structures</span></a>.</p>
+<p>An overview of all primary modules of <code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code> can be found at <a class="reference internal" href="organization-of-modules.html#main-modules"><span class="std std-ref">Main Modules</span></a>.</p>
 <section id="next">
-<h2>Next<a class="headerlink" href="#next" title="Permalink to this headline">¶</a></h2>
+<h3>Next<a class="headerlink" href="#next" title="Permalink to this headline">¶</a></h3>
 <p><a class="reference internal" href="overview.html#overview"><span class="std std-ref">Core structures</span></a></p>
 <p><a class="reference internal" href="data-structure-details.html#data-structure-details"><span class="std std-ref">Data Structure Inside Trial objects</span></a></p>
 <p><a class="reference internal" href="Tutorials-reference.html#tutorials"><span class="std std-ref">Tutorials</span></a></p>
 <p><a class="reference internal" href="making-plots.html#making-plots"><span class="std std-ref">Plotting of data/analysis</span></a></p>
+</section>
 </section>
 </section>
 
@@ -84,9 +82,11 @@ This tutorial demonstrates how to setup a new experiment inside <code class="doc
   <div>
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
-<li><a class="reference internal" href="#">Quick Start Guide</a></li>
+<li><a class="reference internal" href="#">Quick Start Guide</a><ul>
 <li><a class="reference internal" href="#key-structures">Key Structures</a><ul>
 <li><a class="reference internal" href="#next">Next</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -135,7 +135,7 @@ This tutorial demonstrates how to setup a new experiment inside <code class="doc
         <li class="right" >
           <a href="installation.html" title="Installation instructions"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">packerlabimaging 0.1-alpha documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">packerlabimaging 0.2-alpha documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Quick Start Guide</a></li> 
       </ul>
     </div>

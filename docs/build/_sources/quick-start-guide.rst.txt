@@ -10,16 +10,14 @@ To get started with plotting and data exploration, check out `Tutorial 3 - Makin
 
 
 Key Structures
-==============
+++++++++++++++
 
 There are two core data objects for storing experimental data:
 
 
-1) `Experiment` and
+1) `Experiment` - built from constituent `ImagingTrial` objects, and represents the overall experiment.
 
-2) `ImagingTrial` objects
-
-- The `Experiment` class is built from information provided for each constituent trial of the overall Experiment.
+2) `ImagingTrial` - a calcium imaging trial at a single field of view.
 
 
 
@@ -32,9 +30,10 @@ And, there 3 sub-core data types to handle multi-modal data within each imaging 
 3) `CellAnnotations` - Annotations and cellular/ROI segmentations of the live imaging tissue sample
 
 
-An more detailed overview of these modules and other key structures of ``packerlabimaging`` can be found at :ref:`overview`.
+A more detailed overview of these modules and other key structures of ``packerlabimaging`` can be found at :ref:`overview`.
 
 
+An overview of all primary modules of ``packerlabimaging`` can be found at :ref:`main modules`.
 
 
 .. _Tutorial 1 - Initializing an Experiment: Tutorials/Tutorial-1-Initializing-an-Experiment.ipynb

@@ -1,4 +1,4 @@
-.. packerlabimaging documentation master file, created by
+.. packerlabimaging documentation master file, created by Prajay Shah
    sphinx-quickstart on Thu Feb 24 22:32:00 2022.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
@@ -10,8 +10,8 @@ Welcome to packerlabimaging's documentation!
 ++++++++++++++++++++++++++++++++++++++++++++
 
 
-This documentation contains detailed information about the code base of ``packerlabimaging``.
-There are instructions for installation and guides to get you started with utilizing the package.
+This documentation contains guides and information about the usage and structure of ``packerlabimaging``.
+Please follow the instructions for installation and provided guides to get you started with utilizing the package.
 
 
 Please open an issue or pull request on the project's `Github <https://github.com/Packer-Lab/packerlabimaging>`_ page if you are encountering any problems with the package.
@@ -19,14 +19,16 @@ Please open an issue or pull request on the project's `Github <https://github.co
 Introduction
 ++++++++++++
 
-``packerlabimaging`` is designed as a tool-suite for many essential processing, analysis and data visualization steps for 2photon imaging+ experiments in Python.
+``packerlabimaging`` is designed as a integrated tool-suite for essential processing, analysis and data visualization steps for multimodal imaging+ experiments in Python.
+
+
 In particular, ``packerlabimaging`` was first designed to serve a structured data analysis framework for all-optical experiments, which combine 2-photon imaging, 2-photon stimulation and multiple other time-synced data signals (Packer et al., 2015, Nat Methods).
 However, the ``packerlabimaging`` framework is more broadly useful for multi-modal imaging+ neuroscience experiments, in which calcium imaging data is collected with other time-synchronized signals.
 Especially, there are functions for analysis and visualisation of standard Ca2+ imaging data, and of standard all-optical experiments.
 
-.. sidebar:: Schematic of overall package flow
+.. sidebar:: Multimodal imaging+ experiment:
 
-     .. Figure:: files/OverallPackageFlowDiagram.png
+     .. Figure:: files/Typical-experiment-apr-22-2022.jpeg
          :width: 600
 
 
@@ -48,7 +50,7 @@ Table of Contents
    Overview <overview.rst>
    Tutorials <Tutorials-reference.rst>
    Main Modules <main-modules.rst>
-   Data Structure details <data-structure-details.rst>
+   Data structure details <data-structure-details.rst>
    Making plots <making-plots.rst>
    API Reference <reference.rst>
 

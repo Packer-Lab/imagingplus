@@ -4,8 +4,8 @@
 Data Structure Inside Trial objects
 ===================================
 
-Annotated data object for storing multi-functional data
--------------------------------------------------------
+*AnnData* object for storing multi-modal data
+---------------------------------------------
 
 The AnnData library is used to store data in an efficient, multi-functional format. This is stored under: ``trialobject.data``.
 The AnnData object is built around the raw Flu matrix of each ``trialobject``.

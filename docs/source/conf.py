@@ -21,7 +21,7 @@ copyright = '2022, Packer Lab'
 author = 'Packer Lab'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1-alpha'
+release = '0.2-alpha'
 
 
 # -- General configuration ---------------------------------------------------
