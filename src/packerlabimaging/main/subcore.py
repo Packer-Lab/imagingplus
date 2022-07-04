@@ -17,7 +17,7 @@ class TemporalData:
         list, np.ndarray] = None  #: timestamps representing imaging frame times. must be of same time duration as imaging dataset.
     sparse_data: Dict[
         str, np.ndarray] = None  #: dictionary of timeseries channels containing cellsdata keyed at imaging frames for each timeseries channel
-    crop_offset_time: int = 0  #: length of time (secs) of the offset when cropping temporal data
+    crop_offset_time: int = 0  #: length of time (secs) of the offset after cropping temporal data
 
     def __post_init__(self):
         print(f"Created new TemporalData of {self.n_channels} x {self.n_timepoints} (sampled at {self.sampling_rate}")
@@ -232,3 +232,11 @@ class ImagingMetadata:
 
     def __repr__(self):
         return f'ImagingMetadata for imaging cellsdata collected with {self.microscope}.'
+
+    @property
+    def fov_size(self):
+        x_length_um = self.frame_x * self.pix_sz_x
+        y_length_um = self.frame_y * self.pix_sz_y
+        print(f'FOV size: (X): {round(x_length_um, 2)}microns, (Y): {round(y_length_um, 2)}microns')
+        return x_length_um, y_length_um
+

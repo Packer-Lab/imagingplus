@@ -32,9 +32,7 @@ import pickle
 
 # TODO [ ]  thinking about restructuring TwoPhotonImaging trial methods to more general trial type
 #    [ ]  then making TwoPhotonImaging as an independent workflow, allowing the general trial type to retain the methods that are *currently* in TwoPhotonImaging
-from packerlabimaging.utils.utils import ImportTiff
-
-
+from packerlabimaging.utils.utils import ImportTiff, findClosest
 
 """
 
@@ -397,10 +395,17 @@ class ImagingTrial:
     #     return self.metainfo['trialID']
 
     def frameNum(self, time):
-        return round(time * self.imparams.fps)
+        """use the temporally captured frame timing signals to calculate frame number of time point (in imaging series time)"""
+        # subtract the timestamp of the desired frame from the first frame clock timestamp, and convert to secs.
+        time_stamp = time * self.tmdata.sampling_rate
+        frame_num = findClosest(time_stamp, self.tmdata.frame_times)[1]
+        return frame_num
 
     def timePoint(self, frame):
-        return np.round(frame / self.imparams.fps, 2)
+        """use the temporally captured frame timing signals to calculate timepoint of frame (in imaging series time)"""
+        # subtract the timestamp of the desired frame from the first frame clock timestamp, and convert to secs.
+        frame_time = (self.tmdata.frame_times[frame] - self.tmdata.frame_times[0]) / self.tmdata.sampling_rate
+        return np.round(frame_time, 2)
 
     @property
     def tiff_path(self):

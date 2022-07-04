@@ -79,12 +79,15 @@ def plotting_decorator(figsize=(3, 3), nrows=1, ncols=1, dpi=300, apply_image_fr
                 if kwargs['fig'] is None or kwargs['ax'] is None:
                     # print('\-creating fig, ax [1]')
                     kwargs['fig'], kwargs['axs'] = plt.subplots(nrows=nrows_, ncols=ncols_, figsize=figsize_)
+                    kwargs['fig'].tight_layout(pad=1.8)
                 else:
                     pass
             elif ncols_ > 1 or nrows_ > 1:
                 kwargs['fig'], kwargs['axs'] = plt.subplots(nrows=nrows_, ncols=ncols_, figsize=figsize_, dpi=dpi)
+                kwargs['fig'].tight_layout(pad=1.8)
             else:
                 kwargs['fig'], kwargs['ax'] = plt.subplots(figsize=figsize_, dpi=dpi)
+                kwargs['fig'].tight_layout(pad=1.8)
 
             print(f'\- executing plotting function: {plotting_func.__name__}')
             res = plotting_func(
@@ -92,7 +95,6 @@ def plotting_decorator(figsize=(3, 3), nrows=1, ncols=1, dpi=300, apply_image_fr
 
             kwargs['ax'].set_title(kwargs['title'], wrap=True) if 'title' in [*kwargs] else None
 
-            kwargs['fig'].tight_layout(pad=1.8)
 
             if 'show' in [*kwargs]:
                 if kwargs['show'] is True:
@@ -290,7 +292,7 @@ def dataplot_ax_options(ax, data_length: int, **kwargs):
 
         # set x and y axis limits
         if 'xlims' in [*kwargs]: ax.set_xlim([xlim * kwargs['collection_hz'] for xlim in kwargs['xlims']])
-        if 'ylims' in [*kwargs]: ax.set_ylim([ylim * kwargs['collection_hz'] for ylim in kwargs['ylims']])
+        if 'ylims' in [*kwargs]: ax.set_ylim([ylim for ylim in kwargs['ylims']])
 
         # set x_axis label
         # change x-axis to time (secs) if time is requested

@@ -116,6 +116,19 @@ def filterDfBoolCol(df, true_cols=[], false_cols=[]):
     return filtered_df.index
 
 
+def findClosest(arr, input):
+    """find the closest value in a list to the given input"""
+    if type(arr) == list:
+        arr = np.array(arr)
+    subtract = arr - input
+    positive_values = abs(subtract)
+    # closest_value = min(positive_values) + input
+    index = np.where(positive_values == min(positive_values))[0][0]
+    closest_value = arr[index]
+
+    return closest_value, index
+
+
 # calculates average over sliding window for an array
 def moving_average(arr, n=4):
     """
@@ -896,6 +909,32 @@ def flu_splitter3(flu, stim_times, frames_ms, pre_frames=10, post_frames=30):
     return flu_trials
 
 
+# calculate distance between 2 points on a cartesian plane
+def calc_distance_2points(p1: tuple, p2: tuple):
+    """
+    uses the hypothenus method to calculate the straight line distance between two given points on a 2d cartesian plane.
+    :param p1: point 1
+    :param p2: point 2
+    :return:
+    """
+    return math.hypot(p2[0] - p1[0], p2[1] - p1[1])
+
+
+def _calculate_distance_to_target(key_coord: tuple, target_coords: np.ndarray):
+    "calculate distances between key coord and all target coords"
+
+    distances = []
+    for cell in target_coords:
+        cell_x = cell[0]
+        cell_y = cell[1]
+        distance = calc_distance_2points((cell_x, cell_y), key_coord)
+        distances.append(distance)
+
+    # distances_um = np.asarray([x / (1 / expobj.pix_sz_x) for x in distances])
+
+    return np.round(distances, 3)
+
+
 def closest_frame_before(clock, t):
     ''' returns the idx of the frame immediately preceeding
         the time t. Frame clock must be digitised and expressed
@@ -1226,3 +1265,4 @@ def get_trial_frames(clock, start, pre_frames, post_frames, paq_rate, fs=30):
         return None, None
 
     return frames, start_idx
+

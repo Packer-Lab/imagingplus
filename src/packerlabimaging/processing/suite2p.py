@@ -320,7 +320,7 @@ class Suite2pExperiment:
             substract_neuropil = True if neuropil_coeff > 0 else False
             FminusFneu, spks, stat, neuropil = s2p_loader(self.s2pResultsPath, subtract_neuropil=substract_neuropil,
                                                           neuropil_coeff=neuropil_coeff)
-            self.raw.append(FminusFneu)  # raw F of each suite2p ROI
+            self.raw.append(FminusFneu)  # raw F of each suite2p ROI (neuropil corrected if neuropil_coeff > 0)
             self.spks.append(spks)  # deconvolved spikes each suite2p ROI
             self.neuropil.append(neuropil)  # neuropil value of each suite2p ROI
             self.stat.append(stat)  # stat dictionary for each suite2p ROI
@@ -635,7 +635,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
     def s2pResultExists(self, val):
         self.__s2pResultExists = val
 
-    def _get_suite2pResults(self, s2pExp: Suite2pExperiment) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def _get_suite2pResults(self, s2pExp: Suite2pExperiment):
         """
         Get suite2p cellsdata for current trial's key_frames.
 

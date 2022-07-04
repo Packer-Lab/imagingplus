@@ -19,12 +19,12 @@ Please open an issue or pull request on the project's `Github <https://github.co
 Introduction
 ++++++++++++
 
-``packerlabimaging`` is designed as a integrated tool-suite for essential processing, analysis and data visualization steps for multimodal imaging+ experiments in Python.
+``packerlabimaging`` is an a integrated tool-suite for essential processing, analysis and data visualization steps for multimodal calcium imaging+ neuroscience experiments in Python.
 
 
 In particular, ``packerlabimaging`` was first designed to serve a structured data analysis framework for all-optical experiments, which combine 2-photon imaging, 2-photon stimulation and multiple other time-synced data signals (Packer et al., 2015, Nat Methods).
 However, the ``packerlabimaging`` framework is more broadly useful for multi-modal imaging+ neuroscience experiments, in which calcium imaging data is collected with other time-synchronized signals.
-Especially, there are functions for analysis and visualisation of standard Ca2+ imaging data, and of standard all-optical experiments.
+Especially, there are methods for analysis and visualisation of standard calcium imaging data.
 
 .. sidebar:: Multimodal imaging+ experiment:
 
@@ -33,7 +33,7 @@ Especially, there are functions for analysis and visualisation of standard Ca2+ 
 
 
 
-Currently, ``packerlabimaging`` is designed to work best with experiments performed using PackIO (REF) for temporal synchronization, a Bruker 2pPlus microscope for imaging and utilizing Suite2p (REF) for ROI segmentation.
+Currently, ``packerlabimaging`` is most functional for experiments performed using PackIO (REF) for temporal synchronization, a Bruker microscope for 2p imaging and utilizing Suite2p (REF) for cell segmentation.
 
 Follow :ref:`installation` for installation.
 Please refer to :ref:`overview` and :ref:`tutorials` to get started and learn the toolbox.

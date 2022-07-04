@@ -194,6 +194,7 @@ def plot__channel(tmdata: TemporalData, channel: str, **kwargs):
     assert channel in tmdata.channels, f'{channel} not found in .Paq module cellsdata.'
 
     # set any kwargs provided
+    fig = kwargs['fig']
     ax = kwargs['ax']
     kwargs.pop('ax')
 
@@ -213,7 +214,7 @@ def plot__channel(tmdata: TemporalData, channel: str, **kwargs):
 
     # set axis options
     dataplot_ax_options(ax=ax, data_length=len(data), collection_hz=tmdata.sampling_rate, **kwargs)
-
+    kwargs['ax'] = ax
 
 def MeanProject(tiff_path: str = None, frames: tuple = None, save_path: str = None, plot=True,
                 imstack: np.ndarray = None, **kwargs):
