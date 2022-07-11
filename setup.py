@@ -25,7 +25,7 @@ setup(
         'statsmodels',
         'scikit-image',
         'suite2p',
-        'opencv-python'
+        'opencv-python',
         'pystackreg'
     ],
     tests_require=TESTS_REQUIRE,

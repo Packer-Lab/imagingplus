@@ -8,3 +8,5 @@ scipy
 statsmodels
 scikit-image
 suite2p
+opencv-python
+pystackreg

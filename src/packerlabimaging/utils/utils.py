@@ -34,6 +34,10 @@ terms_dictionary = {
 
 
 def define_term(x: str):
+    """
+    TODO fill documentation
+    :param x:
+    """
     try:
         print(f"{x}:\t{terms_dictionary[x]}") if type(x) is str else print(
             'ERROR: please provide a string object as the key')
@@ -43,7 +47,11 @@ def define_term(x: str):
 
 # report sizes of variables
 def _sizeof_fmt(num, suffix='B'):
-    """ by Fred Cirera,  https://stackoverflow.com/a/1094933/1870254, modified"""
+    """ by Fred Cirera,  https://stackoverflow.com/a/1094933/1870254, modified
+    :param num:
+    :param suffix:
+    :return:
+    """
     for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
         if abs(num) < 1024.0:
             return "%3.1f %s%s" % (num, unit, suffix)
@@ -53,22 +61,39 @@ def _sizeof_fmt(num, suffix='B'):
 
 # report sizes of variables
 def print_size_of(var):
+    """
+TODO fill explanation
+    :param var:
+    """
     print(_sizeof_fmt(sys.getsizeof(var)))
 
 
 # report sizes of variables
 def print_size_vars():
+    """
+TODO fill explanation
+    """
     for name, size in sorted(((name, sys.getsizeof(value)) for name, value in locals().items()),
                              key=lambda x: -x[1])[:10]:
         print("{:>30}: {:>8}".format(name, _sizeof_fmt(size)))
 
 
 def return_parent_dir(file_path: str):
+    """
+TODO fill explanation
+    :param file_path:
+    :return:
+    """
     return os.path.dirname(file_path)  # todo replace instance usages of return_parent_dir with os.path.dirname
     # return file_path[:[(s.start(), s.end()) for s in re.finditer('/', file_path)][-1][0]]
 
 
 def save_figure(fig, save_path_full: str = None):
+    """
+TODO fill explanation
+    :param fig:
+    :param save_path_full:
+    """
     print(f'\n\- saving figure to: {save_path_full}', end="\r")
     os.makedirs(os.path.dirname(save_path_full), exist_ok=True)
     fig.savefig(save_path_full)
@@ -117,7 +142,11 @@ def filterDfBoolCol(df, true_cols=[], false_cols=[]):
 
 
 def findClosest(arr, input):
-    """find the closest value in a list to the given input"""
+    """find the closest value in a list to the given input
+    :param arr:
+    :param input:
+    :return:
+    """
     if type(arr) == list:
         arr = np.array(arr)
     subtract = arr - input
@@ -149,6 +178,10 @@ def path_finder(umbrella, *args, is_folder=False):
     containing the string names in each arg
     is_folder = False if args is ls of files
     is_folder = True if  args is ls of folders
+    :param umbrella:
+    :param args:
+    :param is_folder:
+    :return:
     '''
     # ls of bools, has the function found each argument?
     # ensures two folders / files are not found
@@ -187,6 +220,12 @@ def path_finder(umbrella, *args, is_folder=False):
 
 
 def points_in_circle_np(radius, x0=0, y0=0):
+    """
+TODO fill explanation
+    :param radius:
+    :param x0:
+    :param y0:
+    """
     x_ = np.arange(x0 - radius - 1, x0 + radius + 1, dtype=int)
     y_ = np.arange(y0 - radius - 1, y0 + radius + 1, dtype=int)
     x, y = np.where((x_[:, np.newaxis] - x0) ** 2 + (y_ - y0) ** 2 <= radius ** 2)
@@ -199,6 +238,9 @@ def threshold_detect(signal, threshold):
     Returns indexes where the input signal reaches above threshold.
 
     lloyd russell
+    :param signal:
+    :param threshold:
+    :return:
     """
     thresh_signal = signal > threshold
     thresh_signal[1:][thresh_signal[:-1] & thresh_signal[1:]] = False
@@ -207,6 +249,12 @@ def threshold_detect(signal, threshold):
 
 
 def ImportTiff(tiff_path, frames: Union[tuple, list, int] = None):
+    """
+TODO fill explanation
+    :param tiff_path:
+    :param frames:
+    :return:
+    """
     if frames and type(frames) == tuple:
         im_stack = tf.imread(tiff_path, key=range(frames[0], frames[1]))
     elif frames and type(frames) == int:
@@ -245,11 +293,16 @@ def ZProfile(movie, area_center_coords: tuple = None, area_size: int = -1, plot_
 
     Plot a z-profile of a movie, averaged over space inside a square area
 
-    movie = can be np.array of the TIFF stack or a tiff path from which it is read in
-    area_center_coords = coordinates of pixel at center of box (x,y)
-    area_size = int, length and width of the square in pixels
-    plot_frame = which movie frame to take as a reference to plot the area boundaries on
-    vasc_image = optionally include a vasculature image tif of the correct dimensions to plot the coordinates on.
+    :param movie: can be np.array of the TIFF stack or a tiff path from which it is read in
+    :param area_center_coords: coordinates of pixel at center of box (x,y)
+    :param area_size: int, length and width of the square in pixels
+    :param plot_frame: which movie frame to take as a reference to plot the area boundaries on
+    :param vasc_image: optionally include a vasculature image tif of the correct dimensions to plot the coordinates on.
+
+    :param plot_trace:
+    :param plot_image:
+    :param kwargs:
+    :return:
     """
 
     if type(movie) is str:
@@ -329,7 +382,10 @@ def listdirFullpath(directory, string=''):
 
 
 def WriteTiff(save_path, stack: np.array):
-    """use Tifffile imwrite function to save a numpy array to tiff file"""
+    """use Tifffile imwrite function to save a numpy array to tiff file
+    :param save_path:
+    :param stack:
+    """
     print(f"\n\- saving array [{stack.shape}] to: {save_path}", end="\r")
     if not os.path.exists(os.path.dirname(save_path)):
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
@@ -402,6 +458,14 @@ def SaveDownsampledTiff(tiff_path: str = None, stack: np.array = None, group_by:
 
 def subselect_tiff(tiff_path: str = None, tiff_stack: np.array = None, select_frames: tuple = (0, 0),
                    save_as: str = None):
+    """
+TODO fill explanation
+    :param tiff_path:
+    :param tiff_stack:
+    :param select_frames:
+    :param save_as:
+    :return:
+    """
     if tiff_stack is None:
         # open tiff file
         print('running subselecting tiffs')
@@ -420,6 +484,10 @@ def make_tiff_stack(tiff_paths: list, save_as: str = None) -> np.ndarray:
     """
     read in a bunch of tiffs and stack them together, and save the output as the save_as
 
+    :param tiff_paths:
+    :return:
+
+    TODO old:
     :param sorted_paths: ls of string paths for tiffs to stack
     :param save_as: .tif file path to where the tif should be saved
     """
