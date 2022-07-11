@@ -1323,3 +1323,46 @@ def bandPass(img: np.ndarray, fshift, lowfilter=10, highfilter=3):
 
     return img_back
 
+
+def makeFrameAverageTiff(frames: Union[int, list, tuple], tiff_path: str = None, stack: np.ndarray = None, peri_frames: int = 100, save_dir: str = None, to_plot=False, **kwargs):
+    """Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from either the provided tiff_path or the stack array.
+    """
+
+    if type(frames) == int:
+        frames = [frames]
+
+    stack = ImportTiff(tiff_path) if not stack else stack
+    
+    imgs = []
+    for idx, frame in enumerate(frames):
+        # im_batch_reg = tf.imread(tif_path, key=range(0, self.output_ops['batch_size']))
+
+        if 0 > frame - peri_frames // 2: peri_frames_low = frame
+        else: peri_frames_low = peri_frames // 2
+        if stack.shape[0] < frame + peri_frames // 2: peri_frames_high = stack.shape[0] - frame
+        else: peri_frames_high = peri_frames // 2
+        im_sub_reg = stack[frame - peri_frames_low: frame + peri_frames_high]
+
+        avg_sub = np.mean(im_sub_reg, axis=0)
+
+        # convert to 8-bit
+        from packerlabimaging.utils.utils import convert_to_8bit
+        avg_sub = convert_to_8bit(avg_sub, 0, 255)
+
+        if save_dir:
+            if '.tif' in save_dir: save_dir = os.path.dirname(save_dir) + '/'
+            save_path = save_dir + f'/{frames[idx]}_s2preg_frame_avg.tif'
+            os.makedirs(save_dir, exist_ok=True)
+
+            print(f"\t\- Saving averaged s2p registered tiff for frame: {frames[idx]}, to: {save_path}")
+            tf.imwrite(save_path, avg_sub, photometric='minisblack')
+
+        if to_plot:  # todo replace with proper plotting average tiff frame code
+            kwargs['title'] = f'{peri_frames} key_frames avg from s2p reg tif, frame: {frames[idx]}' if not kwargs[
+                'title'] else kwargs['title']
+            from packerlabimaging.plotting.plotting import plotImg
+            plotImg(img=avg_sub, **kwargs)
+
+        imgs.append(avg_sub)
+
+    return np.asarray(imgs)
