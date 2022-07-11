@@ -676,7 +676,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
 
         return np.asarray(raw), np.asarray(spks), np.asarray(neuropil)
 
-    def makeFrameAverageTiff(self, reg_tif_dir: str, frames: Union[int, list], peri_frames: int = 100,
+    def makeFrameAverageTiff(self, reg_tif_dir: str, frames: Union[int, list, tuple], peri_frames: int = 100,
                              save_dir: str = None, to_plot=False, **kwargs):
         """Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from the suite2p registered TIFF file.
         """

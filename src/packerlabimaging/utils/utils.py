@@ -1266,3 +1266,60 @@ def get_trial_frames(clock, start, pre_frames, post_frames, paq_rate, fs=30):
 
     return frames, start_idx
 
+# image processing
+import cv2 as cv
+
+def fourierImage(img: np.ndarray):
+    dft = cv.dft(np.float32(img), flags=cv.DFT_COMPLEX_OUTPUT)
+    dft_shift = np.fft.fftshift(dft)
+    return dft_shift
+
+
+def highPass(img: np.ndarray, fshift, filter=30):
+    """high pass filtering of image"""
+    crow, ccol = img.shape
+    fshift[crow - filter:crow + (filter + 1), ccol - filter:ccol + (filter + 1)] = 0
+    f_ishift = np.fft.ifftshift(fshift)
+    img_back = np.fft.ifft2(f_ishift)
+    img_back = np.real(img_back)
+    return img_back
+
+
+def thresholdImage(img: np.ndarray, low_threshold: int= 0, high_threshold: int=250):
+    filter_out = np.where((low_threshold > img) | (img > high_threshold))
+    img[filter_out] = 0
+    return img
+
+
+def lowPass(img: np.ndarray, fshift, filter=30):
+    crow, ccol = img.shape
+
+    # create a mask first, center square is 1, remaining all zeros
+    mask = np.zeros((crow, ccol, 2), np.uint8)
+    mask[crow - filter:crow + filter, ccol - filter:ccol + filter] = 1
+
+    # apply mask and inverse DFT
+    fshift = fshift * mask
+    f_ishift = np.fft.ifftshift(fshift)
+    img_back = cv.idft(f_ishift)
+    img_back = cv.magnitude(img_back[:, :, 0], img_back[:, :, 1])
+
+    return img_back
+
+
+def bandPass(img: np.ndarray, fshift, lowfilter=10, highfilter=3):
+    crow, ccol = img.shape
+
+    # create a mask first, center square is 1, remaining all zeros
+    mask = np.zeros((crow, ccol, 2), np.uint8)
+    mask[crow - (lowfilter - highfilter):crow + (lowfilter - highfilter),
+    ccol - (lowfilter - highfilter):ccol + (lowfilter - highfilter)] = 1
+
+    # apply mask and inverse DFT
+    fshift = fshift * mask
+    f_ishift = np.fft.ifftshift(fshift)
+    img_back = cv.idft(f_ishift)
+    img_back = cv.magnitude(img_back[:, :, 0], img_back[:, :, 1])
+
+    return img_back
+

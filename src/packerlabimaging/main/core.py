@@ -395,17 +395,17 @@ class ImagingTrial:
     #     return self.metainfo['trialID']
 
     def frameNum(self, time):
-        """use the temporally captured frame timing signals to calculate frame number of time point (in imaging series time)"""
+        """use the temporally captured frame timing signals to calculate and return frame number of time point (in imaging series time)"""
         # subtract the timestamp of the desired frame from the first frame clock timestamp, and convert to secs.
         time_stamp = time * self.tmdata.sampling_rate
-        frame_num = findClosest(time_stamp, self.tmdata.frame_times)[1]
-        return frame_num
+        frame_num = findClosest(self.tmdata.frame_times, self.tmdata.frame_times[0] + time_stamp)[1]
+        return int(frame_num)
 
     def timePoint(self, frame):
-        """use the temporally captured frame timing signals to calculate timepoint of frame (in imaging series time)"""
+        """use the temporally captured frame timing signals to calculate and return timepoint of frame (in imaging series time)"""
         # subtract the timestamp of the desired frame from the first frame clock timestamp, and convert to secs.
         frame_time = (self.tmdata.frame_times[frame] - self.tmdata.frame_times[0]) / self.tmdata.sampling_rate
-        return np.round(frame_time, 2)
+        return np.round(frame_time, 5)
 
     @property
     def tiff_path(self):
