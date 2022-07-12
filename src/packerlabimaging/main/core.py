@@ -2,7 +2,6 @@
 from __future__ import absolute_import
 from dataclasses import dataclass, field
 from typing import Optional, MutableMapping, Union, TypedDict, List, Dict, Any
-
 import numpy as np
 import pandas as pd
 
@@ -10,6 +9,7 @@ from packerlabimaging.main.subcore import ImagingMetadata, ImagingData, CellAnno
 from packerlabimaging.processing.anndata import AnnotatedData
 
 # from packerlabimaging.processing.imagingMetadata import ImagingMetadata
+from packerlabimaging.processing.deepinterpolate import Deepinterpolation
 from packerlabimaging.processing.suite2p import Suite2pResultsTrial
 from packerlabimaging.utils.classes import UnavailableOptionError, TrialMetainfo
 
@@ -322,6 +322,7 @@ class ImagingTrial:
     cells: CellAnnotations = None
     tmdata: TemporalData = None
     Suite2p: Suite2pResultsTrial = None
+    Deepinterpolation: Deepinterpolation = None
 
     def __post_init__(self):
         self.metainfo = TrialMetainfo(date=self.date, trialID=self.trialID, expID=self.expID, expGroup=self.expGroup,
@@ -646,3 +647,6 @@ class ImagingTrial:
                     print('      Mean of the sub-threshold for this cell: %s' % mean_)
 
         return new_array
+
+    def run_deepinterpolation(self, input_file: str, output_file: str, model_path: str, generator_param: dict = {}, inferrence_param: dict = {}):
+        self.Deepinterpolation = Deepinterpolation.deepinterpolate(input_file, output_file, model_path, generator_param, inferrence_param)

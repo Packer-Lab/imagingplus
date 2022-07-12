@@ -787,7 +787,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
 
             tiff_paths_list = [reg_tif_folder + tif_list[i] for i in range(start, end)]
 
-            first_tiff_offset = int(curr_trial_frames[0]) - (start * batch_size)
+            first_tiff_offset = int(curr_trial_frames[0] - (start * batch_size))
             last_tiff_offset = int(curr_trial_frames[1] % batch_size)
             return tiff_paths_list, first_tiff_offset, last_tiff_offset
 

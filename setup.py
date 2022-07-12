@@ -26,7 +26,8 @@ setup(
         'scikit-image',
         'suite2p',
         'opencv-python'
-        'pystackreg'
+        'pystackreg',
+        'deepinterpolation'
     ],
     tests_require=TESTS_REQUIRE,
     zip_safe=False
