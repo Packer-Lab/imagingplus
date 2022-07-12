@@ -205,6 +205,10 @@ class Experiment:
     # noinspection PyAttributeOutsideInit
     @pkl_path.setter
     def pkl_path(self, path: str):
+        """
+        TODO fill doc
+        :param path:
+        """
         self._pkl_path = path
 
     def save_pkl(self, pkl_path: str = None):
