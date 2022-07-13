@@ -275,7 +275,7 @@ def dataplot_frame_options():
     sns.set_style('white')
 
 
-def dataplot_ax_options(ax, data_length: int, **kwargs):
+def dataplot_ax_options(ax, **kwargs):
     """
     :param
         **kwargs:
@@ -303,7 +303,7 @@ def dataplot_ax_options(ax, data_length: int, **kwargs):
                 # change x axis ticks to the appropriate interval
                 # labels = list(range(0, int(data_length // kwargs['collection_hz']), x_tick_secs))
 
-                start, end = ax.get_xticks()[0], ax.get_xticks()[-1]
+                start, end = ax.get_xticks()[0], ax.get_xticks()[-2]
                 labels = list(
                     range(int(start // kwargs['collection_hz']), int(end // kwargs['collection_hz']), x_tick_secs))
 
