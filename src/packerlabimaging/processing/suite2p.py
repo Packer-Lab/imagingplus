@@ -769,10 +769,10 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
 
             if start == end:  # i.e. if the frames selected for crop are in the same batch .tif
                 stacks = [start]
-                last_tiff_offset = int(batch_size * start - (curr_trial_frames[0] + frameNum[1]))
+                last_tiff_offset = batch_size - frameNum[1]
             else:
-                stacks = range(int(start), int(end))
-                last_tiff_offset = int((curr_trial_frames[0] + frameNum[1]) % batch_size)
+                stacks = range(int(start), int(end)) if end - start > 1 else [start, end]
+                last_tiff_offset = batch_size - int((curr_trial_frames[0] + frameNum[1]) % batch_size)
 
             reg_tif_list = os.listdir(reg_tif_folder)
             reg_tif_list.sort()
