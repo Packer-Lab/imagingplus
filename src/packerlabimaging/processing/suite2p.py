@@ -271,7 +271,7 @@ class Suite2pExperiment:
                     if path in self.output_ops['filelist']:
                         self.trials.append(trial)
                     else:
-                        print(f'WARNING: {trial}, {path} not found in suite2p results filelist. Not added to Suite2p object.')
+                        print(f'\tWARNING: {trial}, {path} not found in suite2p results output_ops filelist. Not added to Suite2p object.')
             else:
                 tiff_paths_to_use_s2p.pop(trial)
 

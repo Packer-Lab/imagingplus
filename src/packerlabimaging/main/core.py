@@ -9,7 +9,7 @@ from packerlabimaging.main.subcore import ImagingMetadata, ImagingData, CellAnno
 from packerlabimaging.processing.anndata import AnnotatedData
 
 # from packerlabimaging.processing.imagingMetadata import ImagingMetadata
-from packerlabimaging.processing.deepinterpolate import Deepinterpolation
+from packerlabimaging.processing.denoising import Deepinterpolation
 from packerlabimaging.processing.suite2p import Suite2pResultsTrial
 from packerlabimaging.utils.classes import UnavailableOptionError, TrialMetainfo
 
@@ -326,7 +326,7 @@ class ImagingTrial:
 
     def __post_init__(self):
         self.metainfo = TrialMetainfo(date=self.date, trialID=self.trialID, expID=self.expID, expGroup=self.expGroup,
-                                      comment=self.comment, paths={})  # , microscope=self.microscope)
+                                      comment=self.comment, paths={})
 
         if os.path.exists(self.dataPath):
             self.metainfo['paths']['dataPath'] = self.dataPath
@@ -334,10 +334,9 @@ class ImagingTrial:
             raise FileNotFoundError(f"dataPath does not exist: {self.dataPath}")
 
         # processing collect mean FOV Trace -- after collecting imaging params and Paq timing info
-        im_stack = self.importTrialTiff()
+        im_stack = ImportTiff(tiff_path=self.tiff_path)
         self._n_frames = im_stack.shape[0]
-        self.meanFluImg, self.meanFovFluTrace = self.meanRawFluTrace(
-            im_stack)  #: mean image and mean FOV fluorescence trace
+        self.meanFluImg, self.meanFovFluTrace = self.meanRawFluTrace(im_stack)  #: mean image and mean FOV fluorescence trace
 
         # set, create analysis save path directory and create pkl object
         os.makedirs(self.saveDir, exist_ok=True)

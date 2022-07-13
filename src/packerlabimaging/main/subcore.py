@@ -87,7 +87,7 @@ class TemporalData:
         sparse_data = {}
         for idx, chan in enumerate(self.channels):
             print(f'\t\t\- Adding sparse tmdata for channel: {chan} ')
-            data = self.data.loc[frame_times, chan]
+            data = self.data.iloc[frame_times, idx]
             sparse_data[chan] = data
 
         sparse_data = pd.DataFrame(sparse_data)

@@ -217,7 +217,18 @@ def ImportTiff(tiff_path, frames: Union[tuple, list, int] = None):
         # if len(images) > 0:
         #     im_stack = np.asarray(images)
         # im_stack = tf.imread(tiff_path)
-        im_stack = skio.imread(tiff_path, plugin='pil')
+        try:
+            stack = []
+            with tf.TiffFile(tiff_path) as tif:
+                for page in tif.pages:
+                    image = page.asarray()
+                    stack.append(image)
+            im_stack = np.array(stack)
+        except Exception as ex:
+            try:
+                im_stack = skio.imread(tiff_path, plugin='pil')
+            except Exception as ex:
+                raise ImportError('unknown error in loading tiff stack.')
 
     return im_stack
 
@@ -431,10 +442,10 @@ def make_tiff_stack(tiff_paths: list, save_as: str = None) -> np.ndarray:
 
     data = []
     for i, tif_ in enumerate(tiff_paths):
-        # from skimage import io
-        # img = io.imread(tif_, plugin='pil')
         img = ImportTiff(tiff_path=tif_)
+        # print(f'imported tif stack: {img.shape}')
         data.extend(img)
+        # print('length of data: ', len(data))
     data = np.array(data)
     print(f'\- made tiff stack: {data.shape}')
     WriteTiff(save_path=save_as, stack=data) if save_as else None
@@ -1266,8 +1277,10 @@ def get_trial_frames(clock, start, pre_frames, post_frames, paq_rate, fs=30):
 
     return frames, start_idx
 
+
 # image processing
 import cv2 as cv
+
 
 def fourierImage(img: np.ndarray):
     dft = cv.dft(np.float32(img), flags=cv.DFT_COMPLEX_OUTPUT)
@@ -1285,7 +1298,7 @@ def highPass(img: np.ndarray, fshift, filter=30):
     return img_back
 
 
-def thresholdImage(img: np.ndarray, low_threshold: int= 0, high_threshold: int=250):
+def thresholdImage(img: np.ndarray, low_threshold: int = 0, high_threshold: int = 250):
     filter_out = np.where((low_threshold > img) | (img > high_threshold))
     img[filter_out] = 0
     return img
@@ -1324,7 +1337,8 @@ def bandPass(img: np.ndarray, fshift, lowfilter=10, highfilter=3):
     return img_back
 
 
-def makeFrameAverageTiff(frames: Union[int, list, tuple], tiff_path: str = None, stack: np.ndarray = None, peri_frames: int = 100, save_dir: str = None, to_plot=False, **kwargs):
+def makeFrameAverageTiff(frames: Union[int, list, tuple], tiff_path: str = None, stack: np.ndarray = None,
+                         peri_frames: int = 100, save_dir: str = None, to_plot=False, **kwargs):
     """Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from either the provided tiff_path or the stack array.
     """
 
@@ -1332,15 +1346,19 @@ def makeFrameAverageTiff(frames: Union[int, list, tuple], tiff_path: str = None,
         frames = [frames]
 
     stack = ImportTiff(tiff_path) if not stack else stack
-    
+
     imgs = []
     for idx, frame in enumerate(frames):
         # im_batch_reg = tf.imread(tif_path, key=range(0, self.output_ops['batch_size']))
 
-        if 0 > frame - peri_frames // 2: peri_frames_low = frame
-        else: peri_frames_low = peri_frames // 2
-        if stack.shape[0] < frame + peri_frames // 2: peri_frames_high = stack.shape[0] - frame
-        else: peri_frames_high = peri_frames // 2
+        if 0 > frame - peri_frames // 2:
+            peri_frames_low = frame
+        else:
+            peri_frames_low = peri_frames // 2
+        if stack.shape[0] < frame + peri_frames // 2:
+            peri_frames_high = stack.shape[0] - frame
+        else:
+            peri_frames_high = peri_frames // 2
         im_sub_reg = stack[frame - peri_frames_low: frame + peri_frames_high]
 
         avg_sub = np.mean(im_sub_reg, axis=0)
