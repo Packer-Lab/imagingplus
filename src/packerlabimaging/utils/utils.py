@@ -224,6 +224,7 @@ def ImportTiff(tiff_path, frames: Union[tuple, list, int] = None):
                     image = page.asarray()
                     stack.append(image)
             im_stack = np.array(stack)
+            if len(im_stack) == 1: im_stack = im_stack[0]
         except Exception as ex:
             try:
                 im_stack = skio.imread(tiff_path, plugin='pil')
