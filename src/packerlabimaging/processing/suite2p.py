@@ -767,14 +767,20 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
             start = (curr_trial_frames[0] + frameNum[0]) // batch_size
             end = (curr_trial_frames[0] + frameNum[1]) // batch_size
 
+            if start == end:  # i.e. if the frames selected for crop are in the same batch .tif
+                stacks = [start]
+                last_tiff_offset = int(batch_size * start - (curr_trial_frames[0] + frameNum[1]))
+            else:
+                stacks = range(int(start), int(end))
+                last_tiff_offset = int((curr_trial_frames[0] + frameNum[1]) % batch_size)
+
             reg_tif_list = os.listdir(reg_tif_folder)
             reg_tif_list.sort()
             tif_list = [file for file in reg_tif_list if '.tif' in file]
 
-            tiff_paths_list = [reg_tif_folder + tif_list[i] for i in range(int(start), int(end))]
+            tiff_paths_list = [reg_tif_folder + tif_list[i] for i in stacks]
 
-            first_tiff_offset = int(curr_trial_frames[0] - (start * batch_size))
-            last_tiff_offset = int(curr_trial_frames[1] % batch_size)
+            first_tiff_offset = int(curr_trial_frames[0] + frameNum[0] - (start * batch_size))
 
             print(tiff_paths_list, first_tiff_offset, last_tiff_offset)
             return tiff_paths_list, first_tiff_offset, last_tiff_offset
