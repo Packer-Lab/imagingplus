@@ -59,6 +59,10 @@ class SingleImage:
         self.data = ImportTiff(self.dataPath)
 
     def plotImg(self, **kwargs):
+        """
+TODO fill documentation and add parameters
+        :param kwargs:
+        """
         from packerlabimaging.plotting.plotting import SingleFrame
         SingleFrame(imstack=self.data, **kwargs)
 
@@ -118,7 +122,10 @@ class Experiment:
             return f"{__return_information}\n"
 
     def _get_save_location(self):
-        """specify location to create pickled experiment object."""
+        """specify location to create pickled experiment object.
+        TODO add parameters
+        :return:
+        """
         if self.saveDir[-4:] == '.pkl':
             _pkl_path = self.saveDir
             self.saveDir = self.saveDir[
@@ -131,6 +138,11 @@ class Experiment:
         return _pkl_path
 
     def get_trial_infor(self, trialID: str):
+        """
+TODO fill documentation and add parameters
+        :param trialID:
+        :return:
+        """
         if trialID in [*self.TrialsInformation]:
             return f"\n\t{trialID}: {self.TrialsInformation[trialID]['expGroup']}"
         else:
@@ -156,7 +168,7 @@ class Experiment:
     def add_trial(self, trialID, trialobj=None, **kwargs):
         """
         Add trial object to the experiment. This will add metainformation about the trial to the experiment.
-
+TODO fill add parameters
         :param trialID:
         :param trialobj: ImagingTrial instance.
         """
@@ -177,34 +189,49 @@ class Experiment:
 
     def add_single(self, singleimg: SingleImage, **kwargs):
         """
-
+TODO fill documentation and add parameters
         :param singleimg:
         :param kwargs:
         """
         setattr(self, singleimg.imgID, singleimg)
 
     def combine_trials(self):
-        """todo: Combine anndata table of trials with same cells."""
+        """todo: Combine anndata table of trials with same cells.
+        """
 
     @property
     def trialIDs(self):
+        """
+TODO fill documentation and add parameters
+        :return:
+        """
         return [*self.TrialsInformation]
 
     @staticmethod
     def tiff_path_dir(tiff_path):
-        """retrieve the parent directory of the provided tiff_path"""
+        """retrieve the parent directory of the provided tiff_path
+        TODO add parameters
+        :param tiff_path:
+        :return:
+        """
         return os.path.dirname(tiff_path)
         # return tiff_path[:[(s.start(), s.end()) for s in re.finditer('/', tiff_path)][-1][
         #     0]]  # this is the directory where the Bruker xml files associated with the 2p imaging TIFF are located
 
     @property
     def pkl_path(self):
-        """path in Analysis folder to save pkl object"""
+        """path in Analysis folder to save pkl object
+        :return:
+        """
         return self._pkl_path
 
     # noinspection PyAttributeOutsideInit
     @pkl_path.setter
     def pkl_path(self, path: str):
+        """
+TODO fill documentation and add parameters
+        :param path:
+        """
         self._pkl_path = path
 
     def save_pkl(self, pkl_path: str = None):
@@ -222,12 +249,15 @@ class Experiment:
         print(f"\n\t|- Experiment analysis object saved to {self.pkl_path} -- ")
 
     def save(self):
+        """
+TODO fill documentation
+        """
         self.save_pkl()
 
     def load_trial(self, trialID: str):
         """
         method for importing individual trial objects from Experiment instance using the trial id for a given trial
-
+TODO add parameters
         :param trialID:
         :return:
 
@@ -300,6 +330,10 @@ class Experiment:
 
     @property
     def suite2p_save_path(self):
+        """
+TODO fill documentation
+        :return:
+        """
         return self._suite2p_save_path
 
 
@@ -354,7 +388,7 @@ class ImagingTrial:
     def newImagingTrialfromExperiment(cls, experiment: Experiment, trialID, dataPath, date, comment=''):
         """
         Creates a new ImagingTrial from an Experiment.
-
+TODO fill add parameters
         :param trialID:
         :param dataPath:
         :param date:
@@ -395,14 +429,22 @@ class ImagingTrial:
     #     return self.metainfo['trialID']
 
     def frameNum(self, time):
-        """use the temporally captured frame timing signals to calculate and return frame number of time point (in imaging series time)"""
+        """use the temporally captured frame timing signals to calculate and return frame number of time point (in imaging series time)
+        TODO add parameters
+        :param time:
+        :return:
+        """
         # subtract the timestamp of the desired frame from the first frame clock timestamp, and convert to secs.
         time_stamp = time * self.tmdata.sampling_rate
         frame_num = findClosest(self.tmdata.frame_times, self.tmdata.frame_times[0] + time_stamp)[1]
         return int(frame_num)
 
     def timePoint(self, frame):
-        """use the temporally captured frame timing signals to calculate and return timepoint of frame (in imaging series time)"""
+        """use the temporally captured frame timing signals to calculate and return timepoint of frame (in imaging series time)
+        TODO add parameters
+        :param frame:
+        :return:
+        """
         # subtract the timestamp of the desired frame from the first frame clock timestamp, and convert to secs.
         frame_time = (self.tmdata.frame_times[frame] - self.tmdata.frame_times[0]) / self.tmdata.sampling_rate
         return np.round(frame_time, 5)
@@ -414,6 +456,10 @@ class ImagingTrial:
 
     @property
     def t_series_name(self):
+        """
+TODO fill documentation
+        :return:
+        """
         if "expID" in self.metainfo.keys() and "trialID" in self.metainfo.keys():
             return f'{self.metainfo["expID"]} {self.metainfo["trialID"]}'
         else:
@@ -431,6 +477,10 @@ class ImagingTrial:
 
     @pkl_path.setter
     def pkl_path(self, path: str):
+        """
+TODO fill documentation and add parameters
+        :param path:
+        """
         self.metainfo['paths']['pkl_path'] = path
 
     def save_pkl(self, pkl_path: str = None):
@@ -474,7 +524,11 @@ class ImagingTrial:
         return stack
 
     def addImagingMetadata(self, microscope: str = '', imaging_metadata: ImagingMetadata = None):
-        """Add the imaging metadata submodule to the current ImagingTrial."""
+        """Add the imaging metadata submodule to the current ImagingTrial.
+        TODO add parameters
+        :param microscope:
+        :param imaging_metadata:
+        """
         # imaging metadata
         if 'Bruker' in microscope:
             from packerlabimaging.processing.imagingMetadata import PrairieViewMetadata
@@ -489,6 +543,7 @@ class ImagingTrial:
     @property
     def n_frames(self):
         """number of imaging frames from tiff cellsdata.
+        :return:
         """
         return self._n_frames
 
@@ -532,6 +587,10 @@ class ImagingTrial:
     def create_anndata(self, imdata_type: str = None, layers=False):
         """
         Creates annotated cellsdata (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial.
+        TODO add parameters
+        :param imdata_type:
+        :param layers:
+        :return:
 
         """
         if not self.imdata and self.cells and self.tmdata:
@@ -571,7 +630,7 @@ class ImagingTrial:
     def collectSignalFromCoords(tiff_paths: Union[tuple, list], target_coords_masks: np.ndarray):
         """
         Collect average signal from target mask areas from provided tiffs.
-
+TODO add parameters
         :param tiff_paths:
         :param target_coords_masks:
         :return:
@@ -614,7 +673,12 @@ class ImagingTrial:
     @staticmethod
     def normalize_dff(arr, threshold_pct=20, threshold_val=None):
         """normalize given array (cells x time) to the mean of the fluorescence values below given threshold. Threshold
-        will refer to the that lower percentile of the given trace."""
+        will refer to the that lower percentile of the given trace.
+        TODO add parameters
+        :param arr:
+        :param threshold_pct:
+        :param threshold_val:
+        :return: """
 
         if arr.ndim == 1:
             if threshold_val is None:

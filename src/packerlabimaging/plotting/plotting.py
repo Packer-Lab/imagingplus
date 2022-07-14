@@ -27,7 +27,11 @@ from packerlabimaging.utils.classes import ObjectClassError
 
 @plotting_decorator(figsize=(6, 6))
 def plotImg(img: np.ndarray, **kwargs):
-    """plot image in grayscale."""
+    """plot image in grayscale.
+    TODO add parameters
+    :param img:
+    :param kwargs:
+    """
     assert img.ndim == 2, 'img to plot must only have 2 dimensions.'
     fig, ax = kwargs['fig'], kwargs['ax']
     ax.imshow(img, cmap='gray')
@@ -145,6 +149,8 @@ def plot_flu_trace(trialobj: TwoPhotonImaging, cell, to_plot='raw', **kwargs):
     """
     plot individual cell's flu or dFF trace, with photostim. timings for that cell
 
+TODO add parameters
+
     :param trialobj: trialobject to plot
     :param cell:
     :param to_plot:
@@ -183,6 +189,7 @@ def plot_flu_trace(trialobj: TwoPhotonImaging, cell, to_plot='raw', **kwargs):
 def plot__channel(tmdata: TemporalData, channel: str, **kwargs):
     """
     Plot the stored signal from the specified channel from a PaqData submodule.
+    TODO add parameters
 
     :param paqData: .Paq submodule cellsdata
     :param channel:
@@ -222,9 +229,16 @@ def MeanProject(tiff_path: str = None, frames: tuple = None, save_path: str = No
     Creates, plots and (optionally) saves an average image of the loaded tiff. If frames are provided, tiff is cropped to those frames.
 
     Note: saves as 8-bit grayscale image.
+TODO  add parameters
 
-    :param frames:
+    :param tiff_path:
+    :param save_path:
+    :param plot:
+    :param imstack:
+    :param kwargs:
     :return:
+    :param frames:
+
     """
 
     if imstack is None and tiff_path is not None:
@@ -283,8 +297,16 @@ def MaxProject(tiff_path: str = None, frames: tuple = None, save_path: str = Non
 
     Note: saves as 8-bit grayscale image.
 
-    :param frames:
+TODO add parameters
+
+    :param tiff_path:
+    :param save_path:
+    :param plot:
+    :param imstack:
+    :param kwargs:
     :return:
+    :param frames:
+
     """
 
     if imstack is None and tiff_path is not None:
@@ -343,9 +365,16 @@ def StdevProject(tiff_path: str = None, frames: tuple = None, save_path: str = N
     Creates, plots and (optionally) saves an average image of the loaded tiff. If frames are provided, tiff is cropped to those frames.
 
     Note: saves as 8-bit grayscale image.
+TODO  add parameters
 
-    :param frames:
+    :param tiff_path:
+    :param save_path:
+    :param plot:
+    :param imstack:
+    :param kwargs:
     :return:
+    :param frames:
+
     """
 
     if imstack is None and tiff_path is not None:
@@ -397,6 +426,13 @@ def StdevProject(tiff_path: str = None, frames: tuple = None, save_path: str = N
 
 
 def InspectTiff(tiff_path: str = None, frames: tuple = None, imstack: np.ndarray = None, **kwargs):
+    """
+TODO fill documentation and add parameters
+    :param tiff_path:
+    :param frames:
+    :param imstack:
+    :param kwargs:
+    """
     if imstack is None and tiff_path is not None:
         # read tiff
         print(f'\t\- Creating projections from tiff: {tiff_path}')
@@ -428,6 +464,7 @@ def FrameAverage(key_frames: Union[int, list], tiff_path: str = None, imstack: n
                  peri_frames: int = 100, save_path: str = None, plot=True, **kwargs):
     """
     Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from a multipage imaging TIFF file.
+TODO add parameters
 
     :param tiff_path:
     :param key_frames:
@@ -540,6 +577,7 @@ def SingleFrame(tiff_path: str = None, frame_num: int = 0, title: str = None, im
 @plotting_decorator(figsize=(10, 3))
 def plotMeanFovFluTrace(trialobj: TwoPhotonImaging, **kwargs):
     """make plot of mean Ca trace averaged over the whole FOV
+TODO add parameters
 
     :param trialobj:
     :param kwargs:
@@ -575,6 +613,7 @@ def plot_photostim_traces_overlap(array, trialobj: AllOpticalTrial, exclude_id: 
                                   title='',
                                   x_axis='Time (seconds)', **kwargs):
     """
+    TODO fill documentation and add parameters
     :param array:
     :param trialobj:
     :param exclude_id:
@@ -631,7 +670,7 @@ def plot_photostim_traces_overlap(array, trialobj: AllOpticalTrial, exclude_id: 
 
 def plot_s2p_raw(trialobj, cell_id):
     """
-
+TODO fill documentation and add parameters
     :param trialobj:
     :param cell_id:
     """
@@ -648,7 +687,7 @@ def plot_s2p_raw(trialobj, cell_id):
 def plot_photostim_traces(array, trialobj: AllOpticalTrial, title='', y_min=None, y_max=None, x_label=None,
                           y_label=None, save_fig=None, **kwargs):
     """
-
+TODO fill documentation and add parameters
     :param array:
     :param trialobj:
     :param title:
@@ -698,6 +737,20 @@ def plot_photostim_traces(array, trialobj: AllOpticalTrial, title='', y_min=None
 @plotting_decorator(figsize=(5, 5.5))
 def plot_periphotostim_avg2(dataset, fps=None, legend_labels=None, colors=None, avg_with_std=False,
                             title='high quality plot', pre_stim_sec=None, ylim=None, fig=None, ax=None, **kwargs):
+    """
+TODO fill documentation and add parameters
+    :param dataset:
+    :param fps:
+    :param legend_labels:
+    :param colors:
+    :param avg_with_std:
+    :param title:
+    :param pre_stim_sec:
+    :param ylim:
+    :param fig:
+    :param ax:
+    :param kwargs:
+    """
     # if 'fig' in kwargs.keys():
     #     fig = kwargs['fig']
     #     ax = kwargs['ax']
