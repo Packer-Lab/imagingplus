@@ -304,9 +304,9 @@ def dataplot_ax_options(ax, **kwargs):
                     labels = list(np.arange(kwargs['xlims'][0], kwargs['xlims'][1], x_tick_secs)) if (kwargs['xlims'][1] - kwargs['xlims'][0]) > x_tick_secs else list(np.arange(kwargs['xlims'][0], kwargs['xlims'][1]))
                 else:
                     x_tick_secs = 30 if 'x_tick_secs' not in [*kwargs] else kwargs['x_tick_secs']
-                    start, end = 0, ax.get_xticks()[-2]
+                    start, end = 0, ax.get_xlim()[1]
                     labels = list(
-                        range(int(start // kwargs['collection_hz']), int(end // kwargs['collection_hz']), x_tick_secs))
+                        range(0, int(end // kwargs['collection_hz']), x_tick_secs))
 
                 x_tick_locations = [(label * kwargs['collection_hz']) for label in labels]
                 ax.set_xticks(ticks=x_tick_locations)

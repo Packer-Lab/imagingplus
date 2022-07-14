@@ -85,10 +85,16 @@ class TemporalData:
         sparse_data = {}
         for idx, chan in enumerate(self.channels):
             print(f'\t\t\- Adding sparse tmdata for channel: {chan} ')
-            data = self.data.loc[frame_times, chan]
+            try:
+                data = self.data.loc[frame_times, chan]
+            except ValueError:
+                # assert self.crop_offset_time == 0, 'not able to collect sparse data from cropped data.'
+                frame_idxs = np.searchsorted(self.data.index.to_numpy(), self.frame_times)
+                data = self.data.iloc[frame_idxs, idx]
             sparse_data[chan] = data
 
         sparse_data = pd.DataFrame(sparse_data)
+        print(f"\t|- Collected sparse data:  {sparse_data.shape} ... ")
 
         return sparse_data
 
