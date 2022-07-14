@@ -294,22 +294,21 @@ def dataplot_ax_options(ax, **kwargs):
         if 'ylims' in [*kwargs]: ax.set_ylim([ylim for ylim in kwargs['ylims']])
 
         # set x_axis label
-        # change x-axis to time (secs) if time is requested
         if 'x_axis' in [*kwargs]:
             x_axis = kwargs['x_axis']
+            # change x-axis to time (secs) if time is requested
             if ('time' in x_axis or 'Time' in x_axis) and 'collection_hz' in [*kwargs]:
-                if 'xlims' in [*kwargs]: ax.set_xlim([xlim * kwargs['collection_hz'] for xlim in kwargs['xlims']])
-                x_tick_secs = 30 if 'x_tick_secs' not in [*kwargs] else kwargs['x_tick_secs']
-                # change x axis ticks to the appropriate interval
-                # labels = list(range(0, int(data_length // kwargs['collection_hz']), x_tick_secs))
-
-                start, end = ax.get_xticks()[0], ax.get_xticks()[-2]
-                labels = list(
-                    range(int(start // kwargs['collection_hz']), int(end // kwargs['collection_hz']), x_tick_secs))
+                if 'xlims' in [*kwargs]:
+                    ax.set_xlim([xlim * kwargs['collection_hz'] for xlim in kwargs['xlims']])
+                    x_tick_secs = int((kwargs['xlims'][1] - kwargs['xlims'][0]) // 2) if 'x_tick_secs' not in [*kwargs] else kwargs['x_tick_secs']
+                    labels = list(np.arange(kwargs['xlims'][0], kwargs['xlims'][1], x_tick_secs)) if (kwargs['xlims'][1] - kwargs['xlims'][0]) > x_tick_secs else list(np.arange(kwargs['xlims'][0], kwargs['xlims'][1]))
+                else:
+                    x_tick_secs = 30 if 'x_tick_secs' not in [*kwargs] else kwargs['x_tick_secs']
+                    start, end = 0, ax.get_xticks()[-2]
+                    labels = list(
+                        range(int(start // kwargs['collection_hz']), int(end // kwargs['collection_hz']), x_tick_secs))
 
                 x_tick_locations = [(label * kwargs['collection_hz']) for label in labels]
-                # print('labels: ', labels)
-                # print('x tick locs: ', x_tick_locations)
                 ax.set_xticks(ticks=x_tick_locations)
 
                 ax.set_xticklabels(labels)

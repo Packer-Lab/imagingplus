@@ -349,7 +349,6 @@ class ImagingTrial:
             self.create_anndata()
 
     def __repr__(self):
-        # todo test repr
         return repr(f"{self.t_series_name} (ImagingTrial)")
 
     # todo maybe ? - add alternative constructor to handle construction if temporal cellsdata or cell annotations or imaging cellsdata is provided
@@ -406,8 +405,13 @@ class ImagingTrial:
         return int(frame_num)
 
     def timePoint(self, frame):
-        """use the temporally captured frame timing signals to calculate and return timepoint of frame (in imaging series time)"""
+        """Return the time (secs) at input frame number. Uses the temporally captured frame timing signals to calculate and return timepoint of frame (in imaging series time).
+
+        :return time (secs) at given imaging series frame
+        """
         # subtract the timestamp of the desired frame from the first frame clock timestamp, and convert to secs.
+        assert hasattr(self.tmdata, 'frame_times'), 'cannot retrieve frame timepoint without `frame_times` defined in .tmdata'
+        assert frame in range(0, len(self.tmdata.frame_times)), 'frame not in indexes of frame times'
         frame_time = (self.tmdata.frame_times[frame] - self.tmdata.frame_times[0]) / self.tmdata.sampling_rate
         return np.round(frame_time, 5)
 

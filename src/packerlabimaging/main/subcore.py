@@ -74,8 +74,6 @@ class TemporalData:
         :return:
         """
 
-        # todo insert test to check that original signal has been collected at a rate higher than imaging. if not then need to handle differently.
-
         assert hasattr(self,
                        'frame_times') or frame_times, 'no frame_times given to retrieve cellsdata from those timestamps.'
 
