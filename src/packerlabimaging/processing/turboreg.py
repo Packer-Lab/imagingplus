@@ -8,7 +8,7 @@ from packerlabimaging.main.core import ImagingTrial
 from pystackreg import StackReg
 from skimage import io
 
-from packerlabimaging.utils.utils import ImportTiff
+from packerlabimaging.utils.images import ImportTiff
 
 
 def run__turboreg(stack_path, type: str, **kwargs):

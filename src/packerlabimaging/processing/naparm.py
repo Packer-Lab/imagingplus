@@ -8,7 +8,8 @@ import os
 import numpy as np
 import xml.etree.ElementTree as ET
 
-from packerlabimaging.utils.utils import path_finder, points_in_circle_np, ImportTiff
+from packerlabimaging.utils.utils import path_finder, points_in_circle_np
+from packerlabimaging.utils.images import ImportTiff
 
 
 @dataclass

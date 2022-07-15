@@ -13,7 +13,7 @@ from suite2p import run_s2p
 import tifffile as tf
 
 from packerlabimaging.utils.classes import UnavailableOptionError
-from packerlabimaging.utils.utils import make_tiff_stack, WriteTiff, ImportTiff, SaveDownsampledTiff
+from packerlabimaging.utils.images import ImportTiff, SaveDownsampledTiff, WriteTiff, make_tiff_stack
 
 # TEMP VARIABLES FOR DEVELOPMENT USAGES
 N_PLANES = 1

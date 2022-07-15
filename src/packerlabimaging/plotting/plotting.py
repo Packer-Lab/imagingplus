@@ -14,7 +14,8 @@ from packerlabimaging.workflows.TwoPhotonImaging import TwoPhotonImaging
 
 from packerlabimaging import Experiment
 from packerlabimaging.main.subcore import TemporalData
-from packerlabimaging.utils.utils import save_to_csv, ImportTiff
+from packerlabimaging.utils.utils import save_to_csv
+from packerlabimaging.utils.images import ImportTiff
 
 from packerlabimaging.workflows.AllOptical import AllOpticalTrial
 

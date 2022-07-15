@@ -15,6 +15,7 @@ from ._version import __version__
 from .utils.io import import_obj
 from packerlabimaging.main.core import SingleImage
 from packerlabimaging.utils import utils
+from packerlabimaging.utils import images
 from packerlabimaging.main.core import Experiment
 from packerlabimaging.workflows.TwoPhotonImaging import TwoPhotonImaging
 from packerlabimaging.workflows.AllOptical import AllOpticalTrial

@@ -12,7 +12,7 @@ import tifffile as tf
 
 # grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)
 from packerlabimaging.processing.imagingMetadata import PrairieViewMetadata, ImagingMetadata
-from packerlabimaging.utils.utils import SaveDownsampledTiff
+from packerlabimaging.utils.images import SaveDownsampledTiff
 from packerlabimaging.utils.classes import UnavailableOptionError, PaqInfo
 from packerlabimaging._archive.paq import PaqData
 from packerlabimaging.processing import anndata as ad
