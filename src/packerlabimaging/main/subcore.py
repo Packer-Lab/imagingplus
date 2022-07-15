@@ -50,24 +50,6 @@ class TemporalData:
         """
         return self.data.shape[1]
 
-    # @property
-    # def sparse_data(self):
-    #     assert hasattr(self, 'frame_times'), 'no frame_times given to retrieve cellsdata from those timestamps.'
-    #
-    #     frame_times = self.frame_times
-    #
-    #     print(f"\n\t\- Getting imaging key frames timed cellsdata from {len(frame_times)} frames ... ")
-    #
-    #     # read in and save sparse version of all tmdata channels (only save tmdata from timepoints at frame clock times)
-    #     sparse_data = {}
-    #     for idx, chan in enumerate(self.channels):
-    #         print(f'\t\t\- Adding sparse tmdata for channel: {chan} ')
-    #         data = self.data.loc[frame_times, chan]
-    #         sparse_data[chan] = data
-    #
-    #     sparse_data = pd.DataFrame(sparse_data)
-    #
-    #     return sparse_data
 
     def get_sparse_data(self, frame_times: Union[list, np.ndarray] = None):
         """
