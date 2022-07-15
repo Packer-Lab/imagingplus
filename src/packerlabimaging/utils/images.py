@@ -13,9 +13,7 @@ from skimage import io as skio
 def ZProfile(movie, area_center_coords: tuple = None, area_size: int = -1, plot_trace: bool = True,
              plot_image: bool = True, plot_frame: int = 1, vasc_image: np.array = None, **kwargs):
     """
-    from Sarah Armstrong
-
-    Plot a z-profile of a movie, averaged over space inside a square area
+    Plot a z-profile of a movie, averaged over space inside a square area. by S. Armstrong.
 
     :param movie: can be np.array of the TIFF stack or a tiff path from which it is read in
     :param area_center_coords: coordinates of pixel at center of box (x,y)
@@ -198,6 +196,30 @@ def bandPass(img: np.ndarray, fshift, lowfilter=10, highfilter=3):
 
     return img_back
 
+def z_score_img(key_image: np.ndarray, mean_img: np.ndarray = None, std_img: np.ndarray = None, normal_img_stack: np.ndarray = None, plot: bool = False):
+    """
+    z-score normalization of the input key_image to the input mean img and std img, or to image stack provided in normal_img_stack.
+
+    :param key_image: input image
+    :param mean_img: input mean image
+    :param std_img: input std image
+    :param normal_img_stack: input stack of images to normalize the key image to.
+    :return:
+    """
+    if not mean_img or not std_img:
+        assert normal_img_stack is not None, 'must provide normal_img_stack to use as baseline to z-normalize to.'
+        assert normal_img_stack.shape[0] > 1, 'normal_img_stack must be a stack of 2-D arrays.'
+        mean_img = np.mean(normal_img_stack, axis=0)
+        std_img = np.std(normal_img_stack, axis=0)
+        assert key_image.shape == mean_img.shape == std_img.shape, 'Shape of img must match mean_img and std_img'
+    else:
+        assert key_image.shape == mean_img.shape == std_img.shape, 'Shape of img must match mean_img and std_img'
+
+    z_scored = (key_image - mean_img) / std_img
+    if plot: plt.imshow(z_scored, cmap='bwr'), plt.colorbar(), plt.show()
+    return z_scored
+
+
 def makeFrameAverageTiff(frames: Union[int, list, tuple], tiff_path: str = None, stack: np.ndarray = None,
                          peri_frames: int = 100, save_dir: str = None, to_plot=False, **kwargs):
     """Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from either the provided tiff_path or the stack array.
@@ -367,7 +389,7 @@ def WriteTiff(save_path, stack: np.array):
 
 def make_tiff_stack(tiff_paths: list, save_as: str = None) -> np.ndarray:
     """
-    read in a bunch of tiffs and stack them together, and save the output as the save_as
+    Read in a bunch of tiffs and stack them together, and save the output as the save_as
 
     :param tiff_paths:
     :return:
@@ -392,3 +414,4 @@ def make_tiff_stack(tiff_paths: list, save_as: str = None) -> np.ndarray:
     print(f'\- made tiff stack: {data.shape}')
     WriteTiff(save_path=save_as, stack=data) if save_as else None
     return data
+
