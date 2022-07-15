@@ -31,17 +31,23 @@ class TemporalData:
 
     @property
     def n_frames(self):
-        """number of timed imaging frames"""
+        """number of timed imaging frames
+        :return:
+        """
         return len(self.frame_times)
 
     @property
     def n_timepoints(self):
-        """number of cellsdata collection timepoints"""
+        """number of cellsdata collection timepoints
+        :return:
+        """
         return self.data.shape[0]
 
     @property
     def n_channels(self):
-        """number of cellsdata collection channels"""
+        """number of cellsdata collection channels
+        :return:
+        """
         return self.data.shape[1]
 
     # @property
@@ -69,7 +75,7 @@ class TemporalData:
             - why not just use a downsampling algorithm to downsample to the same frame rate and num datapoints as the imaging key_frames????
         Returns dictionary of numpy array keyed on channels from paq_data timed to 2photon imaging frame_times.
         In effect this works as a downsampling algorithm.
-
+TODO add parameters
         :param frame_times:
         :return:
         """
@@ -173,19 +179,25 @@ class CellAnnotations:
     # properties:
     @property
     def n_cells(self):
-        """number of cells"""
+        """number of cells
+        :return:
+        """
         return len(self.cells_array)
 
     @property
     def n_annotations(self):
-        """number of annotations"""
+        """number of annotations
+        :return:
+        """
         return len(self.annotations)
 
     # todo ?create properties for accessing individual annotations
 
     @property
     def cell_id(self):
-        """ID of cells"""
+        """ID of cells
+        :return:
+        """
         assert 'cell_id' in self.cellsdata, 'cell_id cannot be found in cells annotations under cellsdata'
         return list(self.cellsdata['cell_id'])
 
@@ -210,12 +222,16 @@ class ImagingData:
 
     @property
     def n_frames(self):
-        """number of imaging frames in imaging cellsdata"""
+        """number of imaging frames in imaging cellsdata
+        :return:
+        """
         return self.imdata.shape[1]
 
     @property
     def n_rois(self):
-        """number of ROIs in imaging cellsdata"""
+        """number of ROIs in imaging cellsdata
+        :return:
+        """
         return self.imdata.shape[0]
 
 

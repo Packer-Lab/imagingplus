@@ -34,6 +34,10 @@ terms_dictionary = {
 
 
 def define_term(x: str):
+    """
+    TODO fill documentation and add parameters
+    :param x:
+    """
     try:
         print(f"{x}:\t{terms_dictionary[x]}") if type(x) is str else print(
             'ERROR: please provide a string object as the key')
@@ -43,7 +47,11 @@ def define_term(x: str):
 
 # report sizes of variables
 def _sizeof_fmt(num, suffix='B'):
-    """ by Fred Cirera,  https://stackoverflow.com/a/1094933/1870254, modified"""
+    """ by Fred Cirera,  https://stackoverflow.com/a/1094933/1870254, modified
+    :param num:
+    :param suffix:
+    :return:
+    """
     for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
         if abs(num) < 1024.0:
             return "%3.1f %s%s" % (num, unit, suffix)
@@ -53,22 +61,39 @@ def _sizeof_fmt(num, suffix='B'):
 
 # report sizes of variables
 def print_size_of(var):
+    """
+TODO fill explanation
+    :param var:
+    """
     print(_sizeof_fmt(sys.getsizeof(var)))
 
 
 # report sizes of variables
 def print_size_vars():
+    """
+TODO fill explanation
+    """
     for name, size in sorted(((name, sys.getsizeof(value)) for name, value in locals().items()),
                              key=lambda x: -x[1])[:10]:
         print("{:>30}: {:>8}".format(name, _sizeof_fmt(size)))
 
 
 def return_parent_dir(file_path: str):
+    """
+TODO fill explanation
+    :param file_path:
+    :return:
+    """
     return os.path.dirname(file_path)  # todo replace instance usages of return_parent_dir with os.path.dirname
     # return file_path[:[(s.start(), s.end()) for s in re.finditer('/', file_path)][-1][0]]
 
 
 def save_figure(fig, save_path_full: str = None):
+    """
+TODO fill explanation
+    :param fig:
+    :param save_path_full:
+    """
     print(f'\n\- saving figure to: {save_path_full}', end="\r")
     os.makedirs(os.path.dirname(save_path_full), exist_ok=True)
     fig.savefig(save_path_full)
@@ -78,7 +103,7 @@ def save_figure(fig, save_path_full: str = None):
 def save_to_csv(df: pd.DataFrame, savepath: Path = None):
     """
     Save pandas dataframe to csv at savepath.
-
+TODO fill parameters
     :param df:
     :param savepath:
     """
@@ -91,11 +116,10 @@ def save_to_csv(df: pd.DataFrame, savepath: Path = None):
 def filterDfBoolCol(df, true_cols=[], false_cols=[]):
     '''Filter indices in a pandas dataframe using logical operations
     on columns with Boolean values
-    
-    Inputs:
-        df         -- dataframe
-        true_cols  -- columns where True should be filtered
-        false_cols -- columns where False should be filtered
+
+        :param df:         -- dataframe
+        :param true_cols:  -- columns where True should be filtered
+        :param false_cols: -- columns where False should be filtered
     
     Outputs:
         indices of the dataframe where the logical operation is true
@@ -117,7 +141,12 @@ def filterDfBoolCol(df, true_cols=[], false_cols=[]):
 
 
 def findClosest(arr, input):
-    """find the closest value in a list to the given input"""
+    """find the closest value in a list to the given input
+    TODO fill paramaters
+    :param arr:
+    :param input:
+    :return:
+    """
     if type(arr) == list:
         arr = np.array(arr)
     subtract = arr - input
@@ -133,6 +162,7 @@ def findClosest(arr, input):
 def moving_average(arr, n=4):
     """
     calculates average over sliding window for an array
+    TODO add parameters
     :param arr:
     :param n:
     :return:
@@ -149,6 +179,11 @@ def path_finder(umbrella, *args, is_folder=False):
     containing the string names in each arg
     is_folder = False if args is ls of files
     is_folder = True if  args is ls of folders
+    TODO add parameters
+    :param umbrella:
+    :param args:
+    :param is_folder:
+    :return:
     '''
     # ls of bools, has the function found each argument?
     # ensures two folders / files are not found
@@ -187,6 +222,12 @@ def path_finder(umbrella, *args, is_folder=False):
 
 
 def points_in_circle_np(radius, x0=0, y0=0):
+    """
+TODO fill explanation and add parameters
+    :param radius:
+    :param x0:
+    :param y0:
+    """
     x_ = np.arange(x0 - radius - 1, x0 + radius + 1, dtype=int)
     y_ = np.arange(y0 - radius - 1, y0 + radius + 1, dtype=int)
     x, y = np.where((x_[:, np.newaxis] - x0) ** 2 + (y_ - y0) ** 2 <= radius ** 2)
@@ -199,6 +240,10 @@ def threshold_detect(signal, threshold):
     Returns indexes where the input signal reaches above threshold.
 
     lloyd russell
+    TODO add parameters
+    :param signal:
+    :param threshold:
+    :return:
     """
     thresh_signal = signal > threshold
     thresh_signal[1:][thresh_signal[:-1] & thresh_signal[1:]] = False
@@ -207,6 +252,12 @@ def threshold_detect(signal, threshold):
 
 
 def ImportTiff(tiff_path, frames: Union[tuple, list, int] = None):
+    """
+TODO fill explanation and add parameters
+    :param tiff_path:
+    :param frames:
+    :return:
+    """
     if frames and type(frames) == tuple:
         im_stack = tf.imread(tiff_path, key=range(frames[0], frames[1]))
     elif frames and type(frames) == int:
@@ -257,11 +308,17 @@ def ZProfile(movie, area_center_coords: tuple = None, area_size: int = -1, plot_
 
     Plot a z-profile of a movie, averaged over space inside a square area
 
-    movie = can be np.array of the TIFF stack or a tiff path from which it is read in
-    area_center_coords = coordinates of pixel at center of box (x,y)
-    area_size = int, length and width of the square in pixels
-    plot_frame = which movie frame to take as a reference to plot the area boundaries on
-    vasc_image = optionally include a vasculature image tif of the correct dimensions to plot the coordinates on.
+    :param movie: can be np.array of the TIFF stack or a tiff path from which it is read in
+    :param area_center_coords: coordinates of pixel at center of box (x,y)
+    :param area_size: int, length and width of the square in pixels
+    :param plot_frame: which movie frame to take as a reference to plot the area boundaries on
+    :param vasc_image: optionally include a vasculature image tif of the correct dimensions to plot the coordinates on.
+
+TODO add paramters
+    :param plot_trace:
+    :param plot_image:
+    :param kwargs:
+    :return:
     """
 
     if type(movie) is str:
@@ -341,7 +398,11 @@ def listdirFullpath(directory, string=''):
 
 
 def WriteTiff(save_path, stack: np.array):
-    """use Tifffile imwrite function to save a numpy array to tiff file"""
+    """use Tifffile imwrite function to save a numpy array to tiff file
+    TODO add parameters
+    :param save_path:
+    :param stack:
+    """
     print(f"\n\- saving array [{stack.shape}] to: {save_path}", end="\r")
     if not os.path.exists(os.path.dirname(save_path)):
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
@@ -414,6 +475,14 @@ def SaveDownsampledTiff(tiff_path: str = None, stack: np.array = None, group_by:
 
 def subselect_tiff(tiff_path: str = None, tiff_stack: np.array = None, select_frames: tuple = (0, 0),
                    save_as: str = None):
+    """
+TODO fill explanation and add parameters
+    :param tiff_path:
+    :param tiff_stack:
+    :param select_frames:
+    :param save_as:
+    :return:
+    """
     if tiff_stack is None:
         # open tiff file
         print('running subselecting tiffs')
@@ -432,6 +501,10 @@ def make_tiff_stack(tiff_paths: list, save_as: str = None) -> np.ndarray:
     """
     read in a bunch of tiffs and stack them together, and save the output as the save_as
 
+    :param tiff_paths:
+    :return:
+
+    TODO old:
     :param sorted_paths: ls of string paths for tiffs to stack
     :param save_as: .tif file path to where the tif should be saved
     """
@@ -455,6 +528,7 @@ def make_tiff_stack(tiff_paths: list, save_as: str = None) -> np.ndarray:
 
 def convert_to_8bit(img, target_type_min=0, target_type_max=255):
     """
+    TODO fill documentation and add parameters
     :param img:
     :param target_type:
     :param target_type_min:
@@ -471,7 +545,11 @@ def convert_to_8bit(img, target_type_min=0, target_type_max=255):
 
 
 def get_tiff_paths(path):
-    """finds files with .tif or .tiff within the given directory."""
+    """finds files with .tif or .tiff within the given directory.
+    TODO add parameters
+    :param path:
+    :return:
+    """
     tiff_files = []
     for file in os.listdir(path):
         if file.endswith('.tif') or file.endswith('.tiff'):
@@ -482,7 +560,11 @@ def get_tiff_paths(path):
 
 
 def read_fiji(csv_path):
-    '''reads the csv file saved through plot z axis profile in fiji'''
+    '''reads the csv file saved through plot z axis profile in fiji
+    TODO add parameters
+    :param csv_path:
+    :return:
+    '''
 
     data = []
 
@@ -497,7 +579,10 @@ def read_fiji(csv_path):
 
 
 def save_fiji(arr):
-    '''saves numpy array in current folder as fiji friendly tiff'''
+    '''saves numpy array in current folder as fiji friendly tiff
+    TODO add parameters
+    :param arr:
+    '''
     tf.imsave('Vape_array.tiff', arr.astype('int16'))
 
 
@@ -549,12 +634,21 @@ def clean_lfp_signal(paq, input_array: str, chan_name: str = 'voltage', plot=Fal
 
 
 def intersect(lst1, lst2):
+    """
+TODO fill documentation and add parameters
+    :param lst1:
+    :param lst2:
+    :return:
+    """
     return list(set(lst1) & set(lst2))
 
 
 def dfof(arr):
     '''takes 1d ls or array or 2d array and returns dfof array of same
-       dim (JR 2019) This is extraordinarily slow, use dfof2'''
+       dim (JR 2019) This is extraordinarily slow, use dfof2
+       TODO add parameters
+       :param arr:
+       :return: '''
 
     if type(arr) is list or type(arr) == np.ndarray and len(arr.shape) == 1:
         F = np.mean(arr)
@@ -578,6 +672,9 @@ def dfof2(flu):
     than the dumb one above takes input matrix flu
     (num_cells x num_frames)
     (JR 2019)
+    TODO add parameters
+    :param flu:
+    :return:
 
     '''
 
@@ -587,6 +684,11 @@ def dfof2(flu):
 
 
 def pade_approx_norminv(p):
+    """
+TODO fill documentation and add parameters
+    :param p:
+    :return:
+    """
     q = math.sqrt(2 * math.pi) * (p - 1 / 2) - (157 / 231) * math.sqrt(2) * \
         math.pi ** (3 / 2) * (p - 1 / 2) ** 3
     r = 1 - (78 / 77) * math.pi * (p - 1 / 2) ** 2 + (241 * math.pi ** 2 / 2310) * \
@@ -595,6 +697,12 @@ def pade_approx_norminv(p):
 
 
 def d_prime(hit_rate, false_alarm_rate):
+    """
+TODO fill documentation and add parameters
+    :param hit_rate:
+    :param false_alarm_rate:
+    :return:
+    """
     return pade_approx_norminv(hit_rate) - \
            pade_approx_norminv(false_alarm_rate)
 
@@ -603,6 +711,12 @@ def paq_data(paq, chan_name, threshold_ttl=False, plot=False):
     '''
     returns the cellsdata in Paq (from paq_read) from channel: chan_names
     if threshold_tll: returns sample that trigger occured on
+    TODO add parameters
+    :param paq:
+    :param chan_name:
+    :param threshold_ttl:
+    :param plot:
+    :return:
     '''
 
     chan_idx = paq['chan_names'].index(chan_name)
@@ -622,15 +736,14 @@ def paq_data(paq, chan_name, threshold_ttl=False, plot=False):
 def stim_start_frame_mat(stim_times, frames_ms, fs=5, debug_print=False):
     ''' function to replace stim_start_frames
         Inputs:
-        stim_times -- times that stim occured (same reference frame
+        :param stim_times: times that stim occured (same reference frame
                       as frames_ms
-        frames_ms -- matrix of cell frame times [num_cells x num_frames]
-        fs -- frame rate of the imaging for an inidividual plane (frames/second)
-        debug_print -- whether to print useful debugging statment about each
+        :param frames_ms: matrix of cell frame times [num_cells x num_frames]
+        :param fs: frame rate of the imaging for an inidividual plane (frames/second)
+        :param debug_print: whether to print useful debugging statment about each
                        stim and associated frame time
-        Returns:
+       :param Returns:
         stim_idxs -- matrix of frame indexes that stim occured on for each cell
-                     [num_trials x num_cells]
 
         '''
 
@@ -653,6 +766,12 @@ def stim_start_frame_mat(stim_times, frames_ms, fs=5, debug_print=False):
     for i, stim_time in enumerate(stim_times_copy):
 
         def closest_finder(arr, sorter):
+            """
+TODO fill documentation and add parameters
+            :param arr:
+            :param sorter:
+            :return:
+            """
             return np.searchsorted(
                 arr, stim_time, sorter=sorter)
 
@@ -702,6 +821,12 @@ def stim_start_frame(paq=None, stim_chan_name=None, frame_clock=None,
        unprocessed Paq.
        Or predigitised frame_times and stim_times in reference frame
        of that clock
+       TODO add parameters
+       :param paq:
+       :param stim_chan_name:
+       :param frame_clock:
+       :param stim_times:
+       :return:
 
     '''
 
@@ -724,7 +849,11 @@ def stim_start_frame(paq=None, stim_chan_name=None, frame_clock=None,
 
 def myround(x, base=5):
     '''allow rounding to nearest base number for
-       use with multiplane stack slicing'''
+       use with multiplane stack slicing
+       TODO add parameters
+       :param x:
+       :param base:
+       :return: '''
 
     return base * round(x / base)
 
@@ -732,10 +861,10 @@ def myround(x, base=5):
 def tseries_finder(tseries_lens, frame_clock, paq_rate=20000):
     ''' Finds chunks of frame clock that correspond to the tseries in
         tseries lens
-        tseries_lens -- ls of the number of frames each tseries you want
+        :param tseries_lens: ls of the number of frames each tseries you want
                         to find contains
-        frame_times  -- thresholded times each frame recorded in paqio occured
-        paq_rate     -- input sampling rate of paqio
+        :param frame_times: thresholded times each frame recorded in paqio occured
+        :param paq_rate: input sampling rate of paqio
 
         '''
 
@@ -805,12 +934,12 @@ def tseries_finder(tseries_lens, frame_clock, paq_rate=20000):
 def flu_splitter(flu, clock, t_starts, pre_frames, post_frames):
     '''Split a fluoresence matrix into trial by trial array
 
-       flu -- fluoresence matrix [num_cells x num_frames]
-       clock -- the time that each frame occured
-       t_starts -- the time each frame started
-       pre_frames -- the number of frames before t_start
+       :param flu: fluoresence matrix [num_cells x num_frames]
+       :param clock: the time that each frame occured
+       :param t_starts: the time each frame started
+       ;:param pre_frames: the number of frames before t_start
                      to include in the trial
-       post_frames --  the number of frames after t_start
+       ;:param post_frames:  the number of frames after t_start
                        to include in the trial
 
        returns
@@ -858,6 +987,15 @@ def flu_splitter(flu, clock, t_starts, pre_frames, post_frames):
 
 
 def flu_splitter2(flu, stim_times, frames_ms, pre_frames=10, post_frames=30):
+    """
+TODO fill documentation and add parameters
+    :param flu:
+    :param stim_times:
+    :param frames_ms:
+    :param pre_frames:
+    :param post_frames:
+    :return:
+    """
     stim_idxs = stim_start_frame_mat(stim_times, frames_ms, debug_print=False)
 
     stim_idxs = stim_idxs[:, np.where((stim_idxs[0, :] - pre_frames > 0) &
@@ -889,6 +1027,15 @@ def flu_splitter2(flu, stim_times, frames_ms, pre_frames=10, post_frames=30):
 
 
 def flu_splitter3(flu, stim_times, frames_ms, pre_frames=10, post_frames=30):
+    """
+TODO fill documentation and add parameters
+    :param flu:
+    :param stim_times:
+    :param frames_ms:
+    :param pre_frames:
+    :param post_frames:
+    :return:
+    """
     stim_idxs = stim_start_frame_mat(stim_times, frames_ms, debug_print=False)
 
     # not 100% sure about this line, keep an eye
@@ -951,6 +1098,10 @@ def closest_frame_before(clock, t):
     ''' returns the idx of the frame immediately preceeding
         the time t. Frame clock must be digitised and expressed
         in the same reference frame as t
+        TODO add parameters
+        :param clock:
+        :param t:
+        :return:
         '''
     subbed = np.array(clock) - t
     return np.where(subbed < 0, subbed, -np.inf).argmax()
@@ -961,6 +1112,10 @@ def closest_frame(clock, t):
         the time t. 
         Frame clock must be digitised and expressed
         in the same reference frame as t.
+        TODO add parameters
+        :param clock:
+        :param t:
+        :return:
         '''
     subbed = np.array(clock) - t
     return np.argmin(abs(subbed))
@@ -972,18 +1127,18 @@ def test_responsive(flu, frame_clock, stim_times, pre_frames=10,
         to a stimulus
 
         Inputs:
-        flu -- fluoresence matrix [n_cells x n_frames] likely dfof from suite2p
-        frame_times -- timing of the frames, must be digitised and in same
+        :param flu: fluoresence matrix [n_cells x n_frames] likely dfof from suite2p
+        :param frame_times:  timing of the frames, must be digitised and in same
                        reference frame as stim_times
-        stim_times -- times that stims to test responsiveness on occured,
+        :param stim_times: times that stims to test responsiveness on occured,
                       must be digitised and in same reference frame
                       as frame_times
-        pre_frames -- the number of frames before the stimulus occured to
+        :param pre_frames: the number of frames before the stimulus occured to
                       baseline with
-        post_frames -- the number of frames after stimulus to test differnece
+        :param post_frames: the number of frames after stimulus to test differnece
                        compared
                        to baseline
-        offset -- the number of frames to offset post_frames from the
+        :param offset: the number of frames to offset post_frames from the
                   stimulus, so don't take into account e.g. stimulus artifact
 
         Returns:
@@ -1034,12 +1189,12 @@ def build_flu_array(run, stim_times, pre_frames=10, post_frames=50,
         [n_cells x n_trials x pre_frames+post_frames]
 
         Inputs:
-        run -- BlimpImport object with attributes flu and frames_ms
-        stim_times -- times of trial start stims, should be same
+       :param run: BlimpImport object with attributes flu and frames_ms
+        ":param stim_times: times of trial start stims, should be same
                       reference frame as frames_ms
-        pre_frames -- number of frames before stim to include in
+        :param pre_frames: number of frames before stim to include in
                       trial
-        post_frames -- number of frames after stim to include
+        :param post_frames: number of frames after stim to include
                        in trial
 
         Returns:
@@ -1070,15 +1225,15 @@ def averager(array_list, pre_frames=10, post_frames=50, offset=0,
         visualise results
 
         Inputs:
-        array_list -- ls of tbt fluoresence arrays
-        pre_frames -- number of frames before stim to include in
+        :param array_list: ls of tbt fluoresence arrays
+        :param pre_frames: number of frames before stim to include in
                       trial
-        post_frames -- number of frames after stim to include
+        :param post_frames: number of frames after stim to include
                        in trial
-        offset -- number of frames to offset post_frames to avoid artifacts
-        trial_filter -- ls of trial indexs to include
-        plot -- whether to plot result
-        fs -- frame rate / plane
+        :param offset: number of frames to offset post_frames to avoid artifacts
+        :param trial_filter: ls of trial indexs to include
+        :param plot: whether to plot result
+        :param fs: frame rate / plane
 
         Returns:
         session_average -- mean array [n_sessions x pre_frames+post_frames]
@@ -1128,7 +1283,11 @@ def averager(array_list, pre_frames=10, post_frames=50, offset=0,
 
 
 def lick_binner(run):
-    ''' makes new easytest binned lick variable in run object '''
+    ''' makes new easytest binned lick variable in run object
+    TODO add parameters
+    :param run:
+    :return:
+    '''
 
     licks = run.session.times.get('lick_1')
 
@@ -1155,6 +1314,15 @@ def lick_binner(run):
 
 def prepost_diff(array_list, pre_frames=10,
                  post_frames=50, offset=0, filter_list=None):
+    """
+TODO fill documentation and add parameters
+    :param array_list:
+    :param pre_frames:
+    :param post_frames:
+    :param offset:
+    :param filter_list:
+    :return:
+    """
     n_sessions = len(array_list)
 
     if filter_list:
@@ -1175,6 +1343,16 @@ def prepost_diff(array_list, pre_frames=10,
 
 def raster_plot(arr, y_pos=1, color=np.random.rand(3, ), alpha=1,
                 marker='.', markersize=12, label=None):
+    """
+TODO fill documentation and add parameters
+    :param arr:
+    :param y_pos:
+    :param color:
+    :param alpha:
+    :param marker:
+    :param markersize:
+    :param label:
+    """
     plt.plot(arr, np.ones(len(arr)) * y_pos, marker,
              color=color, alpha=alpha, markersize=markersize,
              label=label)
@@ -1187,8 +1365,8 @@ def get_spiral_start(x_galvo, debounce_time):
     to detect spiral onsets.
     Failures should be caught by assertion at end
     Inputs:
-    x_galvo -- x_galvo signal recorded in paqio
-    debouce_time -- length of time (samples) encapulsating a whole trial
+    :param x_galvo: x_galvo signal recorded in paqio
+    :param debouce_time: length of time (samples) encapulsating a whole trial
                     ensures only spiral at start of trial is captured
     
     """
@@ -1227,7 +1405,11 @@ def get_spiral_start(x_galvo, debounce_time):
 def non_zero_smoother(arr, window_size=200):
     """ Smooths an array by changing values to the number of
         non-0 elements with window
-        
+        TODO add parameters
+        :param arr:
+        :param window_size:
+        :return:
+
         """
 
     windows = np.arange(0, len(arr), window_size)
@@ -1248,11 +1430,27 @@ def non_zero_smoother(arr, window_size=200):
 
 
 def my_floor(a, precision=0):
+    """
+TODO fill documentation and add parameters
+    :param a:
+    :param precision:
+    :return:
+    """
     # Floors to a specified number of decimal points
     return np.round(a - 0.5 * 10 ** (-precision), precision)
 
 
 def get_trial_frames(clock, start, pre_frames, post_frames, paq_rate, fs=30):
+    """
+TODO fill documentation and add parameters
+    :param clock:
+    :param start:
+    :param pre_frames:
+    :param post_frames:
+    :param paq_rate:
+    :param fs:
+    :return:
+    """
     # The frames immediately preceeding stim
     start_idx = closest_frame_before(clock, start)
     frames = np.arange(start_idx - pre_frames, start_idx + post_frames)
@@ -1278,19 +1476,28 @@ def get_trial_frames(clock, start, pre_frames, post_frames, paq_rate, fs=30):
 
     return frames, start_idx
 
-
 # image processing
 import cv2 as cv
 
-
 def fourierImage(img: np.ndarray):
+    """
+TODO fill documentation and add parameters
+    :param img:
+    :return:
+    """
     dft = cv.dft(np.float32(img), flags=cv.DFT_COMPLEX_OUTPUT)
     dft_shift = np.fft.fftshift(dft)
     return dft_shift
 
 
 def highPass(img: np.ndarray, fshift, filter=30):
-    """high pass filtering of image"""
+    """high pass filtering of image
+    TODO add parameters
+    :param img:
+    :param fshift:
+    :param filter:
+    :return:
+    """
     crow, ccol = img.shape
     fshift[crow - filter:crow + (filter + 1), ccol - filter:ccol + (filter + 1)] = 0
     f_ishift = np.fft.ifftshift(fshift)
@@ -1299,13 +1506,27 @@ def highPass(img: np.ndarray, fshift, filter=30):
     return img_back
 
 
-def thresholdImage(img: np.ndarray, low_threshold: int = 0, high_threshold: int = 250):
+def thresholdImage(img: np.ndarray, low_threshold: int= 0, high_threshold: int=250):
+    """
+TODO fill documentation and add parameters
+    :param img:
+    :param low_threshold:
+    :param high_threshold:
+    :return:
+    """
     filter_out = np.where((low_threshold > img) | (img > high_threshold))
     img[filter_out] = 0
     return img
 
 
 def lowPass(img: np.ndarray, fshift, filter=30):
+    """
+TODO fill documentation and add parameters
+    :param img:
+    :param fshift:
+    :param filter:
+    :return:
+    """
     crow, ccol = img.shape
 
     # create a mask first, center square is 1, remaining all zeros
@@ -1322,6 +1543,14 @@ def lowPass(img: np.ndarray, fshift, filter=30):
 
 
 def bandPass(img: np.ndarray, fshift, lowfilter=10, highfilter=3):
+    """
+TODO fill documentation and add parameters
+    :param img:
+    :param fshift:
+    :param lowfilter:
+    :param highfilter:
+    :return:
+    """
     crow, ccol = img.shape
 
     # create a mask first, center square is 1, remaining all zeros
@@ -1341,6 +1570,15 @@ def bandPass(img: np.ndarray, fshift, lowfilter=10, highfilter=3):
 def makeFrameAverageTiff(frames: Union[int, list, tuple], tiff_path: str = None, stack: np.ndarray = None,
                          peri_frames: int = 100, save_dir: str = None, to_plot=False, **kwargs):
     """Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from either the provided tiff_path or the stack array.
+    TODO add parameters
+    :param frames:
+    :param tiff_path:
+    :param stack:
+    :param peri_frames:
+    :param save_dir:
+    :param to_plot:
+    :param kwargs:
+    :return:
     """
 
     if type(frames) == int:

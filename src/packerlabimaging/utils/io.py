@@ -14,6 +14,9 @@ def import_obj(pkl_path):
     Example:
     >>> import packerlabimaging as pkg
     >>> trialobj = pkg.import_obj(pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/2020-12-19_t-013.pkl')
+   TODO add parameters
+    :param pkl_path:
+    :return:
     """
 
     if not os.path.exists(pkl_path):

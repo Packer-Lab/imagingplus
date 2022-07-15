@@ -32,6 +32,16 @@ sns.set_style('white')
 
 def plotting_decorator(figsize=(3, 3), nrows=1, ncols=1, dpi=300, apply_image_frame_options=False,
                        apply_heatmap_options=False):
+    """
+TODO fill documentation and add parameters
+    :param figsize:
+    :param nrows:
+    :param ncols:
+    :param dpi:
+    :param apply_image_frame_options:
+    :param apply_heatmap_options:
+    :return:
+    """
     def plotting_decorator(plotting_func):
         """
         Wrapper to help simplify creating plots from matplotlib.pyplot
@@ -55,7 +65,12 @@ def plotting_decorator(figsize=(3, 3), nrows=1, ncols=1, dpi=300, apply_image_fr
 
         @functools.wraps(plotting_func)
         def inner(*args, **kwargs):
-
+            """
+TODO fill documentation and add parameters
+            :param args:
+            :param kwargs:
+            :return:
+            """
             return_fig_obj = False
 
             # set number of rows, cols and figsize
@@ -122,6 +137,9 @@ def _make_colormap(seq):
     """Return a LinearSegmentedColormap
     seq: a sequence of floats and RGB-tuples. The floats should be increasing
     and in the interval (0,1).
+    TODO add parameters
+    :param seq:
+    :return:
     """
     seq = [(None,) * 3, 0.0] + list(seq) + [1.0, (None,) * 3]
     cdict = {'red': [], 'green': [], 'blue': []}
@@ -137,14 +155,31 @@ def _make_colormap(seq):
 
 # generate an array of random colors
 def _get_random_color(pastel_factor=0.5):
+    """
+TODO fill documentation and add parameters
+    :param pastel_factor:
+    :return:
+    """
     return [(x + pastel_factor) / (1.0 + pastel_factor) for x in [random.uniform(0, 1.0) for i in [1, 2, 3]]]
 
 
 def _color_distance(c1, c2):
+    """
+TODO fill documentation and add parameters
+    :param c1:
+    :param c2:
+    :return:
+    """
     return sum([abs(x[0] - x[1]) for x in zip(c1, c2)])
 
 
 def _generate_new_color(existing_colors, pastel_factor=0.5):
+    """
+TODO fill documentation and add parameters
+    :param existing_colors:
+    :param pastel_factor:
+    :return:
+    """
     max_distance = None
     best_color = None
     for i in range(0, 100):
@@ -174,6 +209,11 @@ def make_random_color_array(n_colors):
 def _add_scalebar(trialobj: Union[ImagingTrial, SingleImage], ax: plt.Axes, **kwargs):
     """add scalebar to the image being plotted on the a single matplotlib.axes.Axes object using the TwoPhotonImaging object information.
     Option to specify scale bar um length to add to plot.
+    TODO add parameters
+    :param trialobj:
+    :param ax:
+    :param kwargs:
+    :return:
 
     """
 
@@ -213,6 +253,11 @@ image_frame_ops = {
 
 # Figure Style settings for notebook.
 def image_frame_options(fig, ax):
+    """
+TODO fill documentation and add parameters
+    :param fig:
+    :param ax:
+    """
     # mpl.pyplot.rcdefaults()
 
     # mpl.rcParams.update({
@@ -257,6 +302,9 @@ def image_frame_options(fig, ax):
 
 
 def dataplot_frame_options():
+    """
+TODO fill documentation
+    """
     import matplotlib as mpl
 
     mpl.rcParams.update({
@@ -277,6 +325,7 @@ def dataplot_frame_options():
 
 def dataplot_ax_options(ax, **kwargs):
     """
+    TODO fill documentation
     :param
         **kwargs:
             x_axis: x axis label, if specify Time or time in x_axis then convert x_axis to time domain
@@ -326,6 +375,9 @@ def dataplot_ax_options(ax, **kwargs):
 
 
 def heatmap_options():
+    """
+TODO fill documentation
+    """
     # import matplotlib as mpl
 
     jet = mpl.cm.get_cmap('jet')
@@ -339,7 +391,12 @@ def plot_coordinates(coords: list, frame_x: int, frame_y: int, background: np.nd
                      **kwargs):
     """
     Plot coordinate locations using matplotlib's imshow function.
-
+TODO add parameters
+    :param coords:
+    :param frame_x:
+    :param frame_y:
+    :param fig:
+    :param ax:
     :param targets_coords: ls containing (x,y) coordinates of targets to plot
     :param background: np.array on which to plot coordinates, default is black background (optional)
     :param kwargs:
