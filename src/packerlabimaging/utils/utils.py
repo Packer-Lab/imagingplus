@@ -268,7 +268,19 @@ TODO fill explanation and add parameters
         # if len(images) > 0:
         #     im_stack = np.asarray(images)
         # im_stack = tf.imread(tiff_path)
-        im_stack = skio.imread(tiff_path, plugin='pil')
+        try:
+            stack = []
+            with tf.TiffFile(tiff_path) as tif:
+                for page in tif.pages:
+                    image = page.asarray()
+                    stack.append(image)
+            im_stack = np.array(stack)
+            if len(im_stack) == 1: im_stack = im_stack[0]
+        except Exception as ex:
+            try:
+                im_stack = skio.imread(tiff_path, plugin='pil')
+            except Exception as ex:
+                raise ImportError('unknown error in loading tiff stack.')
 
     return im_stack
 
@@ -504,10 +516,10 @@ def make_tiff_stack(tiff_paths: list, save_as: str = None) -> np.ndarray:
 
     data = []
     for i, tif_ in enumerate(tiff_paths):
-        # from skimage import io
-        # img = io.imread(tif_, plugin='pil')
         img = ImportTiff(tiff_path=tif_)
+        # print(f'imported tif stack: {img.shape}')
         data.extend(img)
+        # print('length of data: ', len(data))
     data = np.array(data)
     print(f'\- made tiff stack: {data.shape}')
     WriteTiff(save_path=save_as, stack=data) if save_as else None
@@ -1068,7 +1080,7 @@ def calc_distance_2points(p1: tuple, p2: tuple):
 
 
 def _calculate_distance_to_target(key_coord: tuple, target_coords: np.ndarray):
-    "calculate distances between key coord and all target coords
+    "calculate distances between key coord and all target coords"
 
     distances = []
     for cell in target_coords:
@@ -1555,7 +1567,8 @@ TODO fill documentation and add parameters
     return img_back
 
 
-def makeFrameAverageTiff(frames: Union[int, list, tuple], tiff_path: str = None, stack: np.ndarray = None, peri_frames: int = 100, save_dir: str = None, to_plot=False, **kwargs):
+def makeFrameAverageTiff(frames: Union[int, list, tuple], tiff_path: str = None, stack: np.ndarray = None,
+                         peri_frames: int = 100, save_dir: str = None, to_plot=False, **kwargs):
     """Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from either the provided tiff_path or the stack array.
     TODO add parameters
     :param frames:
@@ -1572,15 +1585,19 @@ def makeFrameAverageTiff(frames: Union[int, list, tuple], tiff_path: str = None,
         frames = [frames]
 
     stack = ImportTiff(tiff_path) if not stack else stack
-    
+
     imgs = []
     for idx, frame in enumerate(frames):
         # im_batch_reg = tf.imread(tif_path, key=range(0, self.output_ops['batch_size']))
 
-        if 0 > frame - peri_frames // 2: peri_frames_low = frame
-        else: peri_frames_low = peri_frames // 2
-        if stack.shape[0] < frame + peri_frames // 2: peri_frames_high = stack.shape[0] - frame
-        else: peri_frames_high = peri_frames // 2
+        if 0 > frame - peri_frames // 2:
+            peri_frames_low = frame
+        else:
+            peri_frames_low = peri_frames // 2
+        if stack.shape[0] < frame + peri_frames // 2:
+            peri_frames_high = stack.shape[0] - frame
+        else:
+            peri_frames_high = peri_frames // 2
         im_sub_reg = stack[frame - peri_frames_low: frame + peri_frames_high]
 
         avg_sub = np.mean(im_sub_reg, axis=0)

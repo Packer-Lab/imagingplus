@@ -181,7 +181,7 @@ TODO add parameters
     # make the plot either as just the raw trace or as a dFF trace with the std threshold line drawn as well.
     ax.plot(data_to_plot, linewidth=lw)
 
-    dataplot_ax_options(ax=ax, data_length=len(data_to_plot), **kwargs)
+    dataplot_ax_options(ax=ax, **kwargs)
     mpl.pyplot.rcdefaults()
 
 
@@ -220,7 +220,7 @@ def plot__channel(tmdata: TemporalData, channel: str, **kwargs):
     ax.set_xlabel('tmdata clock')
 
     # set axis options
-    dataplot_ax_options(ax=ax, data_length=len(data), collection_hz=tmdata.sampling_rate, **kwargs)
+    dataplot_ax_options(ax=ax, collection_hz=tmdata.sampling_rate, **kwargs)
     kwargs['ax'] = ax
 
 def MeanProject(tiff_path: str = None, frames: tuple = None, save_path: str = None, plot=True,
@@ -579,6 +579,8 @@ def plotMeanFovFluTrace(trialobj: TwoPhotonImaging, **kwargs):
     """make plot of mean Ca trace averaged over the whole FOV
 TODO add parameters
 
+    NOTE: this function will use the underlying timing that is found under trialobj.tmdata (if that is defined). If there is a mismatch in the number of frame timestamps collected and
+    the number of imaging frames data, the shorter length will be used for plotting (with no warning printed, as it is often the case that there are dropped frames from the microscope).
     :param trialobj:
     :param kwargs:
     """
@@ -597,21 +599,32 @@ TODO add parameters
                 lw = 1
 
         data_to_plot = trialobj.meanFovFluTrace
+        if trialobj.tmdata:
+            if len(data_to_plot) < len(trialobj.tmdata.frame_times):
+                x_range = trialobj.tmdata.frame_times[:len(data_to_plot)] - trialobj.tmdata.frame_times[0]
+            elif len(data_to_plot) > len(trialobj.tmdata.frame_times):
+                x_range = trialobj.tmdata.frame_times - trialobj.tmdata.frame_times[0]
+                data_to_plot = data_to_plot[:len(x_range)]
+            else:
+                x_range = trialobj.tmdata.frame_times - trialobj.tmdata.frame_times[0]
+            time_res = trialobj.tmdata.sampling_rate
+        else:
+            x_range = np.arange(0, len(data_to_plot))
+            time_res = trialobj.imparams.fps
 
         print(f"\t \- PLOTTING mean raw flu trace ... ")
-        ax.plot(data_to_plot, c='forestgreen', linewidth=lw)
+        ax.plot(x_range, data_to_plot, c='forestgreen', linewidth=lw)
 
         ax.set_xlabel('frame #s')
         ax.set_ylabel('Flu (a.u.)')
 
         # set axis options
-        dataplot_ax_options(ax=ax, data_length=len(data_to_plot), collection_hz=trialobj.imparams.fps, **kwargs)
+        dataplot_ax_options(ax=ax, collection_hz=time_res, **kwargs)
 
 
 @plotting_decorator(figsize=(10, 6))
 def plot_photostim_traces_overlap(array, trialobj: AllOpticalTrial, exclude_id: list = None, y_spacing_factor=1,
-                                  title='',
-                                  x_axis='Time (seconds)', **kwargs):
+                                  title='', x_axis='Time (seconds)', **kwargs):
     """
     TODO fill documentation and add parameters
     :param array:
@@ -665,7 +678,7 @@ def plot_photostim_traces_overlap(array, trialobj: AllOpticalTrial, exclude_id: 
     ax.set_title((title + ' - %s' % len_ + ' cells'), horizontalalignment='center', verticalalignment='top', pad=20,
                  fontsize=10, wrap=True)
 
-    dataplot_ax_options(ax=ax, data_length=array.shape[1], **kwargs)
+    dataplot_ax_options(ax=ax, **kwargs)
 
 
 def plot_s2p_raw(trialobj, cell_id):
@@ -962,7 +975,7 @@ def plot_periphotostim_avg(arr: np.ndarray, trialobj: AllOpticalTrial, pre_stim_
         ax.set_title((title + ' - %s' % len_ + ' traces'), horizontalalignment='center', verticalalignment='top',
                      pad=pad, fontsize=10, wrap=True)
 
-    dataplot_ax_options(ax=ax, data_length=arr.shape[1], **kwargs)
+    dataplot_ax_options(ax=ax, **kwargs)
 
 
 # alloptical trial

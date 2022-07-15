@@ -27,18 +27,18 @@ def test_makeSuite2pPlots(existing_expobj_fixture, existing_trialobj_twophotonim
     expobj: Experiment = existing_expobj_fixture[0]
     makeSuite2pPlots(obj=expobj)
 
-    trialobj: TwoPhotonImagingTrial = existing_trialobj_twophotonimaging_fixture[0]
+    trialobj: TwoPhotonImagingTrial = existing_trialobj_twophotonimaging_fixture
     makeSuite2pPlots(obj=trialobj, scalebar=True)
 
 
 def test_plot_flu_trace(existing_trialobj_twophotonimaging_fixture):
-    trialobj: TwoPhotonImagingTrial = existing_trialobj_twophotonimaging_fixture[0]
+    trialobj: TwoPhotonImagingTrial = existing_trialobj_twophotonimaging_fixture
     plot_flu_trace(trialobj=trialobj, cell=10, to_plot='raw', linewidth=0.10,
                    x_lims=None, y_lims=None)
 
 
 def test_plotMeanFovFluTrace(existing_trialobj_twophotonimaging_fixture):
-    trialobj: TwoPhotonImagingTrial = existing_trialobj_twophotonimaging_fixture[0]
+    trialobj: TwoPhotonImagingTrial = existing_trialobj_twophotonimaging_fixture
     plotMeanFovFluTrace(trialobj=trialobj)
 
 

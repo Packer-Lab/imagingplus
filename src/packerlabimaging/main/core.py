@@ -2,7 +2,6 @@
 from __future__ import absolute_import
 from dataclasses import dataclass, field
 from typing import Optional, MutableMapping, Union, TypedDict, List, Dict, Any
-
 import numpy as np
 import pandas as pd
 
@@ -10,6 +9,7 @@ from packerlabimaging.main.subcore import ImagingMetadata, ImagingData, CellAnno
 from packerlabimaging.processing.anndata import AnnotatedData
 
 # from packerlabimaging.processing.imagingMetadata import ImagingMetadata
+from packerlabimaging.processing.denoising import Deepinterpolation
 from packerlabimaging.processing.suite2p import Suite2pResultsTrial
 from packerlabimaging.utils.classes import UnavailableOptionError, TrialMetainfo
 
@@ -228,10 +228,6 @@ TODO fill documentation and add parameters
     # noinspection PyAttributeOutsideInit
     @pkl_path.setter
     def pkl_path(self, path: str):
-        """
-TODO fill documentation and add parameters
-        :param path:
-        """
         self._pkl_path = path
 
     def save_pkl(self, pkl_path: str = None):
@@ -352,10 +348,11 @@ class ImagingTrial:
     cells: CellAnnotations = None
     tmdata: TemporalData = None
     Suite2p: Suite2pResultsTrial = None
+    Deepinterpolation: Deepinterpolation = None
 
     def __post_init__(self):
         self.metainfo = TrialMetainfo(date=self.date, trialID=self.trialID, expID=self.expID, expGroup=self.expGroup,
-                                      comment=self.comment, paths={})  # , microscope=self.microscope)
+                                      comment=self.comment, paths={})
 
         if os.path.exists(self.dataPath):
             self.metainfo['paths']['dataPath'] = self.dataPath
@@ -363,10 +360,9 @@ class ImagingTrial:
             raise FileNotFoundError(f"dataPath does not exist: {self.dataPath}")
 
         # processing collect mean FOV Trace -- after collecting imaging params and Paq timing info
-        im_stack = self.importTrialTiff()
+        im_stack = ImportTiff(tiff_path=self.tiff_path)
         self._n_frames = im_stack.shape[0]
-        self.meanFluImg, self.meanFovFluTrace = self.meanRawFluTrace(
-            im_stack)  #: mean image and mean FOV fluorescence trace
+        self.meanFluImg, self.meanFovFluTrace = self.meanRawFluTrace(im_stack)  #: mean image and mean FOV fluorescence trace
 
         # set, create analysis save path directory and create pkl object
         os.makedirs(self.saveDir, exist_ok=True)
@@ -379,7 +375,6 @@ class ImagingTrial:
             self.create_anndata()
 
     def __repr__(self):
-        # todo test repr
         return repr(f"{self.t_series_name} (ImagingTrial)")
 
     # todo maybe ? - add alternative constructor to handle construction if temporal cellsdata or cell annotations or imaging cellsdata is provided
@@ -445,7 +440,13 @@ TODO fill add parameters
         :param frame:
         :return:
         """
+        """Return the time (secs) at input frame number. Uses the temporally captured frame timing signals to calculate and return timepoint of frame (in imaging series time).
+
+        :return time (secs) at given imaging series frame
+        """
         # subtract the timestamp of the desired frame from the first frame clock timestamp, and convert to secs.
+        assert hasattr(self.tmdata, 'frame_times'), 'cannot retrieve frame timepoint without `frame_times` defined in .tmdata'
+        assert frame in range(0, len(self.tmdata.frame_times)), 'frame not in indexes of frame times'
         frame_time = (self.tmdata.frame_times[frame] - self.tmdata.frame_times[0]) / self.tmdata.sampling_rate
         return np.round(frame_time, 5)
 
@@ -706,3 +707,6 @@ TODO add parameters
                     print('      Mean of the sub-threshold for this cell: %s' % mean_)
 
         return new_array
+
+    def run_deepinterpolation(self, input_file: str, output_file: str, model_path: str, generator_param: dict = {}, inferrence_param: dict = {}):
+        self.Deepinterpolation = Deepinterpolation.deepinterpolate(input_file, output_file, model_path, generator_param, inferrence_param)

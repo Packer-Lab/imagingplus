@@ -271,7 +271,7 @@ class Suite2pExperiment:
                     if path in self.output_ops['filelist']:
                         self.trials.append(trial)
                     else:
-                        print(f'WARNING: {trial}, {path} not found in suite2p results filelist. Not added to Suite2p object.')
+                        print(f'\tWARNING: {trial}, {path} not found in suite2p results output_ops filelist. Not added to Suite2p object.')
             else:
                 tiff_paths_to_use_s2p.pop(trial)
 
@@ -735,16 +735,16 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
 
         return np.asarray(imgs)
 
-    def makeDownSampledTiff(self, save_as: str, group_by: int = 4, reg_tif_folder=None):
+    def makeDownSampledTiff(self, save_as: str, group_by: int = 4, reg_tif_folder=None, frameNum: Union[str, tuple, list, int]='all'):
         """makes downsampled TIFF of current suite2p trial imaging series"""
         reg_tif_folder = reg_tif_folder if reg_tif_folder else self.s2pResultsPath + '/reg_tif/'
 
-        sorted_paths, first_tiff_offset, last_tiff_offset = self.getRegTiffPaths(reg_tif_folder=reg_tif_folder)
+        sorted_paths, first_tiff_offset, last_tiff_offset = self.getRegTiffPaths(reg_tif_folder=reg_tif_folder, frameNum=frameNum)
         data = make_tiff_stack(sorted_paths, save_as=None)
         trial_frames_cropped = data[first_tiff_offset: -last_tiff_offset]
         SaveDownsampledTiff(stack=trial_frames_cropped, group_by=group_by, save_as=save_as)
 
-    def getRegTiffPaths(self, reg_tif_folder=None, frameNum: Union[str, int] = 'all'):
+    def getRegTiffPaths(self, reg_tif_folder=None, frameNum: Union[str, int, tuple, list] = 'all'):
         """get trial's gcamp signals tiff path at a certain frame number"""
         reg_tif_folder = reg_tif_folder if reg_tif_folder else self.s2pResultsPath + '/reg_tif/'
         reg_tif_list = os.listdir(reg_tif_folder)
@@ -763,6 +763,27 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
             offsetFrameNum = int(s2p_frame % batch_size)
 
             return tiff_path, offsetFrameNum
+        elif type(frameNum) is list or type(frameNum) is tuple:
+            start = (curr_trial_frames[0] + frameNum[0]) // batch_size
+            end = (curr_trial_frames[0] + frameNum[1]) // batch_size
+
+            if start == end:  # i.e. if the frames selected for crop are in the same batch .tif
+                stacks = [start]
+                last_tiff_offset = batch_size - frameNum[1]
+            else:
+                stacks = range(int(start), int(end)) if end - start > 1 else [start, end]
+                last_tiff_offset = batch_size - int((curr_trial_frames[0] + frameNum[1]) % batch_size)
+
+            reg_tif_list = os.listdir(reg_tif_folder)
+            reg_tif_list.sort()
+            tif_list = [file for file in reg_tif_list if '.tif' in file]
+
+            tiff_paths_list = [reg_tif_folder + tif_list[i] for i in stacks]
+
+            first_tiff_offset = int(curr_trial_frames[0] + frameNum[0] - (start * batch_size))
+
+            print(tiff_paths_list, first_tiff_offset, last_tiff_offset)
+            return tiff_paths_list, first_tiff_offset, last_tiff_offset
         elif frameNum == 'all':
             reg_tif_list = os.listdir(reg_tif_folder)
             reg_tif_list.sort()
@@ -772,11 +793,8 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
 
             tiff_paths_list = [reg_tif_folder + tif_list[i] for i in range(start, end)]
 
-            first_tiff_offset = int(curr_trial_frames[0]) - (start * batch_size)
+            first_tiff_offset = int(curr_trial_frames[0] - (start * batch_size))
             last_tiff_offset = int(curr_trial_frames[1] % batch_size)
-
-            # print(tiff_paths_list, first_tiff_offset, last_tiff_offset)
-
             return tiff_paths_list, first_tiff_offset, last_tiff_offset
 
         else:
