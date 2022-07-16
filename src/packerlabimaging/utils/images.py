@@ -91,6 +91,7 @@ TODO add paramters
 
     return smol_mean
 
+
 def subselect_tiff(tiff_path: str = None, tiff_stack: np.array = None, select_frames: tuple = (0, 0),
                    save_as: str = None):
     """
@@ -196,11 +197,13 @@ def bandPass(img: np.ndarray, fshift, lowfilter=10, highfilter=3):
 
     return img_back
 
-def z_score_img(key_image: np.ndarray, mean_img: np.ndarray = None, std_img: np.ndarray = None, normal_img_stack: np.ndarray = None, plot: bool = False):
-    """
-    z-score normalization of the input key_image to the input mean img and std img, or to image stack provided in normal_img_stack.
 
-    :param key_image: input image
+def z_score_img(key_img: np.ndarray, mean_img: np.ndarray = None, std_img: np.ndarray = None,
+                normal_img_stack: np.ndarray = None, plot: bool = False):
+    """
+    z-score normalization of the input key_img to the input mean img and std img, or to image stack provided in normal_img_stack.
+
+    :param key_img: input image
     :param mean_img: input mean image
     :param std_img: input std image
     :param normal_img_stack: input stack of images to normalize the key image to.
@@ -211,11 +214,11 @@ def z_score_img(key_image: np.ndarray, mean_img: np.ndarray = None, std_img: np.
         assert normal_img_stack.shape[0] > 1, 'normal_img_stack must be a stack of 2-D arrays.'
         mean_img = np.mean(normal_img_stack, axis=0)
         std_img = np.std(normal_img_stack, axis=0)
-        assert key_image.shape == mean_img.shape == std_img.shape, 'Shape of img must match mean_img and std_img'
+        assert key_img.shape == mean_img.shape == std_img.shape, 'Shape of key_img must match mean_img and std_img'
     else:
-        assert key_image.shape == mean_img.shape == std_img.shape, 'Shape of img must match mean_img and std_img'
+        assert key_img.shape == mean_img.shape == std_img.shape, 'Shape of key_img must match mean_img and std_img'
 
-    z_scored = (key_image - mean_img) / std_img
+    z_scored = (key_img - mean_img) / std_img
     if plot: plt.imshow(z_scored, cmap='bwr'), plt.colorbar(), plt.show()
     return z_scored
 
@@ -414,4 +417,3 @@ def make_tiff_stack(tiff_paths: list, save_as: str = None) -> np.ndarray:
     print(f'\- made tiff stack: {data.shape}')
     WriteTiff(save_path=save_as, stack=data) if save_as else None
     return data
-

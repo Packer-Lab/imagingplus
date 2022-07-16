@@ -764,8 +764,8 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
 
             return tiff_path, offsetFrameNum
         elif type(frameNum) is list or type(frameNum) is tuple:
-            start = (curr_trial_frames[0] + frameNum[0]) // batch_size
-            end = (curr_trial_frames[0] + frameNum[1]) // batch_size
+            start = int(np.floor((curr_trial_frames[0] + frameNum[0]) / batch_size))
+            end = int(np.ceil((curr_trial_frames[0] + frameNum[1]) / batch_size))
 
             if start == end:  # i.e. if the frames selected for crop are in the same batch .tif
                 stacks = [start]
