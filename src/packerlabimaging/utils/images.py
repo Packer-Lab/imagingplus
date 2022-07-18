@@ -11,21 +11,20 @@ from skimage import io as skio
 
 # simple ZProfile function for any sized square in the frame (equivalent to ZProfile function in Fiji)
 def ZProfile(movie, area_center_coords: tuple = None, area_size: int = -1, plot_trace: bool = True,
-             plot_image: bool = True, plot_frame: int = 1, vasc_image: np.array = None, **kwargs):
+             plot_frame: int = None, vasc_image: np.array = None, **kwargs):
     """
     Plot a z-profile of a movie, averaged over space inside a square area. by S. Armstrong.
 
     :param movie: can be np.array of the TIFF stack or a tiff path from which it is read in
     :param area_center_coords: coordinates of pixel at center of box (x,y)
     :param area_size: int, length and width of the square in pixels
-    :param plot_frame: which movie frame to take as a reference to plot the area boundaries on
+    :param plot_frame: plot area boundaries on this frame from movie
     :param vasc_image: optionally include a vasculature image tif of the correct dimensions to plot the coordinates on.
-
-TODO add paramters
-    :param plot_trace:
-    :param plot_image:
+    :param plot_trace: bool to create plot of z profile signal
     :param kwargs:
-    :return:
+            ax_trace: matplotlib axis object for plotting z-profile signal
+            ax_ref: matplotlib axis object for plotting reference image
+    :return: z-profile trace signal
     """
 
     if type(movie) is str:
@@ -56,8 +55,9 @@ TODO add paramters
     smol_mean = np.nanmean(smol_movie, axis=(1, 2))
     print('|- Output shape for z profile: ', smol_mean.shape)
 
-    if plot_image:
+    if plot_frame is not None:
         f, ax1 = plt.subplots()
+        if 'ax_ref' in kwargs: ax1 = kwargs['ax_ref']
         ref_frame = movie[plot_frame, :, :]
         if vasc_image is not None:
             assert vasc_image.shape == movie.shape[1:], 'vasculature image has incompatible dimensions'
@@ -70,14 +70,11 @@ TODO add paramters
 
         ax1.add_patch(rect1)
         ax1.set_title("Z-profile area")
-        plt.show()
+        f.show() if not 'ax_ref' in kwargs else None
 
     if plot_trace:
-        if 'figsize' in kwargs:
-            figsize = kwargs['figsize']
-        else:
-            figsize = [10, 4]
-        fig, ax2 = plt.subplots(figsize=figsize)
+        fig, ax2 = plt.subplots(figsize=[5, 2])
+        if 'ax_trace' in kwargs: ax2 = kwargs['ax_trace']
         if img_fps is not None:
             ax2.plot(np.arange(smol_mean.shape[0]) / img_fps, smol_mean, linewidth=0.5, color='black')
             ax2.set_xlabel('Time (sec)')
@@ -85,9 +82,8 @@ TODO add paramters
             ax2.plot(smol_mean, linewidth=0.5, color='black')
             ax2.set_xlabel('frames')
         ax2.set_ylabel('Flu (a.u.)')
-        if 'title' in kwargs:
-            ax2.set_title(kwargs['title'])
-        plt.show()
+        if 'title' in kwargs: ax2.set_title(kwargs['title'])
+        fig.show() if not 'ax_trace' in kwargs else None
 
     return smol_mean
 
@@ -95,7 +91,8 @@ TODO add paramters
 def subselect_tiff(tiff_path: str = None, tiff_stack: np.array = None, select_frames: tuple = (0, 0),
                    save_as: str = None):
     """
-TODO fill explanation and add parameters
+    Crop multi-stack tiff to requested frames (`select_frames`).
+
     :param tiff_path:
     :param tiff_stack:
     :param select_frames:
@@ -104,8 +101,7 @@ TODO fill explanation and add parameters
     """
     if tiff_stack is None:
         # open tiff file
-        print('running subselecting tiffs')
-        print('|- working on... %s' % tiff_path)
+        print(f'\t\-subselecting tiffs from {tiff_path}')
         tiff_stack = ImportTiff(tiff_path)
 
     stack_cropped = tiff_stack[select_frames[0]:select_frames[1]]
@@ -116,29 +112,30 @@ TODO fill explanation and add parameters
     return stack_cropped
 
 
-def convert_to_8bit(img, target_type_min=0, target_type_max=255):
+def convert_to_8bit(img: np.ndarray, output_min: int = 0, output_max: int = 255) -> np.ndarray:
     """
-    TODO fill documentation and add parameters
-    :param img:
-    :param target_type:
-    :param target_type_min:
-    :param target_type_max:
-    :return:
-    """
-    imin = img.min()
-    imax = img.max()
+    Convert input image to 8-bit depth. Optionally, set low/high thresholds for output image.
 
-    a = (target_type_max - target_type_min) / (imax - imin)
-    b = target_type_max - a * imax
+    :param img: input image
+    :param output_min: minimum threshold for pixel intensity (at 8-bit depth)
+    :param output_max: maximum threshold for pixel intensity (at 8-bit depth)
+    :return: image converted to 8-bit depth
+    """
+    imin = np.min(img)
+    imax = np.max(img)
+
+    a = (output_max - output_min) / (imax - imin)
+    b = output_max - a * imax
     new_img = (a * img + b).astype(np.uint8)
     return new_img
 
 
 def fourierImage(img: np.ndarray):
     """
-TODO fill documentation and add parameters
-    :param img:
-    :return:
+    Fast-fourier transform on input image.
+
+    :param img: input image
+    :return: numpy's fft transform
     """
     dft = cv.dft(np.float32(img), flags=cv.DFT_COMPLEX_OUTPUT)
     dft_shift = np.fft.fftshift(dft)

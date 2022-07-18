@@ -713,12 +713,11 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
             avg_sub = np.mean(im_sub_reg, axis=0)
 
             # convert to 8-bit
-            from packerlabimaging.utils.utils import convert_to_8bit
+            from packerlabimaging.utils.images import convert_to_8bit
             avg_sub = convert_to_8bit(avg_sub, 0, 255)
 
             if save_dir:
                 if '.tif' in save_dir:
-                    from packerlabimaging.utils.utils import return_parent_dir
                     save_dir = os.path.dirname(save_dir) + '/'
                 save_path = save_dir + f'/{frames[idx]}_s2preg_frame_avg.tif'
                 os.makedirs(save_dir, exist_ok=True)

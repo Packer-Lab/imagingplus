@@ -3,6 +3,7 @@
 import sys
 from pathlib import Path
 
+import matplotlib.pyplot
 import numpy as np
 import pandas as pd
 import tifffile as tf
@@ -26,25 +27,21 @@ terms_dictionary = {
 }
 
 
-def define_term(x: str):
+def define_term(term: str):
     """
-    TODO fill documentation and add parameters
-    :param x:
+    Search terms dictionary and retrieve definition of input term if found.
+    :param term: term to search for definition in dictionary.
     """
     try:
-        print(f"{x}:\t{terms_dictionary[x]}") if type(x) is str else print(
+        print(f"{term}:\t{terms_dictionary[term]}") if type(term) is str else print(
             'ERROR: please provide a string object as the key')
     except KeyError:
-        print(f'input - {x} - not found in dictionary')
+        print(f'input - {term} - not found in dictionary')
 
 
 # report sizes of variables
 def _sizeof_fmt(num, suffix='B'):
-    """ by Fred Cirera,  https://stackoverflow.com/a/1094933/1870254, modified
-    :param num:
-    :param suffix:
-    :return:
-    """
+    """ by Fred Cirera,  https://stackoverflow.com/a/1094933/1870254, modified"""
     for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
         if abs(num) < 1024.0:
             return "%3.1f %s%s" % (num, unit, suffix)
@@ -52,40 +49,29 @@ def _sizeof_fmt(num, suffix='B'):
     return "%.1f %s%s" % (num, 'Yi', suffix)
 
 
-# report sizes of variables
 def print_size_of(var):
     """
-TODO fill explanation
-    :param var:
+    Print size of input variable in current memory.
+    :param var: input variable
     """
     print(_sizeof_fmt(sys.getsizeof(var)))
 
 
-# report sizes of variables
 def print_size_vars():
     """
-TODO fill explanation
+    Print size of all current variables in memory.
     """
     for name, size in sorted(((name, sys.getsizeof(value)) for name, value in locals().items()),
                              key=lambda x: -x[1])[:10]:
         print("{:>30}: {:>8}".format(name, _sizeof_fmt(size)))
 
 
-def return_parent_dir(file_path: str):
+def save_figure(fig: matplotlib.pyplot.Figure, save_path_full: str):
     """
-TODO fill explanation
-    :param file_path:
-    :return:
-    """
-    return os.path.dirname(file_path)  # todo replace instance usages of return_parent_dir with os.path.dirname
-    # return file_path[:[(s.start(), s.end()) for s in re.finditer('/', file_path)][-1][0]]
+    Save a matplotlib generated figure to the path provided. Also, makes necessary directories in the path.
 
-
-def save_figure(fig, save_path_full: str = None):
-    """
-TODO fill explanation
-    :param fig:
-    :param save_path_full:
+    :param fig: matplotlib generated figure object
+    :param save_path_full: path to save figure to.
     """
     print(f'\n\- saving figure to: {save_path_full}', end="\r")
     os.makedirs(os.path.dirname(save_path_full), exist_ok=True)
@@ -96,9 +82,9 @@ TODO fill explanation
 def save_to_csv(df: pd.DataFrame, savepath: Path = None):
     """
     Save pandas dataframe to csv at savepath.
-TODO fill parameters
-    :param df:
-    :param savepath:
+
+    :param df: dataframe to save.
+    :param savepath: path to save to.
     """
     savepath.parent.mkdir(parents=True, exist_ok=True)
 
