@@ -18,14 +18,6 @@ from statsmodels import stats
 
 from packerlabimaging.utils import io
 
-# UTILITIES
-
-# dictionary of terms, phrases, etc. that are used in the processing and analysis of imaging cellsdata
-terms_dictionary = {
-    'dFF': "normalization of datatrace for a given imaging ROI by subtraction and division of a given baseline value",
-    'ROI': "a single ROI from the imaging cellsdata"
-}
-
 
 def define_term(term: str):
     """
@@ -33,6 +25,7 @@ def define_term(term: str):
     :param term: term to search for definition in dictionary.
     """
     try:
+        from packerlabimaging.utils.terms_dictionary import terms_dictionary
         print(f"{term}:\t{terms_dictionary[term]}") if type(term) is str else print(
             'ERROR: please provide a string object as the key')
     except KeyError:
