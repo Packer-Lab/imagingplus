@@ -47,33 +47,53 @@ class AnnotatedData(ad.AnnData):
 
 
     def _gen_repr(self, n_obs, n_vars) -> str:  # overriding base method from AnnData
-        """overrides the default anndata _gen_repr_() method for imaging cellsdata usage."""
+        """overrides the default anndata _gen_repr_() method for imaging cellsdata usage.
+        TODO add parameters
+        :param n_obs:
+        :param n_vars:
+        :return:
+        """
 
         return f"Annotated Data of n_obs (# ROIs) × n_vars (# Frames) = {n_obs} × {n_vars}"
 
 
     def add_obs(self, obs_name: str, values: list):
-        """adds values to the observations of an anndata object, under the key obs_name"""
+        """adds values to the observations of an anndata object, under the key obs_name
+        TODO add parameters
+        :param obs_name:
+        :param values:
+        """
         assert len(values) == self.obs.shape[0], f"# of values to add doesn't match # of observations in anndata array"
         self.obs[obs_name] = values
 
     def del_obs(self, obs_name: str): # TODO
-        """removes a key from observations from an anndata object, of the key obs_name"""
+        """removes a key from observations from an anndata object, of the key obs_name
+        TODO add parameters
+        :param obs_name:
+        """
         _ = self.obs.pop(obs_name)
 
 
     def add_var(self, var_name: str, values: list):
-        """adds values to the variables of an anndata object, under the key var_name"""
+        """adds values to the variables of an anndata object, under the key var_name
+        TODO add parameters
+        :param var_name:
+        :param values:
+        """
         assert len(values) == self.var.shape[0], f"# of values to add doesn't match # of observations in anndata array"
         self.var[var_name] = values
 
     def del_var(self, obs_name: str): # TODO
-        """removes a key from variables from an anndata object, of the key var_name"""
+        """removes a key from variables from an anndata object, of the key var_name
+        TODO add parameters
+        :param obs_name:
+        """
         _ = self.var.pop(obs_name)
 
 
     def extend_anndata(self, additional_adata: ad.AnnData, axis: Literal[0,1] = 0):
         """
+        TODO fill explanation and add parameters
         :param additional_adata: an anndata object of dimensions n obs x # var or, # obs x m var (depending on which axis to extend)
         :param axis:
         """

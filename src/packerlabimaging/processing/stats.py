@@ -10,7 +10,12 @@ from packerlabimaging import AllOpticalTrial
 
 
 def runWilcoxonsTest(array1, array2):  # NOTE: not setup for multiplane cells yet
-
+    """
+TODO fill explanation and add parameters
+    :param array1:
+    :param array2:
+    :return:
+    """
     # check if the two distributions of flu values (pre/post) are different
     assert array1.shape == array2.shape, 'shapes for .__pre_array and .__post_array need to be the same for wilcoxon test'
     wilcoxons = np.empty(len(array1))  # [cell (p-value)]
@@ -25,6 +30,11 @@ def sigTestAvgResponse(trial: AllOpticalTrial, p_vals: list, alpha=0.1):  # NOTE
     """
     Uses the p values and a threshold for the Benjamini-Hochberg correction to return which
     cells are still significant after correcting for multiple significance testing
+    TODO add parameters
+    :param trial:
+    :param p_vals:
+    :param alpha:
+    :return:
     """
     print('\n----------------------------------------------------------------')
     print('running statistical significance testing for nontargets response arrays ')

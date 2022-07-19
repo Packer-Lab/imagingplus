@@ -89,6 +89,13 @@ def s2pRun(expobj, trialsSuite2P: Union[list, str] = 'all'):  ## TODO gotta spec
 
 
 def s2p_loader(s2p_path, subtract_neuropil=True, neuropil_coeff=0.7):
+    """
+TODO fill explanation and add parameters
+    :param s2p_path:
+    :param subtract_neuropil:
+    :param neuropil_coeff:
+    :return:
+    """
     found_stat = False
 
     for root, dirs, files in os.walk(s2p_path):
@@ -136,17 +143,34 @@ def s2p_loader(s2p_path, subtract_neuropil=True, neuropil_coeff=0.7):
 # utility funcs
 # quick workaround (patch of suite2p code) because of suite2p internal error for these methods in ROI class
 def from_stat_dict(stat: Dict[str, Any]) -> suite2p.ROI:
+    """
+TODO fill explanation and add parameters
+    :param stat:
+    :return:
+    """
     return suite2p.ROI(ypix=stat['ypix'], xpix=stat['xpix'], lam=stat['lam'], med=stat['med'], do_crop=False)
 
 
 def to_array_(self, Ly: int, Lx: int) -> np.ndarray:
-    """Returns a 2D boolean array of shape (Ly x Lx) indicating where the roi is located."""
+    """Returns a 2D boolean array of shape (Ly x Lx) indicating where the roi is located.
+    TODO add parameters
+    :param self:
+    :param Ly:
+    :param Lx:
+    :return:
+    """
     arr = np.zeros((Ly, Lx), dtype=float)
     arr[self.ypix, self.xpix] = 1
     return arr
 
 
 def stats_dicts_to_3d_array_(stat_dict, output_ops):
+    """
+TODO fill explanation and add parameters
+    :param stat_dict:
+    :param output_ops:
+    :return:
+    """
     arrays = []
     for i, stat in enumerate(stat_dict):
         array = to_array_(from_stat_dict(stat=stat), Ly=output_ops['Ly'], Lx=output_ops['Lx'])
@@ -208,6 +232,10 @@ class Suite2pExperiment:
 
     @classmethod
     def update_ops(cls, new_ops_entries: dict):
+        """
+TODO fill explanation and add parameters
+        :param new_ops_entries:
+        """
         print(f'Updating {[*new_ops_entries]} keys in ops prior to Suite2p run.')
         for key in new_ops_entries:
             cls.ops[key] = new_ops_entries[key]
@@ -290,10 +318,18 @@ class Suite2pExperiment:
 
     @property
     def s2pResultExists(self):
+        """
+TODO fill explanation and add parameters
+        :return:
+        """
         return self.__s2pResultExists
 
     @s2pResultExists.setter
     def s2pResultExists(self, val):
+        """
+TODO fill explanation and add parameters
+        :param val:
+        """
         self.__s2pResultExists = val
 
     def __repr__(self):
@@ -391,7 +427,7 @@ class Suite2pExperiment:
                          s2p_run_batch: int = 2000):
         """
         Stitches together registered tiffs outputs from suite2p from the provided imaging frame start and end values.
-
+TODO add parameters
         :param first_frame: first frame from the overall s2p run to start stitching from
         :param last_frame: last frame from the overall s2p run to end stitching at
         :param force_crop:
@@ -456,12 +492,19 @@ class Suite2pExperiment:
     def subSuite2p(cls, trialsTiffs, s2pResultsPath):
         """
         Alternative constructor for Suite2pExperiment class. Inputs a specific # of trials to use for loading up Suite2p.
+        TODO add parameters
+        :param trialsTiffs:
+        :param s2pResultsPath:
+        :return:
         """
         return cls(trialsTiffsSuite2p=trialsTiffs, s2pResultsPath=s2pResultsPath)
 
     def add_bad_frames(self, frames, bad_frames_npy_loc) -> None:
         """
         Add frames to bad_frames.npy file that will be used by Suite2p to ignore these key_frames during ROI detection.
+        TODO add parameters
+        :param frames:
+        :param bad_frames_npy_loc:
         """
 
         self.bad_frames.extend(frames)
@@ -475,7 +518,7 @@ class Suite2pExperiment:
 
     def setupForSuite2p(self, trialsSuite2P: list, TrialsInformation: dict, **kwargs):
         """
-
+TODO fill explanation
         :param trialsSuite2P: list of trials to use for Suite2p setup
         :param TrialsInformation: dictionary mapping trial ID to tiff_path to use for Suite2p processing of that trial
         :param kwargs:
@@ -534,10 +577,19 @@ class Suite2pExperiment:
                           'save_folder': Suite2p_obj.s2pResultsPath}
 
     def s2pRun(self, expobj, trialsSuite2P: Union[list, str] = 'all'):
+        """
+TODO fill explanation and add parameters
+        :param expobj:
+        :param trialsSuite2P:
+        """
         s2pRun(expobj, trialsSuite2P=trialsSuite2P)
 
     def s2pROIsTiff(self, save_path, cell_ids: Union[str, list] = 'all'):
-        """save a TIFF image of the suite2p ROIs masks."""
+        """save a TIFF image of the suite2p ROIs masks.
+        TODO add parameters
+        :param save_path:
+        :param cell_ids:
+        """
         # todo test function
         # os.chdir(self.s2pResultsPath)
         # stat = np.load('stat.npy', allow_pickle=True)
@@ -629,16 +681,24 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
 
     @property
     def s2pResultExists(self):
+        """
+TODO fill explanation and add parameters
+        :return:
+        """
         return self.__s2pResultExists
 
     @s2pResultExists.setter
     def s2pResultExists(self, val):
+        """
+TODO fill explanation and add parameters
+        :param val:
+        """
         self.__s2pResultExists = val
 
     def _get_suite2pResults(self, s2pExp: Suite2pExperiment):
         """
         Get suite2p cellsdata for current trial's key_frames.
-
+TODO add parameters
         :param s2pExp:
         :return:
         """
@@ -679,6 +739,14 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
     def makeFrameAverageTiff(self, reg_tif_dir: str, frames: Union[int, list, tuple], peri_frames: int = 100,
                              save_dir: str = None, to_plot=False, **kwargs):
         """Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from the suite2p registered TIFF file.
+        TODO add parameters
+        :param reg_tif_dir:
+        :param frames:
+        :param peri_frames:
+        :param save_dir:
+        :param to_plot:
+        :param kwargs:
+        :return:
         """
 
         # read in registered tiff
@@ -735,7 +803,13 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
         return np.asarray(imgs)
 
     def makeDownSampledTiff(self, save_as: str, group_by: int = 4, reg_tif_folder=None, frameNum: Union[str, tuple, list, int]='all'):
-        """makes downsampled TIFF of current suite2p trial imaging series"""
+        """makes downsampled TIFF of current suite2p trial imaging series
+        TODO add parameters
+        :param save_as:
+        :param group_by:
+        :param reg_tif_folder:
+        :param frameNum:
+        """
         reg_tif_folder = reg_tif_folder if reg_tif_folder else self.s2pResultsPath + '/reg_tif/'
 
         sorted_paths, first_tiff_offset, last_tiff_offset = self.getRegTiffPaths(reg_tif_folder=reg_tif_folder, frameNum=frameNum)
@@ -744,7 +818,12 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
         SaveDownsampledTiff(stack=trial_frames_cropped, group_by=group_by, save_as=save_as)
 
     def getRegTiffPaths(self, reg_tif_folder=None, frameNum: Union[str, int, tuple, list] = 'all'):
-        """get trial's gcamp signals tiff path at a certain frame number"""
+        """get trial's gcamp signals tiff path at a certain frame number
+        TODO add parameters
+        :param reg_tif_folder:
+        :param frameNum:
+        :return:
+        """
         reg_tif_folder = reg_tif_folder if reg_tif_folder else self.s2pResultsPath + '/reg_tif/'
         reg_tif_list = os.listdir(reg_tif_folder)
         reg_tif_list.sort()
@@ -800,6 +879,10 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
             raise ValueError(f'frameNum must be `all` or an int of a frame number.')
 
     def getCellsAnnotations(self):
+        """
+TODO fill explanation and add parameters
+        :return:
+        """
         if self.s2pResultExists:
             # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
             # build dataframe for obs_meta from suite2p stat information
@@ -824,6 +907,11 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
             raise ValueError('cannot set cell annotations. no s2p results found in trial.')
 
     def stitch_s2p_reg_tiff(self, save_path: str = None, reg_tif_folder=None):
+        """
+TODO fill explanation and add parameters
+        :param save_path:
+        :param reg_tif_folder:
+        """
         # TODO test out
 
         assert self.s2pResultExists, UnavailableOptionError('stitch_s2p_reg_tiff')
@@ -872,7 +960,10 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
 
     @property
     def cell_coords(self):
-        """X and Y coordinates of cells"""
+        """X and Y coordinates of cells
+        TODO fill explanation and add parameters
+        :return:
+        """
         assert 'med' in self.cellsdata, 'med cannot be found in cells annotations under cellsdata'
         coordinates = np.empty(shape=[self.n_cells, 2])
         for cell, value in enumerate(self.cellsdata['med']):
@@ -883,7 +974,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
     def collectTiffList(self, curr_trial_frames: Union[tuple, list], reg_tif_folder: str = None):
         """
         Collects list of tiffs from registered tiff output folder for current trial of suite2p processed dataset.
-
+TODO add parameters
         :param curr_trial_frames:
         :param reg_tif_folder:
         :return:
@@ -910,7 +1001,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
         TODO: update to use the tiff list and method in core.
 
         uses registered tiffs to collect raw traces from provided target masks target areas
-
+        TODO add parameters
         :param curr_trial_frames:
         :param reg_tif_folder: folder containing .tiff
         :param save:
@@ -1115,7 +1206,7 @@ def add_suite2p_results(expobj, s2p_trials: Union[list, str] = 'all', s2pResults
     todo: probably want to split up the bottom
     todo: test moving function to suite2p file.
     Wrapper for adding suite2p results to Experiment. Can only be run after adding trials to Experiment.
-
+    TODO add parameters
     :param expobj:
     :param s2p_trials: list of trials to use for Suite2p processing/analysis pipeline, default = 'all' to use all trials of Experiment
     :param s2pResultsPath: optional, if suite2p already run then here provide path to plane0 folder of existing suite2p results

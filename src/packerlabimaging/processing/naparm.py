@@ -27,7 +27,9 @@ class naparm:
         print(f"naparm analysis submodule. Loaded from: {self.path}")
 
     def _parseNAPARMxml(self):
-
+        """
+TODO fill explanation
+        """
         print('\n\----- parsing Naparm xml file...')
 
         print('loading NAPARM_xml_path:')
@@ -63,6 +65,9 @@ class naparm:
         self.single_stim_dur = spiral_duration
 
     def _parseNAPARMgpl(self):
+        """
+TODO fill explanation
+        """
         spiral_size = -1
 
         print('\n\----- parsing Naparm gpl file...')
@@ -126,7 +131,10 @@ class naparm:
 
     @classmethod
     def importNaparm(cls, path):
-        """Alternative constructor to be used to run pipeling for loading and parsing Naparm photostimulation protocol."""
+        """Alternative constructor to be used to run pipeling for loading and parsing Naparm photostimulation protocol.
+        TODO add parameters
+        :param path:
+        """
         npm = cls(path)
         npm._NaparmProcessing()
 
@@ -161,6 +169,12 @@ class Targets(naparm):
         print(f"naparm.Targets analysis submodule. Loaded from: {self.path}")
 
     def _readTargetsImage(self, frame_x, frame_y):
+        """
+TODO fill explanation and add parameters
+        :param frame_x:
+        :param frame_y:
+        :return:
+        """
         scale_factor_x = frame_x / 512  ## TODO need to get this from the NAPARM OUTPUT somehow...
         scale_factor_y = frame_y / 512  ## TODO how does the OBFOV scaling work?
 
@@ -216,6 +230,12 @@ class Targets(naparm):
         Finds cells that have been targeted for optogenetic photostimulation using Naparm in all-optical type experiments.
         output: coordinates of targets, and circular areas of targets
         Note this is not done by target groups however. So all of the targets are just in one big ls.
+        TODO add parameters
+        :param frame_x:
+        :param pix_sz_x:
+        :param frame_y:
+        :param pix_sz_y:
+        :return:
         """
 
         # targets_1 = np.where(target_image_scaled_1 > 0)
@@ -277,7 +297,7 @@ class Targets(naparm):
         as a measure of spread
 
         Inputs:
-            resp_positions - the median coordinates of cells
+            :param resp_positions: the median coordinates of cells
         Outputs:
             euclid_dist    - the mean Euclidean distance from central point
         """

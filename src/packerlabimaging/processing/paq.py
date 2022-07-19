@@ -279,7 +279,7 @@ class PaqData(TemporalData):
     def paqProcessingTwoPhotonImaging(cls, paq_path, frame_channel, plot: bool = False):
         """
         Alternative constructor for paq module for working with two photon imaging trials.
-
+        TODO add parameters
         :param plot:
         :param paq_path: path to .paq file
         :param frame_channel: channel to use for measuring frame times from .paq cellsdata
@@ -298,7 +298,7 @@ class PaqData(TemporalData):
     def paqProcessingAllOptical(cls, paq_path: str, stim_channel: str, frame_channel: str, plot: bool =False):
         """
         Alternative constructor for paq module for working with all optical trials.
-
+        TODO add parameters
         :param plot:
         :param stim_channel:
         :param paq_path: path to .paq file
