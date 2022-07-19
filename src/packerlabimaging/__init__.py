@@ -1,9 +1,6 @@
 """
 
-packerlabimaging: an essential package for getting started with processing and analysis of calcium imaging cellsdata in the Packer lab.
-
-The fundamental cellsdata object is one t-series of imaging cellsdata, along with its associated .Paq file, accessory files generated
-from the microscope during cellsdata collection, and any user generated files associated with the experiment of this t-series.
+packerlabimaging: an essential data processing and analysis package for getting started with processing and analysis of calcium imaging data.
 
 """
 
