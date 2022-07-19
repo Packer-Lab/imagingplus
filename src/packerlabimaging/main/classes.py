@@ -665,7 +665,7 @@ class ImagingTrial:
         """Import current trial tiff, create downsampled tiff and save in default analysis directory."""
 
         stack = self.importTrialTiff()
-        from packerlabimaging.utils.utils import SaveDownsampledTiff
+        from packerlabimaging.utils.images import SaveDownsampledTiff
         SaveDownsampledTiff(stack=stack, save_as=f"{self.saveDir}/{self.date}_{self.trialID}_downsampled.tif")
 
     def create_anndata(self, imdata_type: str = None, layers=False):

@@ -13,7 +13,7 @@ from suite2p import run_s2p
 import tifffile as tf
 
 from packerlabimaging.utils.classes import UnavailableOptionError
-from packerlabimaging.utils.utils import make_tiff_stack, WriteTiff, ImportTiff, SaveDownsampledTiff
+from packerlabimaging.utils.images import ImportTiff, SaveDownsampledTiff, WriteTiff, make_tiff_stack
 
 # TEMP VARIABLES FOR DEVELOPMENT USAGES
 N_PLANES = 1
@@ -713,12 +713,11 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
             avg_sub = np.mean(im_sub_reg, axis=0)
 
             # convert to 8-bit
-            from packerlabimaging.utils.utils import convert_to_8bit
+            from packerlabimaging.utils.images import convert_to_8bit
             avg_sub = convert_to_8bit(avg_sub, 0, 255)
 
             if save_dir:
                 if '.tif' in save_dir:
-                    from packerlabimaging.utils.utils import return_parent_dir
                     save_dir = os.path.dirname(save_dir) + '/'
                 save_path = save_dir + f'/{frames[idx]}_s2preg_frame_avg.tif'
                 os.makedirs(save_dir, exist_ok=True)
@@ -764,8 +763,8 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
 
             return tiff_path, offsetFrameNum
         elif type(frameNum) is list or type(frameNum) is tuple:
-            start = (curr_trial_frames[0] + frameNum[0]) // batch_size
-            end = (curr_trial_frames[0] + frameNum[1]) // batch_size
+            start = int(np.floor((curr_trial_frames[0] + frameNum[0]) / batch_size))
+            end = int(np.ceil((curr_trial_frames[0] + frameNum[1]) / batch_size))
 
             if start == end:  # i.e. if the frames selected for crop are in the same batch .tif
                 stacks = [start]

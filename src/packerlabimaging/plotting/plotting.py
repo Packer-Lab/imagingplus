@@ -14,7 +14,8 @@ from packerlabimaging.workflows.TwoPhotonImaging import TwoPhotonImaging
 
 from packerlabimaging import Experiment
 from packerlabimaging.main.subcore import TemporalData
-from packerlabimaging.utils.utils import save_to_csv, ImportTiff
+from packerlabimaging.utils.utils import save_to_csv
+from packerlabimaging.utils.images import ImportTiff
 
 from packerlabimaging.workflows.AllOptical import AllOpticalTrial
 
@@ -265,12 +266,11 @@ TODO  add parameters
     img = np.mean(im_stack, axis=0)
 
     # convert to 8-bit
-    from packerlabimaging.utils.utils import convert_to_8bit
+    from packerlabimaging.utils.images import convert_to_8bit
     img = convert_to_8bit(img, 0, 255)
 
     if save_path:
         if '.tif' in save_path:
-            from packerlabimaging.utils.utils import return_parent_dir
             save_dir = os.path.dirname(save_path) + '/'
             os.makedirs(save_dir, exist_ok=True)
         else:
@@ -339,7 +339,6 @@ TODO add parameters
 
     if save_path:
         if '.tif' in save_path:
-            from packerlabimaging.utils.utils import return_parent_dir
             save_dir = os.path.dirname(save_path) + '/'
             os.makedirs(save_dir, exist_ok=True)
         else:
@@ -400,12 +399,11 @@ TODO  add parameters
     img = np.std(im_stack, axis=0)
 
     # convert to 8-bit
-    from packerlabimaging.utils.utils import convert_to_8bit
+    from packerlabimaging.utils.images import convert_to_8bit
     img = convert_to_8bit(img, 0, 255)
 
     if save_path:
         if '.tif' in save_path:
-            from packerlabimaging.utils.utils import return_parent_dir
             save_dir = os.path.dirname(save_path) + '/'
             os.makedirs(save_dir, exist_ok=True)
         else:
@@ -508,7 +506,6 @@ TODO add parameters
 
         if save_path:
             if '.tif' in save_path:
-                from packerlabimaging.utils.utils import return_parent_dir
                 save_path = os.path.dirname(save_path) + '/'
             save_path = save_path + f'/{frame}_frame_avg.tif'
             os.makedirs(save_path, exist_ok=True)

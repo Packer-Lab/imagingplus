@@ -32,7 +32,8 @@ import pickle
 
 # TODO [ ]  thinking about restructuring TwoPhotonImaging trial methods to more general trial type
 #    [ ]  then making TwoPhotonImaging as an independent workflow, allowing the general trial type to retain the methods that are *currently* in TwoPhotonImaging
-from packerlabimaging.utils.utils import ImportTiff, findClosest
+from packerlabimaging.utils.utils import findClosest
+from packerlabimaging.utils.images import ImportTiff, SaveDownsampledTiff
 
 """
 
@@ -582,7 +583,6 @@ TODO fill documentation and add parameters
         """Import current trial tiff, create downsampled tiff and save in default analysis directory."""
 
         stack = self.importTrialTiff()
-        from packerlabimaging.utils.utils import SaveDownsampledTiff
         SaveDownsampledTiff(stack=stack, save_as=f"{self.saveDir}/{self.date}_{self.trialID}_downsampled.tif")
 
     def create_anndata(self, imdata_type: str = None, layers=False):
@@ -655,7 +655,7 @@ TODO add parameters
             # data = np.asarray(images)
 
             # works
-            from packerlabimaging.utils.utils import ImportTiff
+            from packerlabimaging.utils.images import ImportTiff
             data = ImportTiff(tiff_path)
             print(f'\t\- shape: {data.shape}')
 
