@@ -154,6 +154,10 @@ class AllOpticalTrial(TwoPhotonImaging):
         """Alternative constructor for AllOpticalTrial.
 
         Creates an all optical trial from an existing imaging trial.
+        TODO add parameters
+        :param naparm_path:
+        :param imaging_trial:
+        :return:
         """
 
         initialization_dict = {'naparm_path': naparm_path, 'dataPath': imaging_trial.dataPath,
@@ -167,85 +171,137 @@ class AllOpticalTrial(TwoPhotonImaging):
 
     @property
     def twopstim_path(self):
-        """path to folder containing photostimulation protocols output by NAPARM"""
+        """path to folder containing photostimulation protocols output by NAPARM
+        TODO add parameters
+        :return:
+        """
         if self.twopstim:
             return self.twopstim.path
 
     @property
     def prestim_sec(self):
-        """length of pre stim trace collected (secs)"""
+        """length of pre stim trace collected (secs)
+        TODO add parameters
+        :return:
+        """
         return self.__prestim_sec
 
     @prestim_sec.setter
     def prestim_sec(self, val):
+        """
+    TODO fill explanation and add parameters
+        :param val:
+        """
         assert type(val) == int or type(val) == float, 'can only set prestim_sec with int or float'
         self.__prestim_sec = val
 
     @property
     def poststim_sec(self):
-        """length of post stim trace collected (secs)"""
+        """length of post stim trace collected (secs)
+        TODO add parameters
+        :return:
+        """
         return self.__poststim_sec
 
     @poststim_sec.setter
     def poststim_sec(self, val):
+        """
+        TODO fill explanation and add parameters
+        :param val:
+        """
         assert type(val) == int or type(val) == float, 'can only set poststim_sec with int or float'
         self.__prestim_sec = val
 
     @property
     def prestim_response_window(self):
-        """time window for collecting pre-stim measurement (units: msec)"""
+        """time window for collecting pre-stim measurement (units: msec)
+        TODO add parameters
+        :return:
+        """
         return self.__prestim_response_window
 
     @prestim_response_window.setter
     def prestim_response_window(self, val):
+        """
+        TODO fill explanation and add parameters
+        :param val:
+        """
         assert type(val) == int or type(val) == float, 'can only set prestim_response_window with int or float'
         self.__prestim_response_window = val
 
     @property
     def prestim_response_frames_window(self):
-        """num frames for measuring Flu trace before each photostimulation trial during photostim response measurement (units: frames)"""
+        """num frames for measuring Flu trace before each photostimulation trial during photostim response measurement (units: frames)
+        TODO add parameters
+        :return:
+        """
         return int(self.imparams.fps * self.prestim_response_window)
 
     @property
     def poststim_response_window(self):
-        """time window for collecting post-stim measurement (units: msec)"""
+        """time window for collecting post-stim measurement (units: msec)
+        TODO add parameters
+        :return:
+        """
         return self.__poststim_response_window
 
     @poststim_response_window.setter
     def poststim_response_window(self, val):
+        """
+        TODO fill explanation and add parameters
+        :param val:
+        """
         assert type(val) == int or type(val) == float, 'can only set poststim_response_window with int or float'
         self.__poststim_response_window = val
 
     @property
     def poststim_response_frames_window(self):
-        """num frames for measuring Flu response after each photostimulation trial during photostim response measurement (units: frames)"""
+        """num frames for measuring Flu response after each photostimulation trial during photostim response measurement (units: frames)
+        TODO add parameters
+        :return:
+        """
         return int(self.imparams.fps * self.poststim_response_window)
 
     @property
     def prestim_frames(self):
-        """num frames for collecting Flu trace after each photostimulation trial (units: frames)"""
+        """num frames for collecting Flu trace after each photostimulation trial (units: frames)
+        TODO add parameters
+        :return:
+        """
         return int(self.__prestim_sec * self.imparams.fps)
 
     @property
     def poststim_frames(self):
-        """num frames for collecting Flu trace after each photostimulation trial (units: frames)"""
+        """num frames for collecting Flu trace after each photostimulation trial (units: frames)
+        TODO add parameters
+        :return:
+        """
         return int(self.__poststim_sec * self.imparams.fps)
 
     @property
     def n_stims(self):
         #: TODO set property using anndata responses shape property assigning from array: cells x Flu frames x # of photostim trials
-        """number of photostimulation trials """
+        """number of photostimulation trials
+        TODO add parameters
+        :return:
+        """
         return
 
     @property
     def stim_start_frames(self):
-        """Imaging frames corresponding to start of photostimulation trials."""
+        """Imaging frames corresponding to start of photostimulation trials.
+        TODO add parameters
+        :return:
+        """
         # todo use anndata for getting this
         return []
 
     @property
     def photostim_frames(self):
-        """Imaging frames during photostimulation trials."""
+        """Imaging frames during photostimulation trials.
+        TODO add parameters
+        :return:
+        """
         # todo just use anndata for getting this
         return []
 
@@ -253,6 +309,8 @@ class AllOpticalTrial(TwoPhotonImaging):
     def stim_duration_frames(self):
         """Duration of photostimulation as number of frames.
         Note: Removing 1 more frame than the stim duration, as the stim isn't perfectly aligned with the start of the imaging frame
+        TODO add parameters
+        :return:
         """
         if not hasattr(self, 'twopstim'):
             raise ValueError(
@@ -265,12 +323,18 @@ class AllOpticalTrial(TwoPhotonImaging):
 
     @property
     def prestim_test_slice(self):
-        """slice representing prestim response frames"""
+        """slice representing prestim response frames
+        TODO add parameters
+        :return:
+        """
         return np.s_[self.prestim_frames - self.prestim_response_frames_window: self.prestim_frames]
 
     @property
     def poststim_test_slice(self):
-        """slice representing poststim response frames"""
+        """slice representing poststim response frames
+        TODO add parameters
+        :return:
+        """
         stim_end = self.prestim_frames + self.stim_duration_frames
         return np.s_[stim_end: stim_end + self.poststim_response_frames_window]
 
@@ -279,6 +343,9 @@ class AllOpticalTrial(TwoPhotonImaging):
         Processing alloptical trial photostimulation protocol.
         - parse NAPARM protocol and SLM Targets information under .twopstim
         - collect stimulation timing synchronized to imaging cellsdata frame timings
+        TODO add parameters
+        :param naparm_path:
+        :return:
 
         """
 
@@ -322,6 +389,7 @@ class AllOpticalTrial(TwoPhotonImaging):
         """
         Collect photostimulation timed snippets of signal from selected targets.
 
+        TODO add parameters
         :param stims:
         :param targets_idx: integer for the index of target cell to process
         :param subselect_cells: ls of cells to subset from the overall set of traces (use in place of targets_idx if desired)
@@ -366,6 +434,9 @@ class AllOpticalTrial(TwoPhotonImaging):
         to find cells that were targeted
 
         --- LAST UPDATED NOV 6 2021 - copied over from Vape ---
+
+        TODO add parameters
+        :param plot:
         """
 
         print('\n\----- Searching for targeted cells in annotated cells...')
@@ -513,6 +584,9 @@ class AllOpticalTrial(TwoPhotonImaging):
         """
         Normalize each trace snippet to pre-stim period.
 
+        TODO add parameters
+        :param snippets:
+        :return:
         :return:
         """
 
@@ -536,6 +610,8 @@ class AllOpticalTrial(TwoPhotonImaging):
         """
         Calculations of responses (post-stim - pre-stim) to photostimulation of SLM Targets of the provided snippets array.
 
+        TODO add parameters
+        :param snippets:
         :param stims_to_use: ls of stims to retrieve photostim trial dFF responses
         :return:
         """
@@ -586,7 +662,7 @@ class AllOpticalTrial(TwoPhotonImaging):
     def _TargetsPhotostimResponsesAnndata(self):
         """
         Create an anndata table for photostimulation responses of Targets.
-
+        TODO add parameters
         :return:
         """
 
@@ -594,6 +670,10 @@ class AllOpticalTrial(TwoPhotonImaging):
     def _CellsPhotostimResponsesAnndata(self, photostimResponseAmplitudes: pd.DataFrame):
         """
         Creates annotated cellsdata (see anndata library) object based around the Ca2+ matrix of the imaging trial.
+
+        TODO add parameters
+        :param photostimResponseAmplitudes:
+        :return:
 
         """
 
@@ -619,8 +699,9 @@ class AllOpticalTrial(TwoPhotonImaging):
         Take dfof trace for entire timeseries and break it up in to individual trials, calculate
         the mean amplitudes of response and statistical significance across all trials
 
+        TODO add parameters
         Inputs:
-            plane             - imaging plane n
+        :param plane:             - imaging plane n
         """
         print('\n----------------------------------------------------------------')
         print('running trial Processing for all cells ')
@@ -650,7 +731,7 @@ class AllOpticalTrial(TwoPhotonImaging):
     def staSignificance(self, test):
         """
         TODO docstring
-
+        TODO add parameters
         :param test:
         """
         self.sta_sig = []
@@ -687,6 +768,7 @@ class AllOpticalTrial(TwoPhotonImaging):
     def singleTrialSignificance(self):
         """
         TODO docstring
+        TODO fill explanation
         """
         self.single_sig = []  # single trial significance value for each trial for each cell in each plane
 
@@ -718,7 +800,7 @@ class AllOpticalTrial(TwoPhotonImaging):
     def run_stamm_nogui(self, numDiffStims, startOnStim, everyXStims, preSeconds=0.75, postSeconds=1.25):
         """
         run STAmoviemaker for current trial
-
+        TODO add parameters
         :param numDiffStims:
         :param startOnStim:
         :param everyXStims:
@@ -806,6 +888,10 @@ if __name__ == '__main__':
 
 
     def alloptical_trial_fixture():
+        """
+        TODO fill explaination
+        :return:
+        """
         initialization_dict = {'naparm_path': f'{BASE_PATH}/2020-12-19/photostim/2020-12-19_RL109_ps_014/',
                                'dataPath': f'{BASE_PATH}/2020-12-19/2020-12-19_t-013/2020-12-19_t-013_Cycle00001_Ch3.tif',
                                'saveDir': f'{BASE_PATH}/2020-12-19/',
@@ -819,6 +905,11 @@ if __name__ == '__main__':
 
 
     def test_AllOpticalClass(alloptical_trial_fixture):
+        """
+        TODO fill explaination add parameters
+        :param alloptical_trial_fixture:
+        :return:
+        """
         from packerlabimaging.processing.imagingMetadata import PrairieViewMetadata
         from packerlabimaging.processing.paq import PaqData
 

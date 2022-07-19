@@ -27,10 +27,18 @@ class CellposeImg(SingleImage):
 
     @property
     def trial_id(self):
+        """
+TODO fill explanation and add parameters
+        :return:
+        """
         return f"{self.expID} {self.imgID}"
 
     @property
     def roi_ids(self):
+        """
+TODO fill explanation and add parameters
+        :return:
+        """
         return [*self.roi_areas]
 
     @classmethod
@@ -38,7 +46,14 @@ class CellposeImg(SingleImage):
                       **kwargs):
         """
         Alternate constructor.
-        import and load array coords from cellpose generated ROI masks for red channel interneurons."""
+        import and load array coords from cellpose generated ROI masks for red channel interneurons.
+        TODO add parameters
+        :param dataPath:
+        :param cellpose_npy_path:
+        :param imparams:
+        :param saveDir:
+        :param expID:
+        :param kwargs: """
 
         cellpose = cls(dataPath=dataPath, cellpose_npy_path=cellpose_npy_path, imparams=imparams, saveDir=saveDir,
                        expID=expID)
@@ -60,6 +75,11 @@ class CellposeImg(SingleImage):
 
 
     def plot_img(self, roi_labels=True, **kwargs):
+        """
+TODO fill explanation and add parameters
+        :param roi_labels:
+        :param kwargs:
+        """
         fig, ax = plt.subplots(figsize=(6, 6))
         ax.imshow(self.data, cmap='hot')
 
@@ -79,6 +99,11 @@ class CellposeImg(SingleImage):
         fig.show()
 
     def plot_rois(self, roi_labels=True, **kwargs):
+        """
+TODO fill explanation and add parameters
+        :param roi_labels:
+        :param kwargs:
+        """
         fig, ax = plt.subplots(figsize=(6, 6))
         ax.imshow(self.data, cmap='hot')
         ax.imshow(self.masks, cmap='hot', vmin=0, vmax=1)

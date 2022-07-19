@@ -57,13 +57,16 @@ class PrairieViewMetadata(ImagingMetadata):
         """
         Find the value, description and indices of a particular parameter from an xml file
 
+TODO add parameters
         Inputs:
             path        - path to xml file
-            key         - string corresponding to key in xml tree
+            :param key: string corresponding to key in xml tree
+            :param root:
         Outputs:
             value       - value of the key
             description - unused
             index       - index that the key was found at
+
         """
         value = []
         description = []
@@ -99,6 +102,8 @@ class PrairieViewMetadata(ImagingMetadata):
     def _parsePVMetadata(self):
         """
         Parse all of the relevant acquisition metadata from the PrairieView xml file for this recording
+        TODO add parameters
+        :return:
 
         """
 
