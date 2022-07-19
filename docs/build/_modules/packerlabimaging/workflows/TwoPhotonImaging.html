@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>packerlabimaging.workflows.TwoPhotonImaging &#8212; packerlabimaging 0.2-alpha documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinxdoc.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">packerlabimaging 0.2-alpha documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">packerlabimaging.workflows.TwoPhotonImaging</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for packerlabimaging.workflows.TwoPhotonImaging</h1><div class="highlight"><pre>
+<span></span><span class="c1"># this file tries an approach of building twophoton imaging trial on top of a general Trial class</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="c1"># grabbing functions from .utils_funcs that are used in this script - Prajay&#39;s edits (review based on need)</span>
+<span class="kn">from</span> <span class="nn">packerlabimaging.main.core</span> <span class="kn">import</span> <span class="n">ImagingTrial</span>
+<span class="kn">from</span> <span class="nn">packerlabimaging.main.subcore</span> <span class="kn">import</span> <span class="n">CellAnnotations</span><span class="p">,</span> <span class="n">ImagingData</span>
+<span class="kn">from</span> <span class="nn">packerlabimaging.processing.paq</span> <span class="kn">import</span> <span class="n">PaqData</span>
+<span class="kn">from</span> <span class="nn">packerlabimaging.processing.imagingMetadata</span> <span class="kn">import</span> <span class="n">ImagingMetadata</span>
+
+
+<div class="viewcode-block" id="TwoPhotonImaging"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.TwoPhotonImaging">[docs]</a><span class="k">class</span> <span class="nc">TwoPhotonImaging</span><span class="p">(</span><span class="n">ImagingTrial</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Two Photon Imaging Experiment Data Analysis Workflow.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TwoPhotonImaging.__init__"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.TwoPhotonImaging.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">trialID</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">expID</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dataPath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">expGroup</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">saveDir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tmdata</span><span class="p">:</span> <span class="n">PaqData</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">imdata</span><span class="p">:</span> <span class="n">ImagingData</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">imparams</span><span class="p">:</span> <span class="n">ImagingMetadata</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">cells</span><span class="p">:</span> <span class="n">CellAnnotations</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">comment</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TODO update function docstring for approp args</span>
+<span class="sd">        :param metainfo: TypedDict containing meta-information field needed for this experiment. Please see TwoPhotonImagingMetainfo for type hints on accepted keys.</span>
+<span class="sd">        :param paq_options: TypedDict containing meta-information about .paq file associated with current trial</span>
+<span class="sd">        :param analysis_save_path: path of where to save the experiment analysis object</span>
+<span class="sd">        :param microscope: name of microscope used to record imaging (options: &quot;Bruker&quot; (default), &quot;other&quot;)</span>
+<span class="sd">        :param imagingMicroscopeMetadata: provide ImagingMetadata object (see ImagingMetadata class).</span>
+<span class="sd">        :param suite2p_experiment_obj: provide Suite2p Experiment Object as variable in order to process Suite2p cellsdata for current trial</span>
+<span class="sd">        :param total_frames_stitched: provide frame number on which current trial starts in Suite2p Experiment Object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;\----- CREATING TwoPhotonImagingTrial for trial: </span><span class="si">{</span><span class="n">trialID</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">date</span><span class="o">=</span><span class="n">date</span><span class="p">,</span> <span class="n">trialID</span><span class="o">=</span><span class="n">trialID</span><span class="p">,</span> <span class="n">expID</span><span class="o">=</span><span class="n">expID</span><span class="p">,</span> <span class="n">dataPath</span><span class="o">=</span><span class="n">dataPath</span><span class="p">,</span> <span class="n">expGroup</span><span class="o">=</span><span class="n">expGroup</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="n">comment</span><span class="p">,</span>
+                         <span class="n">saveDir</span><span class="o">=</span><span class="n">saveDir</span><span class="p">,</span> <span class="n">imparams</span><span class="o">=</span><span class="n">imparams</span><span class="p">,</span> <span class="n">cells</span><span class="o">=</span><span class="n">cells</span><span class="p">,</span> <span class="n">tmdata</span><span class="o">=</span><span class="n">tmdata</span><span class="p">)</span>
+
+        <span class="c1"># SAVE two photon trial object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pkl_path</span><span class="p">:</span>
+            <span class="n">lastmod</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getmtime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pkl_path</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lastmod</span> <span class="o">=</span> <span class="s2">&quot;(unsaved pkl object)&quot;</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ID: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">t_series_name</span><span class="si">}</span><span class="s2"> (TwoPhotonImagingTrial experimental object, last saved: </span><span class="si">{</span><span class="n">lastmod</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">t_series_name</span><span class="si">}</span><span class="s2"> (TwoPhotonImagingTrial experimental object)&quot;</span><span class="p">)</span></div>
+
+    <span class="c1"># def _getImagingParameters(self, metadata: Optional[dict] = None, microscope: Optional[str] = &#39;Bruker&#39;):</span>
+    <span class="c1">#     &quot;&quot;&quot;retrieves imaging metadata parameters. If using Bruker microscope and PrairieView, then _prairieview module is used to collect this cellsdata.</span>
+    <span class="c1">#</span>
+    <span class="c1">#     :param microscope: name of the microscope, currently the only supported microscope for parsing metadata directly is Bruker/PrairieView imaging setup.</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     if &#39;Bruker&#39; in microscope:</span>
+    <span class="c1">#         return PrairieViewMetadata(tiff_path_dir=self.tiff_path_dir)</span>
+    <span class="c1">#     else:</span>
+    <span class="c1">#         try:</span>
+    <span class="c1">#             return ImagingMetadata(**metadata)</span>
+    <span class="c1">#         except TypeError:</span>
+    <span class="c1">#             Exception(&#39;required key not present in metadata&#39;)</span>
+    <span class="c1">#</span>
+    <span class="c1"># @property</span>
+    <span class="c1"># def frame_clock(self):</span>
+    <span class="c1">#     if hasattr(self.tmdata, &quot;frame_times&quot;):</span>
+    <span class="c1">#         return self.tmdata.frame_times</span>
+    <span class="c1">#     else:</span>
+    <span class="c1">#         raise ValueError(&#39;Frame clock timings couldnt be retrieved from .tmdata submodule.&#39;)</span>
+
+    <span class="c1"># def stitch_s2p_reg_tiff(self):  ## TODO refactoring in new code from the Suite2p class script?</span>
+    <span class="c1">#     assert self.Suite2p._s2pResultExists, UnavailableOptionError(&#39;stitch_s2p_reg_tiff&#39;)</span>
+    <span class="c1">#</span>
+    <span class="c1">#     tif_path_save2 = self.saveDir + f&#39;reg_tiff_{self.t_series_name}_r.tif&#39;</span>
+    <span class="c1">#</span>
+    <span class="c1">#     start = self.Suite2p.trial_frames[0] // 2000  # 2000 because that is the batch size for suite2p run</span>
+    <span class="c1">#     end = self.Suite2p.trial_frames[1] // 2000 + 1</span>
+    <span class="c1">#</span>
+    <span class="c1">#     if not os.path.exists(tif_path_save2):</span>
+    <span class="c1">#         with tf.TiffWriter(tif_path_save2, bigtiff=True) as tif:</span>
+    <span class="c1">#             with tf.TiffFile(self.Suite2p.reg_tiff_path, multifile=False) as input_tif:</span>
+    <span class="c1">#                 print(&#39;cropping registered tiff&#39;)</span>
+    <span class="c1">#                 cellsdata = input_tif.asarray()</span>
+    <span class="c1">#                 print(&#39;shape of stitched tiff: &#39;, cellsdata.shape)</span>
+    <span class="c1">#             reg_tif_crop = cellsdata[self.Suite2p.trial_frames[0] - start * self.Suite2p.s2p_run_batch:</span>
+    <span class="c1">#                                 self.Suite2p.trial_frames[1] - (</span>
+    <span class="c1">#                                         self.Suite2p.trial_frames - start * self.Suite2p.s2p_run_batch)]</span>
+    <span class="c1">#             print(&#39;saving cropped tiff &#39;, reg_tif_crop.shape)</span>
+    <span class="c1">#             tif.write(reg_tif_crop)</span>
+
+    <span class="c1"># def dfof(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;(delta F)/F normalization of raw Suite2p cellsdata of trial.&quot;&quot;&quot;</span>
+    <span class="c1">#     assert hasattr(self,</span>
+    <span class="c1">#                    &#39;Suite2p&#39;), &#39;no Suite2p module found. dfof function implemented to just normalize raw traces from Suite2p ROIs.&#39;</span>
+    <span class="c1">#     if self.Suite2p._s2pResultExists:</span>
+    <span class="c1">#         dFF = self.normalize_dff(self.Suite2p.raw)</span>
+    <span class="c1">#         return dFF</span>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">packerlabimaging 0.2-alpha documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">packerlabimaging.workflows.TwoPhotonImaging</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Packer Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

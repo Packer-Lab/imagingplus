@@ -3,16 +3,16 @@ API reference
 
 
 
-Experiment class
-----------------
-.. autoclass:: packerlabimaging.Experiment
+SingleImage class
+-----------------
+.. autoclass:: packerlabimaging.SingleImage
     :members:
 
 
 
 TwoPhotonImagingTrial class
 ---------------------------
-.. autoclass:: packerlabimaging.TwoPhotonImagingTrial
+.. autoclass:: packerlabimaging.TwoPhotonImaging
     :members:
 
 

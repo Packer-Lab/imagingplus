@@ -1,6 +1,6 @@
 import os
 
-from deepinterpolation.generic import JsonSaver, ClassLoader
+# from deepinterpolation.generic import JsonSaver, ClassLoader
 
 
 class Deepinterpolation:

@@ -24,7 +24,7 @@ Introduction
 
 In particular, ``packerlabimaging`` was first designed to serve a structured data analysis framework for all-optical experiments, which combine 2-photon imaging, 2-photon stimulation and multiple other time-synced data signals (Packer et al., 2015, Nat Methods).
 However, the ``packerlabimaging`` framework is more broadly useful for multi-modal imaging+ neuroscience experiments, in which calcium imaging data is collected with other time-synchronized signals.
-Especially, there are modular methods for analysis and visualisation of standard calcium imaging data.
+Especially, there are methods for analysis and visualisation of standard calcium imaging data.
 
 .. sidebar:: Multimodal imaging+ experiment:
 
