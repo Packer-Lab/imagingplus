@@ -3,23 +3,37 @@ API reference
 
 
 
-SingleImage class
+core.SingleImage
+----------------
+.. autoclass:: packerlabimaging.main.core.SingleImage
+    :members:
+
+
+
+core.ImagingTrial
 -----------------
-.. autoclass:: packerlabimaging.SingleImage
+.. autoclass:: packerlabimaging.main.core.ImagingTrial
+    :members:
+
+
+core.Experiment
+---------------
+.. autoclass:: packerlabimaging.main.core.Experiment
     :members:
 
 
 
-TwoPhotonImagingTrial class
----------------------------
-.. autoclass:: packerlabimaging.TwoPhotonImaging
+workflows.AllOpticalTrial
+-------------------------
+.. autoclass:: packerlabimaging.workflows.AllOpticalTrial
     :members:
 
 
-
-AllOpticalTrial class
----------------------
-.. autoclass:: packerlabimaging.AllOpticalTrial
+plotting
+--------
+.. autoclass:: packerlabimaging.plotting.plotting
     :members:
+
+
 
 

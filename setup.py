@@ -6,7 +6,7 @@ TESTS_REQUIRE = Path(f"{os.getcwd()}/requirements_dev.txt").read_text().splitlin
 
 setup(
     name='packerlabimaging',
-    version='0.1',
+    version='0.1-beta',
     description='essential processing and analysis code for imaging experiments in Packer lab',
     url='https://github.com/Packer-Lab/packerlabimaging.git',
     author='Packer Lab',
@@ -26,7 +26,8 @@ setup(
         'scikit-image',
         'suite2p',
         'opencv-python',
-        'pystackreg'
+        'pystackreg',
+        'mpl_point_clicker'
     ],
     tests_require=TESTS_REQUIRE,
     zip_safe=False
