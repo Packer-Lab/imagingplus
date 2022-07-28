@@ -32,34 +32,31 @@ class TemporalData:
     @property
     def n_frames(self):
         """number of timed imaging frames
-        :return:
         """
         return len(self.frame_times)
 
     @property
     def n_timepoints(self):
         """number of cellsdata collection timepoints
-        :return:
         """
         return self.data.shape[0]
 
     @property
     def n_channels(self):
         """number of cellsdata collection channels
-        :return:
         """
         return self.data.shape[1]
 
 
-    def get_sparse_data(self, frame_times: Union[list, np.ndarray] = None):
+    def get_sparse_data(self, frame_times: Union[list, np.ndarray] = None) -> pd.DataFrame:
         """
         todo: need to probably average the original signal between key_frames if collected at a higher rate than frame_times.
             - why not just use a downsampling algorithm to downsample to the same frame rate and num datapoints as the imaging key_frames????
         Returns dictionary of numpy array keyed on channels from paq_data timed to 2photon imaging frame_times.
         In effect this works as a downsampling algorithm.
-TODO add parameters
-        :param frame_times:
-        :return:
+
+        :param frame_times: imaging frame timestamps to use for collecting sparse temporal data
+        :return: Dataframe of sparse temporal data across all temporal data channels collected
         """
 
         assert hasattr(self,
@@ -162,14 +159,12 @@ class CellAnnotations:
     @property
     def n_cells(self):
         """number of cells
-        :return:
         """
         return len(self.cells_array)
 
     @property
     def n_annotations(self):
         """number of annotations
-        :return:
         """
         return len(self.annotations)
 
@@ -178,7 +173,6 @@ class CellAnnotations:
     @property
     def cell_id(self):
         """ID of cells
-        :return:
         """
         assert 'cell_id' in self.cellsdata, 'cell_id cannot be found in cells annotations under cellsdata'
         return list(self.cellsdata['cell_id'])
@@ -205,7 +199,6 @@ class ImagingData:
     @property
     def n_frames(self):
         """number of imaging frames in imaging cellsdata
-        :return:
         """
         return self.imdata.shape[1]
 
