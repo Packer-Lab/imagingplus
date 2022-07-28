@@ -11,7 +11,7 @@ import scipy.stats as stats
 import tifffile as tf
 
 from packerlabimaging import TwoPhotonImaging
-from packerlabimaging.main.classes import ImagingMetadata, TemporalData, ImagingTrial, CellAnnotations, \
+from packerlabimaging._archive.classes import ImagingMetadata, TemporalData, ImagingTrial, CellAnnotations, \
     Experiment
 from packerlabimaging.utils.utils import convert_to_8bit
 from packerlabimaging.processing.naparm import Targets
