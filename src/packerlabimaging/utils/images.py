@@ -10,15 +10,16 @@ from skimage import io as skio
 
 
 # simple ZProfile function for any sized square in the frame (equivalent to ZProfile function in Fiji)
-def ZProfile(movie, area_center_coords: tuple = None, area_size: int = -1, plot_trace: bool = True,
+def ZProfile(stack: Union[str, np.ndarray], area_center_coords: tuple = None, area_size: int = -1, plot_trace: bool = True,
              plot_frame: int = None, vasc_image: np.array = None, **kwargs):
     """
-    Plot a z-profile of a movie, averaged over space inside a square area. by S. Armstrong.
+    Plot a z-profile of a stack, averaged over space inside a square area. 
+    by S. Armstrong.
 
-    :param movie: can be np.array of the TIFF stack or a tiff path from which it is read in
+    :param stack: array of the TIFF stack or a tiff path from which it is read in
     :param area_center_coords: coordinates of pixel at center of box (x,y)
     :param area_size: int, length and width of the square in pixels
-    :param plot_frame: plot area boundaries on this frame from movie
+    :param plot_frame: plot area boundaries on this frame from stack
     :param vasc_image: optionally include a vasculature image tif of the correct dimensions to plot the coordinates on.
     :param plot_trace: bool to create plot of z profile signal
     :param kwargs:
@@ -27,22 +28,22 @@ def ZProfile(movie, area_center_coords: tuple = None, area_size: int = -1, plot_
     :return: z-profile trace signal
     """
 
-    if type(movie) is str:
-        movie = tf.imread(movie)
-    print('plotting zprofile for TIFF of shape: ', movie.shape)
+    if type(stack) is str:
+        stack = ImportTiff(tiff_path=stack)
+    print('\- plotting zprofile for TIFF of shape: ', stack.shape)
 
-    # assume 15fps for 1024x1024 movies and 30fps imaging for 512x512 movies
-    if movie.shape[1] == 1024:
+    # assume 15fps for 1024x1024 stacks and 30fps imaging for 512x512 stacks
+    if stack.shape[1] == 1024:
         img_fps = 15
-    elif movie.shape[1] == 512:
+    elif stack.shape[1] == 512:
         img_fps = 30
     else:
         img_fps = None
 
-    assert area_size <= movie.shape[1] and area_size <= movie.shape[2], "area_size must be smaller than the image"
+    assert area_size <= stack.shape[1] and area_size <= stack.shape[2], "area_size must be smaller than the image"
     if area_size == -1:  # this parameter used to plot whole FOV area
-        area_size = movie.shape[1]
-        area_center_coords = (movie.shape[1] / 2, movie.shape[2] / 2)
+        area_size = stack.shape[1]
+        area_center_coords = (stack.shape[1] / 2, stack.shape[2] / 2)
     assert area_size % 2 == 0, "pls give an even area size"
 
     x = area_center_coords[0]
@@ -51,16 +52,16 @@ def ZProfile(movie, area_center_coords: tuple = None, area_size: int = -1, plot_
     x2 = int(x + 1 / 2 * area_size)
     y1 = int(y - 1 / 2 * area_size)
     y2 = int(y + 1 / 2 * area_size)
-    smol_movie = movie[:, y1:y2, x1:x2]
-    smol_mean = np.nanmean(smol_movie, axis=(1, 2))
+    smol_stack = stack[:, y1:y2, x1:x2]
+    smol_mean = np.nanmean(smol_stack, axis=(1, 2))
     print('|- Output shape for z profile: ', smol_mean.shape)
 
     if plot_frame is not None:
         f, ax1 = plt.subplots()
         if 'ax_ref' in kwargs: ax1 = kwargs['ax_ref']
-        ref_frame = movie[plot_frame, :, :]
+        ref_frame = stack[plot_frame, :, :]
         if vasc_image is not None:
-            assert vasc_image.shape == movie.shape[1:], 'vasculature image has incompatible dimensions'
+            assert vasc_image.shape == stack.shape[1:], 'vasculature image has incompatible dimensions'
             ax1.imshow(vasc_image, cmap="binary_r")
         else:
             ax1.imshow(ref_frame, cmap="binary_r")
@@ -221,17 +222,17 @@ def z_score_img(key_img: np.ndarray, mean_img: np.ndarray = None, std_img: np.nd
 
 
 def makeFrameAverageTiff(frames: Union[int, list, tuple], tiff_path: str = None, stack: np.ndarray = None,
-                         peri_frames: int = 100, save_dir: str = None, to_plot=False, **kwargs):
+                         peri_frames: int = 100, save_dir: str = None, to_plot=False, **kwargs) -> np.ndarray:
     """Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from either the provided tiff_path or the stack array.
-    TODO add parameters
-    :param frames:
-    :param tiff_path:
-    :param stack:
-    :param peri_frames:
-    :param save_dir:
-    :param to_plot:
-    :param kwargs:
-    :return:
+
+    :param frames: key frames to create peri-average frames.
+    :param tiff_path: path to tiff file for collecting images.
+    :param stack: image stack array to use for collecting peri-average images
+    :param peri_frames: number of frames to collect pre- and post- from key frame
+    :param save_dir: directory to save tiff images to
+    :param to_plot: if true, show peri-frame average image
+    :param kwargs: see kwargs under packerlabimaging.plotting.plotting.plotImg
+    :return: peri-frame averaged array images
     """
 
     if type(frames) == int:
@@ -277,12 +278,13 @@ def makeFrameAverageTiff(frames: Union[int, list, tuple], tiff_path: str = None,
     return np.asarray(imgs)
 
 
-def ImportTiff(tiff_path, frames: Union[tuple, list, int] = None):
+def ImportTiff(tiff_path, frames: Union[tuple, int] = None) -> np.ndarray:
     """
-TODO fill explanation and add parameters
-    :param tiff_path:
-    :param frames:
-    :return:
+    Import multi-frame tiff file from provided `tiff_path`, between specified frames (if provided, optional).
+
+    :param tiff_path: path to multi-frame tiff file to load
+    :param frames: optional, load frames between frames specified, or load single frame if int provided.
+    :return: stack of tiff images
     """
     if frames and type(frames) == tuple:
         im_stack = tf.imread(tiff_path, key=range(frames[0], frames[1]))
@@ -376,9 +378,9 @@ def SaveDownsampledTiff(tiff_path: str = None, stack: np.array = None, group_by:
 
 def WriteTiff(save_path, stack: np.array):
     """use Tifffile imwrite function to save a numpy array to tiff file
-    TODO add parameters
-    :param save_path:
-    :param stack:
+    
+    :param save_path: path to save .tiff file (include .tiff extension in path name)
+    :param stack: array to save as .tiff file
     """
     print(f"\n\- saving array [{stack.shape}] to: {save_path}", end="\r")
     if not os.path.exists(os.path.dirname(save_path)):
@@ -387,16 +389,13 @@ def WriteTiff(save_path, stack: np.array):
     print(f"\n|- saved array [{stack.shape}] to: {save_path}")
 
 
-def make_tiff_stack(tiff_paths: list, save_as: str = None) -> np.ndarray:
+def make_tiff_stack(tiff_paths: list, save_path: str = None) -> np.ndarray:
     """
-    Read in a bunch of tiffs and stack them together, and save the output as the save_as
+    Concatenate >1 tiff files from `tiff_paths`, and save the output under the .tif file path given under save_path.
 
-    :param tiff_paths:
-    :return:
-
-    TODO old:
-    :param sorted_paths: ls of string paths for tiffs to stack
-    :param save_as: .tif file path to where the tif should be saved
+    :param tiff_paths: list of tiff paths to stack together. 
+    :param save_path: .tif file path to where the tif should be saved
+    :return: stacked images array
     """
 
     num_tiffs = len(tiff_paths)
@@ -412,5 +411,5 @@ def make_tiff_stack(tiff_paths: list, save_as: str = None) -> np.ndarray:
         # print('length of data: ', len(data))
     data = np.array(data)
     print(f'\- made tiff stack: {data.shape}')
-    WriteTiff(save_path=save_as, stack=data) if save_as else None
+    WriteTiff(save_path=save_path, stack=data) if save_path else None
     return data
