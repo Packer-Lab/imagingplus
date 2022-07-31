@@ -8,8 +8,10 @@ import tkinter as tk
 from tkinter import filedialog
 
 
-def ReadRawFile(movie_path=None, start=1, stop=np.Inf, num_frames=np.Inf, verbose=False):
+def ReadRawFile(movie_path=None, start=1, stop=np.Inf, num_frames=np.Inf, verbose=False) -> np.ndarray:
 	"""
+	Read raw file created by PrairieView into array.
+
 	Input
 	-----
 	movie_path : string, optional
@@ -86,6 +88,11 @@ def ReadRawFile(movie_path=None, start=1, stop=np.Inf, num_frames=np.Inf, verbos
 
 
 def WriteRawFile(data, file_name):
+	"""
+	TODO - need to ask Jimmy/Rob
+	:param data: unknown
+	:param file_name: file path to save
+	"""
 	# construct filename
 	if not file_name[-4:] == '.bin':
 		file_name = file_name + '.bin'
