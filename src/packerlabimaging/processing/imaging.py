@@ -19,23 +19,27 @@ def calcAnnulus(trial: ImagingTrial, coord: tuple, inner_distance: float = 10, o
     # use the SLM targets exclusion zone areas as the annulus around each SLM target
     # -- for each SLM target: create a numpy array slice that acts as an annulus around the target
 
-
     :param coord:
     :param distance: distance (in microns) from the edge of the spiral to extend the target exclusion zone
     :return:
     """
 
     radius_px_inner = int(inner_distance) / trial.imparams.pix_sz_x
-    print(f"\- radius of target coord inner circle zone (in pixels): {radius_px_inner}px")
-
     inner_area = tuple([item for item in points_in_circle_np(radius_px_inner, x0=coord[0], y0=coord[1])])
 
     # create annulus by subtracting SLM spiral target pixels
     radius_px_outer = int(outer_distance) / trial.imparams.pix_sz_x
-    print(f"radius of targets (in pixels): {radius_px_outer}px")
 
     outer_area = tuple([item for item in points_in_circle_np(radius_px_outer, x0=coord[0], y0=coord[1])])
     area_annulus = np.array([list(coord_) for i, coord_ in enumerate(outer_area) if coord_ not in inner_area])
+
+    coords = []
+    for coord in area_annulus:
+        if (0 < coord[0] < trial.imparams.frame_x) and (0 < coord[1] < trial.imparams.frame_y):
+            coords.append(coord)
+
+    area_annulus_final = np.array(coords)
+
 
     # testing the areas created
     # import matplotlib.pyplot as plt
@@ -56,9 +60,9 @@ def calcAnnulus(trial: ImagingTrial, coord: tuple, inner_distance: float = 10, o
     # plt.colorbar()
     # plt.show()
 
-    annulus_slice_obj_ = np.s_[area_annulus[:, 0], area_annulus[:, 1]]
+    annulus_slice_obj_ = np.s_[area_annulus_final[:, 0], area_annulus_final[:, 1]]
 
-    return area_annulus, annulus_slice_obj_
+    return area_annulus_final, annulus_slice_obj_
 
 
 def _collect_annulus_flu(trial, annulus_slice_obj):
