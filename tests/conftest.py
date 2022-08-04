@@ -137,12 +137,17 @@ def existing_trialobj_twophotonimaging_fixture():
 
 
 @pytest.fixture(scope="session")
-def existing_expobj_fixture():
+def existing_trialobj_alloptical_fixture():
     expobj = import_obj(
-        pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/test-analysis/HF113_analysis.pkl')
+        pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/RL109_analysis.pkl')
+    trialobj = expobj.load_trial('t-013')
+    return trialobj
 
-    date = '2021-01-31'
-    return expobj, date
+
+@pytest.fixture(scope="session")
+def existing_expobj_fixture():
+    expobj = import_obj(pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/RL109_analysis.pkl')
+    return expobj
 
 
 @pytest.fixture(scope="session")
@@ -155,46 +160,25 @@ def suite2p_results_fixture():
     return FminusFneu, spks, stat, neuropil@pytest.fixture(scope="session")
 
 
-@pytest.fixture(scope="session")
-def existing_trialobj_alloptical_fixture():
-    expobj = import_obj(pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
-    trialobj = expobj.load_trial(trialID='t-013')
-    return trialobj
-
-
 # @pytest.fixture(scope="session")
+# def existing_trialobj_alloptical_fixture():
+#     expobj = import_obj(pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
+#     trialobj = expobj.load_trial(trialID='t-013')
+#     return trialobj
+
+
+@pytest.fixture(scope="session")
 def existing_expobj_nopredones2p_fixture():
-    expobj = import_obj(pkl_path='/home/pshah/mnt/qnap/Analysis/2021-01-25/PS12/PS12_analysis.pkl')
+    expobj = import_obj(pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/RL109_analysis.pkl')
     return expobj
 
-
+@pytest.fixture(scope="session")
 def anndata_trial_data():
-    import pandas as pd
-    import numpy as np
-
-    # number of observations
-    n_obs = 1000
-    # say we measure the time of observing the cellsdata points
-    # add them to a dataframe for storing some annotation
-    obs = pd.DataFrame()
-    obs['group'] = np.random.choice(['day 1', 'day 2', 'day 4', 'day 8'], n_obs)
-    obs['group2'] = np.random.choice(['day 3', 'day 5', 'day 7'], n_obs)
-    # set the names of variables/features to the following
-    # ['A', 'B', 'C', ..., 'AA', 'BB', 'CC', ..., 'AAA', ...]
-    from string import ascii_uppercase
-    var_names = [i * letter for i in range(1, 10) for letter in ascii_uppercase]
-    # number of variables
-    n_vars = len(var_names)
-    var_group = {'var_group_1': np.random.choice(['group A', 'group B', 'group C', 'group D'], n_vars),
-                 'var_group_2': np.random.choice(['group A', 'group B', 'group C', 'group D'], n_vars)}
-    # dataframe for annotating the variables
-    var = pd.DataFrame(var_group, index=var_names)
-    # the cellsdata matrix of shape n_obs x n_vars
-    # X = np.arange(n_obs * n_vars).reshape(n_obs, n_vars)
-    X = np.random.random(n_obs * n_vars).reshape(n_obs, n_vars)
-
-    return X, var, obs
-
+    aotrial = expobj.load_trial(trialID = 't-013')
+    aotrial.data = aotrial.create_anndata(imdata=aotrial.Suite2p,
+                                          cells=aotrial.Suite2p,
+                                          tmdata=aotrial.tmdata,
+                                          imdata_type='suite2p raw - neuropil corrected')
 
 @pytest.fixture(scope='session')
 def existing_anndata():

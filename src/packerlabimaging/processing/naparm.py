@@ -12,11 +12,15 @@ from packerlabimaging.utils.utils import path_finder, points_in_circle_np
 from packerlabimaging.utils.images import ImportTiff
 
 
-@dataclass
 class naparm:
-    path: str  #: path to output from NAPARM used for photostimulation protocol of current imaging trial
 
-    def __post_init__(self):
+    def __init__(self, path: str):
+        """
+        TODO add class description
+
+        :param path: path to output from NAPARM used for photostimulation protocol of current imaging trial
+        """
+        self.path = path  #: path to output from NAPARM used for photostimulation protocol of current imaging trial
         self.stim_freq: float  #: frequency of photostim protocol (of a single photostim trial? or time between individual photostim trials?)
         self.single_stim_dur: float  #: duration of a single photostim shot (ms)
         self.inter_point_delay: float  #: duration of the delay between each photostim shot
@@ -131,13 +135,13 @@ TODO fill explanation
 
     @classmethod
     def importNaparm(cls, path):
-        """Alternative constructor to be used to run pipeling for loading and parsing Naparm photostimulation protocol.
+        """Alternative constructor to be used to run pipeline for loading and parsing Naparm photostimulation protocol.
         TODO add parameters
         :param path:
         """
         npm = cls(path)
         npm._NaparmProcessing()
-
+        return npm
 
 class Targets(naparm):
     """Data and processing for photostimulation targets"""
@@ -147,6 +151,8 @@ class Targets(naparm):
         # SLM target coords attr's
         # self.n_targets = []  # total number of target coordinates per SLM group
         # self.target_coords = []  # x, y locations of target coordinates per SLM group
+        super().__init__(path=naparm_path)
+        self._NaparmProcessing()
         self.stim_start_frames = None  #: list of frame numbers at onset of photostimulation
         self.photostim_frames = None  #: list of frame numbers contained during photostimulation trials
         self.target_areas = []  # photostim targeted pixels area coordinates per SLM group
@@ -154,8 +160,6 @@ class Targets(naparm):
         # self.n_targets_total: int = 0  # total number of SLM targets
         self.target_areas_exclude = []  # similar to .target_areas, but area diameter expanded (used in excluding cellsdata from this expanded region)
 
-        # super().__init__(path=naparm_path)
-        super().importNaparm(path=naparm_path)  # use constructor to call parent
         self.__frame_x = frame_x
         self.__frame_y = frame_y
         self.__pix_sz_x = pix_sz_x

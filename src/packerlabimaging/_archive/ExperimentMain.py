@@ -118,7 +118,7 @@ class Experiment:
         for key, val in trialobj._metainfo.items():
             self.TrialsInformation[trialobj.trialID][key] = val
 
-        self.TrialsInformation[trialobj.trialID]['tiff_path'] = trialobj.tiff_path  # this should be redundant but just keeping up until this is confirmed.
+        self.TrialsInformation[trialobj.trialID]['tiff_path'] = trialobj.data_path  # this should be redundant but just keeping up until this is confirmed.
         # update self.TrialsInformation using the information from new trial_obj
         self.TrialsInformation[trialobj.trialID]['series ID'] = trialobj.t_series_name
         self.TrialsInformation[trialobj.trialID]['repr'] = trialobj.__repr__()

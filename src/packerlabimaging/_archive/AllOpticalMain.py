@@ -361,9 +361,9 @@ class AllOpticalTrial(TwoPhotonImaging):
                 bad_frames.extend(self.photostim_frames)
                 bad_frames = list(np.unique(bad_frames))
                 print(
-                    f'***Added a total of {len(self.photostim_frames)} photostim frames to bad_frames.npy at: {self.tiff_path_dir}/bad_frames.npy \n\t total bad_frames: {len(bad_frames)}')
+                    f'***Added a total of {len(self.photostim_frames)} photostim frames to bad_frames.npy at: {self.data_path_dir}/bad_frames.npy \n\t total bad_frames: {len(bad_frames)}')
                 # f'***Saving a total of {len(photostim_frames)} photostim frames to bad_frames.npy at: {BADFRAMESLOC}/bad_frames.npy')  # TODO replace BADFRAMESLOC with self.pv_xml_dir
-                np.save(f'{self.tiff_path_dir}/bad_frames.npy',
+                np.save(f'{self.data_path_dir}/bad_frames.npy',
                         bad_frames)  # save to npy file and remember to move npy file to tiff folder before running with suite2p
 
         return photostim_frames
@@ -1386,7 +1386,7 @@ class AllOpticalTrial(TwoPhotonImaging):
                 self.stim_images = {}
                 x = [0] * len(stim_timings)
             if 0 in x:
-                tiffs_loc = '%s/*Ch3.tif' % self.tiff_path_dir
+                tiffs_loc = '%s/*Ch3.tif' % self.data_path_dir
                 tiff_path = glob.glob(tiffs_loc)[0]
                 print('working on loading up %s tiff from: ' % self.metainfo['trialID'], tiff_path)
                 im_stack = tf.imread(tiff_path, key=range(self.imparams.n_frames))
@@ -1451,7 +1451,7 @@ class AllOpticalTrial(TwoPhotonImaging):
         qnap_path = os.path.expanduser('/home/pshah/mnt/qnap')
 
         # cellsdata path
-        movie_path = self.tiff_path
+        movie_path = self.data_path
         sync_path = self._paq_path
 
         # stamm save path

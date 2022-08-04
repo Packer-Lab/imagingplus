@@ -188,9 +188,9 @@ class ImagingData:
         """
         Imaging dataset.
 
-        :param imdata: N rois x num_frames, table of imaging cellsdata of cells (N) collected over time (Frames)
+        :param imdata: N rois x num_frames, table of imaging data of cells (N) collected over time (Frames)
         """
-        self.imdata = imdata
+        self.imdata = imdata  #: N rois x num_frames, table of imaging data of cells (N) collected over time (Frames)
         for i, values in kwargs.items():
             setattr(self, i, values)
         print(f'\- added ImagingData module. consisting of {self.imdata.shape} ROIs x Frames.')
@@ -198,13 +198,13 @@ class ImagingData:
 
     @property
     def n_frames(self):
-        """number of imaging frames in imaging cellsdata
+        """number of imaging frames in imaging data
         """
         return self.imdata.shape[1]
 
     @property
     def n_rois(self):
-        """number of ROIs in imaging cellsdata
+        """number of ROIs in imaging data
         :return:
         """
         return self.imdata.shape[0]

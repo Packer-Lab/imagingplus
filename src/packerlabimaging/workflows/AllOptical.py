@@ -3,6 +3,7 @@ import glob
 import os
 import time
 from typing import Union
+from warnings import warn
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -34,8 +35,7 @@ class AllOpticalTrial(TwoPhotonImaging):
     """All Optical Experimental Data Analysis Workflow."""
 
     def __init__(self, naparm_path, dataPath: str, saveDir: str, date: str, trialID: str, expID: str,
-                 expGroup: str = '',
-                 comment: str = '', imparams: ImagingMetadata = None, cells: CellAnnotations = None,
+                 expGroup: str = '', comment: str = '', imparams: ImagingMetadata = None, cells: CellAnnotations = None,
                  tmdata: PaqData = None):
 
         """
@@ -111,28 +111,12 @@ class AllOpticalTrial(TwoPhotonImaging):
         self.twopstim, self.twopstim.stim_start_frames, self.twopstim.photostim_frames = self.photostimProcessing(
             naparm_path=naparm_path)
 
-        # 5) todo collect Flu traces from SLM targets - probably leave out of the init right??
-        if hasattr(self, 'Suite2p'):
-            self.raw_SLMTargets, self.meanFluImg_registered = self.collectSignalFromCoords(
-                curr_trial_frames=self.Suite2p.trial_frames, save=True, target_coords_masks=np.array(self.twopstim.target_areas))
-            self.targets_snippets = self.getTargetsStimTraceSnippets()
-        else:
-            Warning('NO Flu traces collected from any SLM targets because Suite2p not found for trial.')
-
         # 6) Collect Flu traces from Suite2p ROIs:
         #   create:
         #       1) array of dFF pre + post stim Flu snippets for each stim and cell [num cells x num peri-stim frames collected x num stims]
         #       2) photostim response amplitudes in a dataframe for each cell and each photostim
         #       3) save photostim response amplitudes to AnnotatedData
-        self.photostimFluArray, self.photostimResponseAmplitudes, self.photostimResponsesData = self.photostimProcessingAllCells()
-
-        # extend annotated imaging cellsdata object with imaging frames in photostim and stim_start_frames as additional keys in vars
-        __frames_in_stim = [False] * self.imparams.n_frames
-        __stim_start_frame = [False] * self.imparams.n_frames
-        for frame in self.twopstim.photostim_frames: __frames_in_stim[frame] = True
-        for frame in self.twopstim.stim_start_frames: __stim_start_frame[frame] = True
-        self.data.add_var(var_name='photostim_frame', values=__frames_in_stim)
-        self.data.add_var(var_name='stim_start_frame', values=__stim_start_frame)
+        self.photostimProcessingAllCells()
 
         # save final object
         self.save()
@@ -349,9 +333,7 @@ class AllOpticalTrial(TwoPhotonImaging):
 
         """
 
-        self.twopstim = Targets(naparm_path=naparm_path, frame_x=self.imparams.frame_x,
-                                frame_y=self.imparams.frame_y,
-                                pix_sz_x=self.imparams.pix_sz_x, pix_sz_y=self.imparams.pix_sz_y)
+        self.twopstim = Targets(naparm_path=naparm_path, frame_x=self.imparams.frame_x, frame_y=self.imparams.frame_y, pix_sz_x=self.imparams.pix_sz_x, pix_sz_y=self.imparams.pix_sz_y)
 
         # find stim frames
         stim_start_frames = []
@@ -606,7 +588,7 @@ class AllOpticalTrial(TwoPhotonImaging):
         return targets_dff
 
     # todo test
-    def calculatePhotoresponses(self, snippets: np.ndarray, stims_to_use: Union[list, str] = 'all'):
+    def calculatePhotoresponses(self, snippets: np.ndarray, stims_to_use: Union[list, str] = 'all') -> pd.DataFrame:
         """
         Calculations of responses (post-stim - pre-stim) to photostimulation of SLM Targets of the provided snippets array.
 
@@ -708,17 +690,26 @@ class AllOpticalTrial(TwoPhotonImaging):
         print('----------------------------------------------------------------')
 
         # make trial arrays from dff cellsdata shape: [cells x stims x frames]
-        if hasattr(self, 'Suite2p'):
-            photostimFluArray = self._makePhotostimTrialFluSnippets(plane_flu=self.normalize_dff(self.Suite2p.raw))
-            photostimResponseAmplitudes = self.collectPhotostimResponses(photostimFluArray)
+        if self.Suite2p != None:
+            photostimFluArray = self._makePhotostimTrialFluSnippets(plane_flu=self.normalize_dff(self.imdata.imdata))
+            photostimResponseAmplitudes = self.calculatePhotoresponses(photostimFluArray)
 
             ## create new anndata object for storing measured photostim responses from cellsdata, with other relevant cellsdata
-            photostim_responses_adata = self._CellsPhotostimResponsesAnndata(
+            self.data = self._CellsPhotostimResponsesAnndata(
                 photostimResponseAmplitudes=photostimResponseAmplitudes)
 
-            return photostimFluArray, photostimResponseAmplitudes, photostim_responses_adata
+            # extend annotated imaging cellsdata object with imaging frames in photostim and stim_start_frames as additional keys in vars
+            __frames_in_stim = [False] * self.imparams.n_frames
+            __stim_start_frame = [False] * self.imparams.n_frames
+            for frame in self.twopstim.photostim_frames: __frames_in_stim[frame] = True
+            for frame in self.twopstim.stim_start_frames: __stim_start_frame[frame] = True
+            self.data.add_var(var_name='photostim_frame', values=__frames_in_stim)
+            self.data.add_var(var_name='stim_start_frame', values=__stim_start_frame)
+
+            self.photostimFluArray, self.photostimResponseAmplitudes = photostimFluArray, photostimResponseAmplitudes
         else:
-            NotImplementedError('Photostim processing cannot be performed without Suite2p cellsdata.')
+            print('Photostim. processing of fluorescence signal responses cannot be performed without Suite2p cellsdata.')
+
 
     def statisticalProcessingAllCells(self):
         """Runs statistical processing on photostim response arrays"""
@@ -810,7 +801,7 @@ class AllOpticalTrial(TwoPhotonImaging):
         qnap_path = os.path.expanduser('/home/pshah/mnt/qnap')
 
         # cellsdata path
-        movie_path = self.tiff_path
+        movie_path = self.data_path
         sync_path = self._paq_path
 
         # stamm save path

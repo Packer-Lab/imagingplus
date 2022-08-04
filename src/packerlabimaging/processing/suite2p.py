@@ -301,8 +301,7 @@ class Suite2pExperiment:
         # self.trials = [*trialsTiffsSuite2p]
         # todo this is only necessary for running suite2p right?
         self.tiff_paths_to_use_s2p: dict = tiff_paths_to_use_s2p
-        assert len(
-            self.trials) > 0, "no trials found to run suite2p, option available to provide list of trial IDs in " \
+        assert len(self.trials) > 0, "no trials found to run suite2p, option available to provide list of trial IDs in " \
                               "`trialsSuite2P` "
 
 
@@ -347,8 +346,8 @@ class Suite2pExperiment:
         for plane in range(self.n_planes):  # TODO really don't know how planes are collected and fed into suite2p
 
             # extract suite2p stat.npy and neuropil-subtracted F
-            substract_neuropil = True if neuropil_coeff > 0 else False
-            FminusFneu, spks, stat, neuropil = s2p_loader(self.s2pResultsPath, subtract_neuropil=substract_neuropil,
+            subtract_neuropil = True if neuropil_coeff > 0 else False
+            FminusFneu, spks, stat, neuropil = s2p_loader(self.s2pResultsPath, subtract_neuropil=subtract_neuropil,
                                                           neuropil_coeff=neuropil_coeff)
             self.raw.append(FminusFneu)  # raw F of each suite2p ROI (neuropil corrected if neuropil_coeff > 0)
             self.spks.append(spks)  # deconvolved spikes each suite2p ROI
@@ -389,7 +388,7 @@ class Suite2pExperiment:
             print(
                 f'|- Loaded {self.n_units} suite2p classified cells from plane {plane}, recorded for {round(self.raw[plane].shape[1] / self.ops["fs"], 2)} secs total, {self.n_frames} frames total')
 
-        # consider replacing this and use returning properties
+        # TODO consider replacing this and use returning properties
         if self.n_planes == 1:
             # print(f'*** plane 0 cellsdata ***')
             self.raw = self.raw[0]
@@ -664,11 +663,17 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
         CellAnnotations.__init__(self, cells_array=cells_data.index, annotations=cells_data.columns,
                                  cellsdata=cells_data, multidim_data=cells_multidim)
 
-        ImagingData.__init__(self, imdata=raw, spks=spks, neuropil=neuropil)
+        ImagingData.__init__(self, imdata=raw, spks=spks, neuropil=neuropil, data_label='')
 
         print(f"\n\----- ADDED .Suite2p module to trial. ", end='\r')
 
     def __repr__(self):
+        if self.s2pResultExists:
+            return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} key_frames x {self.n_units} s2p ROIs'
+        else:
+            return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} key_frames. No Suite2p Results loaded.'
+
+    def __str__(self):
         if self.s2pResultExists:
             return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} key_frames x {self.n_units} s2p ROIs'
         else:
@@ -813,7 +818,8 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
         SaveDownsampledTiff(stack=trial_frames_cropped, group_by=group_by, save_path=save_path)
 
     def getRegTiffPaths(self, reg_tif_folder=None, frameNum: Union[str, int, tuple, list] = 'all'):
-        """get trial's imaging suite2p registered tiff path at a certain frame number (note that suite2p uses batched registration and creates batched tiff paths).
+        """
+        Return current imaging trial's suite2p output registered tiff paths for a certain frame number (default is for all trial frames). note that suite2p uses batched registration and creates batched motion registered tiffs.
 
         :param reg_tif_folder: registered tiff directory
         :param frameNum: frame numbers (start and end) to create downsampled tiff for (use 'all' (default) to create downsampled tiff for all frames).

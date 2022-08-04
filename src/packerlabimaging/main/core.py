@@ -96,7 +96,7 @@ class ImagingTrial:
             raise FileNotFoundError(f"dataPath does not exist: {self.dataPath}")
 
         # processing collect mean FOV Trace -- after collecting imaging params and Paq timing info
-        im_stack = ImportTiff(tiff_path=self.tiff_path)
+        im_stack = ImportTiff(tiff_path=self.data_path)
         self._n_frames = im_stack.shape[0]
         self.meanFluImg, self.meanFovFluTrace = self.meanRawFluTrace(
             im_stack)  #: mean image and mean FOV fluorescence trace
@@ -136,7 +136,7 @@ class ImagingTrial:
                                      trialID=trialID,
                                      expID=experiment.expID,
                                      comment=comment)
-        experiment.add_trial(trialID=trialID, trialobj=trialobj)
+        experiment.add_imaging_trial(trialID=trialID, trialobj=trialobj)
         return trialobj
 
     # @property
@@ -186,8 +186,8 @@ class ImagingTrial:
         return np.round(frame_time, 5)
 
     @property
-    def tiff_path(self):
-        """tiff path of current trial object"""
+    def data_path(self):
+        """data path of current trial object"""
         return self.metainfo['paths']['dataPath']
 
     @property
@@ -202,9 +202,9 @@ class ImagingTrial:
             raise ValueError('missing `expID` or `trialID` required to retrieve t series id')
 
     @property
-    def tiff_path_dir(self):
-        """Parent directory of .tiff cellsdata path"""
-        return os.path.dirname(self.tiff_path)
+    def data_path_dir(self):
+        """Parent directory of data path"""
+        return os.path.dirname(self.data_path)
 
     @property
     def pkl_path(self):
@@ -251,7 +251,7 @@ class ImagingTrial:
         :return: matplotlib imshow plot
         """
         from packerlabimaging.plotting.plotting import SingleFrame
-        stack = SingleFrame(tiff_path=self.tiff_path, frame_num=frame_num, title=title)
+        stack = SingleFrame(tiff_path=self.data_path, frame_num=frame_num, title=title)
 
         # stack = tf.imread(self.tiff_path, key=frame_num)
         # plt.imshow(stack, cmap='gray')
@@ -268,7 +268,7 @@ class ImagingTrial:
         # imaging metadata
         if Bruker:
             from packerlabimaging.processing.imagingMetadata import PrairieViewMetadata
-            self.imparams = PrairieViewMetadata(pv_xml_dir=self.tiff_path_dir)
+            self.imparams = PrairieViewMetadata(pv_xml_dir=self.data_path_dir)
         elif imaging_metadata:
             self.imparams = imaging_metadata
         else:
@@ -289,8 +289,8 @@ class ImagingTrial:
 
         :return: imaging tiff as numpy array
         """
-        print(f"\n\- loading raw TIFF file from: {self.tiff_path}", end='\r')
-        im_stack = ImportTiff(tiff_path=self.tiff_path)
+        print(f"\n\- loading raw TIFF file from: {self.data_path}", end='\r')
+        im_stack = ImportTiff(tiff_path=self.data_path)
         # im_stack = tf.imread(self.tiff_path)
         print('|- Loaded experiment tiff of shape: ', im_stack.shape)
 
@@ -319,7 +319,7 @@ class ImagingTrial:
         stack = self.importTrialTiff()
         SaveDownsampledTiff(stack=stack, save_as=f"{self.saveDir}/{self.date}_{self.trialID}_downsampled.tif")
 
-    def create_anndata(self, imdata_type: str = None, layers=False):
+    def create_anndata(self, imdata_type: str, imdata: ImagingData=None, cells: CellAnnotations=None, tmdata: TemporalData=None):
         """
         Creates annotated cellsdata (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial.
 
@@ -328,33 +328,24 @@ class ImagingTrial:
         :return:
 
         """
-        if not self.imdata and self.cells and self.tmdata:
-            raise ValueError(
-                'cannot create anndata table. anndata creation only available if experiments have ImagingData (.imdata), CellAnnotations (.cells) and TemporalData (.tmdata)')
+        # if not self.imdata and self.cells and self.tmdata:
+        #     raise ValueError(
+        #         'cannot create anndata table. anndata creation only available if experiments have ImagingData (.imdata), CellAnnotations (.cells) and TemporalData (.tmdata)')
 
         # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
-        assert hasattr(self.cells, 'cellsdata'), 'missing cellsdata attr from .cells'
-        obs_meta = self.cells.cellsdata
+        obs = self.cells if cells is None else cells
+        assert hasattr(cells, 'cellsdata'), 'no `data` under .cells'
 
         # SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata
-        assert hasattr(self.tmdata, 'cellsdata'), 'missing cellsdata attr from .tmdata'
-        var_meta = self.tmdata.data
+        vars = self.tmdata if tmdata is None else tmdata
+        assert hasattr(vars, 'data'), 'no `data` under .tmdata'
 
         print(f"\n\----- CREATING annotated cellsdata object using AnnData:")
-        assert hasattr(self.imdata, 'cellsdata'), 'missing cellsdata attr from .imdata'
-        _data_type = [*self.imdata.imdata][0] if not imdata_type else imdata_type
-        primary_data = self.imdata.imdata[_data_type]
+        imdata = self.imdata if imdata is None else imdata
+        assert hasattr(imdata, 'data') or tmdata != None, 'no `data` under .imdata'
 
-        if layers and self.imdata.n_data > 0:
-            layers = {}
-            for layer in self.imdata.data_labels:
-                if layer == _data_type:
-                    layers[layer] = self.imdata.imdata[layer]
-        else:
-            layers = None
-
-        anndata_setup = {'X': primary_data, 'data_label': _data_type, 'obs': obs_meta, 'var': var_meta,
-                         'obs_m': self.cells.multidim_data if self.cells.multidim_data else None, 'layers': layers}
+        anndata_setup = {'X': imdata.imdata, 'data_label': imdata_type, 'obs': obs, 'var': vars,
+                         'obsm': cells.multidim_data if cells.multidim_data else None}
 
         adata = AnnotatedData(**anndata_setup)
 
@@ -537,7 +528,7 @@ class Experiment:
     #
     #     print(f"|- ADDED trial: {trialobj.trialID} to {self.expID} experiment")
 
-    def add_trial(self, trialID: str = None, trialobj: ImagingTrial = None, **kwargs):
+    def add_imaging_trial(self, trialID: str = None, trialobj: ImagingTrial = None, **kwargs):
         """
         Add trial to current experiment by adding trial meta-information.
 

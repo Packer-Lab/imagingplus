@@ -35,7 +35,7 @@ def test_TwoPhotonImagingTrial(twophoton_imaging_multitrial_noPreDoneSuite2p_fix
                                         saveDir=f'/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis/',
                                         dataPath= dataPath, expGroup= "awake spont. 2p imaging + LFP")
 
-            expobj.add_trial(trialID=trial, trialobj=trialobj)
+            expobj.add_imaging_trial(trialID=trial, trialobj=trialobj)
 
 
 @pytest.mark.skip

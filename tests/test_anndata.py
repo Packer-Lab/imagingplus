@@ -1,46 +1,30 @@
 import numpy as np
 import pandas as pd
-from packerlabimaging import TwoPhotonImagingTrial
+import pytest
+
+from packerlabimaging import TwoPhotonImaging
 
 import packerlabimaging as pli
 from packerlabimaging.processing import anndata
-from conftest import anndata_trial_data
+from conftest import anndata_trial_data, existing_trialobj_alloptical_fixture
 
 
-def test_AnnotatedData():
-    X, var, obs = anndata_trial_data()
-    adata = anndata.AnnotatedData(X=X, obs=obs, var=var, data_label='test_data')
-    print(adata)
-    return adata
+def test_AnnotatedData(existing_trialobj_alloptical_fixture):
+    aotrial = existing_trialobj_alloptical_fixture
+    aotrial.data = aotrial.create_anndata(imdata=aotrial.Suite2p,
+                                          cells=aotrial.Suite2p,
+                                          tmdata=aotrial.tmdata,
+                                          imdata_type='suite2p raw - neuropil corrected')
 
-adata = test_AnnotatedData()
+test_AnnotatedData(existing_trialobj_alloptical_fixture)
 
-
+@pytest.mark.skip
 def test_convert_to_df(existing_anndata):
     'todo continue testing --- not working for everything.'
     adata = existing_anndata()
     df = adata.convert_to_df()
     print(df)
     return df
-
-df = adata.convert_to_df()
-
-# %%
-import seaborn as sns
-import matplotlib.pyplot as plt
-
-# %%
-sns.scatterplot(data=df, x="group", y="test_data")
-plt.show()
-
-def make_seaborn_plots(df):
-    """todo - make seaborn plot from long-form dataframe to use as example in Anndata tutorial."""
-
-
-
-    pass
-
-
 
 
 
