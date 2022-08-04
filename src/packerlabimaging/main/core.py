@@ -323,6 +323,8 @@ class ImagingTrial:
         """
         Creates annotated cellsdata (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial.
 
+        Note: the tmdata is used as the source of truth for imaging frames time signals. If there is a mismatch, then tmdata timestamps for extraneous imaging frames will not be included in adata table.
+
         :param imdata_type: label to describe primary dataset in anndata structure.
         :param layers: if true, add .imdata processed data directly to anndata structure as layers. TODO: need to work out if this is doing anything (looks like might need to be deleted)
         :return:
@@ -332,20 +334,24 @@ class ImagingTrial:
         #     raise ValueError(
         #         'cannot create anndata table. anndata creation only available if experiments have ImagingData (.imdata), CellAnnotations (.cells) and TemporalData (.tmdata)')
 
+        imdata = self.imdata if imdata is None else imdata
+        assert hasattr(imdata, 'imdata') or tmdata != None, 'no `imdata` under .imdata'
+
         # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
         obs = self.cells if cells is None else cells
-        assert hasattr(cells, 'cellsdata'), 'no `data` under .cells'
+        assert hasattr(obs, 'cellsdata'), 'no `data` under .cells'
+        assert obs.cellsdata.shape[0] == imdata.imdata.shape[0], 'incorrect # of cells passed to anndata creation.'
 
         # SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata
-        vars = self.tmdata if tmdata is None else tmdata
-        assert hasattr(vars, 'data'), 'no `data` under .tmdata'
+        vars = self.tmdata.data if tmdata is None else tmdata
+        if vars.shape[0] != imdata.imdata.shape[1]:
+            print(f'WARNING: mismatch of timestamps in tmdata ({vars.shape[0]}) and frames in imdata ({imdata.n_frames}) passed to anndata creation.')
+            vars = vars[:imdata.imdata.shape[1]]
 
         print(f"\n\----- CREATING annotated cellsdata object using AnnData:")
-        imdata = self.imdata if imdata is None else imdata
-        assert hasattr(imdata, 'data') or tmdata != None, 'no `data` under .imdata'
 
-        anndata_setup = {'X': imdata.imdata, 'data_label': imdata_type, 'obs': obs, 'var': vars,
-                         'obsm': cells.multidim_data if cells.multidim_data else None}
+        anndata_setup = {'X': imdata.imdata, 'data_label': imdata_type, 'obs': obs.cellsdata, 'var': vars,
+                         'obsm': obs.multidim_data if obs.multidim_data else None}
 
         adata = AnnotatedData(**anndata_setup)
 
@@ -659,7 +665,7 @@ class Experiment:
 
         # print(self.Suite2p)
         # adding of suite2p trial level as well in this function as well
-        total_frames = 0
+        total_frames = 0  # TODO need to use approach of cross-checking trial ID with trials run in 2p imaging outputs to select correct frame numbers relative to the s2p output
         for trial in self.Suite2p.trials:
             trialobj = self.load_trial(trialID=trial)
             trialobj.Suite2p = Suite2pResultsTrial(s2pExp=self.Suite2p, trial_frames=(

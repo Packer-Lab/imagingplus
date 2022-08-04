@@ -15,8 +15,7 @@ class TemporalData:
     data: pd.DataFrame  #: N columns x Time array of N x 1D cellsdata channels collected over Time at the same sampling rate
     frame_times: Union[
         list, np.ndarray] = None  #: timestamps representing imaging frame times. must be of same time duration as imaging dataset.
-    sparse_data: Dict[
-        str, np.ndarray] = None  #: dictionary of timeseries channels containing cellsdata keyed at imaging frames for each timeseries channel
+    sparse_data: pd.DataFrame = None  #: dataframe of timeseries channels containing cellsdata keyed at imaging frames for each timeseries channel
     crop_offset_time: int = 0  #: length of time (secs) of the offset after cropping temporal data
 
     def __post_init__(self):
@@ -60,7 +59,7 @@ class TemporalData:
         """
 
         assert hasattr(self,
-                       'frame_times') or frame_times, 'no frame_times given to retrieve cellsdata from those timestamps.'
+                       'frame_times') or frame_times, 'no frame_times given to retrieve temporal sync. data from those timestamps.'
 
         frame_times = self.frame_times if frame_times is None else frame_times
 
@@ -135,7 +134,8 @@ class CellAnnotations:
         self.cellsdata = cellsdata
         self.multidim_data = multidim_data
 
-        print(f'\- added CellAnnotations module. consisting of {self.n_annotations} annotations.')
+        assert len(self.cellsdata) == self.n_cells, 'mismatch of # of cells and cellsdata field.'
+        print(f'\- added CellAnnotations module. consisting of {self.n_annotations} annotations x {self.n_cells} cells.')
         if self.multidim_data:
             for label, data in self.multidim_data.items():
                 if not len(data) == self.n_cells:

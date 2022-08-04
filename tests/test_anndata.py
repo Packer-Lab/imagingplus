@@ -13,10 +13,10 @@ def test_AnnotatedData(existing_trialobj_alloptical_fixture):
     aotrial = existing_trialobj_alloptical_fixture
     aotrial.data = aotrial.create_anndata(imdata=aotrial.Suite2p,
                                           cells=aotrial.Suite2p,
-                                          tmdata=aotrial.tmdata,
+                                          tmdata=aotrial.tmdata.sparse_data,
                                           imdata_type='suite2p raw - neuropil corrected')
 
-test_AnnotatedData(existing_trialobj_alloptical_fixture)
+test_AnnotatedData(existing_trialobj_alloptical_fixture())
 
 @pytest.mark.skip
 def test_convert_to_df(existing_anndata):

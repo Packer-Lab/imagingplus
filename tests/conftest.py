@@ -136,10 +136,9 @@ def existing_trialobj_twophotonimaging_fixture():
     return trialobj1
 
 
-@pytest.fixture(scope="session")
+# @pytest.fixture(scope="session")
 def existing_trialobj_alloptical_fixture():
-    expobj = import_obj(
-        pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/RL109_analysis.pkl')
+    expobj = import_obj(pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/RL109_analysis.pkl')
     trialobj = expobj.load_trial('t-013')
     return trialobj
 

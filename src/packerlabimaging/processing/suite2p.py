@@ -660,8 +660,8 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
         cells_data, cells_multidim = self.getCellsAnnotations()
         # super(Suite2pResultsTrial, self).__init__(cells_array=cells_data.index, annotations=cells_data.columns, cellsdata=cells_data, multidim_data=cells_multidim)
 
-        CellAnnotations.__init__(self, cells_array=cells_data.index, annotations=cells_data.columns,
-                                 cellsdata=cells_data, multidim_data=cells_multidim)
+        CellAnnotations.__init__(self, cells_array=cells_data.index[self.iscell], annotations=cells_data.columns,
+                                 cellsdata=cells_data[self.iscell], multidim_data=cells_multidim)
 
         ImagingData.__init__(self, imdata=raw, spks=spks, neuropil=neuropil, data_label='')
 
@@ -885,8 +885,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
         if self.s2pResultExists:
             # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
             # build dataframe for obs_meta from suite2p stat information
-            obs_meta = pd.DataFrame(
-                columns=[*self.stat[0]], index=range(len(self.stat)))
+            obs_meta = pd.DataFrame(columns=[*self.stat[0]], index=range(len(self.stat)))[self.iscell]
 
             for idx, __stat in enumerate(self.stat):
                 for __column in [*__stat]:
@@ -898,7 +897,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
             for col in [*obs_m]:
                 for idx, __stat in enumerate(self.stat):
                     obs_m[col].append(__stat[col])
-                obs_m[col] = np.asarray(obs_m[col])
+                obs_m[col] = np.asarray(obs_m[col])[self.iscell]
 
             return obs_meta, obs_m
 
