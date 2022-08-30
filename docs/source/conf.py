@@ -32,7 +32,8 @@ release = '0.2-alpha'
 extensions = ["sphinx.ext.autodoc",
               "sphinx.ext.viewcode",
               "nbsphinx",
-              "sphinx_gallery.load_style"
+              "sphinx_gallery.load_style",
+              "sphinx.ext.napoleon"
 ]
 autodoc_default_options = {
     'members':         True,

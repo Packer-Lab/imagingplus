@@ -4,7 +4,7 @@ API reference
 
 
 SingleImage class
-----------------
+-----------------
 .. autoclass:: packerlabimaging.SingleImage
     :members:
 

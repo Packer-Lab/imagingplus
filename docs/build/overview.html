@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Core structures &#8212; packerlabimaging 0.2-alpha documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -13,6 +13,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -26,6 +27,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="right" >
           <a href="Tutorials-reference.html" title="Tutorials"
              accesskey="N">next</a> |</li>
@@ -43,19 +47,19 @@
           <div class="body" role="main">
             
   <section id="core-structures">
-<span id="overview"></span><h1><strong>Core structures</strong><a class="headerlink" href="#core-structures" title="Permalink to this headline">¶</a></h1>
+<span id="overview"></span><h1><strong>Core structures</strong><a class="headerlink" href="#core-structures" title="Permalink to this heading">¶</a></h1>
 <p>There are two core types of objects that are used to store experimental data: <cite>Experiment</cite> and <cite>ImagingTrial</cite> objects. <cite>ImagingTrial</cite> objects represent a single, continuous imaging+ trial. The <cite>Experiment</cite> acts as a container to collect any number/types of individual <cite>ImagingTrial</cite> objects. Together, the <cite>Experiment</cite> and <cite>ImagingTrial</cite> are the primary entry points to analysis with the package. In general, this follows a typical imaging experiment design which might contain an arbitrary number and mixture of imaging+ trials. The definition of an “experiment” is loose but, abstractly, can be thought of as a collection of imaging+ trials across a common imaging field-of-view. On the other hand, a “trial” is strictly a single time series of imaging+ data collection.
 Each <cite>ImagingTrial</cite> is built out-of three sub-types - <cite>TemporalData</cite>, <cite>ImagingData</cite> and <cite>CellAnnotations</cite> - which represent the three general modes of data outputs of an imaging+ data collection trial (Figure 2). Ultimately, the goal of this data processing flow is to organise data of an imaging+ experiment trial into an anndata data structure table that closely and intuitively represents and integrates multi-modal experimental data in a single Pythonic object (Figure 3). The natively functionality of the anndata library also allows for efficient on-disk and on-memory data access solution for imaging+ data.</p>
 <section id="modular-data-processing-analysis-and-visualisation">
-<h2><strong>Modular Data Processing, Analysis and Visualisation</strong><a class="headerlink" href="#modular-data-processing-analysis-and-visualisation" title="Permalink to this headline">¶</a></h2>
+<h2><strong>Modular Data Processing, Analysis and Visualisation</strong><a class="headerlink" href="#modular-data-processing-analysis-and-visualisation" title="Permalink to this heading">¶</a></h2>
 <p>Packerlabimaging is designed to be highly modular. This allows an as-per-need data analysis workflow utilising a mixture of pre-built analysis submodules and custom user-built modules. We provide a sub-module to integrate the use of Suite2p, which is currently the most popular calcium imaging region-of-interest segmentation library to generate <cite>ImagingData</cite> and <cite>CellsAnnotations</cite> structures from microscope .tiff fluorescence calcium imaging data. We provide a sub-module for .paq data generated from PackIO which is used for temporal synchronisation of multiple hardware components during an experiment, including for instance electrophysiological data from an electrode collecting data from a sample. We also provide pre-built support for parsing microscope acquisition metadata from Bruker microscopes. Non-Bruker imaging acquisition can be readily handled using a general imaging acquisition metadata class or creation of a custom class for the desired microscope system. An additional sub-module provides support for parsing holographic 2-photon SLM stimulation protocols generated using NAPARM (ref) for all-optical imaging+ trials, and for running the STAMovieMaker algorithm for quick analysis of all-optical experiments.</p>
 <p>Finally, we also provide a plotting module which contains a number of convenient methods for typical plotting of imaging+ data.</p>
 </section>
 <section id="extensibility">
-<h2><strong>Extensibility</strong><a class="headerlink" href="#extensibility" title="Permalink to this headline">¶</a></h2>
+<h2><strong>Extensibility</strong><a class="headerlink" href="#extensibility" title="Permalink to this heading">¶</a></h2>
 <p>The design structure of packerlabimaging is purposefully meant to enable direct extensibility on top of the core built-in structures of the package that allow end-users to create custom data processing/analysis workflows while benefiting from pre-engineered structures and workflows. For instance, packerlabimaging comes pre-built with a fully built-out workflow for AllOptical imaging+ trials which extends the core <cite>ImagingTrial</cite>. This workflow integrates individual data processing sub-modules to create a custom type of imaging+ trial designed for an all-optical experiment. Additionally methods for typical analysis of AllOptical data are provided herein.</p>
 <section id="next">
-<h3>Next<a class="headerlink" href="#next" title="Permalink to this headline">¶</a></h3>
+<h3>Next<a class="headerlink" href="#next" title="Permalink to this heading">¶</a></h3>
 <p><a class="reference internal" href="data-structure-details.html#data-structure-details"><span class="std std-ref">Data Structure Inside Trial objects</span></a></p>
 <p><a class="reference internal" href="Tutorials-reference.html#tutorials"><span class="std std-ref">Tutorials</span></a></p>
 </section>
@@ -109,7 +113,7 @@ Each <cite>ImagingTrial</cite> is built out-of three sub-types - <cite>TemporalD
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -120,6 +124,9 @@ Each <cite>ImagingTrial</cite> is built out-of three sub-types - <cite>TemporalD
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="right" >
           <a href="Tutorials-reference.html" title="Tutorials"
              >next</a> |</li>
@@ -132,7 +139,7 @@ Each <cite>ImagingTrial</cite> is built out-of three sub-types - <cite>TemporalD
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2022, Packer Lab.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
     </div>
   </body>
 </html>

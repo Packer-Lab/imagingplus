@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Integration with PACKIO outputs (.paq data) &#8212; packerlabimaging 0.2-alpha documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
@@ -13,6 +13,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
@@ -26,6 +27,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">packerlabimaging 0.2-alpha documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Integration with PACKIO outputs (.paq data)</a></li> 
       </ul>
@@ -251,6 +255,7 @@ div.nboutput.container div.output_area > div[class^='highlight']{
 }
 
 /* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
 div.rendered_html table {
   border: none;
   border-collapse: collapse;
@@ -259,10 +264,14 @@ div.rendered_html table {
   font-size: 12px;
   table-layout: fixed;
 }
+.jp-RenderedHTMLCommon thead,
 div.rendered_html thead {
   border-bottom: 1px solid black;
   vertical-align: bottom;
 }
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
 div.rendered_html tr,
 div.rendered_html th,
 div.rendered_html td {
@@ -274,18 +283,21 @@ div.rendered_html td {
   max-width: none;
   border: none;
 }
+.jp-RenderedHTMLCommon th,
 div.rendered_html th {
   font-weight: bold;
 }
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
 div.rendered_html tbody tr:nth-child(odd) {
   background: #f5f5f5;
 }
+.jp-RenderedHTMLCommon tbody tr:hover,
 div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
 <section id="Integration-with-PACKIO-outputs-(.paq-data)">
-<h1>Integration with PACKIO outputs (.paq data)<a class="headerlink" href="#Integration-with-PACKIO-outputs-(.paq-data)" title="Permalink to this headline">¶</a></h1>
+<h1>Integration with PACKIO outputs (.paq data)<a class="headerlink" href="#Integration-with-PACKIO-outputs-(.paq-data)" title="Permalink to this heading">¶</a></h1>
 <p>PACKIO is a software for temporal synchronization of experimental data acquisition and simultaneous hardware triggering. More information can be found at: <a class="reference external" href="https://github.com/apacker83/PackIO">https://github.com/apacker83/PackIO</a></p>
 <p>The outputs of PACKIO is a .paq file that contains data across all channels collected.</p>
 <div class="nbinput nblast docutils container">
@@ -303,7 +315,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <section id="adding-paqdata-module-to-the-trialobj">
-<h2>adding paqdata module to the trialobj<a class="headerlink" href="#adding-paqdata-module-to-the-trialobj" title="Permalink to this headline">¶</a></h2>
+<h2>adding paqdata module to the trialobj<a class="headerlink" href="#adding-paqdata-module-to-the-trialobj" title="Permalink to this heading">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -344,7 +356,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </section>
 <section id="Processing-paq-data">
-<h2>Processing paq data<a class="headerlink" href="#Processing-paq-data" title="Permalink to this headline">¶</a></h2>
+<h2>Processing paq data<a class="headerlink" href="#Processing-paq-data" title="Permalink to this heading">¶</a></h2>
 <p>In this paq data, one of the channels recorded the microscope imaging frame clock. We can retrieve these frame clock times to retrieve the paq clock timestamps when the imaging period began and finished.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -376,7 +388,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </section>
 <section id="Synchronizing-.paq-data-with-imaging-frames">
-<h2>Synchronizing .paq data with imaging frames<a class="headerlink" href="#Synchronizing-.paq-data-with-imaging-frames" title="Permalink to this headline">¶</a></h2>
+<h2>Synchronizing .paq data with imaging frames<a class="headerlink" href="#Synchronizing-.paq-data-with-imaging-frames" title="Permalink to this heading">¶</a></h2>
 <p>Since, imaging is generally performed at multiple orders of magnitude slower data collection speed, we have provided the <code class="docutils literal notranslate"><span class="pre">get_sparse_paq()</span></code> method in the .Paq module to collect paq data from channels at timepoints synchronized with only the imaging frames (found under <code class="docutils literal notranslate"><span class="pre">.Paq.frame_times</span></code>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -440,7 +452,7 @@ div.rendered_html tbody tr:hover {
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -451,13 +463,16 @@ div.rendered_html tbody tr:hover {
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">packerlabimaging 0.2-alpha documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Integration with PACKIO outputs (.paq data)</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2022, Packer Lab.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
     </div>
   </body>
 </html>

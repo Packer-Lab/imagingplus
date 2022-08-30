@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Tutorial 6 - Integrating with Suite2p (running Suite2p pipeline and storing results) &#8212; packerlabimaging 0.2-alpha documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
@@ -13,6 +13,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
@@ -28,6 +29,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="right" >
           <a href="Tutorial-8-Extending-built-in-classes.html" title="Tutorial 8 - Extending built in classes"
              accesskey="N">next</a> |</li>
@@ -260,6 +264,7 @@ div.nboutput.container div.output_area > div[class^='highlight']{
 }
 
 /* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
 div.rendered_html table {
   border: none;
   border-collapse: collapse;
@@ -268,10 +273,14 @@ div.rendered_html table {
   font-size: 12px;
   table-layout: fixed;
 }
+.jp-RenderedHTMLCommon thead,
 div.rendered_html thead {
   border-bottom: 1px solid black;
   vertical-align: bottom;
 }
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
 div.rendered_html tr,
 div.rendered_html th,
 div.rendered_html td {
@@ -283,18 +292,21 @@ div.rendered_html td {
   max-width: none;
   border: none;
 }
+.jp-RenderedHTMLCommon th,
 div.rendered_html th {
   font-weight: bold;
 }
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
 div.rendered_html tbody tr:nth-child(odd) {
   background: #f5f5f5;
 }
+.jp-RenderedHTMLCommon tbody tr:hover,
 div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
 <section id="Tutorial-6---Integrating-with-Suite2p-(running-Suite2p-pipeline-and-storing-results)">
-<h1>Tutorial 6 - Integrating with Suite2p (running Suite2p pipeline and storing results)<a class="headerlink" href="#Tutorial-6---Integrating-with-Suite2p-(running-Suite2p-pipeline-and-storing-results)" title="Permalink to this headline">¶</a></h1>
+<h1>Tutorial 6 - Integrating with Suite2p (running Suite2p pipeline and storing results)<a class="headerlink" href="#Tutorial-6---Integrating-with-Suite2p-(running-Suite2p-pipeline-and-storing-results)" title="Permalink to this heading">¶</a></h1>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -319,9 +331,9 @@ cannot use anatomical mode, but otherwise suite2p will run normally
 <p>In this tutorial, we add the Suite2p submodule to an existing <code class="docutils literal notranslate"><span class="pre">expobj</span></code>. We also show how to run the suite2p pipeline using the <code class="docutils literal notranslate"><span class="pre">.Suite2p</span></code> submodule. Finally, we show how to access and use Suite2p results once the pipeline is run. Note: it is also possible to directly import independently run Suite2p results for this experiment (this is demonstrated in the final section).</p>
 <p>Suite2p provides an excellent cell (ROI) detection algorithm for calcium imaging datasets. The pipeline includes registration and spike deconvolution as well. Please familiarize yourself with the basic functionality of Suite2p using their documentation (found <a class="reference external" href="https://suite2p.readthedocs.io/en/latest/index.html">here</a>) before proceeding with these examples below.</p>
 <section id="Adding-the-Suite2p-module">
-<h2>Adding the Suite2p module<a class="headerlink" href="#Adding-the-Suite2p-module" title="Permalink to this headline">¶</a></h2>
+<h2>Adding the Suite2p module<a class="headerlink" href="#Adding-the-Suite2p-module" title="Permalink to this heading">¶</a></h2>
 <section id="Import-data-analysis-object">
-<h3>Import data analysis object<a class="headerlink" href="#Import-data-analysis-object" title="Permalink to this headline">¶</a></h3>
+<h3>Import data analysis object<a class="headerlink" href="#Import-data-analysis-object" title="Permalink to this heading">¶</a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -356,7 +368,7 @@ cannot use anatomical mode, but otherwise suite2p will run normally
 </section>
 </section>
 <section id="Prepare-for-Suite2p-run">
-<h2>Prepare for Suite2p run<a class="headerlink" href="#Prepare-for-Suite2p-run" title="Permalink to this headline">¶</a></h2>
+<h2>Prepare for Suite2p run<a class="headerlink" href="#Prepare-for-Suite2p-run" title="Permalink to this heading">¶</a></h2>
 <p>We next need to setup the Suite2p settings to run for our particular imaging experiment. Use the <code class="docutils literal notranslate"><span class="pre">.Suite2p.update_ops(dict)</span></code> method to update any <code class="docutils literal notranslate"><span class="pre">ops</span></code> options before running to Suite2p.</p>
 <p>To get the necessary imaging metadata parameters, here we use one of the <code class="docutils literal notranslate"><span class="pre">trialobj</span></code> contained within the present <code class="docutils literal notranslate"><span class="pre">expobj</span></code> to retrieve that information.</p>
 <div class="nbinput nblast docutils container">
@@ -399,7 +411,7 @@ cannot use anatomical mode, but otherwise suite2p will run normally
 </div>
 </section>
 <section id="Run-Suite2p">
-<h2>Run Suite2p<a class="headerlink" href="#Run-Suite2p" title="Permalink to this headline">¶</a></h2>
+<h2>Run Suite2p<a class="headerlink" href="#Run-Suite2p" title="Permalink to this heading">¶</a></h2>
 <p>Now, we are all set to run Suite2p. We have provided the <code class="docutils literal notranslate"><span class="pre">.Suite2p.s2pRun</span></code> method as a wrapper to run the Suite2p on the current <code class="docutils literal notranslate"><span class="pre">expobj</span></code>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -412,7 +424,7 @@ cannot use anatomical mode, but otherwise suite2p will run normally
 </div>
 </section>
 <section id="Explore-suite2p-results---next-steps-after-running-Suite2p">
-<h2>Explore suite2p results - next steps after running Suite2p<a class="headerlink" href="#Explore-suite2p-results---next-steps-after-running-Suite2p" title="Permalink to this headline">¶</a></h2>
+<h2>Explore suite2p results - next steps after running Suite2p<a class="headerlink" href="#Explore-suite2p-results---next-steps-after-running-Suite2p" title="Permalink to this heading">¶</a></h2>
 <p>TODO</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -424,7 +436,7 @@ cannot use anatomical mode, but otherwise suite2p will run normally
 </div>
 </section>
 <section id="Import-suite2p-results-directly">
-<h2>Import suite2p results directly<a class="headerlink" href="#Import-suite2p-results-directly" title="Permalink to this headline">¶</a></h2>
+<h2>Import suite2p results directly<a class="headerlink" href="#Import-suite2p-results-directly" title="Permalink to this heading">¶</a></h2>
 <p>If we had run suite2p on our experiment independent of creating the <code class="docutils literal notranslate"><span class="pre">expobj</span></code>, we can add that Suite2p output to the present <code class="docutils literal notranslate"><span class="pre">expobj</span></code> by providing a valid path to the <code class="docutils literal notranslate"><span class="pre">s2pResultsPath</span></code> argument when setting up the <code class="docutils literal notranslate"><span class="pre">.Suite2p</span></code> submodule on our <code class="docutils literal notranslate"><span class="pre">expobj</span></code>.</p>
 <p>Note: the output that is required in <code class="docutils literal notranslate"><span class="pre">s2pResultsPath</span></code> is the path to <code class="docutils literal notranslate"><span class="pre">&lt;../plane0/&gt;</span></code> of the Suite2p results output.</p>
 <div class="nbinput nblast docutils container">
@@ -496,7 +508,7 @@ cannot use anatomical mode, but otherwise suite2p will run normally
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -507,6 +519,9 @@ cannot use anatomical mode, but otherwise suite2p will run normally
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="right" >
           <a href="Tutorial-8-Extending-built-in-classes.html" title="Tutorial 8 - Extending built in classes"
              >next</a> |</li>
@@ -520,7 +535,7 @@ cannot use anatomical mode, but otherwise suite2p will run normally
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2022, Packer Lab.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
     </div>
   </body>
 </html>

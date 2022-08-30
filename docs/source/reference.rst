@@ -35,5 +35,6 @@ plotting
     :members:
 
 
-
-
+subcore.TemporalData
+---------
+.. autoclass::

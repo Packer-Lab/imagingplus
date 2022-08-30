@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Creating an experiment - UPDATED MAR 29 2022 &#8212; packerlabimaging 0.2-alpha documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
@@ -13,6 +13,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
@@ -26,6 +27,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">packerlabimaging 0.2-alpha documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Creating an experiment - UPDATED MAR 29 2022</a></li> 
       </ul>
@@ -251,6 +255,7 @@ div.nboutput.container div.output_area > div[class^='highlight']{
 }
 
 /* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
 div.rendered_html table {
   border: none;
   border-collapse: collapse;
@@ -259,10 +264,14 @@ div.rendered_html table {
   font-size: 12px;
   table-layout: fixed;
 }
+.jp-RenderedHTMLCommon thead,
 div.rendered_html thead {
   border-bottom: 1px solid black;
   vertical-align: bottom;
 }
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
 div.rendered_html tr,
 div.rendered_html th,
 div.rendered_html td {
@@ -274,12 +283,15 @@ div.rendered_html td {
   max-width: none;
   border: none;
 }
+.jp-RenderedHTMLCommon th,
 div.rendered_html th {
   font-weight: bold;
 }
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
 div.rendered_html tbody tr:nth-child(odd) {
   background: #f5f5f5;
 }
+.jp-RenderedHTMLCommon tbody tr:hover,
 div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
@@ -293,7 +305,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <section id="Creating-an-experiment---UPDATED-MAR-29-2022">
-<h1>Creating an experiment - UPDATED MAR 29 2022<a class="headerlink" href="#Creating-an-experiment---UPDATED-MAR-29-2022" title="Permalink to this headline">¶</a></h1>
+<h1>Creating an experiment - UPDATED MAR 29 2022<a class="headerlink" href="#Creating-an-experiment---UPDATED-MAR-29-2022" title="Permalink to this heading">¶</a></h1>
 <p>The first step towards starting the analysis pipeline and creating the <code class="docutils literal notranslate"><span class="pre">Experiment</span></code> object is to create a dictionary (<code class="docutils literal notranslate"><span class="pre">ExperimentMetainfo</span></code>) to collect the metadata fields required for initializing <code class="docutils literal notranslate"><span class="pre">Experiment</span></code>. In <code class="docutils literal notranslate"><span class="pre">ExperimentMetainfo</span></code>, we provide initial information about the experiment.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -381,7 +393,7 @@ imported packerlabimaging successfully
 </div>
 </section>
 <section id="Adding-trials-to-an-experiment">
-<h1>Adding trials to an experiment<a class="headerlink" href="#Adding-trials-to-an-experiment" title="Permalink to this headline">¶</a></h1>
+<h1>Adding trials to an experiment<a class="headerlink" href="#Adding-trials-to-an-experiment" title="Permalink to this heading">¶</a></h1>
 <p>After creating the initial <code class="docutils literal notranslate"><span class="pre">expobj</span></code> experiment, we move onto loading each trial from the experiment.</p>
 <p>There is a built-in <code class="docutils literal notranslate"><span class="pre">ImagingTrial</span></code> workflow for data processing and analysis of an all optical imaging experiment trial called <code class="docutils literal notranslate"><span class="pre">AllOpticalTrial</span></code>. This extends the <code class="docutils literal notranslate"><span class="pre">TwoPhotonImaging</span></code> trial workflow.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">AllOpticalTrial</span></code> is setup in an analogous manner as the <code class="docutils literal notranslate"><span class="pre">TwoPhotonImaging</span></code> workflow. In addition to the fields required for the <code class="docutils literal notranslate"><span class="pre">TwoPhotonImaging</span></code> trial, we supply additional fields that allow for addition of all-optical specific sub-modules. In particular, we supply a <code class="docutils literal notranslate"><span class="pre">naparm_path</span></code> which triggers the workflow to run the <code class="docutils literal notranslate"><span class="pre">naparm</span></code> analysis sub-module for analysis of 2-photon photostimulation protocols setup by NAPARM during the all-optical experiment.</p>
@@ -476,7 +488,7 @@ imported packerlabimaging successfully
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -487,13 +499,16 @@ imported packerlabimaging successfully
         <li class="right" style="margin-right: 10px">
           <a href="../genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">packerlabimaging 0.2-alpha documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Creating an experiment - UPDATED MAR 29 2022</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2022, Packer Lab.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
     </div>
   </body>
 </html>
