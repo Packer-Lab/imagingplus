@@ -1,0 +1,205 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>packerlabimaging.processing.cellpose &#8212; packerlabimaging 0.2-alpha documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinxdoc.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">packerlabimaging 0.2-alpha documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">packerlabimaging.processing.cellpose</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for packerlabimaging.processing.cellpose</h1><div class="highlight"><pre>
+<span></span><span class="c1"># functions for interacting with cellpose processed data</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+<span class="kn">from</span> <span class="nn">packerlabimaging.main.subcore</span> <span class="kn">import</span> <span class="n">ImagingMetadata</span>
+
+<span class="kn">from</span> <span class="nn">packerlabimaging.main.core</span> <span class="kn">import</span> <span class="n">SingleImage</span>
+<span class="kn">from</span> <span class="nn">packerlabimaging.plotting._utils</span> <span class="kn">import</span> <span class="n">_add_scalebar</span>
+
+
+<div class="viewcode-block" id="CellposeImg"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.cellpose.CellposeImg">[docs]</a><span class="k">class</span> <span class="nc">CellposeImg</span><span class="p">(</span><span class="n">SingleImage</span><span class="p">):</span>
+<div class="viewcode-block" id="CellposeImg.__init__"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.cellpose.CellposeImg.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataPath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cellpose_npy_path</span><span class="p">,</span> <span class="n">imparams</span><span class="p">:</span> <span class="n">ImagingMetadata</span><span class="p">,</span> <span class="n">saveDir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">expID</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">dataPath</span><span class="o">=</span><span class="n">dataPath</span><span class="p">,</span> <span class="n">imparams</span><span class="o">=</span><span class="n">imparams</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cellpose_npy_path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;cellpose npy file not found from path: </span><span class="si">{</span><span class="n">cellpose_npy_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cellpose_npy_path</span> <span class="o">=</span> <span class="n">cellpose_npy_path</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">expID</span> <span class="o">=</span> <span class="n">expID</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">saveDir</span> <span class="o">=</span> <span class="n">saveDir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roi_areas</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1">#: dict containing coordinates of the whole masks generated by cellpose for each ROI</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roi_outlines</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1">#: dict containing coordinates of the outlines generated by cellpose for each ROI</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">masks</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">imparams</span><span class="o">.</span><span class="n">frame_x</span><span class="p">,</span>
+                                                 <span class="n">imparams</span><span class="o">.</span><span class="n">frame_y</span><span class="p">])</span>  <span class="c1">#: numpy array of ROIs masks, ROI # is allocated at the appropriate coordinate</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">trial_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">TODO fill explanation and add parameters</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">expID</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">imgID</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">roi_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">TODO fill explanation and add parameters</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_areas</span><span class="p">]</span>
+
+<div class="viewcode-block" id="CellposeImg.load_cellpose"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.cellpose.CellposeImg.load_cellpose">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load_cellpose</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dataPath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cellpose_npy_path</span><span class="p">,</span> <span class="n">imparams</span><span class="p">:</span> <span class="n">ImagingMetadata</span><span class="p">,</span> <span class="n">saveDir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">expID</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                      <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Alternate constructor.</span>
+<span class="sd">        import and load array coords from cellpose generated ROI masks for red channel interneurons.</span>
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :param dataPath:</span>
+<span class="sd">        :param cellpose_npy_path:</span>
+<span class="sd">        :param imparams:</span>
+<span class="sd">        :param saveDir:</span>
+<span class="sd">        :param expID:</span>
+<span class="sd">        :param kwargs: &quot;&quot;&quot;</span>
+
+        <span class="n">cellpose</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">dataPath</span><span class="o">=</span><span class="n">dataPath</span><span class="p">,</span> <span class="n">cellpose_npy_path</span><span class="o">=</span><span class="n">cellpose_npy_path</span><span class="p">,</span> <span class="n">imparams</span><span class="o">=</span><span class="n">imparams</span><span class="p">,</span> <span class="n">saveDir</span><span class="o">=</span><span class="n">saveDir</span><span class="p">,</span>
+                       <span class="n">expID</span><span class="o">=</span><span class="n">expID</span><span class="p">)</span>
+
+        <span class="c1"># find all paths with &#39;_seg.npy&#39;</span>
+        <span class="n">npy_path</span> <span class="o">=</span> <span class="n">cellpose</span><span class="o">.</span><span class="n">cellpose_npy_path</span>
+
+        <span class="n">dat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">npy_path</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="n">rois</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">dat</span><span class="p">[</span><span class="s1">&#39;masks&#39;</span><span class="p">])[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">outlines</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">roi_areas</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rois</span><span class="p">:</span>
+            <span class="n">roi_areas</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dat</span><span class="p">[</span><span class="s1">&#39;masks&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">outlines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dat</span><span class="p">[</span><span class="s1">&#39;outlines&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">)</span>
+
+        <span class="n">cellpose</span><span class="o">.</span><span class="n">roi_outlines</span> <span class="o">=</span> <span class="n">outlines</span>
+        <span class="n">cellpose</span><span class="o">.</span><span class="n">roi_areas</span> <span class="o">=</span> <span class="n">roi_areas</span>
+        <span class="n">cellpose</span><span class="o">.</span><span class="n">masks</span> <span class="o">=</span> <span class="n">dat</span><span class="p">[</span><span class="s1">&#39;masks&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="CellposeImg.plot_img"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.cellpose.CellposeImg.plot_img">[docs]</a>    <span class="k">def</span> <span class="nf">plot_img</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roi_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">TODO fill explanation and add parameters</span>
+<span class="sd">        :param roi_labels:</span>
+<span class="sd">        :param kwargs:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;hot&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">roi_labels</span><span class="p">:</span>
+            <span class="c1"># add labels of ROI numbers:</span>
+            <span class="k">for</span> <span class="n">roi</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">roi_ids</span><span class="p">:</span>
+                <span class="c1"># roi = self.roi_ids[0]</span>
+                <span class="n">coord</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_areas</span><span class="p">[</span><span class="n">roi</span><span class="p">][</span><span class="mi">0</span><span class="p">])),</span>
+                         <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_areas</span><span class="p">[</span><span class="n">roi</span><span class="p">][</span><span class="mi">1</span><span class="p">])))</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">coord</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">roi</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="s1">&#39;x-small&#39;</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trial_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;scalebar_um&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="s1">&#39;trialobj&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">_add_scalebar</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CellposeImg.plot_rois"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.cellpose.CellposeImg.plot_rois">[docs]</a>    <span class="k">def</span> <span class="nf">plot_rois</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roi_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">TODO fill explanation and add parameters</span>
+<span class="sd">        :param roi_labels:</span>
+<span class="sd">        :param kwargs:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;hot&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">masks</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;hot&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">roi_labels</span><span class="p">:</span>
+            <span class="c1"># add labels of ROI numbers:</span>
+            <span class="k">for</span> <span class="n">roi</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">roi_ids</span><span class="p">:</span>
+                <span class="c1"># roi = self.roi_ids[0]</span>
+                <span class="n">coord</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_areas</span><span class="p">[</span><span class="n">roi</span><span class="p">][</span><span class="mi">0</span><span class="p">])),</span>
+                         <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_areas</span><span class="p">[</span><span class="n">roi</span><span class="p">][</span><span class="mi">1</span><span class="p">])))</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">coord</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">roi</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="s1">&#39;x-small&#39;</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trial_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;scalebar_um&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="s1">&#39;trialobj&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">_add_scalebar</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">packerlabimaging 0.2-alpha documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">packerlabimaging.processing.cellpose</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Packer Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

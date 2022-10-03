@@ -326,7 +326,6 @@ class ImagingTrial:
         Note: the tmdata is used as the source of truth for imaging frames time signals. If there is a mismatch, then tmdata timestamps for extraneous imaging frames will not be included in adata table.
 
         :param imdata_type: label to describe primary dataset in anndata structure.
-        :param layers: if true, add .imdata processed data directly to anndata structure as layers. TODO: need to work out if this is doing anything (looks like might need to be deleted)
         :return:
 
         """
@@ -388,45 +387,6 @@ class ImagingTrial:
             targets_trace_full = np.concatenate((targets_trace_full, targets_trace), axis=1)
 
         return targets_trace_full
-
-    @staticmethod
-    def normalize_dff(arr: np.ndarray, normalize_pct: int = 20, normalize_val=None):
-        """
-        Normalize given array (cells x time) to the mean of the fluorescence values below given threshold. Threshold
-        will refer to the that lower percentile of the given trace. Calculate dFF of traces.
-        
-        :param arr: numpy array of fluorescence values (cells x time)
-        :param normalize_pct: percentile to normalize each cell trace to, default = 20 (20th percentile)
-        :param normalize_val: value to normalize each cell trace to
-        :return: normalized array of fluorescence values (cells x time)
-        """
-
-        if arr.ndim == 1:
-            if normalize_val is None:
-                a = np.percentile(arr, normalize_pct)
-                mean_ = arr[arr < a].mean()
-            else:
-                mean_ = normalize_val
-            new_array = ((arr - mean_) / mean_) * 100
-            if np.isnan(new_array).any() == True:
-                Warning('Cell (unknown) contains nan, normalization factor: %s ' % mean_)
-
-        else:
-            new_array = np.empty_like(arr)
-            for i in range(len(arr)):
-                if normalize_val is None:
-                    a = np.percentile(arr[i], normalize_pct)
-                else:
-                    a = normalize_val
-                mean_ = np.mean(arr[i][arr[i] < a])
-                new_array[i] = ((arr[i] - mean_) / abs(mean_)) * 100
-
-                if np.isnan(new_array[i]).any() == True:
-                    print('Warning:')
-                    print('Cell %d: contains nan' % (i + 1))
-                    print('      Mean of the sub-threshold for this cell: %s' % mean_)
-
-        return new_array
 
     def run_deepinterpolation(self, input_file: str, output_file: str, model_path: str, generator_param: dict = {},
                               inferrence_param: dict = {}):

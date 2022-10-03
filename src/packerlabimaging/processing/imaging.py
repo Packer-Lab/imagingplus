@@ -11,6 +11,46 @@ from packerlabimaging.main.core import ImagingTrial
 from packerlabimaging.utils.utils import points_in_circle_np
 
 
+def normalize_dff(arr: np.ndarray, normalize_pct: int = 20, normalize_val=None):
+    """
+    Normalize given array (cells x time) to the mean of the fluorescence values below given threshold. Threshold
+    will refer to the that lower percentile of the given trace. Calculate dFF of traces.
+
+    :param arr: numpy array of fluorescence values (cells x time)
+    :param normalize_pct: percentile to normalize each cell trace to, default = 20 (20th percentile)
+    :param normalize_val: value to normalize each cell trace to
+    :return: normalized array of fluorescence values (cells x time)
+    """
+
+    if arr.ndim == 1:
+        if normalize_val is None:
+            a = np.percentile(arr, normalize_pct)
+            mean_ = arr[arr < a].mean()
+        else:
+            mean_ = normalize_val
+        new_array = ((arr - mean_) / mean_) * 100
+        if np.isnan(new_array).any() == True:
+            Warning('Cell (unknown) contains nan, normalization factor: %s ' % mean_)
+
+    else:
+        new_array = np.empty_like(arr)
+        for i in range(len(arr)):
+            if normalize_val is None:
+                a = np.percentile(arr[i], normalize_pct)
+            else:
+                a = normalize_val
+            mean_ = np.mean(arr[i][arr[i] < a])
+            new_array[i] = ((arr[i] - mean_) / abs(mean_)) * 100
+
+            if np.isnan(new_array[i]).any() == True:
+                print('Warning:')
+                print('Cell %d: contains nan' % (i + 1))
+                print('      Mean of the sub-threshold for this cell: %s' % mean_)
+
+    return new_array
+
+
+
 def calcAnnulus(trial: ImagingTrial, coord: tuple, inner_distance: float = 10, outer_distance: float = 15):
     """
     Creates an annulus around a given coordinate (coord) of the specified diameter that is considered the exclusion zone around the coordinate.

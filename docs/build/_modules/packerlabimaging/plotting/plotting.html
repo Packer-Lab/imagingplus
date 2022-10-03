@@ -66,12 +66,14 @@
 
 <span class="c1"># DATA ANALYSIS PLOTTING FUNCS</span>
 
-<div class="viewcode-block" id="plotImg"><a class="viewcode-back" href="../../../making-plots.html#packerlabimaging.plotting.plotting.plotImg">[docs]</a><span class="nd">@plotting_decorator</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<div class="viewcode-block" id="plotImg"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.plotting.plotting.plotImg">[docs]</a><span class="nd">@plotting_decorator</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">plotImg</span><span class="p">(</span><span class="n">img</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;plot image in grayscale.</span>
-<span class="sd">    TODO add parameters</span>
-<span class="sd">    :param img:</span>
+    <span class="sd">&quot;&quot;&quot;Plot image in grayscale.</span>
+<span class="sd">    </span>
+<span class="sd">    :param img: input image to show</span>
 <span class="sd">    :param kwargs:</span>
+<span class="sd">        :trialobj: ImagingTrial or SingleImage; object associated with input image.</span>
+<span class="sd">        :scalebar_um: int; size of scalebar to plot on image (in um); must provide trialobj parameter.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="n">img</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;img to plot must only have 2 dimensions.&#39;</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;fig&#39;</span><span class="p">],</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;ax&#39;</span><span class="p">]</span>
@@ -81,12 +83,12 @@
         <span class="k">if</span> <span class="s1">&#39;trialobj&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="n">_add_scalebar</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;must provide trialobj parameter to access for making scalebar.&#39;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;must provide trialobj parameter to make scalebar.&#39;</span><span class="p">)</span></div>
 
 
 <span class="c1"># suite2p cellsdata</span>
 <span class="c1"># simple plot of the location of the given cell(s) against a black FOV</span>
-<div class="viewcode-block" id="plotRoiLocations"><a class="viewcode-back" href="../../../making-plots.html#packerlabimaging.plotting.plotting.plotRoiLocations">[docs]</a><span class="nd">@mpl</span><span class="o">.</span><span class="n">rc_context</span><span class="p">(</span><span class="n">image_frame_ops</span><span class="p">)</span>
+<div class="viewcode-block" id="plotRoiLocations"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.plotting.plotting.plotRoiLocations">[docs]</a><span class="nd">@mpl</span><span class="o">.</span><span class="n">rc_context</span><span class="p">(</span><span class="n">image_frame_ops</span><span class="p">)</span>
 <span class="nd">@plotting_decorator</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">plotRoiLocations</span><span class="p">(</span><span class="n">trialobj</span><span class="p">:</span> <span class="n">TwoPhotonImaging</span><span class="p">,</span> <span class="n">suite2p_rois</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span>
                      <span class="n">background</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -143,7 +145,7 @@
     <span class="n">mpl</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">rcdefaults</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="makeSuite2pPlots"><a class="viewcode-back" href="../../../making-plots.html#packerlabimaging.plotting.plotting.makeSuite2pPlots">[docs]</a><span class="nd">@mpl</span><span class="o">.</span><span class="n">rc_context</span><span class="p">(</span><span class="n">image_frame_ops</span><span class="p">)</span>
+<div class="viewcode-block" id="makeSuite2pPlots"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.plotting.plotting.makeSuite2pPlots">[docs]</a><span class="nd">@mpl</span><span class="o">.</span><span class="n">rc_context</span><span class="p">(</span><span class="n">image_frame_ops</span><span class="p">)</span>
 <span class="nd">@plotting_decorator</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">makeSuite2pPlots</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Experiment</span><span class="p">,</span> <span class="n">TwoPhotonImaging</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -185,16 +187,14 @@
     <span class="n">mpl</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">rcdefaults</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="plot_flu_trace"><a class="viewcode-back" href="../../../making-plots.html#packerlabimaging.plotting.plotting.plot_flu_trace">[docs]</a><span class="nd">@plotting_decorator</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-<span class="k">def</span> <span class="nf">plot_flu_trace</span><span class="p">(</span><span class="n">trialobj</span><span class="p">:</span> <span class="n">TwoPhotonImaging</span><span class="p">,</span> <span class="n">cell</span><span class="p">,</span> <span class="n">to_plot</span><span class="o">=</span><span class="s1">&#39;raw&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="plot_flu_trace"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.plotting.plotting.plot_flu_trace">[docs]</a><span class="nd">@plotting_decorator</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">plot_flu_trace</span><span class="p">(</span><span class="n">trialobj</span><span class="p">:</span> <span class="n">TwoPhotonImaging</span><span class="p">,</span> <span class="n">cell</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">to_plot</span><span class="o">=</span><span class="s1">&#39;raw&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    plot individual cell&#39;s flu or dFF trace, with photostim. timings for that cell</span>
+<span class="sd">    Plot individual cell&#39;s flu or dFF trace, with photostim. timings for that cell. Accesses the object&#39;s anndata data storage.</span>
 
-<span class="sd">TODO add parameters</span>
-
-<span class="sd">    :param trialobj: trialobject to plot</span>
-<span class="sd">    :param cell:</span>
-<span class="sd">    :param to_plot:</span>
+<span class="sd">    :param trialobj: TwoPhotonImaging (or derived) object containing anndata data storage from which to select cell to plot flu trace</span>
+<span class="sd">    :param cell: cell index number</span>
+<span class="sd">    :param to_plot: select data layer to plot (choose &#39;raw&#39; to plot main raw data layer, otherwise choose name of the desired layer)</span>
 <span class="sd">    :param fig: a matplotlib.Figure instance, if provided use this fig for plotting</span>
 <span class="sd">    :param ax: a matplotlib.Axes.axes instance, if provided use this ax for plotting</span>
 <span class="sd">    :param show: if False, do not display plot (used when the necessity is to return the fig and ax objects to futher manipulation)</span>
@@ -226,23 +226,21 @@
     <span class="n">mpl</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">rcdefaults</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="plot__channel"><a class="viewcode-back" href="../../../making-plots.html#packerlabimaging.plotting.plotting.plot__channel">[docs]</a><span class="nd">@plotting_decorator</span><span class="p">()</span>
+<div class="viewcode-block" id="plot__channel"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.plotting.plotting.plot__channel">[docs]</a><span class="nd">@plotting_decorator</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">plot__channel</span><span class="p">(</span><span class="n">tmdata</span><span class="p">:</span> <span class="n">TemporalData</span><span class="p">,</span> <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Plot the stored signal from the specified channel from a PaqData submodule.</span>
-<span class="sd">    TODO add parameters</span>
+<span class="sd">    Plot the saved signal from the specified channel from a PaqData submodule.</span>
 
-<span class="sd">    :param paqData: .Paq submodule cellsdata</span>
-<span class="sd">    :param channel:</span>
+<span class="sd">    :param tmdata: TemporalData object</span>
+<span class="sd">    :param channel: channel to plot</span>
 <span class="sd">    :param kwargs:</span>
-<span class="sd">        x_axis: str, x axis label, if &#39;time&#39; or &quot;Time&quot; found in x_axis label, will convert x axis to time domain.</span>
-<span class="sd">        x_tick_secs: int, interval to plot x axis ticks</span>
-<span class="sd">        ax: matplotlib axis object to use for plotting.</span>
+<span class="sd">        :x_axis: str; x axis label, if &#39;time&#39; or &quot;Time&quot; found in x_axis label, will convert x axis to time domain.</span>
+<span class="sd">        :x_tick_secs: int; interval to plot x axis ticks</span>
+<span class="sd">        :ax: matplotlib axis object to use for plotting.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">tmdata</span><span class="o">.</span><span class="n">channels</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s1"> not found in .Paq module cellsdata.&#39;</span>
 
     <span class="c1"># set any kwargs provided</span>
-    <span class="n">fig</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;fig&#39;</span><span class="p">]</span>
     <span class="n">ax</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;ax&#39;</span><span class="p">]</span>
     <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;ax&#39;</span><span class="p">)</span>
 
@@ -264,21 +262,23 @@
     <span class="n">dataplot_ax_options</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">collection_hz</span><span class="o">=</span><span class="n">tmdata</span><span class="o">.</span><span class="n">sampling_rate</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;ax&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ax</span></div>
 
-<div class="viewcode-block" id="MeanProject"><a class="viewcode-back" href="../../../making-plots.html#packerlabimaging.plotting.plotting.MeanProject">[docs]</a><span class="k">def</span> <span class="nf">MeanProject</span><span class="p">(</span><span class="n">tiff_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">frames</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">save_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">imstack</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="MeanProject"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.plotting.plotting.MeanProject">[docs]</a><span class="k">def</span> <span class="nf">MeanProject</span><span class="p">(</span><span class="n">tiff_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">frames</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">save_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">imstack</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates, plots and (optionally) saves an average image of the loaded tiff. If frames are provided, tiff is cropped to those frames.</span>
+<span class="sd">    Mean Projection function.</span>
+<span class="sd">    Creates, plots and (optionally) saves a Mean Projection image of the loaded tiff. If frames are provided, tiff is cropped to those frames.</span>
 
 <span class="sd">    Note: saves as 8-bit grayscale image.</span>
-<span class="sd">TODO  add parameters</span>
 
-<span class="sd">    :param tiff_path:</span>
-<span class="sd">    :param save_path:</span>
-<span class="sd">    :param plot:</span>
-<span class="sd">    :param imstack:</span>
+<span class="sd">    :param tiff_path: path to tiff file to load (if imstack not provided)</span>
+<span class="sd">    :param save_path: path to save output image</span>
+<span class="sd">    :param plot: if True, show the output image</span>
+<span class="sd">    :param imstack: data stack to use as input (if tiff_path not provided)</span>
+<span class="sd">    :param frames: crop input stack to specified frames before calculating mean projection.</span>
 <span class="sd">    :param kwargs:</span>
-<span class="sd">    :return:</span>
-<span class="sd">    :param frames:</span>
+<span class="sd">        :trialobj: ImagingTrial or SingleImage; object associated with input image.</span>
+<span class="sd">        :scalebar_um: int; size of scalebar to plot on image (in um); must provide trialobj parameter.</span>
+<span class="sd">    :return: mean projection image</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -323,29 +323,30 @@
         <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
         <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Mean Project&#39;</span><span class="p">)</span>
         <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>  <span class="c1"># just plot for now to make sure that you are doing things correctly so far</span>
-        <span class="k">if</span> <span class="s1">&#39;scalebar&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;scalebar&#39;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="s1">&#39;scalebar_um&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;scalebar_um&#39;</span><span class="p">]:</span>
             <span class="k">if</span> <span class="s1">&#39;trialobj&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
                 <span class="n">_add_scalebar</span><span class="p">(</span><span class="n">trialobj</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;trialobj&#39;</span><span class="p">],</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">img</span></div>
 
 
-<div class="viewcode-block" id="MaxProject"><a class="viewcode-back" href="../../../making-plots.html#packerlabimaging.plotting.plotting.MaxProject">[docs]</a><span class="k">def</span> <span class="nf">MaxProject</span><span class="p">(</span><span class="n">tiff_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">frames</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">save_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-               <span class="n">imstack</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="MaxProject"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.plotting.plotting.MaxProject">[docs]</a><span class="k">def</span> <span class="nf">MaxProject</span><span class="p">(</span><span class="n">tiff_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">frames</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">save_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+               <span class="n">imstack</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Maximum projection function.</span>
 <span class="sd">    Creates, plots and (optionally) saves an average image of the loaded tiff. If frames are provided, tiff is cropped to those frames.</span>
 
 <span class="sd">    Note: saves as 8-bit grayscale image.</span>
 
-<span class="sd">TODO add parameters</span>
-
-<span class="sd">    :param tiff_path:</span>
-<span class="sd">    :param save_path:</span>
-<span class="sd">    :param plot:</span>
-<span class="sd">    :param imstack:</span>
+<span class="sd">    :param tiff_path: path to tiff file to load (if imstack not provided)</span>
+<span class="sd">    :param save_path: path to save output image</span>
+<span class="sd">    :param plot: if True, show the output image</span>
+<span class="sd">    :param imstack: data stack to use as input (if tiff_path not provided)</span>
+<span class="sd">    :param frames: crop input stack to specified frames before calculating maximum projection.</span>
 <span class="sd">    :param kwargs:</span>
-<span class="sd">    :return:</span>
-<span class="sd">    :param frames:</span>
+<span class="sd">        :trialobj: ImagingTrial or SingleImage; object associated with input image.</span>
+<span class="sd">        :scalebar_um: int; size of scalebar to plot on image (in um); must provide trialobj parameter.</span>
+<span class="sd">    :return: maximum projection image</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -374,7 +375,7 @@
     <span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">im_stack</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="c1"># convert to 8-bit</span>
-    <span class="kn">from</span> <span class="nn">packerlabimaging.utils.utils</span> <span class="kn">import</span> <span class="n">convert_to_8bit</span>
+    <span class="kn">from</span> <span class="nn">packerlabimaging.utils.images</span> <span class="kn">import</span> <span class="n">convert_to_8bit</span>
     <span class="n">img</span> <span class="o">=</span> <span class="n">convert_to_8bit</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">save_path</span><span class="p">:</span>
@@ -398,21 +399,22 @@
     <span class="k">return</span> <span class="n">img</span></div>
 
 
-<div class="viewcode-block" id="StdevProject"><a class="viewcode-back" href="../../../making-plots.html#packerlabimaging.plotting.plotting.StdevProject">[docs]</a><span class="k">def</span> <span class="nf">StdevProject</span><span class="p">(</span><span class="n">tiff_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">frames</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">save_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<div class="viewcode-block" id="StdevProject"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.plotting.plotting.StdevProject">[docs]</a><span class="k">def</span> <span class="nf">StdevProject</span><span class="p">(</span><span class="n">tiff_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">frames</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">save_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">imstack</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates, plots and (optionally) saves an average image of the loaded tiff. If frames are provided, tiff is cropped to those frames.</span>
 
 <span class="sd">    Note: saves as 8-bit grayscale image.</span>
-<span class="sd">TODO  add parameters</span>
 
-<span class="sd">    :param tiff_path:</span>
-<span class="sd">    :param save_path:</span>
-<span class="sd">    :param plot:</span>
-<span class="sd">    :param imstack:</span>
+<span class="sd">    :param tiff_path: path to tiff file to load (if imstack not provided)</span>
+<span class="sd">    :param imstack: data stack to use as input (if tiff_path not provided)</span>
+<span class="sd">    :param frames: crop input stack to specified frames before calculating stdev projection.</span>
+<span class="sd">    :param save_path: path to save output image</span>
+<span class="sd">    :param plot: if True, show the output image</span>
 <span class="sd">    :param kwargs:</span>
-<span class="sd">    :return:</span>
-<span class="sd">    :param frames:</span>
+<span class="sd">        :trialobj: ImagingTrial or SingleImage; object associated with input image.</span>
+<span class="sd">        :scalebar_um: int; size of scalebar to plot on image (in um); must provide trialobj parameter.</span>
+<span class="sd">    :return: stdev projection image</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -463,13 +465,17 @@
     <span class="k">return</span> <span class="n">img</span></div>
 
 
-<div class="viewcode-block" id="InspectTiff"><a class="viewcode-back" href="../../../making-plots.html#packerlabimaging.plotting.plotting.InspectTiff">[docs]</a><span class="k">def</span> <span class="nf">InspectTiff</span><span class="p">(</span><span class="n">tiff_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">frames</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">imstack</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="InspectTiff"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.plotting.plotting.InspectTiff">[docs]</a><span class="k">def</span> <span class="nf">InspectTiff</span><span class="p">(</span><span class="n">tiff_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">frames</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">imstack</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">TODO fill documentation and add parameters</span>
-<span class="sd">    :param tiff_path:</span>
-<span class="sd">    :param frames:</span>
-<span class="sd">    :param imstack:</span>
+<span class="sd">    Plot stdev, max and mean project of input image.</span>
+
+<span class="sd">    :param tiff_path: path to tiff file to load (if imstack not provided)</span>
+<span class="sd">    :param imstack: data stack to use as input (if tiff_path not provided)</span>
+<span class="sd">    :param frames: crop input stack to specified frames before calculating stdev projection.</span>
 <span class="sd">    :param kwargs:</span>
+<span class="sd">        :trialobj: ImagingTrial or SingleImage; object associated with input image.</span>
+<span class="sd">        :scalebar_um: int; size of scalebar to plot on image (in um); must provide trialobj parameter.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">imstack</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">tiff_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># read tiff</span>
@@ -498,19 +504,18 @@
     <span class="n">_</span> <span class="o">=</span> <span class="n">MeanProject</span><span class="p">(</span><span class="n">imstack</span><span class="o">=</span><span class="n">image</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="FrameAverage"><a class="viewcode-back" href="../../../making-plots.html#packerlabimaging.plotting.plotting.FrameAverage">[docs]</a><span class="k">def</span> <span class="nf">FrameAverage</span><span class="p">(</span><span class="n">key_frames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">tiff_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">imstack</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">peri_frames</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">save_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="FrameAverage"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.plotting.plotting.FrameAverage">[docs]</a><span class="k">def</span> <span class="nf">FrameAverage</span><span class="p">(</span><span class="n">key_frames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">tiff_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">imstack</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">peri_frames</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">save_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from a multipage imaging TIFF file.</span>
-<span class="sd">TODO add parameters</span>
 
-<span class="sd">    :param tiff_path:</span>
-<span class="sd">    :param key_frames:</span>
-<span class="sd">    :param save_path:</span>
-<span class="sd">    :param imstack:</span>
-<span class="sd">    :param peri_frames:</span>
-<span class="sd">    :param to_plot:</span>
-<span class="sd">    :return:</span>
+<span class="sd">    :param tiff_path: path to tiff file to load (if imstack not provided)</span>
+<span class="sd">    :param imstack: data stack to use as input (if tiff_path not provided)</span>
+<span class="sd">    :param key_frames: key frames around which to create peri-frame averages</span>
+<span class="sd">    :param peri_frames: number of frames around the key frame to calculate average from</span>
+<span class="sd">    :param plot: if True, show the output image</span>
+<span class="sd">    :param save_path: path to save output image</span>
+<span class="sd">    :return: array of images</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Making peri-frame avg image...&#39;</span><span class="p">)</span>
@@ -573,10 +578,10 @@
             <span class="n">plotImg</span><span class="p">(</span><span class="n">img</span><span class="o">=</span><span class="n">avg_sub</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">avg_sub</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">images</span></div>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">(</span><span class="n">images</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SingleFrame"><a class="viewcode-back" href="../../../making-plots.html#packerlabimaging.plotting.plotting.SingleFrame">[docs]</a><span class="nd">@plotting_decorator</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<div class="viewcode-block" id="SingleFrame"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.plotting.plotting.SingleFrame">[docs]</a><span class="nd">@plotting_decorator</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">SingleFrame</span><span class="p">(</span><span class="n">tiff_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">frame_num</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">imstack</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    plots an image of a single specified tiff frame after reading using tifffile.</span>
@@ -601,7 +606,7 @@
 
     <span class="k">if</span> <span class="s1">&#39;scalebar_um&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
         <span class="k">if</span> <span class="s1">&#39;trialobj&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">_add_scalebar</span><span class="p">(</span><span class="n">scale_bar_um</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;scalebar_um&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">_add_scalebar</span><span class="p">(</span><span class="n">scalebar_um</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;scalebar_um&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;must provide trialobj parameter to access for making scalebar.&#39;</span><span class="p">)</span>
 
@@ -611,15 +616,17 @@
 
 
 <span class="c1"># plots the raw trace for the Flu mean of the FOV (similar to the ZProject in Fiji)</span>
-<div class="viewcode-block" id="plotMeanFovFluTrace"><a class="viewcode-back" href="../../../making-plots.html#packerlabimaging.plotting.plotting.plotMeanFovFluTrace">[docs]</a><span class="nd">@plotting_decorator</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<div class="viewcode-block" id="plotMeanFovFluTrace"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.plotting.plotting.plotMeanFovFluTrace">[docs]</a><span class="nd">@plotting_decorator</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">plotMeanFovFluTrace</span><span class="p">(</span><span class="n">trialobj</span><span class="p">:</span> <span class="n">TwoPhotonImaging</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;make plot of mean Ca trace averaged over the whole FOV</span>
-<span class="sd">TODO add parameters</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make plot of mean fluorescence trace averaged over the whole FOV</span>
 
 <span class="sd">    NOTE: this function will use the underlying timing that is found under trialobj.tmdata (if that is defined). If there is a mismatch in the number of frame timestamps collected and</span>
 <span class="sd">    the number of imaging frames data, the shorter length will be used for plotting (with no warning printed, as it is often the case that there are dropped frames from the microscope).</span>
-<span class="sd">    :param trialobj:</span>
+
+<span class="sd">    :param trialobj: TwoPhotonImaging (or derived) object</span>
 <span class="sd">    :param kwargs:</span>
+<span class="sd">        :ax: matplotlib axis object to use for plotting.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">trialobj</span><span class="p">,</span> <span class="s1">&#39;meanFovFluTrace&#39;</span><span class="p">):</span>
@@ -659,18 +666,21 @@
         <span class="n">dataplot_ax_options</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">collection_hz</span><span class="o">=</span><span class="n">time_res</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="plot_photostim_traces_overlap"><a class="viewcode-back" href="../../../making-plots.html#packerlabimaging.plotting.plotting.plot_photostim_traces_overlap">[docs]</a><span class="nd">@plotting_decorator</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<div class="viewcode-block" id="plot_photostim_traces_overlap"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.plotting.plotting.plot_photostim_traces_overlap">[docs]</a><span class="nd">@plotting_decorator</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">plot_photostim_traces_overlap</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">trialobj</span><span class="p">:</span> <span class="n">AllOpticalTrial</span><span class="p">,</span> <span class="n">exclude_id</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">y_spacing_factor</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                                   <span class="n">title</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">x_axis</span><span class="o">=</span><span class="s1">&#39;Time (seconds)&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    TODO fill documentation and add parameters</span>
-<span class="sd">    :param array:</span>
-<span class="sd">    :param trialobj:</span>
-<span class="sd">    :param exclude_id:</span>
-<span class="sd">    :param y_spacing_factor:</span>
-<span class="sd">    :param title:</span>
-<span class="sd">    :param x_axis:</span>
+<span class="sd">    Plot fluorescence traces of alloptical stimulated cells on one plot.</span>
+
+<span class="sd">    :param array: fluorescence traces of alloptical stimulated cells to plot.</span>
+<span class="sd">    :param trialobj: AllOptical object to select cells from</span>
+<span class="sd">    :param exclude_id: list of cell id&#39;s to exclude from plot</span>
+<span class="sd">    :param y_spacing_factor: increase to add more space between plotted traces</span>
+<span class="sd">    :param title: title of plot</span>
+<span class="sd">    :param x_axis: x-axis of plot in units of Frames or Time (seconds)</span>
 <span class="sd">    :param kwargs:</span>
+<span class="sd">        :ax: matplotlib axis object to use for plotting.</span>
+
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -718,73 +728,10 @@
     <span class="n">dataplot_ax_options</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="plot_s2p_raw"><a class="viewcode-back" href="../../../making-plots.html#packerlabimaging.plotting.plotting.plot_s2p_raw">[docs]</a><span class="k">def</span> <span class="nf">plot_s2p_raw</span><span class="p">(</span><span class="n">trialobj</span><span class="p">,</span> <span class="n">cell_id</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">TODO fill documentation and add parameters</span>
-<span class="sd">    :param trialobj:</span>
-<span class="sd">    :param cell_id:</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">baseline_raw</span><span class="p">[</span><span class="n">trialobj</span><span class="o">.</span><span class="n">cell_id</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">cell_id</span><span class="p">)],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">baseline_raw</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
-
-
-<span class="c1"># LFP</span>
-
-
-<span class="c1">### plot entire trace of individual targeted cells as super clean subplots, with the same y-axis lims</span>
-<div class="viewcode-block" id="plot_photostim_traces"><a class="viewcode-back" href="../../../making-plots.html#packerlabimaging.plotting.plotting.plot_photostim_traces">[docs]</a><span class="k">def</span> <span class="nf">plot_photostim_traces</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">trialobj</span><span class="p">:</span> <span class="n">AllOpticalTrial</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">y_min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                          <span class="n">y_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">save_fig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">TODO fill documentation and add parameters</span>
-<span class="sd">    :param array:</span>
-<span class="sd">    :param trialobj:</span>
-<span class="sd">    :param title:</span>
-<span class="sd">    :param y_min:</span>
-<span class="sd">    :param y_max:</span>
-<span class="sd">    :param x_label:</span>
-<span class="sd">    :param y_label:</span>
-<span class="sd">    :param save_fig:</span>
-<span class="sd">    :param kwargs:</span>
-<span class="sd">        options include:</span>
-<span class="sd">            hits: ls; a ls of 1s and 0s that is used to add a scatter point to the plot at stim_start_frames indexes at 1s</span>
-<span class="sd">    :return:</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># make rolling average for these plots</span>
-    <span class="n">w</span> <span class="o">=</span> <span class="mi">30</span>
-    <span class="n">array</span> <span class="o">=</span> <span class="p">[(</span><span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">w</span><span class="p">),</span> <span class="s1">&#39;valid&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="n">w</span><span class="p">)</span> <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">array</span><span class="p">]</span>
-
-    <span class="n">len_</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
-    <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="n">len_</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">len_</span><span class="p">))</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">axs</span><span class="p">)):</span>
-        <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">y_min</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">])</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">stim_start_frames</span><span class="p">:</span>
-            <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">j</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s1">&#39;scatter&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">stim_start_frames</span><span class="p">[</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;scatter&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]]</span>
-            <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-            <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;chocolate&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">len_</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">s2p_cell_targets</span><span class="p">):</span>
-            <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Cell # </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">s2p_cell_targets</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-        <span class="k">if</span> <span class="s1">&#39;line_ids&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">axs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;Target </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;line_ids&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]],</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
-
-    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">((</span><span class="n">title</span> <span class="o">+</span> <span class="s1">&#39; - </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">len_</span> <span class="o">+</span> <span class="s1">&#39; cells&#39;</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">verticalalignment</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-                     <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
-    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">x_label</span><span class="p">)</span>
-    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">y_label</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">save_fig</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_fig</span><span class="p">)</span>
-
-    <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
-
 
 <span class="c1">### photostim analysis - PLOT avg over photostim. trials traces for the provided traces</span>
-<div class="viewcode-block" id="plot_periphotostim_avg2"><a class="viewcode-back" href="../../../making-plots.html#packerlabimaging.plotting.plotting.plot_periphotostim_avg2">[docs]</a><span class="nd">@plotting_decorator</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">))</span>
+<span class="c1"># todo decide which photostim avg plot func to keep</span>
+<div class="viewcode-block" id="plot_periphotostim_avg2"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.plotting.plotting.plot_periphotostim_avg2">[docs]</a><span class="nd">@plotting_decorator</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">plot_periphotostim_avg2</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">legend_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">avg_with_std</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                             <span class="n">title</span><span class="o">=</span><span class="s1">&#39;high quality plot&#39;</span><span class="p">,</span> <span class="n">pre_stim_sec</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -908,7 +855,7 @@
 
 
 <span class="c1">### photostim analysis - PLOT avg over all photstim. trials traces from PHOTOSTIM TARGETTED cells</span>
-<div class="viewcode-block" id="plot_periphotostim_avg"><a class="viewcode-back" href="../../../making-plots.html#packerlabimaging.plotting.plotting.plot_periphotostim_avg">[docs]</a><span class="nd">@plotting_decorator</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">))</span>
+<div class="viewcode-block" id="plot_periphotostim_avg"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.plotting.plotting.plot_periphotostim_avg">[docs]</a><span class="nd">@plotting_decorator</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">plot_periphotostim_avg</span><span class="p">(</span><span class="n">arr</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">trialobj</span><span class="p">:</span> <span class="n">AllOpticalTrial</span><span class="p">,</span> <span class="n">pre_stim_sec</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">post_stim_sec</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
                            <span class="n">avg_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">x_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -1018,7 +965,7 @@
 <span class="c1"># alloptical trial</span>
 <span class="c1">### plot the location of all SLM targets, along with option for plotting the mean img of the current trial</span>
 
-<div class="viewcode-block" id="plot_SLMtargets_Locs"><a class="viewcode-back" href="../../../making-plots.html#packerlabimaging.plotting.plotting.plot_SLMtargets_Locs">[docs]</a><span class="nd">@mpl</span><span class="o">.</span><span class="n">rc_context</span><span class="p">(</span><span class="n">image_frame_ops</span><span class="p">)</span>
+<div class="viewcode-block" id="plot_SLMtargets_Locs"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.plotting.plotting.plot_SLMtargets_Locs">[docs]</a><span class="nd">@mpl</span><span class="o">.</span><span class="n">rc_context</span><span class="p">(</span><span class="n">image_frame_ops</span><span class="p">)</span>
 <span class="nd">@plotting_decorator</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">plot_SLMtargets_Locs</span><span class="p">(</span><span class="n">trialobj</span><span class="p">:</span> <span class="n">AllOpticalTrial</span><span class="p">,</span> <span class="n">targets_coords</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span>
                          <span class="n">background</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1092,7 +1039,7 @@
 <span class="c1"># alloptical trial plotting</span>
 
 
-<div class="viewcode-block" id="plot_s2pMasks"><a class="viewcode-back" href="../../../making-plots.html#packerlabimaging.plotting.plotting.plot_s2pMasks">[docs]</a><span class="k">def</span> <span class="nf">plot_s2pMasks</span><span class="p">():</span>
+<div class="viewcode-block" id="plot_s2pMasks"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.plotting.plotting.plot_s2pMasks">[docs]</a><span class="k">def</span> <span class="nf">plot_s2pMasks</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot; Creates some images of SLM targets to suite2p cells.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1100,7 +1047,7 @@
 
 
 <span class="c1"># todo need to find new place for this:</span>
-<div class="viewcode-block" id="export_klicker_to_csv"><a class="viewcode-back" href="../../../making-plots.html#packerlabimaging.plotting.plotting.export_klicker_to_csv">[docs]</a><span class="k">def</span> <span class="nf">export_klicker_to_csv</span><span class="p">(</span><span class="n">klicker</span><span class="p">:</span> <span class="n">mpl_point_clicker</span><span class="o">.</span><span class="n">clicker</span><span class="p">,</span> <span class="n">csv_path</span><span class="p">):</span>
+<div class="viewcode-block" id="export_klicker_to_csv"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.plotting.plotting.export_klicker_to_csv">[docs]</a><span class="k">def</span> <span class="nf">export_klicker_to_csv</span><span class="p">(</span><span class="n">klicker</span><span class="p">:</span> <span class="n">mpl_point_clicker</span><span class="o">.</span><span class="n">clicker</span><span class="p">,</span> <span class="n">csv_path</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Save point cellsdata from mplpointclicker klicker to .csv</span>
 <span class="sd">    :param klicker: mplpointclicker klicker object</span>
 <span class="sd">    :param csv_path: path to save csv file of klicker points</span>

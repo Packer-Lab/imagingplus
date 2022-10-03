@@ -2,39 +2,67 @@ API reference
 =============
 
 
-
-core.SingleImage
-----------------
-.. autoclass:: packerlabimaging.main.core.SingleImage
-    :members:
-
-
-
-core.ImagingTrial
+core
 -----------------
-.. autoclass:: packerlabimaging.main.core.ImagingTrial
-    :members:
-
-
-core.Experiment
----------------
-.. autoclass:: packerlabimaging.main.core.Experiment
+.. automodule:: packerlabimaging.main.core
     :members:
 
 
 
-workflows.AllOpticalTrial
--------------------------
-.. autoclass:: packerlabimaging.workflows.AllOpticalTrial
+subcore
+--------------------
+.. automodule:: packerlabimaging.main.subcore
     :members:
+
 
 
 plotting
 --------
-.. autoclass:: packerlabimaging.plotting.plotting
+.. automodule:: packerlabimaging.plotting.plotting
     :members:
 
 
-subcore.TemporalData
----------
-.. autoclass::
+processing
+----------
+.. automodule:: packerlabimaging.processing.anndata
+    :members:
+
+.. automodule:: packerlabimaging.processing.cellpose
+    :members:
+
+.. automodule:: packerlabimaging.processing.imagingMetadata
+    :members:
+
+.. automodule:: packerlabimaging.processing.paq
+    :members:
+
+.. automodule:: packerlabimaging.processing.suite2p
+    :members:
+
+.. automodule:: packerlabimaging.processing.stats
+    :members:
+
+
+
+workflows (AllOptical)
+--------------------
+.. automodule:: packerlabimaging.workflows.AllOptical
+    :members:
+
+
+
+utils
+-----
+.. automodule:: packerlabimaging.utils.io
+    :members:
+
+.. automodule:: packerlabimaging.utils.utils
+    :members:
+
+.. automodule:: packerlabimaging.utils.PrairieLink
+    :members:
+
+.. automodule:: packerlabimaging.utils.images
+    :members:
+
+

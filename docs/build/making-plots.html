@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Plotting of data/analysis &#8212; packerlabimaging 0.2-alpha documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -13,7 +13,6 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -47,26 +46,39 @@
           <div class="body" role="main">
             
   <section id="plotting-of-data-analysis">
-<span id="making-plots"></span><h1>Plotting of data/analysis<a class="headerlink" href="#plotting-of-data-analysis" title="Permalink to this heading">¶</a></h1>
+<span id="making-plots"></span><h1>Plotting of data/analysis<a class="headerlink" href="#plotting-of-data-analysis" title="Permalink to this headline">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code> provides a number of convenience plotting functions to create the most commonly made plots for 2photon imaging analysis.</p>
 <p>All of these pre-built plots are demo’ed at <a class="reference external" href="Tutorials/Tutorial-3-Making-useful-plots.ipynb">Tutorial - making plots</a>.</p>
 <section id="module-packerlabimaging.plotting.plotting">
-<span id="available-plotting-functions"></span><h2>Available plotting functions:<a class="headerlink" href="#module-packerlabimaging.plotting.plotting" title="Permalink to this heading">¶</a></h2>
+<span id="available-plotting-functions"></span><h2>Available plotting functions:<a class="headerlink" href="#module-packerlabimaging.plotting.plotting" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.plotImg">
-<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plotImg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plotImg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plotImg" title="Permalink to this definition">¶</a></dt>
-<dd><p>plot image in grayscale.
-TODO add parameters
-:param img:
-:param kwargs:</p>
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plotImg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plotImg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plotImg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot image in grayscale.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>img</strong> – input image to show</p></li>
+<li><p><strong>kwargs</strong> – <dl class="field-list simple">
+<dt class="field-odd">trialobj</dt>
+<dd class="field-odd"><p>ImagingTrial or SingleImage; object associated with input image.</p>
+</dd>
+<dt class="field-even">scalebar_um</dt>
+<dd class="field-even"><p>int; size of scalebar to plot on image (in um); must provide trialobj parameter.</p>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.plotRoiLocations">
-<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plotRoiLocations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#packerlabimaging.TwoPhotonImaging" title="packerlabimaging.workflows.TwoPhotonImaging.TwoPhotonImaging"><span class="pre">TwoPhotonImaging</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">suite2p_rois</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plotRoiLocations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plotRoiLocations" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plotRoiLocations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">packerlabimaging.workflows.TwoPhotonImaging.TwoPhotonImaging</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suite2p_rois</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plotRoiLocations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plotRoiLocations" title="Permalink to this definition">¶</a></dt>
 <dd><p>plots an image of the FOV to show the locations of cells given in cells ls.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>trialobj</strong> – alloptical or 2p imaging object</p></li>
 <li><p><strong>background</strong> – either 2dim numpy array to use as the backsplash or None (default; which is a black background)</p></li>
@@ -84,7 +96,7 @@ TODO add parameters
 <li><p><strong>show</strong> – if False, do not display plot (used when the necessity is to return the fig and ax objects to futher manipulation)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns fig, ax<span class="colon">:</span></dt>
+<dt class="field-even">Returns fig, ax</dt>
 <dd class="field-even"><p>returns fig and ax object, if show is False</p>
 </dd>
 </dl>
@@ -92,18 +104,18 @@ TODO add parameters
 
 <dl class="py function">
 <dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.makeSuite2pPlots">
-<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">makeSuite2pPlots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Experiment</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="reference.html#packerlabimaging.TwoPhotonImaging" title="packerlabimaging.workflows.TwoPhotonImaging.TwoPhotonImaging"><span class="pre">TwoPhotonImaging</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#makeSuite2pPlots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.makeSuite2pPlots" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">makeSuite2pPlots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="reference.html#packerlabimaging.main.core.Experiment" title="packerlabimaging.main.core.Experiment"><span class="pre">packerlabimaging.main.core.Experiment</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">packerlabimaging.workflows.TwoPhotonImaging.TwoPhotonImaging</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#makeSuite2pPlots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.makeSuite2pPlots" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes four plots that are created by Suite2p output.</p>
 <p>credit: run_s2p tutorial on Mouseland/Suite2p on github</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>obj</strong> – Experiment or Trial object to use for creating Suite2p plots.</p></li>
 <li><p><strong>axs</strong> – a matplotlib.Axes.axes instance (4 cols x 1 rows), if provided use these axes for plotting</p></li>
 <li><p><strong>show</strong> – if False, do not display plot (used when the necessity is to return the fig and ax objects to futher manipulation)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns fig, axs<span class="colon">:</span></dt>
+<dt class="field-even">Returns fig, axs</dt>
 <dd class="field-even"><p>returns fig and ax object, if show is False</p>
 </dd>
 </dl>
@@ -111,49 +123,46 @@ TODO add parameters
 
 <dl class="py function">
 <dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.plot_flu_trace">
-<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_flu_trace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#packerlabimaging.TwoPhotonImaging" title="packerlabimaging.workflows.TwoPhotonImaging.TwoPhotonImaging"><span class="pre">TwoPhotonImaging</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'raw'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plot_flu_trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plot_flu_trace" title="Permalink to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>plot individual cell’s flu or dFF trace, with photostim. timings for that cell</p>
-</div></blockquote>
-<p>TODO add parameters</p>
-<blockquote>
-<div><dl class="field-list simple">
-<dt class="field-odd">param trialobj<span class="colon">:</span></dt>
-<dd class="field-odd"><p>trialobject to plot</p>
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_flu_trace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">packerlabimaging.workflows.TwoPhotonImaging.TwoPhotonImaging</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'raw'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plot_flu_trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plot_flu_trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot individual cell’s flu or dFF trace, with photostim. timings for that cell. Accesses the object’s anndata data storage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trialobj</strong> – TwoPhotonImaging (or derived) object containing anndata data storage from which to select cell to plot flu trace</p></li>
+<li><p><strong>cell</strong> – cell index number</p></li>
+<li><p><strong>to_plot</strong> – select data layer to plot (choose ‘raw’ to plot main raw data layer, otherwise choose name of the desired layer)</p></li>
+<li><p><strong>fig</strong> – a matplotlib.Figure instance, if provided use this fig for plotting</p></li>
+<li><p><strong>ax</strong> – a matplotlib.Axes.axes instance, if provided use this ax for plotting</p></li>
+<li><p><strong>show</strong> – if False, do not display plot (used when the necessity is to return the fig and ax objects to futher manipulation)</p></li>
+</ul>
 </dd>
-<dt class="field-even">param cell<span class="colon">:</span></dt>
-<dd class="field-even"><p></p></dd>
-<dt class="field-odd">param to_plot<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-<dt class="field-even">param fig<span class="colon">:</span></dt>
-<dd class="field-even"><p>a matplotlib.Figure instance, if provided use this fig for plotting</p>
-</dd>
-<dt class="field-odd">param ax<span class="colon">:</span></dt>
-<dd class="field-odd"><p>a matplotlib.Axes.axes instance, if provided use this ax for plotting</p>
-</dd>
-<dt class="field-even">param show<span class="colon">:</span></dt>
-<dd class="field-even"><p>if False, do not display plot (used when the necessity is to return the fig and ax objects to futher manipulation)</p>
-</dd>
-<dt class="field-odd">returns fig, ax<span class="colon">:</span></dt>
-<dd class="field-odd"><p>returns fig and ax object, if show is False</p>
+<dt class="field-even">Returns fig, ax</dt>
+<dd class="field-even"><p>returns fig and ax object, if show is False</p>
 </dd>
 </dl>
-</div></blockquote>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.plot__channel">
-<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot__channel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmdata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TemporalData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plot__channel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plot__channel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot the stored signal from the specified channel from a PaqData submodule.
-TODO add parameters</p>
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot__channel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmdata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#packerlabimaging.main.subcore.TemporalData" title="packerlabimaging.main.subcore.TemporalData"><span class="pre">packerlabimaging.main.subcore.TemporalData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plot__channel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plot__channel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the saved signal from the specified channel from a PaqData submodule.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>paqData</strong> – .Paq submodule cellsdata</p></li>
-<li><p><strong>channel</strong> – </p></li>
-<li><p><strong>kwargs</strong> – x_axis: str, x axis label, if ‘time’ or “Time” found in x_axis label, will convert x axis to time domain.
-x_tick_secs: int, interval to plot x axis ticks
-ax: matplotlib axis object to use for plotting.</p></li>
+<li><p><strong>tmdata</strong> – TemporalData object</p></li>
+<li><p><strong>channel</strong> – channel to plot</p></li>
+<li><p><strong>kwargs</strong> – <dl class="field-list simple">
+<dt class="field-odd">x_axis</dt>
+<dd class="field-odd"><p>str; x axis label, if ‘time’ or “Time” found in x_axis label, will convert x axis to time domain.</p>
+</dd>
+<dt class="field-even">x_tick_secs</dt>
+<dd class="field-even"><p>int; interval to plot x axis ticks</p>
+</dd>
+<dt class="field-odd">ax</dt>
+<dd class="field-odd"><p>matplotlib axis object to use for plotting.</p>
+</dd>
+</dl>
+</p></li>
 </ul>
 </dd>
 </dl>
@@ -161,146 +170,154 @@ ax: matplotlib axis object to use for plotting.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.MeanProject">
-<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">MeanProject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiff_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imstack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#MeanProject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.MeanProject" title="Permalink to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>Creates, plots and (optionally) saves an average image of the loaded tiff. If frames are provided, tiff is cropped to those frames.</p>
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">MeanProject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiff_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imstack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#MeanProject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.MeanProject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mean Projection function.
+Creates, plots and (optionally) saves a Mean Projection image of the loaded tiff. If frames are provided, tiff is cropped to those frames.</p>
 <p>Note: saves as 8-bit grayscale image.</p>
-</div></blockquote>
-<p>TODO  add parameters</p>
-<blockquote>
-<div><dl class="field-list simple">
-<dt class="field-odd">param tiff_path<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-<dt class="field-even">param save_path<span class="colon">:</span></dt>
-<dd class="field-even"><p></p></dd>
-<dt class="field-odd">param plot<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-<dt class="field-even">param imstack<span class="colon">:</span></dt>
-<dd class="field-even"><p></p></dd>
-<dt class="field-odd">param kwargs<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-<dt class="field-even">return<span class="colon">:</span></dt>
-<dd class="field-even"><p></p></dd>
-<dt class="field-odd">param frames<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tiff_path</strong> – path to tiff file to load (if imstack not provided)</p></li>
+<li><p><strong>save_path</strong> – path to save output image</p></li>
+<li><p><strong>plot</strong> – if True, show the output image</p></li>
+<li><p><strong>imstack</strong> – data stack to use as input (if tiff_path not provided)</p></li>
+<li><p><strong>frames</strong> – crop input stack to specified frames before calculating mean projection.</p></li>
+<li><p><strong>kwargs</strong> – <dl class="field-list simple">
+<dt class="field-odd">trialobj</dt>
+<dd class="field-odd"><p>ImagingTrial or SingleImage; object associated with input image.</p>
+</dd>
+<dt class="field-even">scalebar_um</dt>
+<dd class="field-even"><p>int; size of scalebar to plot on image (in um); must provide trialobj parameter.</p>
+</dd>
 </dl>
-</div></blockquote>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>mean projection image</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.MaxProject">
-<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">MaxProject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiff_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imstack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#MaxProject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.MaxProject" title="Permalink to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>Creates, plots and (optionally) saves an average image of the loaded tiff. If frames are provided, tiff is cropped to those frames.</p>
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">MaxProject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiff_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imstack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#MaxProject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.MaxProject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum projection function.
+Creates, plots and (optionally) saves an average image of the loaded tiff. If frames are provided, tiff is cropped to those frames.</p>
 <p>Note: saves as 8-bit grayscale image.</p>
-</div></blockquote>
-<p>TODO add parameters</p>
-<blockquote>
-<div><dl class="field-list simple">
-<dt class="field-odd">param tiff_path<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-<dt class="field-even">param save_path<span class="colon">:</span></dt>
-<dd class="field-even"><p></p></dd>
-<dt class="field-odd">param plot<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-<dt class="field-even">param imstack<span class="colon">:</span></dt>
-<dd class="field-even"><p></p></dd>
-<dt class="field-odd">param kwargs<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-<dt class="field-even">return<span class="colon">:</span></dt>
-<dd class="field-even"><p></p></dd>
-<dt class="field-odd">param frames<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tiff_path</strong> – path to tiff file to load (if imstack not provided)</p></li>
+<li><p><strong>save_path</strong> – path to save output image</p></li>
+<li><p><strong>plot</strong> – if True, show the output image</p></li>
+<li><p><strong>imstack</strong> – data stack to use as input (if tiff_path not provided)</p></li>
+<li><p><strong>frames</strong> – crop input stack to specified frames before calculating maximum projection.</p></li>
+<li><p><strong>kwargs</strong> – <dl class="field-list simple">
+<dt class="field-odd">trialobj</dt>
+<dd class="field-odd"><p>ImagingTrial or SingleImage; object associated with input image.</p>
+</dd>
+<dt class="field-even">scalebar_um</dt>
+<dd class="field-even"><p>int; size of scalebar to plot on image (in um); must provide trialobj parameter.</p>
+</dd>
 </dl>
-</div></blockquote>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>maximum projection image</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.StdevProject">
-<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">StdevProject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiff_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imstack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#StdevProject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.StdevProject" title="Permalink to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>Creates, plots and (optionally) saves an average image of the loaded tiff. If frames are provided, tiff is cropped to those frames.</p>
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">StdevProject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiff_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imstack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#StdevProject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.StdevProject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates, plots and (optionally) saves an average image of the loaded tiff. If frames are provided, tiff is cropped to those frames.</p>
 <p>Note: saves as 8-bit grayscale image.</p>
-</div></blockquote>
-<p>TODO  add parameters</p>
-<blockquote>
-<div><dl class="field-list simple">
-<dt class="field-odd">param tiff_path<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-<dt class="field-even">param save_path<span class="colon">:</span></dt>
-<dd class="field-even"><p></p></dd>
-<dt class="field-odd">param plot<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-<dt class="field-even">param imstack<span class="colon">:</span></dt>
-<dd class="field-even"><p></p></dd>
-<dt class="field-odd">param kwargs<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-<dt class="field-even">return<span class="colon">:</span></dt>
-<dd class="field-even"><p></p></dd>
-<dt class="field-odd">param frames<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tiff_path</strong> – path to tiff file to load (if imstack not provided)</p></li>
+<li><p><strong>imstack</strong> – data stack to use as input (if tiff_path not provided)</p></li>
+<li><p><strong>frames</strong> – crop input stack to specified frames before calculating stdev projection.</p></li>
+<li><p><strong>save_path</strong> – path to save output image</p></li>
+<li><p><strong>plot</strong> – if True, show the output image</p></li>
+<li><p><strong>kwargs</strong> – <dl class="field-list simple">
+<dt class="field-odd">trialobj</dt>
+<dd class="field-odd"><p>ImagingTrial or SingleImage; object associated with input image.</p>
+</dd>
+<dt class="field-even">scalebar_um</dt>
+<dd class="field-even"><p>int; size of scalebar to plot on image (in um); must provide trialobj parameter.</p>
+</dd>
 </dl>
-</div></blockquote>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>stdev projection image</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.InspectTiff">
-<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">InspectTiff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiff_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imstack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#InspectTiff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.InspectTiff" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>TODO fill documentation and add parameters</dt><dd><dl class="field-list simple">
-<dt class="field-odd">param tiff_path<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-<dt class="field-even">param frames<span class="colon">:</span></dt>
-<dd class="field-even"><p></p></dd>
-<dt class="field-odd">param imstack<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-<dt class="field-even">param kwargs<span class="colon">:</span></dt>
-<dd class="field-even"><p></p></dd>
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">InspectTiff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiff_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imstack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#InspectTiff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.InspectTiff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot stdev, max and mean project of input image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tiff_path</strong> – path to tiff file to load (if imstack not provided)</p></li>
+<li><p><strong>imstack</strong> – data stack to use as input (if tiff_path not provided)</p></li>
+<li><p><strong>frames</strong> – crop input stack to specified frames before calculating stdev projection.</p></li>
+<li><p><strong>kwargs</strong> – <dl class="field-list simple">
+<dt class="field-odd">trialobj</dt>
+<dd class="field-odd"><p>ImagingTrial or SingleImage; object associated with input image.</p>
+</dd>
+<dt class="field-even">scalebar_um</dt>
+<dd class="field-even"><p>int; size of scalebar to plot on image (in um); must provide trialobj parameter.</p>
+</dd>
 </dl>
+</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.FrameAverage">
-<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">FrameAverage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tiff_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imstack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peri_frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#FrameAverage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.FrameAverage" title="Permalink to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from a multipage imaging TIFF file.</p>
-</div></blockquote>
-<p>TODO add parameters</p>
-<blockquote>
-<div><dl class="field-list simple">
-<dt class="field-odd">param tiff_path<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-<dt class="field-even">param key_frames<span class="colon">:</span></dt>
-<dd class="field-even"><p></p></dd>
-<dt class="field-odd">param save_path<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-<dt class="field-even">param imstack<span class="colon">:</span></dt>
-<dd class="field-even"><p></p></dd>
-<dt class="field-odd">param peri_frames<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-<dt class="field-even">param to_plot<span class="colon">:</span></dt>
-<dd class="field-even"><p></p></dd>
-<dt class="field-odd">return<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">FrameAverage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tiff_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imstack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peri_frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#FrameAverage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.FrameAverage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from a multipage imaging TIFF file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tiff_path</strong> – path to tiff file to load (if imstack not provided)</p></li>
+<li><p><strong>imstack</strong> – data stack to use as input (if tiff_path not provided)</p></li>
+<li><p><strong>key_frames</strong> – key frames around which to create peri-frame averages</p></li>
+<li><p><strong>peri_frames</strong> – number of frames around the key frame to calculate average from</p></li>
+<li><p><strong>plot</strong> – if True, show the output image</p></li>
+<li><p><strong>save_path</strong> – path to save output image</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array of images</p>
+</dd>
 </dl>
-</div></blockquote>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.SingleFrame">
-<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">SingleFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiff_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imstack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#SingleFrame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.SingleFrame" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">SingleFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiff_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imstack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.array</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#SingleFrame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.SingleFrame" title="Permalink to this definition">¶</a></dt>
 <dd><p>plots an image of a single specified tiff frame after reading using tifffile.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tiff_path</strong> – path to .tiff file to loads</p></li>
 <li><p><strong>frame_num</strong> – frame # from 2p imaging tiff to show (default is 0 - i.e. the first frame)</p></li>
 <li><p><strong>title</strong> – (optional) give a string to use as title</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>matplotlib imshow plot</p>
 </dd>
 </dl>
@@ -308,74 +325,45 @@ ax: matplotlib axis object to use for plotting.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.plotMeanFovFluTrace">
-<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plotMeanFovFluTrace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#packerlabimaging.TwoPhotonImaging" title="packerlabimaging.workflows.TwoPhotonImaging.TwoPhotonImaging"><span class="pre">TwoPhotonImaging</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plotMeanFovFluTrace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plotMeanFovFluTrace" title="Permalink to this definition">¶</a></dt>
-<dd><p>make plot of mean Ca trace averaged over the whole FOV
-TODO add parameters</p>
-<blockquote>
-<div><p>NOTE: this function will use the underlying timing that is found under trialobj.tmdata (if that is defined). If there is a mismatch in the number of frame timestamps collected and
-the number of imaging frames data, the shorter length will be used for plotting (with no warning printed, as it is often the case that there are dropped frames from the microscope).
-:param trialobj:
-:param kwargs:</p>
-</div></blockquote>
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plotMeanFovFluTrace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">packerlabimaging.workflows.TwoPhotonImaging.TwoPhotonImaging</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plotMeanFovFluTrace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plotMeanFovFluTrace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make plot of mean fluorescence trace averaged over the whole FOV</p>
+<p>NOTE: this function will use the underlying timing that is found under trialobj.tmdata (if that is defined). If there is a mismatch in the number of frame timestamps collected and
+the number of imaging frames data, the shorter length will be used for plotting (with no warning printed, as it is often the case that there are dropped frames from the microscope).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trialobj</strong> – TwoPhotonImaging (or derived) object</p></li>
+<li><p><strong>kwargs</strong> – <dl class="field-list simple">
+<dt class="field-odd">ax</dt>
+<dd class="field-odd"><p>matplotlib axis object to use for plotting.</p>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.plot_photostim_traces_overlap">
-<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_photostim_traces_overlap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#packerlabimaging.AllOpticalTrial" title="packerlabimaging.workflows.AllOptical.AllOpticalTrial"><span class="pre">AllOpticalTrial</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_spacing_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Time</span> <span class="pre">(seconds)'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plot_photostim_traces_overlap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plot_photostim_traces_overlap" title="Permalink to this definition">¶</a></dt>
-<dd><p>TODO fill documentation and add parameters
-:param array:
-:param trialobj:
-:param exclude_id:
-:param y_spacing_factor:
-:param title:
-:param x_axis:
-:param kwargs:</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.plot_s2p_raw">
-<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_s2p_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trialobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plot_s2p_raw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plot_s2p_raw" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>TODO fill documentation and add parameters</dt><dd><dl class="field-list simple">
-<dt class="field-odd">param trialobj<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-<dt class="field-even">param cell_id<span class="colon">:</span></dt>
-<dd class="field-even"><p></p></dd>
-</dl>
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_photostim_traces_overlap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#packerlabimaging.workflows.AllOptical.AllOpticalTrial" title="packerlabimaging.workflows.AllOptical.AllOpticalTrial"><span class="pre">packerlabimaging.workflows.AllOptical.AllOpticalTrial</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_spacing_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Time</span> <span class="pre">(seconds)'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plot_photostim_traces_overlap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plot_photostim_traces_overlap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot fluorescence traces of alloptical stimulated cells on one plot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> – fluorescence traces of alloptical stimulated cells to plot.</p></li>
+<li><p><strong>trialobj</strong> – AllOptical object to select cells from</p></li>
+<li><p><strong>exclude_id</strong> – list of cell id’s to exclude from plot</p></li>
+<li><p><strong>y_spacing_factor</strong> – increase to add more space between plotted traces</p></li>
+<li><p><strong>title</strong> – title of plot</p></li>
+<li><p><strong>x_axis</strong> – x-axis of plot in units of Frames or Time (seconds)</p></li>
+<li><p><strong>kwargs</strong> – <dl class="field-list simple">
+<dt class="field-odd">ax</dt>
+<dd class="field-odd"><p>matplotlib axis object to use for plotting.</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.plot_photostim_traces">
-<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_photostim_traces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#packerlabimaging.AllOpticalTrial" title="packerlabimaging.workflows.AllOptical.AllOpticalTrial"><span class="pre">AllOpticalTrial</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plot_photostim_traces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plot_photostim_traces" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>TODO fill documentation and add parameters</dt><dd><dl class="field-list simple">
-<dt class="field-odd">param array<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-<dt class="field-even">param trialobj<span class="colon">:</span></dt>
-<dd class="field-even"><p></p></dd>
-<dt class="field-odd">param title<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-<dt class="field-even">param y_min<span class="colon">:</span></dt>
-<dd class="field-even"><p></p></dd>
-<dt class="field-odd">param y_max<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-<dt class="field-even">param x_label<span class="colon">:</span></dt>
-<dd class="field-even"><p></p></dd>
-<dt class="field-odd">param y_label<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-<dt class="field-even">param save_fig<span class="colon">:</span></dt>
-<dd class="field-even"><p></p></dd>
-<dt class="field-odd">param kwargs<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt>options include:</dt><dd><p>hits: ls; a ls of 1s and 0s that is used to add a scatter point to the plot at stim_start_frames indexes at 1s</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">return<span class="colon">:</span></dt>
-<dd class="field-even"><p></p></dd>
-</dl>
+</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -385,27 +373,27 @@ the number of imaging frames data, the shorter length will be used for plotting 
 <span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_periphotostim_avg2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avg_with_std</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'high</span> <span class="pre">quality</span> <span class="pre">plot'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_stim_sec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plot_periphotostim_avg2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plot_periphotostim_avg2" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>TODO fill documentation and add parameters</dt><dd><dl class="field-list simple">
-<dt class="field-odd">param dataset<span class="colon">:</span></dt>
+<dt class="field-odd">param dataset</dt>
 <dd class="field-odd"><p></p></dd>
-<dt class="field-even">param fps<span class="colon">:</span></dt>
+<dt class="field-even">param fps</dt>
 <dd class="field-even"><p></p></dd>
-<dt class="field-odd">param legend_labels<span class="colon">:</span></dt>
+<dt class="field-odd">param legend_labels</dt>
 <dd class="field-odd"><p></p></dd>
-<dt class="field-even">param colors<span class="colon">:</span></dt>
+<dt class="field-even">param colors</dt>
 <dd class="field-even"><p></p></dd>
-<dt class="field-odd">param avg_with_std<span class="colon">:</span></dt>
+<dt class="field-odd">param avg_with_std</dt>
 <dd class="field-odd"><p></p></dd>
-<dt class="field-even">param title<span class="colon">:</span></dt>
+<dt class="field-even">param title</dt>
 <dd class="field-even"><p></p></dd>
-<dt class="field-odd">param pre_stim_sec<span class="colon">:</span></dt>
+<dt class="field-odd">param pre_stim_sec</dt>
 <dd class="field-odd"><p></p></dd>
-<dt class="field-even">param ylim<span class="colon">:</span></dt>
+<dt class="field-even">param ylim</dt>
 <dd class="field-even"><p></p></dd>
-<dt class="field-odd">param fig<span class="colon">:</span></dt>
+<dt class="field-odd">param fig</dt>
 <dd class="field-odd"><p></p></dd>
-<dt class="field-even">param ax<span class="colon">:</span></dt>
+<dt class="field-even">param ax</dt>
 <dd class="field-even"><p></p></dd>
-<dt class="field-odd">param kwargs<span class="colon">:</span></dt>
+<dt class="field-odd">param kwargs</dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
 </dd>
@@ -414,7 +402,7 @@ the number of imaging frames data, the shorter length will be used for plotting 
 
 <dl class="py function">
 <dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.plot_periphotostim_avg">
-<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_periphotostim_avg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#packerlabimaging.AllOpticalTrial" title="packerlabimaging.workflows.AllOptical.AllOpticalTrial"><span class="pre">AllOpticalTrial</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_stim_sec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_stim_sec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avg_only</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plot_periphotostim_avg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plot_periphotostim_avg" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_periphotostim_avg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#packerlabimaging.workflows.AllOptical.AllOpticalTrial" title="packerlabimaging.workflows.AllOptical.AllOpticalTrial"><span class="pre">packerlabimaging.workflows.AllOptical.AllOpticalTrial</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_stim_sec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_stim_sec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avg_only</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plot_periphotostim_avg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plot_periphotostim_avg" title="Permalink to this definition">¶</a></dt>
 <dd><p>plot trace across all stims
 :param arr: Flu traces to plot (will be plotted as individual traces unless avg_only is True) dimensions should be cells x stims x key_frames
 :param trialobj: instance object of AllOpticalTrial
@@ -435,14 +423,14 @@ the number of imaging frames data, the shorter length will be used for plotting 
 </dl>
 </div></blockquote>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>fig</strong> – a matplotlib.Figure instance, if provided use this fig for plotting</p></li>
 <li><p><strong>ax</strong> – a matplotlib.Axes.axes instance, if provided use this ax for plotting</p></li>
 <li><p><strong>show</strong> – if False, do not display plot (used when the necessity is to return the fig and ax objects to futher manipulation)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns fig, ax<span class="colon">:</span></dt>
+<dt class="field-even">Returns fig, ax</dt>
 <dd class="field-even"><p>returns fig and ax object, if show is False</p>
 </dd>
 </dl>
@@ -450,10 +438,10 @@ the number of imaging frames data, the shorter length will be used for plotting 
 
 <dl class="py function">
 <dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.plot_SLMtargets_Locs">
-<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_SLMtargets_Locs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#packerlabimaging.AllOpticalTrial" title="packerlabimaging.workflows.AllOptical.AllOpticalTrial"><span class="pre">AllOpticalTrial</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets_coords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plot_SLMtargets_Locs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plot_SLMtargets_Locs" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_SLMtargets_Locs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#packerlabimaging.workflows.AllOptical.AllOpticalTrial" title="packerlabimaging.workflows.AllOptical.AllOpticalTrial"><span class="pre">packerlabimaging.workflows.AllOptical.AllOpticalTrial</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets_coords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#plot_SLMtargets_Locs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.plot_SLMtargets_Locs" title="Permalink to this definition">¶</a></dt>
 <dd><p>plot SLM target coordinate locations</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>trialobj</strong> – </p></li>
 <li><p><strong>targets_coords</strong> – ls containing (x,y) coordinates of targets to plot</p></li>
@@ -464,7 +452,7 @@ the number of imaging frames data, the shorter length will be used for plotting 
 <li><p><strong>show</strong> – if False, do not display plot (used when the necessity is to return the fig and ax objects to futher manipulation)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns fig, ax<span class="colon">:</span></dt>
+<dt class="field-even">Returns fig, ax</dt>
 <dd class="field-even"><p>returns fig and ax object, if show is False</p>
 </dd>
 </dl>
@@ -478,7 +466,7 @@ the number of imaging frames data, the shorter length will be used for plotting 
 
 <dl class="py function">
 <dt class="sig sig-object py" id="packerlabimaging.plotting.plotting.export_klicker_to_csv">
-<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">export_klicker_to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">klicker</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">clicker</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#export_klicker_to_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.export_klicker_to_csv" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">packerlabimaging.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">export_klicker_to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">klicker</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">mpl_point_clicker._clicker.clicker</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/packerlabimaging/plotting/plotting.html#export_klicker_to_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packerlabimaging.plotting.plotting.export_klicker_to_csv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save point cellsdata from mplpointclicker klicker to .csv
 :param klicker: mplpointclicker klicker object
 :param csv_path: path to save csv file of klicker points</p>
@@ -486,7 +474,7 @@ the number of imaging frames data, the shorter length will be used for plotting 
 
 </section>
 <section id="all-plotting-functions">
-<h2>All plotting functions:<a class="headerlink" href="#all-plotting-functions" title="Permalink to this heading">¶</a></h2>
+<h2>All plotting functions:<a class="headerlink" href="#all-plotting-functions" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">plot_SLMtargets_Locs()</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">plot_cells_loc()</span></code></p></li>
@@ -548,7 +536,7 @@ the number of imaging frames data, the shorter length will be used for plotting 
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -574,7 +562,7 @@ the number of imaging frames data, the shorter length will be used for plotting 
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2022, Packer Lab.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
     </div>
   </body>
 </html>

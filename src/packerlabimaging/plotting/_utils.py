@@ -210,9 +210,10 @@ def _add_scalebar(trialobj: Union[ImagingTrial, SingleImage], ax: plt.Axes, **kw
     """add scalebar to the image being plotted on the a single matplotlib.axes.Axes object using the TwoPhotonImaging object information.
     Option to specify scale bar um length to add to plot.
     TODO add parameters
-    :param trialobj:
-    :param ax:
+    :param trialobj: ImagingTrial or SingleImage; object associated with input image.
+    :param ax: plot object to add scale bar on
     :param kwargs:
+        scalebar_um: int; size of scalebar to plot on image (in um); must provide trialobj parameter.
     :return:
 
     """
@@ -222,15 +223,16 @@ def _add_scalebar(trialobj: Union[ImagingTrial, SingleImage], ax: plt.Axes, **kw
     #     raise ObjectClassError(function='_add_scalebar', valid_class=[TwoPhotonImagingTrial, AllOpticalTrial], invalid_class=type(trialobj))
     # else:
     assert trialobj.imparams, 'could not find imaging metadata (.imparams) for trialobj.'
-    scale_bar_um = 100 if 'scale_bar_um' not in kwargs else kwargs['scale_bar_um']
-    numpx = scale_bar_um / trialobj.imparams.pix_sz_x
+    scalebar_um = 100 if 'scalebar_um' not in kwargs else kwargs['scalebar_um']
+    assert type(scalebar_um) == int, 'scale bar length must be provided as integer (units: microns)'
+    numpx = scalebar_um / trialobj.imparams.pix_sz_x
 
     lw = 5 if 'lw' not in [*kwargs] else kwargs['lw']
     color = 'white' if 'color' not in [*kwargs] else kwargs['color']
     right_offset = 50 if 'right_offset' not in [*kwargs] else kwargs['right_offset']
     bottom_offset = 50 if 'bottom_offset' not in [*kwargs] else kwargs['bottom_offset']
 
-    print(f'\- adding scalebar of length {scale_bar_um} microns.')
+    print(f'\- adding scalebar of length {scalebar_um} microns.')
 
     ax.plot(np.linspace(trialobj.imparams.frame_x - right_offset - numpx, trialobj.imparams.frame_x - right_offset, 40),
             [trialobj.imparams.frame_y - bottom_offset] * 40, color=color, lw=lw, solid_capstyle='butt')

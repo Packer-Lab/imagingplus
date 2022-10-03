@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Tutorial 2 - Data organization inside packerlabimaging &#8212; packerlabimaging 0.2-alpha documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
@@ -13,7 +13,6 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
@@ -21,7 +20,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Tutorial 3 - Making Useful Plots" href="Tutorial-3-plotting-module.html" />
-    <link rel="prev" title="Tutorial 1 - Initializing an Experiment" href="Tutorial-1-Initializing-an-Experiment.html" /> 
+    <link rel="prev" title="Tutorials" href="../Tutorials-reference.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -36,7 +35,7 @@
           <a href="Tutorial-3-plotting-module.html" title="Tutorial 3 - Making Useful Plots"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Tutorial-1-Initializing-an-Experiment.html" title="Tutorial 1 - Initializing an Experiment"
+          <a href="../Tutorials-reference.html" title="Tutorials"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">packerlabimaging 0.2-alpha documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../Tutorials-reference.html" accesskey="U">Tutorials</a> &#187;</li>
@@ -264,7 +263,6 @@ div.nboutput.container div.output_area > div[class^='highlight']{
 }
 
 /* Some additional styling taken form the Jupyter notebook CSS */
-.jp-RenderedHTMLCommon table,
 div.rendered_html table {
   border: none;
   border-collapse: collapse;
@@ -273,14 +271,10 @@ div.rendered_html table {
   font-size: 12px;
   table-layout: fixed;
 }
-.jp-RenderedHTMLCommon thead,
 div.rendered_html thead {
   border-bottom: 1px solid black;
   vertical-align: bottom;
 }
-.jp-RenderedHTMLCommon tr,
-.jp-RenderedHTMLCommon th,
-.jp-RenderedHTMLCommon td,
 div.rendered_html tr,
 div.rendered_html th,
 div.rendered_html td {
@@ -292,21 +286,18 @@ div.rendered_html td {
   max-width: none;
   border: none;
 }
-.jp-RenderedHTMLCommon th,
 div.rendered_html th {
   font-weight: bold;
 }
-.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
 div.rendered_html tbody tr:nth-child(odd) {
   background: #f5f5f5;
 }
-.jp-RenderedHTMLCommon tbody tr:hover,
 div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
 <section id="Tutorial-2---Data-organization-inside-packerlabimaging">
-<h1>Tutorial 2 - Data organization inside packerlabimaging<a class="headerlink" href="#Tutorial-2---Data-organization-inside-packerlabimaging" title="Permalink to this heading">¶</a></h1>
+<h1>Tutorial 2 - Data organization inside packerlabimaging<a class="headerlink" href="#Tutorial-2---Data-organization-inside-packerlabimaging" title="Permalink to this headline">¶</a></h1>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -339,7 +330,7 @@ imported packerlabimaging
 </div>
 <p><em>This notebook demonstrates the basics of how data is organized inside of a trial object.</em></p>
 <section id="Importing-data-analysis-objects">
-<h2>Importing data analysis objects<a class="headerlink" href="#Importing-data-analysis-objects" title="Permalink to this heading">¶</a></h2>
+<h2>Importing data analysis objects<a class="headerlink" href="#Importing-data-analysis-objects" title="Permalink to this headline">¶</a></h2>
 <p>The first step to begin using the data analysis objects is to import the previously created objects. In general, it is advised to import th high-level <code class="docutils literal notranslate"><span class="pre">Experiment</span></code> object first, and then use the <code class="docutils literal notranslate"><span class="pre">.load_trial</span></code> method to load an individual <code class="docutils literal notranslate"><span class="pre">-Trial</span></code> object.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
@@ -371,7 +362,7 @@ trials in Experiment object:
 </div>
 </section>
 <section id="paq-data">
-<h2>paq data<a class="headerlink" href="#paq-data" title="Permalink to this heading">¶</a></h2>
+<h2>paq data<a class="headerlink" href="#paq-data" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">paq</span></code> sub-module is used to retrieve and store data from the .paq file for each trial. It can be accessed by <code class="docutils literal notranslate"><span class="pre">trialobj.paq</span></code>:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
@@ -407,7 +398,7 @@ packerlabimaging.processing.paq.paqData:
 </div>
 </section>
 <section id="Suite2p-data">
-<h2>Suite2p data<a class="headerlink" href="#Suite2p-data" title="Permalink to this heading">¶</a></h2>
+<h2>Suite2p data<a class="headerlink" href="#Suite2p-data" title="Permalink to this headline">¶</a></h2>
 <p>Suite2p is the primary Ca2+ imaging library that is integrated into the analysis pipeline. The dedicated <code class="docutils literal notranslate"><span class="pre">suite2p</span></code> submodule handles accessing suite2p functionality, as well as the data imported from Suite2p processing. Suite2p related data and methods are accessed using <code class="docutils literal notranslate"><span class="pre">trialobj.Suite2p</span></code>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -443,7 +434,7 @@ packerlabimaging.processing.paq.paqData:
 </div>
 </section>
 <section id="Annotated-Data">
-<h2>Annotated Data<a class="headerlink" href="#Annotated-Data" title="Permalink to this heading">¶</a></h2>
+<h2>Annotated Data<a class="headerlink" href="#Annotated-Data" title="Permalink to this headline">¶</a></h2>
 <p>The AnnData library is the primary protocol that is used to store imaging data in an efficient, multi-functional format. It is created using the <code class="docutils literal notranslate"><span class="pre">anndata</span></code> sub-module and can be accessed using <code class="docutils literal notranslate"><span class="pre">trialobj.data</span></code>. By default, <code class="docutils literal notranslate"><span class="pre">trialobj.data</span></code> is a data array generated from Suite2p processed data. For all guidance on AnnData objects, visit: <a class="reference external" href="https://anndata.readthedocs.io/en/latest/index.html">https://anndata.readthedocs.io/en/latest/index.html</a>.</p>
 <p>The AnnData object is built around the raw Flu matrix of each <code class="docutils literal notranslate"><span class="pre">trialobj</span></code> . In keeping with AnnData conventions, the data structure is organized in <em>n</em> observations (obs) x <em>m</em> variables (var), where observations are suite2p ROIs and variables are imaging frame timepoints.</p>
 <div class="nbinput docutils container">
@@ -484,7 +475,7 @@ AnnData object with n_obs × n_vars = 640 × 16368
 </pre></div></div>
 </div>
 <section id="storage-of-Flu-data">
-<h3>storage of Flu data<a class="headerlink" href="#storage-of-Flu-data" title="Permalink to this heading">¶</a></h3>
+<h3>storage of Flu data<a class="headerlink" href="#storage-of-Flu-data" title="Permalink to this headline">¶</a></h3>
 <p>The raw data is stored in <code class="docutils literal notranslate"><span class="pre">.X</span></code></p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
@@ -569,7 +560,7 @@ shape:  (640, 16368)
 <p>The rest of the AnnData data object is built according to the dimensions of the original Flu data input.</p>
 </section>
 <section id="observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">
-<h3>observations (Suite2p ROIs metadata and associated processing info)<a class="headerlink" href="#observations-(Suite2p-ROIs-metadata-and-associated-processing-info)" title="Permalink to this heading">¶</a></h3>
+<h3>observations (Suite2p ROIs metadata and associated processing info)<a class="headerlink" href="#observations-(Suite2p-ROIs-metadata-and-associated-processing-info)" title="Permalink to this headline">¶</a></h3>
 <p>For instance, the metadata for each suite2p ROI stored in Suite2p’s stat.npy output is added to <code class="docutils literal notranslate"><span class="pre">trialobject.data</span></code> under <code class="docutils literal notranslate"><span class="pre">obs</span></code> and <code class="docutils literal notranslate"><span class="pre">obsm</span></code> (1D and &gt;1-D observations annotations, respectively).</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
@@ -870,7 +861,7 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 </div>
 </section>
 <section id="variables-(temporal-synchronization-of-paq-channels-and-imaging)">
-<h3>variables (temporal synchronization of paq channels and imaging)<a class="headerlink" href="#variables-(temporal-synchronization-of-paq-channels-and-imaging)" title="Permalink to this heading">¶</a></h3>
+<h3>variables (temporal synchronization of paq channels and imaging)<a class="headerlink" href="#variables-(temporal-synchronization-of-paq-channels-and-imaging)" title="Permalink to this headline">¶</a></h3>
 <p>And the temporal synchronization data of the experiment collected in .paq output is added to the variables annotations under <code class="docutils literal notranslate"><span class="pre">var</span></code>. These variables are timed to the imaging frame clock timings. The total # of variables is the number of imaging frames in the original Flu data input.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
@@ -1054,7 +1045,7 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 </div>
 </section>
 <section id="Creating-or-Modifying-AnnData-arrays-of-trialobj">
-<h3>Creating or Modifying AnnData arrays of trialobj<a class="headerlink" href="#Creating-or-Modifying-AnnData-arrays-of-trialobj" title="Permalink to this heading">¶</a></h3>
+<h3>Creating or Modifying AnnData arrays of trialobj<a class="headerlink" href="#Creating-or-Modifying-AnnData-arrays-of-trialobj" title="Permalink to this headline">¶</a></h3>
 <p>There are a number of helper functions to create anndata arrays or modify existing anndata arrays.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
@@ -1571,8 +1562,8 @@ available attributes:
   </div>
   <div>
     <h4>Previous topic</h4>
-    <p class="topless"><a href="Tutorial-1-Initializing-an-Experiment.html"
-                          title="previous chapter">Tutorial 1 - Initializing an Experiment</a></p>
+    <p class="topless"><a href="../Tutorials-reference.html"
+                          title="previous chapter">Tutorials</a></p>
   </div>
   <div>
     <h4>Next topic</h4>
@@ -1595,7 +1586,7 @@ available attributes:
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -1613,7 +1604,7 @@ available attributes:
           <a href="Tutorial-3-plotting-module.html" title="Tutorial 3 - Making Useful Plots"
              >next</a> |</li>
         <li class="right" >
-          <a href="Tutorial-1-Initializing-an-Experiment.html" title="Tutorial 1 - Initializing an Experiment"
+          <a href="../Tutorials-reference.html" title="Tutorials"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">packerlabimaging 0.2-alpha documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../Tutorials-reference.html" >Tutorials</a> &#187;</li>
@@ -1622,7 +1613,7 @@ available attributes:
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2022, Packer Lab.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
     </div>
   </body>
 </html>

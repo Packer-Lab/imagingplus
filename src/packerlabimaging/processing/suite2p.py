@@ -257,9 +257,9 @@ class Suite2pExperiment:
         self.cell_id = []  # cell ROI # id per plane
         self.n_units = []  # num of ROIs in suite2p result per plane
         self.cell_plane = []  # the corresponding imaging plane for each cell
-        self.cell_med = []  # y, x location of each cell in the imaging frame
-        self.cell_x = []  # TODO ROB
-        self.cell_y = []  # TODO ROB
+        self.cell_med = []  # y, x pixel location of each cell in the imaging frame
+        self.cell_x = []  # x pixel location of cell
+        self.cell_y = []  # y pixel location of cell
         self.raw = []  # [cells x num key_frames], raw traces for each cell from suite2p
         self.stat = []
         self.spks = []
@@ -1227,7 +1227,7 @@ def add_suite2p_results(expobj, s2p_trials: Union[list, str] = 'all', s2pResults
                 break
         if expobj.Suite2p.s2pResultExists:
             expobj._suite2p_save_path = s2pResultsPath
-            # todo - why is this reiniting the whole s2p module??? this action should just be to add results to pre-existing module
+            # todo - why is this re'initing the whole s2p module??? this action should just be to add results to pre-existing module
             expobj.Suite2p = Suite2pResultsExperiment(trialsTiffsSuite2p=expobj.Suite2p._trialsTiffsSuite2p,
                                                       s2pResultsPath=s2pResultsPath)
         else:

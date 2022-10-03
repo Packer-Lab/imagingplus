@@ -1,0 +1,144 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>packerlabimaging.processing.stats &#8212; packerlabimaging 0.2-alpha documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinxdoc.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">packerlabimaging 0.2-alpha documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">packerlabimaging.processing.stats</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for packerlabimaging.processing.stats</h1><div class="highlight"><pre>
+<span></span><span class="c1"># class for collecting statistical tests for analysing cellsdata</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">stats</span>
+<span class="kn">import</span> <span class="nn">statsmodels.api</span>
+<span class="kn">import</span> <span class="nn">statsmodels</span> <span class="k">as</span> <span class="nn">sm</span>
+
+<span class="kn">from</span> <span class="nn">packerlabimaging</span> <span class="kn">import</span> <span class="n">AllOpticalTrial</span>
+
+<span class="sd">&quot;&quot;&quot;STATISTICS FOR TESTING FOR SIGNIFICANCE OF PHOTOSTIM RESPONSES&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="runWilcoxonsTest"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.stats.runWilcoxonsTest">[docs]</a><span class="k">def</span> <span class="nf">runWilcoxonsTest</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">array2</span><span class="p">):</span>  <span class="c1"># NOTE: not setup for multiplane cells yet</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">TODO fill explanation and add parameters</span>
+<span class="sd">    :param array1:</span>
+<span class="sd">    :param array2:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># check if the two distributions of flu values (pre/post) are different</span>
+    <span class="k">assert</span> <span class="n">array1</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">array2</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">&#39;shapes for .__pre_array and .__post_array need to be the same for wilcoxon test&#39;</span>
+    <span class="n">wilcoxons</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">array1</span><span class="p">))</span>  <span class="c1"># [cell (p-value)]</span>
+
+    <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">array1</span><span class="p">)):</span>
+        <span class="n">wilcoxons</span><span class="p">[</span><span class="n">cell</span><span class="p">]</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">wilcoxon</span><span class="p">(</span><span class="n">array2</span><span class="p">[</span><span class="n">cell</span><span class="p">],</span> <span class="n">array1</span><span class="p">[</span><span class="n">cell</span><span class="p">])[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">wilcoxons</span></div>
+
+
+<div class="viewcode-block" id="sigTestAvgResponse"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.stats.sigTestAvgResponse">[docs]</a><span class="k">def</span> <span class="nf">sigTestAvgResponse</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">AllOpticalTrial</span><span class="p">,</span> <span class="n">p_vals</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>  <span class="c1"># NOTE: not setup for multiplane cells yet</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Uses the p values and a threshold for the Benjamini-Hochberg correction to return which</span>
+<span class="sd">    cells are still significant after correcting for multiple significance testing</span>
+<span class="sd">    TODO add parameters</span>
+<span class="sd">    :param trial:</span>
+<span class="sd">    :param p_vals:</span>
+<span class="sd">    :param alpha:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">----------------------------------------------------------------&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;running statistical significance testing for nontargets response arrays &#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;----------------------------------------------------------------&#39;</span><span class="p">)</span>
+
+    <span class="n">sig_units</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">p_vals</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">sig_units</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">multitest</span><span class="o">.</span><span class="n">multipletests</span><span class="p">(</span><span class="n">p_vals</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;fdr_bh&#39;</span><span class="p">,</span>
+                                                              <span class="n">is_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">returnsorted</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;no cells responding&#39;</span><span class="p">)</span>
+
+    <span class="c1"># p values without bonferroni correction</span>
+    <span class="n">no_bonf_corr</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">p_vals</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">]</span>
+    <span class="n">trial</span><span class="o">.</span><span class="n">nomulti_sig_units</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">trial</span><span class="o">.</span><span class="n">s2p_nontargets</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;bool&#39;</span><span class="p">)</span>
+    <span class="n">trial</span><span class="o">.</span><span class="n">nomulti_sig_units</span><span class="p">[</span><span class="n">no_bonf_corr</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1">## TODO - validate by Rob - commented out in his code, is this repeating the sigunits defined by multipletests call just above?</span>
+    <span class="c1"># p values after bonferroni correction</span>
+    <span class="n">bonf_corr</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">p_vals</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;</span> <span class="mf">0.05</span> <span class="o">/</span> <span class="n">trial</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">n_units</span><span class="p">]</span>
+    <span class="n">sig_units</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">trial</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">n_units</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;bool&#39;</span><span class="p">)</span>
+    <span class="n">sig_units</span><span class="p">[</span><span class="n">bonf_corr</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">return</span> <span class="n">sig_units</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">packerlabimaging 0.2-alpha documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">packerlabimaging.processing.stats</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Packer Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

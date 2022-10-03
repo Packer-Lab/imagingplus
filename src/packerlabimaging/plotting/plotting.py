@@ -28,10 +28,12 @@ from packerlabimaging.utils.classes import ObjectClassError
 
 @plotting_decorator(figsize=(6, 6))
 def plotImg(img: np.ndarray, **kwargs):
-    """plot image in grayscale.
-    TODO add parameters
-    :param img:
+    """Plot image in grayscale.
+    
+    :param img: input image to show
     :param kwargs:
+        :trialobj: ImagingTrial or SingleImage; object associated with input image.
+        :scalebar_um: int; size of scalebar to plot on image (in um); must provide trialobj parameter.
     """
     assert img.ndim == 2, 'img to plot must only have 2 dimensions.'
     fig, ax = kwargs['fig'], kwargs['ax']
@@ -41,7 +43,7 @@ def plotImg(img: np.ndarray, **kwargs):
         if 'trialobj' in kwargs:
             _add_scalebar(ax=ax, **kwargs)
         else:
-            raise ValueError('must provide trialobj parameter to access for making scalebar.')
+            raise ValueError('must provide trialobj parameter to make scalebar.')
 
 
 # suite2p cellsdata
@@ -146,15 +148,13 @@ def makeSuite2pPlots(obj: Union[Experiment, TwoPhotonImaging], **kwargs):
 
 
 @plotting_decorator(figsize=(20, 3))
-def plot_flu_trace(trialobj: TwoPhotonImaging, cell, to_plot='raw', **kwargs):
+def plot_flu_trace(trialobj: TwoPhotonImaging, cell: int, to_plot='raw', **kwargs):
     """
-    plot individual cell's flu or dFF trace, with photostim. timings for that cell
+    Plot individual cell's flu or dFF trace, with photostim. timings for that cell. Accesses the object's anndata data storage.
 
-TODO add parameters
-
-    :param trialobj: trialobject to plot
-    :param cell:
-    :param to_plot:
+    :param trialobj: TwoPhotonImaging (or derived) object containing anndata data storage from which to select cell to plot flu trace
+    :param cell: cell index number
+    :param to_plot: select data layer to plot (choose 'raw' to plot main raw data layer, otherwise choose name of the desired layer)
     :param fig: a matplotlib.Figure instance, if provided use this fig for plotting
     :param ax: a matplotlib.Axes.axes instance, if provided use this ax for plotting
     :param show: if False, do not display plot (used when the necessity is to return the fig and ax objects to futher manipulation)
@@ -189,20 +189,18 @@ TODO add parameters
 @plotting_decorator()
 def plot__channel(tmdata: TemporalData, channel: str, **kwargs):
     """
-    Plot the stored signal from the specified channel from a PaqData submodule.
-    TODO add parameters
+    Plot the saved signal from the specified channel from a PaqData submodule.
 
-    :param paqData: .Paq submodule cellsdata
-    :param channel:
+    :param tmdata: TemporalData object
+    :param channel: channel to plot
     :param kwargs:
-        x_axis: str, x axis label, if 'time' or "Time" found in x_axis label, will convert x axis to time domain.
-        x_tick_secs: int, interval to plot x axis ticks
-        ax: matplotlib axis object to use for plotting.
+        :x_axis: str; x axis label, if 'time' or "Time" found in x_axis label, will convert x axis to time domain.
+        :x_tick_secs: int; interval to plot x axis ticks
+        :ax: matplotlib axis object to use for plotting.
     """
     assert channel in tmdata.channels, f'{channel} not found in .Paq module cellsdata.'
 
     # set any kwargs provided
-    fig = kwargs['fig']
     ax = kwargs['ax']
     kwargs.pop('ax')
 
@@ -225,20 +223,22 @@ def plot__channel(tmdata: TemporalData, channel: str, **kwargs):
     kwargs['ax'] = ax
 
 def MeanProject(tiff_path: str = None, frames: tuple = None, save_path: str = None, plot=True,
-                imstack: np.ndarray = None, **kwargs):
+                imstack: np.ndarray = None, **kwargs) -> np.ndarray:
     """
-    Creates, plots and (optionally) saves an average image of the loaded tiff. If frames are provided, tiff is cropped to those frames.
+    Mean Projection function.
+    Creates, plots and (optionally) saves a Mean Projection image of the loaded tiff. If frames are provided, tiff is cropped to those frames.
 
     Note: saves as 8-bit grayscale image.
-TODO  add parameters
 
-    :param tiff_path:
-    :param save_path:
-    :param plot:
-    :param imstack:
+    :param tiff_path: path to tiff file to load (if imstack not provided)
+    :param save_path: path to save output image
+    :param plot: if True, show the output image
+    :param imstack: data stack to use as input (if tiff_path not provided)
+    :param frames: crop input stack to specified frames before calculating mean projection.
     :param kwargs:
-    :return:
-    :param frames:
+        :trialobj: ImagingTrial or SingleImage; object associated with input image.
+        :scalebar_um: int; size of scalebar to plot on image (in um); must provide trialobj parameter.
+    :return: mean projection image
 
     """
 
@@ -283,7 +283,7 @@ TODO  add parameters
         ax.imshow(img, cmap='gray')
         fig.suptitle(f'Mean Project')
         fig.show()  # just plot for now to make sure that you are doing things correctly so far
-        if 'scalebar' in kwargs and kwargs['scalebar']:
+        if 'scalebar_um' in kwargs and kwargs['scalebar_um']:
             if 'trialobj' in kwargs:
                 _add_scalebar(trialobj=kwargs['trialobj'], ax=ax, **kwargs)
 
@@ -291,21 +291,22 @@ TODO  add parameters
 
 
 def MaxProject(tiff_path: str = None, frames: tuple = None, save_path: str = None, plot=True,
-               imstack: np.ndarray = None, **kwargs):
+               imstack: np.ndarray = None, **kwargs) -> np.ndarray:
     """
+    Maximum projection function.
     Creates, plots and (optionally) saves an average image of the loaded tiff. If frames are provided, tiff is cropped to those frames.
 
     Note: saves as 8-bit grayscale image.
 
-TODO add parameters
-
-    :param tiff_path:
-    :param save_path:
-    :param plot:
-    :param imstack:
+    :param tiff_path: path to tiff file to load (if imstack not provided)
+    :param save_path: path to save output image
+    :param plot: if True, show the output image
+    :param imstack: data stack to use as input (if tiff_path not provided)
+    :param frames: crop input stack to specified frames before calculating maximum projection.
     :param kwargs:
-    :return:
-    :param frames:
+        :trialobj: ImagingTrial or SingleImage; object associated with input image.
+        :scalebar_um: int; size of scalebar to plot on image (in um); must provide trialobj parameter.
+    :return: maximum projection image
 
     """
 
@@ -334,7 +335,7 @@ TODO add parameters
     img = np.sum(im_stack, axis=0)
 
     # convert to 8-bit
-    from packerlabimaging.utils.utils import convert_to_8bit
+    from packerlabimaging.utils.images import convert_to_8bit
     img = convert_to_8bit(img, 0, 255)
 
     if save_path:
@@ -364,15 +365,16 @@ def StdevProject(tiff_path: str = None, frames: tuple = None, save_path: str = N
     Creates, plots and (optionally) saves an average image of the loaded tiff. If frames are provided, tiff is cropped to those frames.
 
     Note: saves as 8-bit grayscale image.
-TODO  add parameters
 
-    :param tiff_path:
-    :param save_path:
-    :param plot:
-    :param imstack:
+    :param tiff_path: path to tiff file to load (if imstack not provided)
+    :param imstack: data stack to use as input (if tiff_path not provided)
+    :param frames: crop input stack to specified frames before calculating stdev projection.
+    :param save_path: path to save output image
+    :param plot: if True, show the output image
     :param kwargs:
-    :return:
-    :param frames:
+        :trialobj: ImagingTrial or SingleImage; object associated with input image.
+        :scalebar_um: int; size of scalebar to plot on image (in um); must provide trialobj parameter.
+    :return: stdev projection image
 
     """
 
@@ -425,11 +427,15 @@ TODO  add parameters
 
 def InspectTiff(tiff_path: str = None, frames: tuple = None, imstack: np.ndarray = None, **kwargs):
     """
-TODO fill documentation and add parameters
-    :param tiff_path:
-    :param frames:
-    :param imstack:
+    Plot stdev, max and mean project of input image.
+
+    :param tiff_path: path to tiff file to load (if imstack not provided)
+    :param imstack: data stack to use as input (if tiff_path not provided)
+    :param frames: crop input stack to specified frames before calculating stdev projection.
     :param kwargs:
+        :trialobj: ImagingTrial or SingleImage; object associated with input image.
+        :scalebar_um: int; size of scalebar to plot on image (in um); must provide trialobj parameter.
+
     """
     if imstack is None and tiff_path is not None:
         # read tiff
@@ -459,18 +465,17 @@ TODO fill documentation and add parameters
 
 
 def FrameAverage(key_frames: Union[int, list], tiff_path: str = None, imstack: np.ndarray = None,
-                 peri_frames: int = 100, save_path: str = None, plot=True, **kwargs):
+                 peri_frames: int = 100, save_path: str = None, plot=True, **kwargs) -> np.ndarray:
     """
     Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from a multipage imaging TIFF file.
-TODO add parameters
 
-    :param tiff_path:
-    :param key_frames:
-    :param save_path:
-    :param imstack:
-    :param peri_frames:
-    :param to_plot:
-    :return:
+    :param tiff_path: path to tiff file to load (if imstack not provided)
+    :param imstack: data stack to use as input (if tiff_path not provided)
+    :param key_frames: key frames around which to create peri-frame averages
+    :param peri_frames: number of frames around the key frame to calculate average from
+    :param plot: if True, show the output image
+    :param save_path: path to save output image
+    :return: array of images
     """
 
     print('\nMaking peri-frame avg image...')
@@ -533,7 +538,7 @@ TODO add parameters
             plotImg(img=avg_sub, **kwargs)
         images.append(avg_sub)
 
-    return images
+    return np.ndarray(images)
 
 
 @plotting_decorator(figsize=(6, 6))
@@ -561,7 +566,7 @@ def SingleFrame(tiff_path: str = None, frame_num: int = 0, title: str = None, im
 
     if 'scalebar_um' in kwargs:
         if 'trialobj' in kwargs:
-            _add_scalebar(scale_bar_um=kwargs['scalebar_um'], **kwargs)
+            _add_scalebar(scalebar_um=kwargs['scalebar_um'], **kwargs)
         else:
             raise ValueError('must provide trialobj parameter to access for making scalebar.')
 
@@ -573,13 +578,15 @@ def SingleFrame(tiff_path: str = None, frame_num: int = 0, title: str = None, im
 # plots the raw trace for the Flu mean of the FOV (similar to the ZProject in Fiji)
 @plotting_decorator(figsize=(10, 3))
 def plotMeanFovFluTrace(trialobj: TwoPhotonImaging, **kwargs):
-    """make plot of mean Ca trace averaged over the whole FOV
-TODO add parameters
+    """
+    Make plot of mean fluorescence trace averaged over the whole FOV
 
     NOTE: this function will use the underlying timing that is found under trialobj.tmdata (if that is defined). If there is a mismatch in the number of frame timestamps collected and
     the number of imaging frames data, the shorter length will be used for plotting (with no warning printed, as it is often the case that there are dropped frames from the microscope).
-    :param trialobj:
+
+    :param trialobj: TwoPhotonImaging (or derived) object
     :param kwargs:
+        :ax: matplotlib axis object to use for plotting.
     """
 
     if not hasattr(trialobj, 'meanFovFluTrace'):
@@ -623,14 +630,17 @@ TODO add parameters
 def plot_photostim_traces_overlap(array, trialobj: AllOpticalTrial, exclude_id: list = None, y_spacing_factor=1,
                                   title='', x_axis='Time (seconds)', **kwargs):
     """
-    TODO fill documentation and add parameters
-    :param array:
-    :param trialobj:
-    :param exclude_id:
-    :param y_spacing_factor:
-    :param title:
-    :param x_axis:
+    Plot fluorescence traces of alloptical stimulated cells on one plot.
+
+    :param array: fluorescence traces of alloptical stimulated cells to plot.
+    :param trialobj: AllOptical object to select cells from
+    :param exclude_id: list of cell id's to exclude from plot
+    :param y_spacing_factor: increase to add more space between plotted traces
+    :param title: title of plot
+    :param x_axis: x-axis of plot in units of Frames or Time (seconds)
     :param kwargs:
+        :ax: matplotlib axis object to use for plotting.
+
 
     """
 
@@ -678,72 +688,9 @@ def plot_photostim_traces_overlap(array, trialobj: AllOpticalTrial, exclude_id: 
     dataplot_ax_options(ax=ax, **kwargs)
 
 
-def plot_s2p_raw(trialobj, cell_id):
-    """
-TODO fill documentation and add parameters
-    :param trialobj:
-    :param cell_id:
-    """
-    plt.figure(figsize=(50, 3))
-    plt.plot(trialobj.baseline_raw[trialobj.cell_id.index(cell_id)], linewidth=0.5, c='black')
-    plt.xlim(0, len(trialobj.baseline_raw[0]))
-    plt.show()
-
-
-# LFP
-
-
-### plot entire trace of individual targeted cells as super clean subplots, with the same y-axis lims
-def plot_photostim_traces(array, trialobj: AllOpticalTrial, title='', y_min=None, y_max=None, x_label=None,
-                          y_label=None, save_fig=None, **kwargs):
-    """
-TODO fill documentation and add parameters
-    :param array:
-    :param trialobj:
-    :param title:
-    :param y_min:
-    :param y_max:
-    :param x_label:
-    :param y_label:
-    :param save_fig:
-    :param kwargs:
-        options include:
-            hits: ls; a ls of 1s and 0s that is used to add a scatter point to the plot at stim_start_frames indexes at 1s
-    :return:
-    """
-    # make rolling average for these plots
-    w = 30
-    array = [(np.convolve(trace, np.ones(w), 'valid') / w) for trace in array]
-
-    len_ = len(array)
-    fig, axs = plt.subplots(nrows=len_, sharex=True, figsize=(20, 3 * len_))
-    for i in range(len(axs)):
-        axs[i].plot(array[i], linewidth=1, color='black', zorder=2)
-        if y_min != None:
-            axs[i].set_ylim([y_min, y_max])
-        for j in trialobj.stim_start_frames:
-            axs[i].axvline(x=j, c='gray', alpha=0.7, zorder=1)
-        if 'scatter' in kwargs.keys():
-            x = trialobj.stim_start_frames[kwargs['scatter'][i]]
-            y = [0] * len(x)
-            axs[i].scatter(x, y, c='chocolate', zorder=3)
-        if len_ == len(trialobj.s2p_cell_targets):
-            axs[i].set_title('Cell # %s' % trialobj.s2p_cell_targets[i])
-        if 'line_ids' in kwargs:
-            axs[i].legend(['Target %s' % kwargs['line_ids'][i]], loc='upper left')
-
-    axs[0].set_title((title + ' - %s' % len_ + ' cells'), loc='left', verticalalignment='top', pad=20,
-                     fontsize=15)
-    axs[0].set_xlabel(x_label)
-    axs[0].set_ylabel(y_label)
-
-    if save_fig is not None:
-        plt.savefig(save_fig)
-
-    fig.show()
-
 
 ### photostim analysis - PLOT avg over photostim. trials traces for the provided traces
+# todo decide which photostim avg plot func to keep
 @plotting_decorator(figsize=(5, 5.5))
 def plot_periphotostim_avg2(dataset, fps=None, legend_labels=None, colors=None, avg_with_std=False,
                             title='high quality plot', pre_stim_sec=None, ylim=None, fig=None, ax=None, **kwargs):

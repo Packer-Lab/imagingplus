@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Data Structure Inside Trial objects &#8212; packerlabimaging 0.2-alpha documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -13,7 +13,6 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -47,16 +46,16 @@
           <div class="body" role="main">
             
   <section id="data-structure-inside-trial-objects">
-<span id="data-structure-details"></span><h1>Data Structure Inside Trial objects<a class="headerlink" href="#data-structure-inside-trial-objects" title="Permalink to this heading">¶</a></h1>
+<span id="data-structure-details"></span><h1>Data Structure Inside Trial objects<a class="headerlink" href="#data-structure-inside-trial-objects" title="Permalink to this headline">¶</a></h1>
 <section id="anndata-object-for-storing-multi-modal-data">
-<h2><em>AnnData</em> object for storing multi-modal data<a class="headerlink" href="#anndata-object-for-storing-multi-modal-data" title="Permalink to this heading">¶</a></h2>
+<h2><em>AnnData</em> object for storing multi-modal data<a class="headerlink" href="#anndata-object-for-storing-multi-modal-data" title="Permalink to this headline">¶</a></h2>
 <p>The AnnData library is used to store data in an efficient, multi-functional format. This is stored under: <code class="docutils literal notranslate"><span class="pre">trialobject.data</span></code>.
 The AnnData object is built around the raw Flu matrix of each <code class="docutils literal notranslate"><span class="pre">trialobject</span></code>.
 In keeping with AnnData conventions, the data structure is organized in <em>n</em> observations (obs) x <em>m</em> variables (var), where observations are suite2p ROIs and variables are imaging frame timepoints.
 The rest of the AnnData data object is built according to these dimensions.
 For instance, the metadata for each suite2p ROI stored in Suite2p’s stat.npy output is added to <code class="docutils literal notranslate"><span class="pre">trialobject.data</span></code> under <code class="docutils literal notranslate"><span class="pre">obs</span></code> and <code class="docutils literal notranslate"><span class="pre">obsm</span></code> (1D and &gt;1-D observations annotations, respectively).
 And the temporal synchronization data of the experiment collected in .paq output is added to the variables annotations under <code class="docutils literal notranslate"><span class="pre">var</span></code>.</p>
-<a class="reference internal image-reference" href="files/packerlabimaging-anndata-integration-01.jpg"><img alt="files/packerlabimaging-anndata-integration-01.jpg" src="files/packerlabimaging-anndata-integration-01.jpg" style="width: 600px;" /></a>
+<a class="reference internal image-reference" href="_images/packerlabimaging-anndata-integration-01.jpg"><img alt="_images/packerlabimaging-anndata-integration-01.jpg" src="_images/packerlabimaging-anndata-integration-01.jpg" style="width: 600px;" /></a>
 <p>Further processing on the raw data is added to the AnnData object as <code class="docutils literal notranslate"><span class="pre">layers</span></code>. For instance, dFF normalization of the raw data is added as the <code class="docutils literal notranslate"><span class="pre">dFF</span></code> layer to the existing AnnData object.</p>
 <p>The primary benefit of anndata is that it enforces an intuitive data structure and allows a workflow that maintains relationships between different data sources and types, including processed data.
 Lastly, AnnData objects are highly scalable, allowing individual users to further modify and add observations and variables of their own as their experiment dictates. Note: since AnnData is an independent library, they have an implementation for unstructured data annotations, however usage of this feature is not recommended within the packerlabimaging ecosystem as unstructured data elements should be built as attributes of the <code class="docutils literal notranslate"><span class="pre">trialobject</span></code>.</p>
@@ -106,7 +105,7 @@ Lastly, AnnData objects are highly scalable, allowing individual users to furthe
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -132,7 +131,7 @@ Lastly, AnnData objects are highly scalable, allowing individual users to furthe
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2022, Packer Lab.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
     </div>
   </body>
 </html>
