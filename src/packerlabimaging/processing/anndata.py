@@ -5,7 +5,6 @@ import numpy as np
 import pandas as pd
 
 
-
 class AnnotatedData(ad.AnnData):
     """Creates annotated cellsdata (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial."""
 
@@ -45,57 +44,55 @@ class AnnotatedData(ad.AnnData):
                 descr += f"\n\t{attr}: \n\t\t|- {str(list(keys))[1:-1]}"
         return descr
 
-
     def _gen_repr(self, n_obs, n_vars) -> str:  # overriding base method from AnnData
         """overrides the default anndata _gen_repr_() method for imaging cellsdata usage.
-        TODO add parameters
-        :param n_obs:
-        :param n_vars:
+
+        :param n_obs: number of observations in anndata table
+        :param n_vars: number of variables in anndata table
         :return:
         """
 
         return f"Annotated Data of n_obs (# ROIs) × n_vars (# Frames) = {n_obs} × {n_vars}"
 
-
     def add_obs(self, obs_name: str, values: list):
         """adds values to the observations of an anndata object, under the key obs_name
-        TODO add parameters
-        :param obs_name:
-        :param values:
+
+        :param obs_name: name of new observation field to add to anndata table
+        :param values: list of data values to add under new observation field
         """
         assert len(values) == self.obs.shape[0], f"# of values to add doesn't match # of observations in anndata array"
         self.obs[obs_name] = values
 
-    def del_obs(self, obs_name: str): # TODO
+    def del_obs(self, obs_name: str):
         """removes a key from observations from an anndata object, of the key obs_name
-        TODO add parameters
-        :param obs_name:
+
+        :param obs_name: name of observation to remove
         """
         _ = self.obs.pop(obs_name)
 
-
     def add_var(self, var_name: str, values: list):
         """adds values to the variables of an anndata object, under the key var_name
-        TODO add parameters
-        :param var_name:
-        :param values:
+
+        :param var_name: name of new variable field to add to anndata table
+        :param values: list of data values to add under new variable field
         """
         assert len(values) == self.var.shape[0], f"# of values to add doesn't match # of observations in anndata array"
         self.var[var_name] = values
 
-    def del_var(self, obs_name: str): # TODO
+    def del_var(self, var_name: str):
         """removes a key from variables from an anndata object, of the key var_name
-        TODO add parameters
-        :param obs_name:
-        """
-        _ = self.var.pop(obs_name)
 
-
-    def extend_anndata(self, additional_adata: ad.AnnData, axis: Literal[0,1] = 0):
+        :param var_name: name of variable to remove
         """
-        TODO fill explanation and add parameters
-        :param additional_adata: an anndata object of dimensions n obs x # var or, # obs x m var (depending on which axis to extend)
-        :param axis:
+        _ = self.var.pop(var_name)
+
+    def extend_anndata(self, additional_adata: ad.AnnData, axis: Literal[0, 1] = 0):
+        """
+        Extend with an additional anndata object. Specify axis to extend. Ensure that new anndata object matches number of variables or observations depending on
+        which axis is being extended.
+
+        :param additional_adata: an anndata object with matching observations or variables (depending on which axis is being extended).
+        :param axis: axis on which to extend
         """
         adata = ad.concat([self, additional_adata], axis=axis)
         return adata
@@ -165,26 +162,3 @@ class AnnotatedData(ad.AnnData):
     #     else:
     #         Warning(
     #             'did not create anndata. anndata creation only available if experiments were processed with suite2p and .Paq file(s) provided for temporal synchronization')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
