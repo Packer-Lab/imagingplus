@@ -179,7 +179,7 @@ def make_random_color_array(n_colors):
 def _add_scalebar(trialobj: Union[ImagingTrial, SingleImage], ax: plt.Axes, **kwargs):
     """add scalebar to the image being plotted on the a single matplotlib.axes.Axes object using the TwoPhotonImaging object information.
     Option to specify scale bar um length to add to plot.
-    TODO add parameters
+
     :param trialobj: ImagingTrial or SingleImage; object associated with input image.
     :param ax: plot object to add scale bar on
     :param kwargs:
