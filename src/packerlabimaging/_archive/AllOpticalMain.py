@@ -1096,7 +1096,7 @@ class AllOpticalTrial(TwoPhotonImaging):
 
     def statisticalProcessingAllCells(self):
         """Runs statistical processing on photostim response arrays"""
-        from packerlabimaging.processing.stats import AllOpticalStats
+        from packerlabimaging._archive.stats import AllOpticalStats
 
         self.wilcoxons = AllOpticalStats.runWilcoxonsTest(array1=self.__pre_array, array2=self.__post_array)
         self.sig_units = AllOpticalStats.sigTestAvgResponse(self=self, p_vals=self.wilcoxons, alpha=0.1)
