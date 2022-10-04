@@ -49,8 +49,6 @@ class TemporalData:
 
     def get_sparse_data(self, frame_times: Union[list, np.ndarray] = None) -> pd.DataFrame:
         """
-        todo: need to probably average the original signal between key_frames if collected at a higher rate than frame_times.
-            - why not just use a downsampling algorithm to downsample to the same frame rate and num datapoints as the imaging key_frames????
         Returns dictionary of numpy array keyed on channels from paq_data timed to 2photon imaging frame_times.
         In effect this works as a downsampling algorithm.
 
@@ -168,7 +166,6 @@ class CellAnnotations:
         """
         return len(self.annotations)
 
-    # todo ?create properties for accessing individual annotations
 
     @property
     def cell_id(self):

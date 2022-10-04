@@ -27,20 +27,9 @@ sns.set_style('white')
 
 # %% UTILITY FUNCS
 
-# wrapper for piping plots in and out of figures
-
-
-def plotting_decorator(figsize=(3, 3), nrows=1, ncols=1, dpi=300, apply_image_frame_options=False,
-                       apply_heatmap_options=False):
+def plotting_decorator(figsize=(3, 3), nrows=1, ncols=1, dpi=300):
     """
-TODO fill documentation and add parameters
-    :param figsize:
-    :param nrows:
-    :param ncols:
-    :param dpi:
-    :param apply_image_frame_options:
-    :param apply_heatmap_options:
-    :return:
+    Wrapper for piping plots in and out of figures
     """
     def plotting_decorator(plotting_func):
         """
@@ -65,12 +54,6 @@ TODO fill documentation and add parameters
 
         @functools.wraps(plotting_func)
         def inner(*args, **kwargs):
-            """
-TODO fill documentation and add parameters
-            :param args:
-            :param kwargs:
-            :return:
-            """
             return_fig_obj = False
 
             # set number of rows, cols and figsize
@@ -135,11 +118,7 @@ from matplotlib.colors import LinearSegmentedColormap
 
 def _make_colormap(seq):
     """Return a LinearSegmentedColormap
-    seq: a sequence of floats and RGB-tuples. The floats should be increasing
-    and in the interval (0,1).
-    TODO add parameters
-    :param seq:
-    :return:
+    :param seq: a sequence of floats and RGB-tuples. The floats should be increasing and in the interval (0,1).
     """
     seq = [(None,) * 3, 0.0] + list(seq) + [1.0, (None,) * 3]
     cdict = {'red': [], 'green': [], 'blue': []}
@@ -153,32 +132,23 @@ def _make_colormap(seq):
     return LinearSegmentedColormap('CustomMap', cdict)
 
 
-# generate an array of random colors
-def _get_random_color(pastel_factor=0.5):
+def _get_random_color(pastel_factor: float = 0.5):
     """
-TODO fill documentation and add parameters
-    :param pastel_factor:
-    :return:
+    Generate an array of random colors
     """
     return [(x + pastel_factor) / (1.0 + pastel_factor) for x in [random.uniform(0, 1.0) for i in [1, 2, 3]]]
 
 
 def _color_distance(c1, c2):
     """
-TODO fill documentation and add parameters
-    :param c1:
-    :param c2:
-    :return:
+    Calculate distance between two colors (input in RGB values).
     """
     return sum([abs(x[0] - x[1]) for x in zip(c1, c2)])
 
 
-def _generate_new_color(existing_colors, pastel_factor=0.5):
+def _generate_new_color(existing_colors: Union[list, set], pastel_factor=0.5):
     """
-TODO fill documentation and add parameters
-    :param existing_colors:
-    :param pastel_factor:
-    :return:
+    Generate a new color based on existing colors as input.
     """
     max_distance = None
     best_color = None
@@ -198,7 +168,7 @@ def make_random_color_array(n_colors):
     Generates a list of random colors for an input number of colors required.
 
     :param n_colors: # of colors required
-    :return: list of colors in RGB
+    :return: list of colors in RGB values
     """
     colors = []
     for i in range(0, n_colors):
@@ -213,7 +183,11 @@ def _add_scalebar(trialobj: Union[ImagingTrial, SingleImage], ax: plt.Axes, **kw
     :param trialobj: ImagingTrial or SingleImage; object associated with input image.
     :param ax: plot object to add scale bar on
     :param kwargs:
-        scalebar_um: int; size of scalebar to plot on image (in um); must provide trialobj parameter.
+        :scalebar_um: int; size of scalebar to plot on image (in um); must provide trialobj parameter.
+        :right_offset: int; move scalebar left/right
+        :bottom_offset: int; move scalebar up/down
+        :color: str; color of scalebar to show on plot
+        :lw: int, float; linewidth of scalebar to show on plot
     :return:
 
     """
@@ -256,9 +230,7 @@ image_frame_ops = {
 # Figure Style settings for notebook.
 def image_frame_options(fig, ax):
     """
-TODO fill documentation and add parameters
-    :param fig:
-    :param ax:
+    Matplotlib settings for plotting an image.
     """
     # mpl.pyplot.rcdefaults()
 
@@ -305,7 +277,7 @@ TODO fill documentation and add parameters
 
 def dataplot_frame_options():
     """
-TODO fill documentation
+    Matplotlib frame-level settings for plotting a dataplot.
     """
     import matplotlib as mpl
 
@@ -327,14 +299,14 @@ TODO fill documentation
 
 def dataplot_ax_options(ax, **kwargs):
     """
-    TODO fill documentation
+    Matplotlib axis-level settings for plotting a dataplot.
     :param
         **kwargs:
-            x_axis: x axis label, if specify Time or time in x_axis then convert x_axis to time domain
-            collection_hz: cellsdata collection rate (in Hz)
-            x_tick_secs: interval (in secs) for plotting x ticks when converting x axis to time domain
-            xlims: set xlimits for plot
-            ylims: set ylimits for plot
+            :x_axis: x axis label, if specify Time or time in x_axis then convert x_axis to time domain
+            :collection_hz: cellsdata collection rate (in Hz)
+            :x_tick_secs: interval (in secs) for plotting x ticks when converting x axis to time domain
+            :xlims: set xlimits for plot
+            :ylims: set ylimits for plot
 
     """
     if ax:
@@ -378,10 +350,8 @@ def dataplot_ax_options(ax, **kwargs):
 
 def heatmap_options():
     """
-TODO fill documentation
+    Matplotlib settings for plotting a heatmap.
     """
-    # import matplotlib as mpl
-
     jet = mpl.cm.get_cmap('jet')
     jet.set_bad(color='k')
 
@@ -393,15 +363,15 @@ def plot_coordinates(coords: list, frame_x: int, frame_y: int, background: np.nd
                      **kwargs):
     """
     Plot coordinate locations using matplotlib's imshow function.
-TODO add parameters
-    :param coords:
-    :param frame_x:
-    :param frame_y:
-    :param fig:
-    :param ax:
-    :param targets_coords: ls containing (x,y) coordinates of targets to plot
+
+    :param coords: ls containing (x,y) coordinates of targets to plot
+    :param frame_x: x-axis size of background plot
+    :param frame_y: y-axis size of background plot
     :param background: np.array on which to plot coordinates, default is black background (optional)
+    :param fig: matplotlib figure object to plot
+    :param ax: matplotlib axis object to plot
     :param kwargs:
+        :edgecolors: edgecolor of coordinates that are plotted
     """
 
     if background is None:
@@ -420,10 +390,3 @@ TODO add parameters
     ax.margins(0)
     fig.tight_layout()
 
-    if 'title' in [*kwargs]:
-        if kwargs['title'] is not None:
-            ax.set_title(kwargs['title'])
-        else:
-            pass
-
-# todo add utility to send a plot/cellsdata to a plotly server, or a basic flask SVG server

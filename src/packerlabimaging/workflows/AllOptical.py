@@ -879,7 +879,6 @@ if __name__ == '__main__':
 
     def alloptical_trial_fixture():
         """
-        TODO fill explaination
         :return:
         """
         initialization_dict = {'naparm_path': f'{BASE_PATH}/2020-12-19/photostim/2020-12-19_RL109_ps_014/',
@@ -896,7 +895,6 @@ if __name__ == '__main__':
 
     def test_AllOpticalClass(alloptical_trial_fixture):
         """
-        TODO fill explaination add parameters
         :param alloptical_trial_fixture:
         :return:
         """
@@ -920,31 +918,3 @@ if __name__ == '__main__':
 
     idict = alloptical_trial_fixture()
     aotrial = test_AllOpticalClass(idict)
-
-# archive
-
-# def collectPhotostimResponses(self, photostimFluArray):
-#     """
-#     TODO docstring
-#
-#     :param photostimFluArray:
-#     :return:
-#     """
-#     # create parameters, slices, and subsets for making pre-stim and post-stim arrays to use in stats comparison
-#     # test_period = self.prestim_response_window / 1000  # sec
-#     # self.test_frames = int(self.imparams.fps * test_period)  # test period for stats
-#
-#     # mean pre and post stimulus (within post-stim response window) flu trace values for all cells, all trials
-#     self.__analysis_array = photostimFluArray
-#     self.__pre_array = np.mean(self.__analysis_array[:, self.prestim_test_slice, :],
-#                                axis=1)  # [cells x prestim frames] (avg'd taken over all stims)
-#     self.__post_array = np.mean(self.__analysis_array[:, self.poststim_test_slice, :],
-#                                 axis=1)  # [cells x poststim frames] (avg'd taken over all stims)
-#
-#     # Vape's version for collection photostim response amplitudes
-#     # calculate amplitude of response for all cells, all trials
-#     all_amplitudes = self.__post_array - self.__pre_array
-#
-#     df = pd.DataFrame(index=range(self.Suite2p.n_units), columns=self.stim_start_frames, data=all_amplitudes)
-#
-#     return df
