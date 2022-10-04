@@ -48,12 +48,12 @@ NOTES:
 
 @dataclass
 class SingleImage:
-    dataPath: str
-    date: str = None
-    imgID: str = None
-    expGroup: str = None
-    comment: str = None
-    imparams: ImagingMetadata = None
+    dataPath: str                       #: path to source image
+    date: str = None                    #: date associated with processed image
+    imgID: str = None                   #: id of image
+    expGroup: str = None                #: experimental group of image
+    comment: str = None                 #: notes regarding image
+    imparams: ImagingMetadata = None    #: image collection parameters of image
 
     def __post_init__(self):
         # self.data = tf.imread(self.dataPath)
