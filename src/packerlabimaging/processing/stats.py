@@ -9,12 +9,9 @@ from packerlabimaging import AllOpticalTrial
 """STATISTICS FOR TESTING FOR SIGNIFICANCE OF PHOTOSTIM RESPONSES"""
 
 
-def runWilcoxonsTest(array1, array2):  # NOTE: not setup for multiplane cells yet
+def runWilcoxonsTest(array1, array2):
     """
-TODO fill explanation and add parameters
-    :param array1:
-    :param array2:
-    :return:
+    Run wilcoxons statistical comparison test on two input arrays. Array 1 and array 2 must be of same length and ordered in paired format.
     """
     # check if the two distributions of flu values (pre/post) are different
     assert array1.shape == array2.shape, 'shapes for .__pre_array and .__post_array need to be the same for wilcoxon test'
@@ -26,13 +23,13 @@ TODO fill explanation and add parameters
     return wilcoxons
 
 
-def sigTestAvgResponse(trial: AllOpticalTrial, p_vals: list, alpha=0.1):  # NOTE: not setup for multiplane cells yet
+def sigTestAvgResponse(trial: AllOpticalTrial, p_vals: list, alpha=0.1):
     """
     Uses the p values and a threshold for the Benjamini-Hochberg correction to return which
     cells are still significant after correcting for multiple significance testing
-    TODO add parameters
+
     :param trial:
-    :param p_vals:
+    :param p_vals: list of p-values, each corresponding to a given cell's comparison
     :param alpha:
     :return:
     """
@@ -50,12 +47,11 @@ def sigTestAvgResponse(trial: AllOpticalTrial, p_vals: list, alpha=0.1):  # NOTE
 
     # p values without bonferroni correction
     no_bonf_corr = [i for i, p in enumerate(p_vals) if p < 0.05]
-    trial.nomulti_sig_units = np.zeros(len(trial.s2p_nontargets), dtype='bool')
-    trial.nomulti_sig_units[no_bonf_corr] = True
+    nomulti_sig_units = np.zeros(len(p_vals), dtype='bool')
+    nomulti_sig_units[no_bonf_corr] = True
 
-    ## TODO - validate by Rob - commented out in his code, is this repeating the sigunits defined by multipletests call just above?
     # p values after bonferroni correction
-    bonf_corr = [i for i, p in enumerate(p_vals) if p < 0.05 / trial.Suite2p.n_units]
+    bonf_corr = [i for i, p in enumerate(p_vals) if p < 0.05 / len(p_vals)]
     sig_units = np.zeros(trial.Suite2p.n_units, dtype='bool')
     sig_units[bonf_corr] = True
 

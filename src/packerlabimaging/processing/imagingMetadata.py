@@ -53,20 +53,9 @@ class PrairieViewMetadata(ImagingMetadata):
                f'\n\tscan centre (V): {self.scan_x}, {self.scan_y}'
 
     @staticmethod
-    def _getPVStateShard(root, key) -> List:
+    def _getPVStateShard(root, key):
         """
         Find the value, description and indices of a particular parameter from an xml file
-
-TODO add parameters
-        Inputs:
-            path        - path to xml file
-            :param key: string corresponding to key in xml tree
-            :param root:
-        Outputs:
-            value       - value of the key
-            description - unused
-            index       - index that the key was found at
-
         """
         value = []
         description = []
@@ -99,12 +88,11 @@ TODO add parameters
 
         return value, description, index
 
-    def _parsePVMetadata(self):
+    def _parsePVMetadata(self) -> dict:
         """
         Parse all of the relevant acquisition metadata from the PrairieView xml file for this recording
-        TODO add parameters
-        :return:
 
+        :return: dict; parsed values related to metadata from PrairieView xml file.
         """
 
         print('\n\t\- Parsing PV Metadata for Bruker microscope...')
