@@ -400,7 +400,7 @@ class Experiment:
     """Overall experiment. It can collate all imaging trials that are part of a single field-of-view (FOV) of imaging"""
 
     expID: str  #: given identification name for experiment
-    dataPath: str  #: main dir where the imaging cellsdata is contained
+    dataPath: str  #: main dir where the imaging data is contained
     saveDir: str  #: main dir where the experiment object and the trial objects will be saved to
     comment: str = ''  #: notes related to experiment
     singleImages: Dict[str, SingleImage] = None  #: contains single image frames from each experiment

@@ -15,12 +15,9 @@ import tifffile as tf
 from packerlabimaging.utils.classes import UnavailableOptionError
 from packerlabimaging.utils.images import ImportTiff, SaveDownsampledTiff, WriteTiff, make_tiff_stack
 
-# TEMP VARIABLES FOR DEVELOPMENT USAGES
-N_PLANES = 1
-
 
 # suite2p methods
-def s2pRun(expobj, trialsSuite2P: Union[list, str] = 'all'):  ## TODO gotta specify # of planes somewhere here
+def s2pRun(expobj, trialsSuite2P: Union[list, str] = 'all'):
     """run suite2p for an Experiment object, using trials specified in current experiment object, using the attributes
     determined directly from the experiment object.
 
@@ -38,25 +35,6 @@ def s2pRun(expobj, trialsSuite2P: Union[list, str] = 'all'):  ## TODO gotta spec
         tiffs_paths_to_use_s2p.append(expobj.TrialsInformation[trial]['tiff_path'])
 
     expobj.Suite2p.tiffs_paths_to_use_s2p = tiffs_paths_to_use_s2p
-
-    # # load the first tiff in expobj.Suite2p.trials to collect default metainformation about imaging setup parameters
-    # trial = expobj.Suite2p.trials[0]
-    # from packerlabimaging import TwoPhotonImagingTrial
-    # trialobj: TwoPhotonImagingTrial = import_obj(expobj.TrialsInformation[trial]['analysis_object_information']['pkl path'])
-
-    # # set imaging parameters using defaults or kwargs if provided
-    # frame_x = trialobj.imparams.frame_x if 'frame_x' not in kwargs else kwargs['frame_x']
-    # frame_y = trialobj.imparams.frame_y if 'frame_y' not in kwargs else kwargs['frame_y']
-
-    # # setup ops dictionary
-    # # expobj.Suite2p.ops['fs'] = fps / n_planes
-    # batch_size = expobj.Suite2p.ops['batch_size'] * (262144 / (
-    #         frame_x * frame_y))  # larger key_frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images
-
-    # # set other ops parameters if provided in kwargs:
-    # for key in kwargs:
-    #     if key in [*expobj.Suite2p.ops]:
-    #         expobj.Suite2p.ops[key] = kwargs[key]
 
     # setup db dict
     expobj.Suite2p.ops['batch_size'] = int(expobj.Suite2p.ops['batch_size'])
@@ -81,7 +59,7 @@ def s2pRun(expobj, trialsSuite2P: Union[list, str] = 'all'):  ## TODO gotta spec
     expobj.Suite2p.ops = opsEnd
 
     expobj.Suite2p.s2pResultExists = True
-    expobj.Suite2p.s2pResultsPath = _suite2p_save_path + '/plane0/'  ## need to further debug that the flow of the suite2p s2pResultsPath makes sense
+    expobj.Suite2p.s2pResultsPath = _suite2p_save_path
 
     print(f'\n\nCompleted Suite2p run. \n\t Results are saved to: {expobj.Suite2p.s2pResultsPath}')
 
@@ -249,21 +227,17 @@ class Suite2pExperiment:
         print(f"\- ADDING .Suite2p module to Experiment object ... ", end='\r')
 
         ## initialize attr's
-        # TODO add attr comment
         self.n_frames: int = 0  # total number of imaging key_frames in the Suite2p run
-
-        self.n_planes: int = N_PLANES
 
         self.cell_id = []  # cell ROI # id per plane
         self.n_units = []  # num of ROIs in suite2p result per plane
-        self.cell_plane = []  # the corresponding imaging plane for each cell
         self.cell_med = []  # y, x pixel location of each cell in the imaging frame
         self.cell_x = []  # x pixel location of cell
         self.cell_y = []  # y pixel location of cell
         self.raw = []  # [cells x num key_frames], raw traces for each cell from suite2p
-        self.stat = []
-        self.spks = []
-        self.neuropil = []
+        self.stat = []  # stat output from suite2p
+        self.spks = []  # deconvolved spikes output from suite2p
+        self.neuropil = []  # neuropil output from suite2p
         self.mean_img = []  # mean img output from suite2p
         self.mean_imgE = []  # mean img Enhanced output from suite2p
         self.radius = []  # cell radius from suite2p
@@ -274,10 +248,10 @@ class Suite2pExperiment:
 
         if s2pResultsPath is None:
             # initialize needed variables and attr's for future calling of s2pRun
-            self.s2pResultsPath = None
+            self.__s2pResultsPath = None
             self.s2pResultExists = False
         else:
-            self.s2pResultsPath = s2pResultsPath
+            self.__s2pResultsPath = s2pResultsPath
             try:
                 self._retrieveSuite2pData(self.s2pResultsPath, neuropil_coeff=self.neuropil_coeff)
             except Exception:
@@ -291,24 +265,36 @@ class Suite2pExperiment:
         for trial, path in tiff_paths_to_use_s2p.items():
             if path is not None:
                 if self.s2pResultExists and hasattr(self, 'output_ops'):
-                    if path in self.output_ops['filelist']:
-                        self.trials.append(trial)
-                    else:
-                        print(f'\tWARNING: {trial}, {path} not found in suite2p results output_ops filelist. Not added to Suite2p object.')
+                    if path in self.output_ops['filelist']: self.trials.append(trial)
+                    else: print(f'\tWARNING: {trial}, {path} not found in suite2p results output_ops filelist. Not added to Suite2p object.')
             else:
                 tiff_paths_to_use_s2p.pop(trial)
 
-        # self.trials = [*trialsTiffsSuite2p]
         # todo this is only necessary for running suite2p right?
         self.tiff_paths_to_use_s2p: dict = tiff_paths_to_use_s2p
         assert len(self.trials) > 0, "no trials found to run suite2p, option available to provide list of trial IDs in " \
                               "`trialsSuite2P` "
 
-
         self.db: dict = {}
 
         # finish
         print(f"|- ADDED .Suite2p module to Experiment object. ")
+
+    @property
+    def s2pResultsPath(self):
+        """
+        Path to the saved suite2p results output.
+        """
+        return self.__s2pResultsPath
+
+    @s2pResultsPath.setter
+    def s2pResultsPath(self, val):
+        """
+        Setter for path to the saved suite2p results output.
+        :param val: file path
+        """
+        self.__s2pResultsPath = val
+
 
     @property
     def s2pResultExists(self):
@@ -343,69 +329,62 @@ class Suite2pExperiment:
 
         s2p_path = self.s2pResultsPath if s2p_path is None else s2p_path
 
-        for plane in range(self.n_planes):  # TODO really don't know how planes are collected and fed into suite2p
+        # extract suite2p stat.npy and neuropil-subtracted F
+        subtract_neuropil = True if neuropil_coeff > 0 else False
+        FminusFneu, spks, stat, neuropil = s2p_loader(self.s2pResultsPath, subtract_neuropil=subtract_neuropil,
+                                                      neuropil_coeff=neuropil_coeff)
+        self.raw.append(FminusFneu)  # raw F of each suite2p ROI (neuropil corrected if neuropil_coeff > 0)
+        self.spks.append(spks)  # deconvolved spikes each suite2p ROI
+        self.neuropil.append(neuropil)  # neuropil value of each suite2p ROI
+        self.stat.append(stat)  # stat dictionary for each suite2p ROI
+        self.n_frames = spks.shape[1]
 
-            # extract suite2p stat.npy and neuropil-subtracted F
-            subtract_neuropil = True if neuropil_coeff > 0 else False
-            FminusFneu, spks, stat, neuropil = s2p_loader(self.s2pResultsPath, subtract_neuropil=subtract_neuropil,
-                                                          neuropil_coeff=neuropil_coeff)
-            self.raw.append(FminusFneu)  # raw F of each suite2p ROI (neuropil corrected if neuropil_coeff > 0)
-            self.spks.append(spks)  # deconvolved spikes each suite2p ROI
-            self.neuropil.append(neuropil)  # neuropil value of each suite2p ROI
-            self.stat.append(stat)  # stat dictionary for each suite2p ROI
-            self.n_frames = spks.shape[1]
+        self.ops: dict = np.load(os.path.join(s2p_path, 'ops.npy'), allow_pickle=True).item()
+        self.mean_img.append(self.ops['meanImg'])
+        self.mean_imgE.append(self.ops['meanImgE'])  # enhanced mean image from suite2p
+        self.xoff = self.ops['xoff']  # motion correction info
+        self.yoff = self.ops['yoff']
 
-            self.ops: dict = np.load(os.path.join(s2p_path, 'ops.npy'), allow_pickle=True).item()
-            self.mean_img.append(self.ops['meanImg'])
-            self.mean_imgE.append(self.ops['meanImgE'])  # enhanced mean image from suite2p
-            self.xoff = self.ops['xoff']  # motion correction info
-            self.yoff = self.ops['yoff']
+        cell_id = []
+        cell_med = []
+        cell_x = []
+        cell_y = []
 
-            cell_id = []
-            cell_plane = []
-            cell_med = []
-            cell_x = []
-            cell_y = []
+        # stat is an np array of dictionaries
+        for cell, s in enumerate(stat):
+            cell_id.append(cell)
+            cell_med.append(s['med'])
 
-            # stat is an np array of dictionaries
-            for cell, s in enumerate(stat):
-                cell_id.append(cell)
-                cell_med.append(s['med'])
+            cell_x.append(s['xpix'])
+            cell_y.append(s['ypix'])
 
-                cell_x.append(s['xpix'])
-                cell_y.append(s['ypix'])
+        self.cell_id.append(cell_id)
+        self.n_units.append(len(self.cell_id))
+        self.cell_med.append(cell_med)
+        self.cell_x.append(cell_x)
+        self.cell_y.append(cell_y)
 
-            self.cell_id.append(cell_id)
-            self.n_units.append(len(self.cell_id[plane]))
-            self.cell_med.append(cell_med)
-            self.cell_x.append(cell_x)
-            self.cell_y.append(cell_y)
+        num_units = FminusFneu.shape[0]
 
-            num_units = FminusFneu.shape[0]
-            cell_plane.extend([plane] * num_units)
-            self.cell_plane.append(cell_plane)
-
-            print(
-                f'|- Loaded {self.n_units} suite2p classified cells from plane {plane}, recorded for {round(self.raw[plane].shape[1] / self.ops["fs"], 2)} secs total, {self.n_frames} frames total')
+        print(
+            f'|- Loaded {self.n_units} suite2p classified cells from plane 0, recorded for {round(self.raw[0].shape[1] / self.ops["fs"], 2)} secs total, {self.n_frames} frames total')
 
         # TODO consider replacing this and use returning properties
-        if self.n_planes == 1:
-            # print(f'*** plane 0 cellsdata ***')
-            self.raw = self.raw[0]
-            self.spks = self.spks[0]
-            self.neuropil = self.neuropil[0]
-            self.mean_img = self.mean_img[0]
-            self.mean_imgE = self.mean_imgE[0]
-            self.xoff = self.xoff[0]
-            self.yoff = self.yoff[0]
-            self.cell_id = self.cell_id[0]
-            self.n_units = self.n_units[0]
-            self.cell_med = self.cell_med[0]
-            self.cell_plane = self.cell_plane[0]
-            self.cell_x = self.cell_x[0]
-            self.cell_y = self.cell_y[0]
-            self.n_frames = self.spks.shape[1]
-            # print(f'n_frames', self.n_frames)
+        # print(f'*** plane 0 cellsdata ***')
+        self.raw = self.raw[0]
+        self.spks = self.spks[0]
+        self.neuropil = self.neuropil[0]
+        self.mean_img = self.mean_img[0]
+        self.mean_imgE = self.mean_imgE[0]
+        self.xoff = self.xoff[0]
+        self.yoff = self.yoff[0]
+        self.cell_id = self.cell_id[0]
+        self.n_units = self.n_units[0]
+        self.cell_med = self.cell_med[0]
+        self.cell_x = self.cell_x[0]
+        self.cell_y = self.cell_y[0]
+        self.n_frames = self.spks.shape[1]
+        # print(f'n_frames', self.n_frames)
 
         # read in other files
         self.output_ops: dict = np.load(Path(self.s2pResultsPath).joinpath('ops.npy'), allow_pickle=True).item()
@@ -514,6 +493,13 @@ class Suite2pExperiment:
         :param trialsSuite2P: list of trials to use for Suite2p setup
         :param TrialsInformation: dictionary mapping trial ID to tiff_path to use for Suite2p processing of that trial
         :param kwargs:
+            :fs:
+            :nplanes:
+            :pix_sz_x:
+            :pix_sz_y:
+            :frame_x:
+            :frame_y:
+            :n_channels:
         """
         if trialsSuite2P != self.trials:
 
@@ -521,7 +507,7 @@ class Suite2pExperiment:
             for trial in trialsSuite2P:
                 trialsTiffs[trial] = TrialsInformation[trial]['tiff_path']
 
-            Suite2p_obj = self.subSuite2p(trialsTiffs=trialsSuite2P, s2pResultsPath=self.s2pResultsPath)
+            Suite2p_obj = self.subSuite2p(trialsTiffs=trialsTiffs, s2pResultsPath=self.s2pResultsPath)
         else:
             Suite2p_obj = self
         # self.trials = trialsSuite2P if trialsSuite2P else self.trials
@@ -532,17 +518,17 @@ class Suite2pExperiment:
         # load the first tiff in Suite2p_obj.trials to collect default metainformation about imaging setup parameters
         trial = Suite2p_obj.trials[0]
         from packerlabimaging import import_obj
-        trialobj = import_obj(TrialsInformation[trial]['analysis_object_information']['pkl path'])
+        from packerlabimaging.main.core import ImagingTrial
+        trialobj: ImagingTrial = import_obj(TrialsInformation[trial]['analysis_object_information']['pkl path'])
 
         # set imaging parameters using defaults or kwargs if provided
-        fps = trialobj.fps if 'fs' not in kwargs else kwargs['fs']
-        n_planes = trialobj.n_planes if 'n_planes' not in kwargs else kwargs['n_planes']
-        pix_sz_x = trialobj.pix_sz_x if 'pix_sz_x' not in kwargs else kwargs['pix_sz_x']
-        pix_sz_y = trialobj.pix_sz_y if 'pix_sz_y' not in kwargs else kwargs['pix_sz_y']
-        frame_x = trialobj.frame_x if 'frame_x' not in kwargs else kwargs['frame_x']
-        frame_y = trialobj.frame_y if 'frame_y' not in kwargs else kwargs['frame_y']
-        n_channels = kwargs['n_channels'] if 'n_channels' in [
-            *kwargs] else 1  # default is 1 channel imaging in .tiffs for suite2p
+        fps = trialobj.imparams.fps if 'fs' not in kwargs else kwargs['fs']
+        n_planes = trialobj.imparams.n_planes if 'n_planes' not in kwargs else kwargs['n_planes']
+        pix_sz_x = trialobj.imparams.pix_sz_x if 'pix_sz_x' not in kwargs else kwargs['pix_sz_x']
+        pix_sz_y = trialobj.imparams.pix_sz_y if 'pix_sz_y' not in kwargs else kwargs['pix_sz_y']
+        frame_x = trialobj.imparams.frame_x if 'frame_x' not in kwargs else kwargs['frame_x']
+        frame_y = trialobj.imparams.frame_y if 'frame_y' not in kwargs else kwargs['frame_y']
+        n_channels = kwargs['n_channels'] if 'n_channels' in [*kwargs] else 1  # default is 1 channel imaging in .tiffs for suite2p
 
         # setup ops dictionary
         Suite2p_obj.ops['fs'] = fps / n_planes
@@ -564,8 +550,7 @@ class Suite2pExperiment:
                           'batch_size': int(batch_size),
                           'nimg_init': int(Suite2p_obj.ops['batch_size']), 'nplanes': n_planes, 'nchannels': n_channels,
                           'tiff_list': list(Suite2p_obj.tiff_paths_to_use_s2p.values()),
-                          'data_path': Suite2p_obj.dataPath,
-                          # TODO need to figure out how to more appropriately bring in the dataPath here
+                          'data_path': os.path.dirname(trialobj.dataPath),
                           'save_folder': Suite2p_obj.s2pResultsPath}
 
     def s2pRun(self, expobj, trialsSuite2P: Union[list, str] = 'all'):
@@ -580,15 +565,11 @@ class Suite2pExperiment:
     def s2pROIsTiff(self, save_path, cell_ids: Union[str, list] = 'all'):
         """
         Save a TIFF image of the suite2p ROIs masks.
-        
+        # todo test function
+
         :param save_path: path to save to
         :param cell_ids: IDs of Suite2p ROI masks to show in image (use 'all' (default) to plot all ROI masks)
         """
-        # todo test function
-        # os.chdir(self.s2pResultsPath)
-        # stat = np.load('stat.npy', allow_pickle=True)
-        # ops = np.load('ops.npy', allow_pickle=True).item()
-        # iscell = np.load('iscell.npy', allow_pickle=True)
 
         mask_img = np.zeros((self.output_ops['Ly'], self.output_ops['Lx']), dtype='uint8')
 
@@ -600,25 +581,6 @@ class Suite2pExperiment:
                 mask_img[ypix, xpix] = np.random.randint(10, 255)
 
         WriteTiff(save_path=save_path, stack=mask_img)
-
-    # PROCESSING OF SUITE2P OUTPUT
-    def filterROIs(self, overlapthreshold: int = None, skewthreshold: float = None, footprintthreshold: float = None,
-                   npixthreshold: float = None,
-                   aspectratiothreshold: float = None, classifierthreshold: float = None, boundarybox: np.array = None):
-
-        """TODO develop function
-        Filter Suite2p ROIs based on a variety of metrics of each ROI. Filters can be combined by providing a value to each filter.
-
-        :param skewthreshold:
-        :param footprintthreshold:
-        :param npixthreshold:
-        :param aspectratiothreshold:
-        :param classifierthreshold:
-        :param boundarybox:
-        :param overlapthreshold: percentage threshold for filtering out overlapping ROIs. if overlap between two or more ROIs exceeds a specified percentage threshold, then remove the ROI with smaller npix.
-
-        """
-        pass
 
 
 # noinspection DuplicatedCode
@@ -702,32 +664,20 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
         :return:
         """
 
-        if s2pExp.n_planes == 1:
-            # self.cell_id = s2pExp.cell_id
-            self.stat = s2pExp.stat
-            self.output_ops = s2pExp.output_ops
-            self.n_units = s2pExp.n_units
-            self.iscell = s2pExp.iscell
+        # self.cell_id = s2pExp.cell_id
+        self.stat = s2pExp.stat
+        self.output_ops = s2pExp.output_ops
+        self.n_units = s2pExp.n_units
+        self.iscell = s2pExp.iscell
 
-            raw = s2pExp.raw[:, self.trial_frames[0]:self.trial_frames[
-                1]]
-            spks = s2pExp.spks[:, self.trial_frames[0]:self.trial_frames[
-                1]]
-            neuropil = s2pExp.neuropil[:, self.trial_frames[0]:self.trial_frames[
-                1]]
+        raw = s2pExp.raw[:, self.trial_frames[0]:self.trial_frames[
+            1]]
+        spks = s2pExp.spks[:, self.trial_frames[0]:self.trial_frames[
+            1]]
+        neuropil = s2pExp.neuropil[:, self.trial_frames[0]:self.trial_frames[
+            1]]
 
-            self.s2pResultExists = True
-
-        else:
-            raw = []
-            spks = []
-            neuropil = []
-            for plane in range(s2pExp.n_planes):
-                raw.append(s2pExp.raw[plane][:, self.trial_frames[0]:self.trial_frames[1]])
-                spks.append(s2pExp.spks[plane][:, self.trial_frames[0]:self.trial_frames[1]])
-                neuropil.append(s2pExp.neuropil[plane][:, self.trial_frames[0]:self.trial_frames[1]])
-
-                self.s2pResultExists = True
+        self.s2pResultExists = True
 
         self.im = stats_dicts_to_3d_array_(stat_dict=s2pExp.stat, output_ops=s2pExp.output_ops)
         self.im[self.im == 0] = np.nan
@@ -941,7 +891,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
         print(sorted_paths)
 
         if os.path.exists(tif_path_save):
-            data = make_tiff_stack(sorted_paths, save_as=tif_path_save)
+            data = make_tiff_stack(sorted_paths, save_path=tif_path_save)
 
         if not os.path.exists(tif_path_save2):
             with tf.TiffWriter(tif_path_save2, bigtiff=True) as tif:
@@ -1031,17 +981,9 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
             except IndexError:
                 break
 
-            ### works
             import cv2
             ret, images = cv2.imreadmulti(tiff_path, [], cv2.IMREAD_ANYCOLOR)
             data = np.asarray(images)
-
-            # # works
-            # from packerlabimaging.utils.utils import ImportTiff
-            # data = ImportTiff(tiff_path, frames=(0, batch_size))
-
-            #### works
-            # im_stack = tf.imread(tiff_path, key=range(batch_size))
 
             print(f'\t\- shape: {data.shape}')
             targets_trace = np.zeros([num_coords, data.shape[0]], dtype='float32')
@@ -1061,9 +1003,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
 
         return raw_coords_signal
 
-    #### archiving away for now - trying to switch to an approach that doesn't inherit from parent suite2p obj.
-
-
+#### archiving away for now - trying to switch to an approach that doesn't inherit from parent suite2p obj.
 # class Suite2PTrial_(Suite2pExperiment):
 #     """used to collect and store suite2p processed cellsdata for one trial - out of overall experiment."""
 #
@@ -1203,7 +1143,7 @@ def add_suite2p_results(expobj, s2p_trials: Union[list, str] = 'all', s2pResults
 
     :param expobj: Experiment object to add suite2p results to
     :param s2p_trials: list of trials to use for Suite2p processing/analysis pipeline, default = 'all' to use all trials of Experiment
-    :param s2pResultsPath: optional, if suite2p already run then here provide path to plane0 folder of existing suite2p results
+    :param s2pResultsPath: optional, if suite2p already run then here provide path existing suite2p results
     """
 
     print(f'\- Adding suite2p module to experiment. Located under .Suite2p')
