@@ -88,12 +88,12 @@
 
 <div class="viewcode-block" id="SingleImage"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.main.core.SingleImage">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">SingleImage</span><span class="p">:</span>
-    <span class="n">dataPath</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">imgID</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">expGroup</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">comment</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">imparams</span><span class="p">:</span> <span class="n">ImagingMetadata</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">dataPath</span><span class="p">:</span> <span class="nb">str</span>                       <span class="c1">#: path to source image</span>
+    <span class="n">date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>                    <span class="c1">#: date associated with processed image</span>
+    <span class="n">imgID</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>                   <span class="c1">#: id of image</span>
+    <span class="n">expGroup</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>                <span class="c1">#: experimental group of image</span>
+    <span class="n">comment</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>                 <span class="c1">#: notes regarding image</span>
+    <span class="n">imparams</span><span class="p">:</span> <span class="n">ImagingMetadata</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1">#: image collection parameters of image</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># self.data = tf.imread(self.dataPath)</span>
@@ -440,7 +440,7 @@
     <span class="sd">&quot;&quot;&quot;Overall experiment. It can collate all imaging trials that are part of a single field-of-view (FOV) of imaging&quot;&quot;&quot;</span>
 
     <span class="n">expID</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1">#: given identification name for experiment</span>
-    <span class="n">dataPath</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1">#: main dir where the imaging cellsdata is contained</span>
+    <span class="n">dataPath</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1">#: main dir where the imaging data is contained</span>
     <span class="n">saveDir</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1">#: main dir where the experiment object and the trial objects will be saved to</span>
     <span class="n">comment</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>  <span class="c1">#: notes related to experiment</span>
     <span class="n">singleImages</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SingleImage</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#: contains single image frames from each experiment</span>

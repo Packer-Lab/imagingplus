@@ -33,7 +33,7 @@ Especially, there are methods for analysis and visualisation of standard calcium
 
 
 
-Currently, ``packerlabimaging`` is most functional for experiments performed using PackIO (REF) for temporal synchronization, a Bruker microscope for 2p imaging and utilizing Suite2p (REF) for cell segmentation.
+Currently, ``packerlabimaging`` is most functional for experiments performed using `PackIO <http://apacker83.github.io/PackIO/>`_ for temporal synchronization, a Bruker microscope for 2p imaging and utilizing `Suite2p <https://suite2p.readthedocs.io/en/latest/>`_ for automated post-processing cell segmentation.
 
 Follow :ref:`installation` for installation.
 Please refer to :ref:`overview` and :ref:`tutorials` to get started and learn the toolbox.

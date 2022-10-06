@@ -39,9 +39,6 @@ processing
 .. automodule:: packerlabimaging.processing.suite2p
     :members:
 
-.. automodule:: packerlabimaging.processing.stats
-    :members:
-
 
 
 workflows (AllOptical)

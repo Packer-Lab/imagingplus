@@ -28,7 +28,6 @@ def s2pRun(expobj, trialsSuite2P: Union[list, str] = 'all'):
     _suite2p_save_path = expobj.saveDir + '/suite2p/'  #: default location to save Suite2p output results of current experiment
 
     expobj.Suite2p.trials = trialsSuite2P if trialsSuite2P != 'all' else expobj.Suite2p.trials
-    # expobj._trialsTiffsSuite2p = trialsSuite2P if trialsSuite2P else expobj._trialsTiffsSuite2p
 
     tiffs_paths_to_use_s2p = []
     for trial in expobj.Suite2p.trials:

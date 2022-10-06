@@ -3,7 +3,19 @@
 **Core structures**
 ===================
 
-There are two core types of objects that are used to store experimental data: `Experiment` and `ImagingTrial` objects. `ImagingTrial` objects represent a single, continuous imaging+ trial. The `Experiment` acts as a container to collect any number/types of individual `ImagingTrial` objects. Together, the `Experiment` and `ImagingTrial` are the primary entry points to analysis with the package. In general, this follows a typical imaging experiment design which might contain an arbitrary number and mixture of imaging+ trials. The definition of an "experiment" is loose but, abstractly, can be thought of as a collection of imaging+ trials across a common imaging field-of-view. On the other hand, a "trial" is strictly a single time series of imaging+ data collection.
+There are two core types of objects that are used to store experimental data: `Experiment` and `ImagingTrial` objects.
+
+`ImagingTrial` objects represent a single, continuous imaging+ trial.
+
+
+The `Experiment` acts as a container to collect any number/types of individual `ImagingTrial` objects.
+
+Together, the `Experiment` and `ImagingTrial` are the primary entry points to analysis with the package.
+In general, this follows a typical imaging experiment design which might contain an arbitrary number and mixture of imaging+ trials.
+The definition of an "experiment" is loose but, abstractly, can be thought of as a collection of imaging+ trials across a common imaging field-of-view.
+On the other hand, a "trial" is strictly a single time series of imaging+ data collection.
+
+
 Each `ImagingTrial` is built out-of three sub-types - `TemporalData`, `ImagingData` and `CellAnnotations` - which represent the three general modes of data outputs of an imaging+ data collection trial (Figure 2). Ultimately, the goal of this data processing flow is to organise data of an imaging+ experiment trial into an anndata data structure table that closely and intuitively represents and integrates multi-modal experimental data in a single Pythonic object (Figure 3). The natively functionality of the anndata library also allows for efficient on-disk and on-memory data access solution for imaging+ data.
 
 

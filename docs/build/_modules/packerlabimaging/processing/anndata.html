@@ -45,7 +45,6 @@
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 
-
 <div class="viewcode-block" id="AnnotatedData"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.anndata.AnnotatedData">[docs]</a><span class="k">class</span> <span class="nc">AnnotatedData</span><span class="p">(</span><span class="n">ad</span><span class="o">.</span><span class="n">AnnData</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Creates annotated cellsdata (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial.&quot;&quot;&quot;</span>
 
@@ -85,57 +84,55 @@
                 <span class="n">descr</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">: </span><span class="se">\n\t\t</span><span class="s2">|- </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">keys</span><span class="p">))[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">descr</span>
 
-
     <span class="k">def</span> <span class="nf">_gen_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_obs</span><span class="p">,</span> <span class="n">n_vars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># overriding base method from AnnData</span>
         <span class="sd">&quot;&quot;&quot;overrides the default anndata _gen_repr_() method for imaging cellsdata usage.</span>
-<span class="sd">        TODO add parameters</span>
-<span class="sd">        :param n_obs:</span>
-<span class="sd">        :param n_vars:</span>
+
+<span class="sd">        :param n_obs: number of observations in anndata table</span>
+<span class="sd">        :param n_vars: number of variables in anndata table</span>
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Annotated Data of n_obs (# ROIs) × n_vars (# Frames) = </span><span class="si">{</span><span class="n">n_obs</span><span class="si">}</span><span class="s2"> × </span><span class="si">{</span><span class="n">n_vars</span><span class="si">}</span><span class="s2">&quot;</span>
 
-
 <div class="viewcode-block" id="AnnotatedData.add_obs"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.anndata.AnnotatedData.add_obs">[docs]</a>    <span class="k">def</span> <span class="nf">add_obs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;adds values to the observations of an anndata object, under the key obs_name</span>
-<span class="sd">        TODO add parameters</span>
-<span class="sd">        :param obs_name:</span>
-<span class="sd">        :param values:</span>
+
+<span class="sd">        :param obs_name: name of new observation field to add to anndata table</span>
+<span class="sd">        :param values: list of data values to add under new observation field</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;# of values to add doesn&#39;t match # of observations in anndata array&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="n">obs_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span></div>
 
-<div class="viewcode-block" id="AnnotatedData.del_obs"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.anndata.AnnotatedData.del_obs">[docs]</a>    <span class="k">def</span> <span class="nf">del_obs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span> <span class="c1"># TODO</span>
+<div class="viewcode-block" id="AnnotatedData.del_obs"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.anndata.AnnotatedData.del_obs">[docs]</a>    <span class="k">def</span> <span class="nf">del_obs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;removes a key from observations from an anndata object, of the key obs_name</span>
-<span class="sd">        TODO add parameters</span>
-<span class="sd">        :param obs_name:</span>
+
+<span class="sd">        :param obs_name: name of observation to remove</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">obs_name</span><span class="p">)</span></div>
 
-
 <div class="viewcode-block" id="AnnotatedData.add_var"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.anndata.AnnotatedData.add_var">[docs]</a>    <span class="k">def</span> <span class="nf">add_var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;adds values to the variables of an anndata object, under the key var_name</span>
-<span class="sd">        TODO add parameters</span>
-<span class="sd">        :param var_name:</span>
-<span class="sd">        :param values:</span>
+
+<span class="sd">        :param var_name: name of new variable field to add to anndata table</span>
+<span class="sd">        :param values: list of data values to add under new variable field</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;# of values to add doesn&#39;t match # of observations in anndata array&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">var</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span></div>
 
-<div class="viewcode-block" id="AnnotatedData.del_var"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.anndata.AnnotatedData.del_var">[docs]</a>    <span class="k">def</span> <span class="nf">del_var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span> <span class="c1"># TODO</span>
+<div class="viewcode-block" id="AnnotatedData.del_var"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.anndata.AnnotatedData.del_var">[docs]</a>    <span class="k">def</span> <span class="nf">del_var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;removes a key from variables from an anndata object, of the key var_name</span>
-<span class="sd">        TODO add parameters</span>
-<span class="sd">        :param obs_name:</span>
+
+<span class="sd">        :param var_name: name of variable to remove</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">obs_name</span><span class="p">)</span></div>
+        <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">var_name</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="AnnotatedData.extend_anndata"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.anndata.AnnotatedData.extend_anndata">[docs]</a>    <span class="k">def</span> <span class="nf">extend_anndata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">additional_adata</span><span class="p">:</span> <span class="n">ad</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="AnnotatedData.extend_anndata"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.anndata.AnnotatedData.extend_anndata">[docs]</a>    <span class="k">def</span> <span class="nf">extend_anndata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">additional_adata</span><span class="p">:</span> <span class="n">ad</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        TODO fill explanation and add parameters</span>
-<span class="sd">        :param additional_adata: an anndata object of dimensions n obs x # var or, # obs x m var (depending on which axis to extend)</span>
-<span class="sd">        :param axis:</span>
+<span class="sd">        Extend with an additional anndata object. Specify axis to extend. Ensure that new anndata object matches number of variables or observations depending on</span>
+<span class="sd">        which axis is being extended.</span>
+
+<span class="sd">        :param additional_adata: an anndata object with matching observations or variables (depending on which axis is being extended).</span>
+<span class="sd">        :param axis: axis on which to extend</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">adata</span> <span class="o">=</span> <span class="n">ad</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="bp">self</span><span class="p">,</span> <span class="n">additional_adata</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">adata</span></div>
@@ -205,29 +202,6 @@
     <span class="c1">#     else:</span>
     <span class="c1">#         Warning(</span>
     <span class="c1">#             &#39;did not create anndata. anndata creation only available if experiments were processed with suite2p and .Paq file(s) provided for temporal synchronization&#39;)</span>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </pre></div>
 
             <div class="clearer"></div>

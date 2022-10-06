@@ -93,20 +93,9 @@
                <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">scan centre (V): </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scan_x</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scan_y</span><span class="si">}</span><span class="s1">&#39;</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_getPVStateShard</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_getPVStateShard</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find the value, description and indices of a particular parameter from an xml file</span>
-
-<span class="sd">TODO add parameters</span>
-<span class="sd">        Inputs:</span>
-<span class="sd">            path        - path to xml file</span>
-<span class="sd">            :param key: string corresponding to key in xml tree</span>
-<span class="sd">            :param root:</span>
-<span class="sd">        Outputs:</span>
-<span class="sd">            value       - value of the key</span>
-<span class="sd">            description - unused</span>
-<span class="sd">            index       - index that the key was found at</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">value</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">description</span> <span class="o">=</span> <span class="p">[]</span>
@@ -139,12 +128,11 @@
 
         <span class="k">return</span> <span class="n">value</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">index</span>
 
-    <span class="k">def</span> <span class="nf">_parsePVMetadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_parsePVMetadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse all of the relevant acquisition metadata from the PrairieView xml file for this recording</span>
-<span class="sd">        TODO add parameters</span>
-<span class="sd">        :return:</span>
 
+<span class="sd">        :return: dict; parsed values related to metadata from PrairieView xml file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">\- Parsing PV Metadata for Bruker microscope...&#39;</span><span class="p">)</span>

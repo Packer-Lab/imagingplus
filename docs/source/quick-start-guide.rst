@@ -3,7 +3,7 @@
 Quick Start Guide
 =================
 
-The easiest way to get started with using ``packerlabimaging`` is to follow `Tutorial 1 - Initializing an Experiment`_.
+The easiest way to get started with using ``packerlabimaging`` is to follow `Tutorial 1 - Getting started with data`_.
 This tutorial demonstrates how to setup a new experiment inside ``packerlabimaging`` for data processing and analysis.
 
 To get started with plotting and data exploration, check out `Tutorial 3 - Making useful plots`_.
@@ -36,8 +36,8 @@ A more detailed overview of these modules and other key structures of ``packerla
 An overview of all primary modules of ``packerlabimaging`` can be found at :ref:`main modules`.
 
 
-.. _Tutorial 1 - Initializing an Experiment: Tutorials/Tutorial-1-Initializing-an-Experiment.ipynb
-.. _Tutorial 3 - Making useful plots: Tutorials/Tutorial-3-Making-useful-plots.ipynb
+.. _Tutorial 1 - Getting started with data: Tutorials/Tutorial-1-Overview-of-Workflow.ipynb
+.. _Tutorial 3 - Making useful plots: Tutorials/Tutorial-3-plotting-module.ipynb
 
 
 

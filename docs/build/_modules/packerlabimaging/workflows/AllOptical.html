@@ -43,7 +43,6 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
-<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -754,9 +753,9 @@
 <div class="viewcode-block" id="AllOpticalTrial.statisticalProcessingAllCells"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.workflows.AllOptical.AllOpticalTrial.statisticalProcessingAllCells">[docs]</a>    <span class="k">def</span> <span class="nf">statisticalProcessingAllCells</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Runs statistical processing on photostim response arrays&quot;&quot;&quot;</span>
 
-        <span class="kn">from</span> <span class="nn">packerlabimaging.processing.stats</span> <span class="kn">import</span> <span class="n">runWilcoxonsTest</span>
+        <span class="kn">from</span> <span class="nn">packerlabimaging._archive.stats</span> <span class="kn">import</span> <span class="n">runWilcoxonsTest</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">wilcoxons</span> <span class="o">=</span> <span class="n">runWilcoxonsTest</span><span class="p">(</span><span class="n">array1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__pre_array</span><span class="p">,</span> <span class="n">array2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__post_array</span><span class="p">)</span>
-        <span class="kn">from</span> <span class="nn">packerlabimaging.processing.stats</span> <span class="kn">import</span> <span class="n">sigTestAvgResponse</span>
+        <span class="kn">from</span> <span class="nn">packerlabimaging._archive.stats</span> <span class="kn">import</span> <span class="n">sigTestAvgResponse</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sig_units</span> <span class="o">=</span> <span class="n">sigTestAvgResponse</span><span class="p">(</span><span class="n">trial</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">p_vals</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wilcoxons</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AllOpticalTrial.staSignificance"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.workflows.AllOptical.AllOpticalTrial.staSignificance">[docs]</a>    <span class="k">def</span> <span class="nf">staSignificance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">):</span>
@@ -920,7 +919,6 @@
 
     <span class="k">def</span> <span class="nf">alloptical_trial_fixture</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        TODO fill explaination</span>
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">initialization_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;naparm_path&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BASE_PATH</span><span class="si">}</span><span class="s1">/2020-12-19/photostim/2020-12-19_RL109_ps_014/&#39;</span><span class="p">,</span>
@@ -937,7 +935,6 @@
 
     <span class="k">def</span> <span class="nf">test_AllOpticalClass</span><span class="p">(</span><span class="n">alloptical_trial_fixture</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        TODO fill explaination add parameters</span>
 <span class="sd">        :param alloptical_trial_fixture:</span>
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -961,34 +958,6 @@
 
     <span class="n">idict</span> <span class="o">=</span> <span class="n">alloptical_trial_fixture</span><span class="p">()</span>
     <span class="n">aotrial</span> <span class="o">=</span> <span class="n">test_AllOpticalClass</span><span class="p">(</span><span class="n">idict</span><span class="p">)</span>
-
-<span class="c1"># archive</span>
-
-<span class="c1"># def collectPhotostimResponses(self, photostimFluArray):</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     TODO docstring</span>
-<span class="c1">#</span>
-<span class="c1">#     :param photostimFluArray:</span>
-<span class="c1">#     :return:</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     # create parameters, slices, and subsets for making pre-stim and post-stim arrays to use in stats comparison</span>
-<span class="c1">#     # test_period = self.prestim_response_window / 1000  # sec</span>
-<span class="c1">#     # self.test_frames = int(self.imparams.fps * test_period)  # test period for stats</span>
-<span class="c1">#</span>
-<span class="c1">#     # mean pre and post stimulus (within post-stim response window) flu trace values for all cells, all trials</span>
-<span class="c1">#     self.__analysis_array = photostimFluArray</span>
-<span class="c1">#     self.__pre_array = np.mean(self.__analysis_array[:, self.prestim_test_slice, :],</span>
-<span class="c1">#                                axis=1)  # [cells x prestim frames] (avg&#39;d taken over all stims)</span>
-<span class="c1">#     self.__post_array = np.mean(self.__analysis_array[:, self.poststim_test_slice, :],</span>
-<span class="c1">#                                 axis=1)  # [cells x poststim frames] (avg&#39;d taken over all stims)</span>
-<span class="c1">#</span>
-<span class="c1">#     # Vape&#39;s version for collection photostim response amplitudes</span>
-<span class="c1">#     # calculate amplitude of response for all cells, all trials</span>
-<span class="c1">#     all_amplitudes = self.__post_array - self.__pre_array</span>
-<span class="c1">#</span>
-<span class="c1">#     df = pd.DataFrame(index=range(self.Suite2p.n_units), columns=self.stim_start_frames, data=all_amplitudes)</span>
-<span class="c1">#</span>
-<span class="c1">#     return df</span>
 </pre></div>
 
             <div class="clearer"></div>

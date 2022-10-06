@@ -55,12 +55,9 @@
 <span class="kn">from</span> <span class="nn">packerlabimaging.utils.classes</span> <span class="kn">import</span> <span class="n">UnavailableOptionError</span>
 <span class="kn">from</span> <span class="nn">packerlabimaging.utils.images</span> <span class="kn">import</span> <span class="n">ImportTiff</span><span class="p">,</span> <span class="n">SaveDownsampledTiff</span><span class="p">,</span> <span class="n">WriteTiff</span><span class="p">,</span> <span class="n">make_tiff_stack</span>
 
-<span class="c1"># TEMP VARIABLES FOR DEVELOPMENT USAGES</span>
-<span class="n">N_PLANES</span> <span class="o">=</span> <span class="mi">1</span>
-
 
 <span class="c1"># suite2p methods</span>
-<div class="viewcode-block" id="s2pRun"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.suite2p.s2pRun">[docs]</a><span class="k">def</span> <span class="nf">s2pRun</span><span class="p">(</span><span class="n">expobj</span><span class="p">,</span> <span class="n">trialsSuite2P</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span><span class="p">):</span>  <span class="c1">## TODO gotta specify # of planes somewhere here</span>
+<div class="viewcode-block" id="s2pRun"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.suite2p.s2pRun">[docs]</a><span class="k">def</span> <span class="nf">s2pRun</span><span class="p">(</span><span class="n">expobj</span><span class="p">,</span> <span class="n">trialsSuite2P</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;run suite2p for an Experiment object, using trials specified in current experiment object, using the attributes</span>
 <span class="sd">    determined directly from the experiment object.</span>
 
@@ -71,32 +68,12 @@
     <span class="n">_suite2p_save_path</span> <span class="o">=</span> <span class="n">expobj</span><span class="o">.</span><span class="n">saveDir</span> <span class="o">+</span> <span class="s1">&#39;/suite2p/&#39;</span>  <span class="c1">#: default location to save Suite2p output results of current experiment</span>
 
     <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">trials</span> <span class="o">=</span> <span class="n">trialsSuite2P</span> <span class="k">if</span> <span class="n">trialsSuite2P</span> <span class="o">!=</span> <span class="s1">&#39;all&#39;</span> <span class="k">else</span> <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">trials</span>
-    <span class="c1"># expobj._trialsTiffsSuite2p = trialsSuite2P if trialsSuite2P else expobj._trialsTiffsSuite2p</span>
 
     <span class="n">tiffs_paths_to_use_s2p</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">trial</span> <span class="ow">in</span> <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">trials</span><span class="p">:</span>
         <span class="n">tiffs_paths_to_use_s2p</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">expobj</span><span class="o">.</span><span class="n">TrialsInformation</span><span class="p">[</span><span class="n">trial</span><span class="p">][</span><span class="s1">&#39;tiff_path&#39;</span><span class="p">])</span>
 
     <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">tiffs_paths_to_use_s2p</span> <span class="o">=</span> <span class="n">tiffs_paths_to_use_s2p</span>
-
-    <span class="c1"># # load the first tiff in expobj.Suite2p.trials to collect default metainformation about imaging setup parameters</span>
-    <span class="c1"># trial = expobj.Suite2p.trials[0]</span>
-    <span class="c1"># from packerlabimaging import TwoPhotonImagingTrial</span>
-    <span class="c1"># trialobj: TwoPhotonImagingTrial = import_obj(expobj.TrialsInformation[trial][&#39;analysis_object_information&#39;][&#39;pkl path&#39;])</span>
-
-    <span class="c1"># # set imaging parameters using defaults or kwargs if provided</span>
-    <span class="c1"># frame_x = trialobj.imparams.frame_x if &#39;frame_x&#39; not in kwargs else kwargs[&#39;frame_x&#39;]</span>
-    <span class="c1"># frame_y = trialobj.imparams.frame_y if &#39;frame_y&#39; not in kwargs else kwargs[&#39;frame_y&#39;]</span>
-
-    <span class="c1"># # setup ops dictionary</span>
-    <span class="c1"># # expobj.Suite2p.ops[&#39;fs&#39;] = fps / n_planes</span>
-    <span class="c1"># batch_size = expobj.Suite2p.ops[&#39;batch_size&#39;] * (262144 / (</span>
-    <span class="c1">#         frame_x * frame_y))  # larger key_frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images</span>
-
-    <span class="c1"># # set other ops parameters if provided in kwargs:</span>
-    <span class="c1"># for key in kwargs:</span>
-    <span class="c1">#     if key in [*expobj.Suite2p.ops]:</span>
-    <span class="c1">#         expobj.Suite2p.ops[key] = kwargs[key]</span>
 
     <span class="c1"># setup db dict</span>
     <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">ops</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">ops</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">])</span>
@@ -121,7 +98,7 @@
     <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">ops</span> <span class="o">=</span> <span class="n">opsEnd</span>
 
     <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">s2pResultExists</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">s2pResultsPath</span> <span class="o">=</span> <span class="n">_suite2p_save_path</span> <span class="o">+</span> <span class="s1">&#39;/plane0/&#39;</span>  <span class="c1">## need to further debug that the flow of the suite2p s2pResultsPath makes sense</span>
+    <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">s2pResultsPath</span> <span class="o">=</span> <span class="n">_suite2p_save_path</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">Completed Suite2p run. </span><span class="se">\n\t</span><span class="s1"> Results are saved to: </span><span class="si">{</span><span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">s2pResultsPath</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
@@ -289,21 +266,17 @@
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;\- ADDING .Suite2p module to Experiment object ... &quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
 
         <span class="c1">## initialize attr&#39;s</span>
-        <span class="c1"># TODO add attr comment</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># total number of imaging key_frames in the Suite2p run</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_planes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">N_PLANES</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">cell_id</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># cell ROI # id per plane</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_units</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># num of ROIs in suite2p result per plane</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cell_plane</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># the corresponding imaging plane for each cell</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cell_med</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># y, x location of each cell in the imaging frame</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cell_x</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># TODO ROB</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cell_y</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># TODO ROB</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_med</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># y, x pixel location of each cell in the imaging frame</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_x</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># x pixel location of cell</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_y</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># y pixel location of cell</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">raw</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># [cells x num key_frames], raw traces for each cell from suite2p</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stat</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">spks</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">neuropil</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stat</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># stat output from suite2p</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spks</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># deconvolved spikes output from suite2p</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">neuropil</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># neuropil output from suite2p</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mean_img</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># mean img output from suite2p</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mean_imgE</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># mean img Enhanced output from suite2p</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># cell radius from suite2p</span>
@@ -314,10 +287,10 @@
 
         <span class="k">if</span> <span class="n">s2pResultsPath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># initialize needed variables and attr&#39;s for future calling of s2pRun</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">s2pResultsPath</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__s2pResultsPath</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">s2pResultExists</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">s2pResultsPath</span> <span class="o">=</span> <span class="n">s2pResultsPath</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__s2pResultsPath</span> <span class="o">=</span> <span class="n">s2pResultsPath</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_retrieveSuite2pData</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s2pResultsPath</span><span class="p">,</span> <span class="n">neuropil_coeff</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">neuropil_coeff</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -331,24 +304,36 @@
         <span class="k">for</span> <span class="n">trial</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">tiff_paths_to_use_s2p</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">s2pResultExists</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;output_ops&#39;</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_ops</span><span class="p">[</span><span class="s1">&#39;filelist&#39;</span><span class="p">]:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">trials</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trial</span><span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">WARNING: </span><span class="si">{</span><span class="n">trial</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1"> not found in suite2p results output_ops filelist. Not added to Suite2p object.&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_ops</span><span class="p">[</span><span class="s1">&#39;filelist&#39;</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">trials</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trial</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">WARNING: </span><span class="si">{</span><span class="n">trial</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1"> not found in suite2p results output_ops filelist. Not added to Suite2p object.&#39;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">tiff_paths_to_use_s2p</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">trial</span><span class="p">)</span>
 
-        <span class="c1"># self.trials = [*trialsTiffsSuite2p]</span>
         <span class="c1"># todo this is only necessary for running suite2p right?</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tiff_paths_to_use_s2p</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">tiff_paths_to_use_s2p</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trials</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;no trials found to run suite2p, option available to provide list of trial IDs in &quot;</span> \
                               <span class="s2">&quot;`trialsSuite2P` &quot;</span>
 
-
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="c1"># finish</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|- ADDED .Suite2p module to Experiment object. &quot;</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">s2pResultsPath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Path to the saved suite2p results output.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__s2pResultsPath</span>
+
+    <span class="nd">@s2pResultsPath</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">s2pResultsPath</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Setter for path to the saved suite2p results output.</span>
+<span class="sd">        :param val: file path</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__s2pResultsPath</span> <span class="o">=</span> <span class="n">val</span>
+
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">s2pResultExists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -383,69 +368,62 @@
 
         <span class="n">s2p_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s2pResultsPath</span> <span class="k">if</span> <span class="n">s2p_path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">s2p_path</span>
 
-        <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_planes</span><span class="p">):</span>  <span class="c1"># TODO really don&#39;t know how planes are collected and fed into suite2p</span>
+        <span class="c1"># extract suite2p stat.npy and neuropil-subtracted F</span>
+        <span class="n">subtract_neuropil</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">neuropil_coeff</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="n">FminusFneu</span><span class="p">,</span> <span class="n">spks</span><span class="p">,</span> <span class="n">stat</span><span class="p">,</span> <span class="n">neuropil</span> <span class="o">=</span> <span class="n">s2p_loader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s2pResultsPath</span><span class="p">,</span> <span class="n">subtract_neuropil</span><span class="o">=</span><span class="n">subtract_neuropil</span><span class="p">,</span>
+                                                      <span class="n">neuropil_coeff</span><span class="o">=</span><span class="n">neuropil_coeff</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">FminusFneu</span><span class="p">)</span>  <span class="c1"># raw F of each suite2p ROI (neuropil corrected if neuropil_coeff &gt; 0)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spks</span><span class="p">)</span>  <span class="c1"># deconvolved spikes each suite2p ROI</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">neuropil</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">neuropil</span><span class="p">)</span>  <span class="c1"># neuropil value of each suite2p ROI</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stat</span><span class="p">)</span>  <span class="c1"># stat dictionary for each suite2p ROI</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span> <span class="o">=</span> <span class="n">spks</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
-            <span class="c1"># extract suite2p stat.npy and neuropil-subtracted F</span>
-            <span class="n">subtract_neuropil</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">neuropil_coeff</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">False</span>
-            <span class="n">FminusFneu</span><span class="p">,</span> <span class="n">spks</span><span class="p">,</span> <span class="n">stat</span><span class="p">,</span> <span class="n">neuropil</span> <span class="o">=</span> <span class="n">s2p_loader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s2pResultsPath</span><span class="p">,</span> <span class="n">subtract_neuropil</span><span class="o">=</span><span class="n">subtract_neuropil</span><span class="p">,</span>
-                                                          <span class="n">neuropil_coeff</span><span class="o">=</span><span class="n">neuropil_coeff</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">FminusFneu</span><span class="p">)</span>  <span class="c1"># raw F of each suite2p ROI (neuropil corrected if neuropil_coeff &gt; 0)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">spks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spks</span><span class="p">)</span>  <span class="c1"># deconvolved spikes each suite2p ROI</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">neuropil</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">neuropil</span><span class="p">)</span>  <span class="c1"># neuropil value of each suite2p ROI</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stat</span><span class="p">)</span>  <span class="c1"># stat dictionary for each suite2p ROI</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span> <span class="o">=</span> <span class="n">spks</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ops</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s2p_path</span><span class="p">,</span> <span class="s1">&#39;ops.npy&#39;</span><span class="p">),</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean_img</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ops</span><span class="p">[</span><span class="s1">&#39;meanImg&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean_imgE</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ops</span><span class="p">[</span><span class="s1">&#39;meanImgE&#39;</span><span class="p">])</span>  <span class="c1"># enhanced mean image from suite2p</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xoff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ops</span><span class="p">[</span><span class="s1">&#39;xoff&#39;</span><span class="p">]</span>  <span class="c1"># motion correction info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yoff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ops</span><span class="p">[</span><span class="s1">&#39;yoff&#39;</span><span class="p">]</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">ops</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s2p_path</span><span class="p">,</span> <span class="s1">&#39;ops.npy&#39;</span><span class="p">),</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">mean_img</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ops</span><span class="p">[</span><span class="s1">&#39;meanImg&#39;</span><span class="p">])</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">mean_imgE</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ops</span><span class="p">[</span><span class="s1">&#39;meanImgE&#39;</span><span class="p">])</span>  <span class="c1"># enhanced mean image from suite2p</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">xoff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ops</span><span class="p">[</span><span class="s1">&#39;xoff&#39;</span><span class="p">]</span>  <span class="c1"># motion correction info</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">yoff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ops</span><span class="p">[</span><span class="s1">&#39;yoff&#39;</span><span class="p">]</span>
+        <span class="n">cell_id</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">cell_med</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">cell_x</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">cell_y</span> <span class="o">=</span> <span class="p">[]</span>
 
-            <span class="n">cell_id</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">cell_plane</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">cell_med</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">cell_x</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">cell_y</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># stat is an np array of dictionaries</span>
+        <span class="k">for</span> <span class="n">cell</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">stat</span><span class="p">):</span>
+            <span class="n">cell_id</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span>
+            <span class="n">cell_med</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="s1">&#39;med&#39;</span><span class="p">])</span>
 
-            <span class="c1"># stat is an np array of dictionaries</span>
-            <span class="k">for</span> <span class="n">cell</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">stat</span><span class="p">):</span>
-                <span class="n">cell_id</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span>
-                <span class="n">cell_med</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="s1">&#39;med&#39;</span><span class="p">])</span>
+            <span class="n">cell_x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="s1">&#39;xpix&#39;</span><span class="p">])</span>
+            <span class="n">cell_y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="s1">&#39;ypix&#39;</span><span class="p">])</span>
 
-                <span class="n">cell_x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="s1">&#39;xpix&#39;</span><span class="p">])</span>
-                <span class="n">cell_y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="s1">&#39;ypix&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_id</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_units</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell_id</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_med</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell_med</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell_x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell_y</span><span class="p">)</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">cell_id</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell_id</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">n_units</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell_id</span><span class="p">[</span><span class="n">plane</span><span class="p">]))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cell_med</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell_med</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cell_x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell_x</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cell_y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell_y</span><span class="p">)</span>
+        <span class="n">num_units</span> <span class="o">=</span> <span class="n">FminusFneu</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-            <span class="n">num_units</span> <span class="o">=</span> <span class="n">FminusFneu</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">cell_plane</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">plane</span><span class="p">]</span> <span class="o">*</span> <span class="n">num_units</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cell_plane</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell_plane</span><span class="p">)</span>
-
-            <span class="nb">print</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;|- Loaded </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_units</span><span class="si">}</span><span class="s1"> suite2p classified cells from plane </span><span class="si">{</span><span class="n">plane</span><span class="si">}</span><span class="s1">, recorded for </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">ops</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s1"> secs total, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span><span class="si">}</span><span class="s1"> frames total&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;|- Loaded </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_units</span><span class="si">}</span><span class="s1"> suite2p classified cells from plane 0, recorded for </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">ops</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s1"> secs total, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span><span class="si">}</span><span class="s1"> frames total&#39;</span><span class="p">)</span>
 
         <span class="c1"># TODO consider replacing this and use returning properties</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_planes</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="c1"># print(f&#39;*** plane 0 cellsdata ***&#39;)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">spks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">neuropil</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">neuropil</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">mean_img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_img</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">mean_imgE</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_imgE</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">xoff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xoff</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">yoff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">yoff</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cell_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_id</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">n_units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_units</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cell_med</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_med</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cell_plane</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_plane</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cell_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cell_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spks</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="c1"># print(f&#39;n_frames&#39;, self.n_frames)</span>
+        <span class="c1"># print(f&#39;*** plane 0 cellsdata ***&#39;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">neuropil</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">neuropil</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean_img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_img</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean_imgE</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_imgE</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xoff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xoff</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yoff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">yoff</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_id</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_units</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_med</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_med</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spks</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># print(f&#39;n_frames&#39;, self.n_frames)</span>
 
         <span class="c1"># read in other files</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_ops</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s2pResultsPath</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;ops.npy&#39;</span><span class="p">),</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
@@ -554,6 +532,13 @@
 <span class="sd">        :param trialsSuite2P: list of trials to use for Suite2p setup</span>
 <span class="sd">        :param TrialsInformation: dictionary mapping trial ID to tiff_path to use for Suite2p processing of that trial</span>
 <span class="sd">        :param kwargs:</span>
+<span class="sd">            :fs:</span>
+<span class="sd">            :nplanes:</span>
+<span class="sd">            :pix_sz_x:</span>
+<span class="sd">            :pix_sz_y:</span>
+<span class="sd">            :frame_x:</span>
+<span class="sd">            :frame_y:</span>
+<span class="sd">            :n_channels:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">trialsSuite2P</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trials</span><span class="p">:</span>
 
@@ -561,7 +546,7 @@
             <span class="k">for</span> <span class="n">trial</span> <span class="ow">in</span> <span class="n">trialsSuite2P</span><span class="p">:</span>
                 <span class="n">trialsTiffs</span><span class="p">[</span><span class="n">trial</span><span class="p">]</span> <span class="o">=</span> <span class="n">TrialsInformation</span><span class="p">[</span><span class="n">trial</span><span class="p">][</span><span class="s1">&#39;tiff_path&#39;</span><span class="p">]</span>
 
-            <span class="n">Suite2p_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subSuite2p</span><span class="p">(</span><span class="n">trialsTiffs</span><span class="o">=</span><span class="n">trialsSuite2P</span><span class="p">,</span> <span class="n">s2pResultsPath</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">s2pResultsPath</span><span class="p">)</span>
+            <span class="n">Suite2p_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subSuite2p</span><span class="p">(</span><span class="n">trialsTiffs</span><span class="o">=</span><span class="n">trialsTiffs</span><span class="p">,</span> <span class="n">s2pResultsPath</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">s2pResultsPath</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">Suite2p_obj</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="c1"># self.trials = trialsSuite2P if trialsSuite2P else self.trials</span>
@@ -572,17 +557,17 @@
         <span class="c1"># load the first tiff in Suite2p_obj.trials to collect default metainformation about imaging setup parameters</span>
         <span class="n">trial</span> <span class="o">=</span> <span class="n">Suite2p_obj</span><span class="o">.</span><span class="n">trials</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="kn">from</span> <span class="nn">packerlabimaging</span> <span class="kn">import</span> <span class="n">import_obj</span>
-        <span class="n">trialobj</span> <span class="o">=</span> <span class="n">import_obj</span><span class="p">(</span><span class="n">TrialsInformation</span><span class="p">[</span><span class="n">trial</span><span class="p">][</span><span class="s1">&#39;analysis_object_information&#39;</span><span class="p">][</span><span class="s1">&#39;pkl path&#39;</span><span class="p">])</span>
+        <span class="kn">from</span> <span class="nn">packerlabimaging.main.core</span> <span class="kn">import</span> <span class="n">ImagingTrial</span>
+        <span class="n">trialobj</span><span class="p">:</span> <span class="n">ImagingTrial</span> <span class="o">=</span> <span class="n">import_obj</span><span class="p">(</span><span class="n">TrialsInformation</span><span class="p">[</span><span class="n">trial</span><span class="p">][</span><span class="s1">&#39;analysis_object_information&#39;</span><span class="p">][</span><span class="s1">&#39;pkl path&#39;</span><span class="p">])</span>
 
         <span class="c1"># set imaging parameters using defaults or kwargs if provided</span>
-        <span class="n">fps</span> <span class="o">=</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">fps</span> <span class="k">if</span> <span class="s1">&#39;fs&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;fs&#39;</span><span class="p">]</span>
-        <span class="n">n_planes</span> <span class="o">=</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">n_planes</span> <span class="k">if</span> <span class="s1">&#39;n_planes&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;n_planes&#39;</span><span class="p">]</span>
-        <span class="n">pix_sz_x</span> <span class="o">=</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">pix_sz_x</span> <span class="k">if</span> <span class="s1">&#39;pix_sz_x&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;pix_sz_x&#39;</span><span class="p">]</span>
-        <span class="n">pix_sz_y</span> <span class="o">=</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">pix_sz_y</span> <span class="k">if</span> <span class="s1">&#39;pix_sz_y&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;pix_sz_y&#39;</span><span class="p">]</span>
-        <span class="n">frame_x</span> <span class="o">=</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">frame_x</span> <span class="k">if</span> <span class="s1">&#39;frame_x&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;frame_x&#39;</span><span class="p">]</span>
-        <span class="n">frame_y</span> <span class="o">=</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">frame_y</span> <span class="k">if</span> <span class="s1">&#39;frame_y&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;frame_y&#39;</span><span class="p">]</span>
-        <span class="n">n_channels</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;n_channels&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;n_channels&#39;</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="o">*</span><span class="n">kwargs</span><span class="p">]</span> <span class="k">else</span> <span class="mi">1</span>  <span class="c1"># default is 1 channel imaging in .tiffs for suite2p</span>
+        <span class="n">fps</span> <span class="o">=</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">fps</span> <span class="k">if</span> <span class="s1">&#39;fs&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;fs&#39;</span><span class="p">]</span>
+        <span class="n">n_planes</span> <span class="o">=</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">n_planes</span> <span class="k">if</span> <span class="s1">&#39;n_planes&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;n_planes&#39;</span><span class="p">]</span>
+        <span class="n">pix_sz_x</span> <span class="o">=</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">pix_sz_x</span> <span class="k">if</span> <span class="s1">&#39;pix_sz_x&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;pix_sz_x&#39;</span><span class="p">]</span>
+        <span class="n">pix_sz_y</span> <span class="o">=</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">pix_sz_y</span> <span class="k">if</span> <span class="s1">&#39;pix_sz_y&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;pix_sz_y&#39;</span><span class="p">]</span>
+        <span class="n">frame_x</span> <span class="o">=</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">frame_x</span> <span class="k">if</span> <span class="s1">&#39;frame_x&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;frame_x&#39;</span><span class="p">]</span>
+        <span class="n">frame_y</span> <span class="o">=</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">frame_y</span> <span class="k">if</span> <span class="s1">&#39;frame_y&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;frame_y&#39;</span><span class="p">]</span>
+        <span class="n">n_channels</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;n_channels&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;n_channels&#39;</span> <span class="ow">in</span> <span class="p">[</span><span class="o">*</span><span class="n">kwargs</span><span class="p">]</span> <span class="k">else</span> <span class="mi">1</span>  <span class="c1"># default is 1 channel imaging in .tiffs for suite2p</span>
 
         <span class="c1"># setup ops dictionary</span>
         <span class="n">Suite2p_obj</span><span class="o">.</span><span class="n">ops</span><span class="p">[</span><span class="s1">&#39;fs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fps</span> <span class="o">/</span> <span class="n">n_planes</span>
@@ -604,8 +589,7 @@
                           <span class="s1">&#39;batch_size&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">batch_size</span><span class="p">),</span>
                           <span class="s1">&#39;nimg_init&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">Suite2p_obj</span><span class="o">.</span><span class="n">ops</span><span class="p">[</span><span class="s1">&#39;batch_size&#39;</span><span class="p">]),</span> <span class="s1">&#39;nplanes&#39;</span><span class="p">:</span> <span class="n">n_planes</span><span class="p">,</span> <span class="s1">&#39;nchannels&#39;</span><span class="p">:</span> <span class="n">n_channels</span><span class="p">,</span>
                           <span class="s1">&#39;tiff_list&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">Suite2p_obj</span><span class="o">.</span><span class="n">tiff_paths_to_use_s2p</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
-                          <span class="s1">&#39;data_path&#39;</span><span class="p">:</span> <span class="n">Suite2p_obj</span><span class="o">.</span><span class="n">dataPath</span><span class="p">,</span>
-                          <span class="c1"># TODO need to figure out how to more appropriately bring in the dataPath here</span>
+                          <span class="s1">&#39;data_path&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">dataPath</span><span class="p">),</span>
                           <span class="s1">&#39;save_folder&#39;</span><span class="p">:</span> <span class="n">Suite2p_obj</span><span class="o">.</span><span class="n">s2pResultsPath</span><span class="p">}</span></div>
 
 <div class="viewcode-block" id="Suite2pExperiment.s2pRun"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.suite2p.Suite2pExperiment.s2pRun">[docs]</a>    <span class="k">def</span> <span class="nf">s2pRun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expobj</span><span class="p">,</span> <span class="n">trialsSuite2P</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span><span class="p">):</span>
@@ -620,15 +604,11 @@
 <div class="viewcode-block" id="Suite2pExperiment.s2pROIsTiff"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.suite2p.Suite2pExperiment.s2pROIsTiff">[docs]</a>    <span class="k">def</span> <span class="nf">s2pROIsTiff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_path</span><span class="p">,</span> <span class="n">cell_ids</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save a TIFF image of the suite2p ROIs masks.</span>
-<span class="sd">        </span>
+<span class="sd">        # todo test function</span>
+
 <span class="sd">        :param save_path: path to save to</span>
 <span class="sd">        :param cell_ids: IDs of Suite2p ROI masks to show in image (use &#39;all&#39; (default) to plot all ROI masks)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># todo test function</span>
-        <span class="c1"># os.chdir(self.s2pResultsPath)</span>
-        <span class="c1"># stat = np.load(&#39;stat.npy&#39;, allow_pickle=True)</span>
-        <span class="c1"># ops = np.load(&#39;ops.npy&#39;, allow_pickle=True).item()</span>
-        <span class="c1"># iscell = np.load(&#39;iscell.npy&#39;, allow_pickle=True)</span>
 
         <span class="n">mask_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">output_ops</span><span class="p">[</span><span class="s1">&#39;Ly&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_ops</span><span class="p">[</span><span class="s1">&#39;Lx&#39;</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;uint8&#39;</span><span class="p">)</span>
 
@@ -639,26 +619,7 @@
                 <span class="n">xpix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stat</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s1">&#39;xpix&#39;</span><span class="p">]</span>
                 <span class="n">mask_img</span><span class="p">[</span><span class="n">ypix</span><span class="p">,</span> <span class="n">xpix</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
 
-        <span class="n">WriteTiff</span><span class="p">(</span><span class="n">save_path</span><span class="o">=</span><span class="n">save_path</span><span class="p">,</span> <span class="n">stack</span><span class="o">=</span><span class="n">mask_img</span><span class="p">)</span></div>
-
-    <span class="c1"># PROCESSING OF SUITE2P OUTPUT</span>
-<div class="viewcode-block" id="Suite2pExperiment.filterROIs"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.suite2p.Suite2pExperiment.filterROIs">[docs]</a>    <span class="k">def</span> <span class="nf">filterROIs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">overlapthreshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skewthreshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">footprintthreshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                   <span class="n">npixthreshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                   <span class="n">aspectratiothreshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">classifierthreshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">boundarybox</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-
-        <span class="sd">&quot;&quot;&quot;TODO develop function</span>
-<span class="sd">        Filter Suite2p ROIs based on a variety of metrics of each ROI. Filters can be combined by providing a value to each filter.</span>
-
-<span class="sd">        :param skewthreshold:</span>
-<span class="sd">        :param footprintthreshold:</span>
-<span class="sd">        :param npixthreshold:</span>
-<span class="sd">        :param aspectratiothreshold:</span>
-<span class="sd">        :param classifierthreshold:</span>
-<span class="sd">        :param boundarybox:</span>
-<span class="sd">        :param overlapthreshold: percentage threshold for filtering out overlapping ROIs. if overlap between two or more ROIs exceeds a specified percentage threshold, then remove the ROI with smaller npix.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div></div>
+        <span class="n">WriteTiff</span><span class="p">(</span><span class="n">save_path</span><span class="o">=</span><span class="n">save_path</span><span class="p">,</span> <span class="n">stack</span><span class="o">=</span><span class="n">mask_img</span><span class="p">)</span></div></div>
 
 
 <span class="c1"># noinspection DuplicatedCode</span>
@@ -742,32 +703,20 @@
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="n">s2pExp</span><span class="o">.</span><span class="n">n_planes</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="c1"># self.cell_id = s2pExp.cell_id</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stat</span> <span class="o">=</span> <span class="n">s2pExp</span><span class="o">.</span><span class="n">stat</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">output_ops</span> <span class="o">=</span> <span class="n">s2pExp</span><span class="o">.</span><span class="n">output_ops</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">n_units</span> <span class="o">=</span> <span class="n">s2pExp</span><span class="o">.</span><span class="n">n_units</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">iscell</span> <span class="o">=</span> <span class="n">s2pExp</span><span class="o">.</span><span class="n">iscell</span>
+        <span class="c1"># self.cell_id = s2pExp.cell_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stat</span> <span class="o">=</span> <span class="n">s2pExp</span><span class="o">.</span><span class="n">stat</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_ops</span> <span class="o">=</span> <span class="n">s2pExp</span><span class="o">.</span><span class="n">output_ops</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_units</span> <span class="o">=</span> <span class="n">s2pExp</span><span class="o">.</span><span class="n">n_units</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iscell</span> <span class="o">=</span> <span class="n">s2pExp</span><span class="o">.</span><span class="n">iscell</span>
 
-            <span class="n">raw</span> <span class="o">=</span> <span class="n">s2pExp</span><span class="o">.</span><span class="n">raw</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="bp">self</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span>
-                <span class="mi">1</span><span class="p">]]</span>
-            <span class="n">spks</span> <span class="o">=</span> <span class="n">s2pExp</span><span class="o">.</span><span class="n">spks</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="bp">self</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span>
-                <span class="mi">1</span><span class="p">]]</span>
-            <span class="n">neuropil</span> <span class="o">=</span> <span class="n">s2pExp</span><span class="o">.</span><span class="n">neuropil</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="bp">self</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span>
-                <span class="mi">1</span><span class="p">]]</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">s2pExp</span><span class="o">.</span><span class="n">raw</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="bp">self</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span>
+            <span class="mi">1</span><span class="p">]]</span>
+        <span class="n">spks</span> <span class="o">=</span> <span class="n">s2pExp</span><span class="o">.</span><span class="n">spks</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="bp">self</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span>
+            <span class="mi">1</span><span class="p">]]</span>
+        <span class="n">neuropil</span> <span class="o">=</span> <span class="n">s2pExp</span><span class="o">.</span><span class="n">neuropil</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="bp">self</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span>
+            <span class="mi">1</span><span class="p">]]</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">s2pResultExists</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">raw</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">spks</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">neuropil</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">s2pExp</span><span class="o">.</span><span class="n">n_planes</span><span class="p">):</span>
-                <span class="n">raw</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s2pExp</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="n">plane</span><span class="p">][:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="bp">self</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
-                <span class="n">spks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s2pExp</span><span class="o">.</span><span class="n">spks</span><span class="p">[</span><span class="n">plane</span><span class="p">][:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="bp">self</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
-                <span class="n">neuropil</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s2pExp</span><span class="o">.</span><span class="n">neuropil</span><span class="p">[</span><span class="n">plane</span><span class="p">][:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="bp">self</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">s2pResultExists</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s2pResultExists</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">im</span> <span class="o">=</span> <span class="n">stats_dicts_to_3d_array_</span><span class="p">(</span><span class="n">stat_dict</span><span class="o">=</span><span class="n">s2pExp</span><span class="o">.</span><span class="n">stat</span><span class="p">,</span> <span class="n">output_ops</span><span class="o">=</span><span class="n">s2pExp</span><span class="o">.</span><span class="n">output_ops</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">im</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">im</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
@@ -981,7 +930,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="n">sorted_paths</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">tif_path_save</span><span class="p">):</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">make_tiff_stack</span><span class="p">(</span><span class="n">sorted_paths</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="n">tif_path_save</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">make_tiff_stack</span><span class="p">(</span><span class="n">sorted_paths</span><span class="p">,</span> <span class="n">save_path</span><span class="o">=</span><span class="n">tif_path_save</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">tif_path_save2</span><span class="p">):</span>
             <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">TiffWriter</span><span class="p">(</span><span class="n">tif_path_save2</span><span class="p">,</span> <span class="n">bigtiff</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">tif</span><span class="p">:</span>
@@ -1071,17 +1020,9 @@
             <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
                 <span class="k">break</span>
 
-            <span class="c1">### works</span>
             <span class="kn">import</span> <span class="nn">cv2</span>
             <span class="n">ret</span><span class="p">,</span> <span class="n">images</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imreadmulti</span><span class="p">(</span><span class="n">tiff_path</span><span class="p">,</span> <span class="p">[],</span> <span class="n">cv2</span><span class="o">.</span><span class="n">IMREAD_ANYCOLOR</span><span class="p">)</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
-
-            <span class="c1"># # works</span>
-            <span class="c1"># from packerlabimaging.utils.utils import ImportTiff</span>
-            <span class="c1"># data = ImportTiff(tiff_path, frames=(0, batch_size))</span>
-
-            <span class="c1">#### works</span>
-            <span class="c1"># im_stack = tf.imread(tiff_path, key=range(batch_size))</span>
 
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">\- shape: </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="n">targets_trace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">num_coords</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
@@ -1101,9 +1042,7 @@
 
         <span class="k">return</span> <span class="n">raw_coords_signal</span></div></div>
 
-    <span class="c1">#### archiving away for now - trying to switch to an approach that doesn&#39;t inherit from parent suite2p obj.</span>
-
-
+<span class="c1">#### archiving away for now - trying to switch to an approach that doesn&#39;t inherit from parent suite2p obj.</span>
 <span class="c1"># class Suite2PTrial_(Suite2pExperiment):</span>
 <span class="c1">#     &quot;&quot;&quot;used to collect and store suite2p processed cellsdata for one trial - out of overall experiment.&quot;&quot;&quot;</span>
 <span class="c1">#</span>
@@ -1243,7 +1182,7 @@
 
 <span class="sd">    :param expobj: Experiment object to add suite2p results to</span>
 <span class="sd">    :param s2p_trials: list of trials to use for Suite2p processing/analysis pipeline, default = &#39;all&#39; to use all trials of Experiment</span>
-<span class="sd">    :param s2pResultsPath: optional, if suite2p already run then here provide path to plane0 folder of existing suite2p results</span>
+<span class="sd">    :param s2pResultsPath: optional, if suite2p already run then here provide path existing suite2p results</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;\- Adding suite2p module to experiment. Located under .Suite2p&#39;</span><span class="p">)</span>
@@ -1267,7 +1206,7 @@
                 <span class="k">break</span>
         <span class="k">if</span> <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">s2pResultExists</span><span class="p">:</span>
             <span class="n">expobj</span><span class="o">.</span><span class="n">_suite2p_save_path</span> <span class="o">=</span> <span class="n">s2pResultsPath</span>
-            <span class="c1"># todo - why is this reiniting the whole s2p module??? this action should just be to add results to pre-existing module</span>
+            <span class="c1"># todo - why is this re&#39;initing the whole s2p module??? this action should just be to add results to pre-existing module</span>
             <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span> <span class="o">=</span> <span class="n">Suite2pResultsExperiment</span><span class="p">(</span><span class="n">trialsTiffsSuite2p</span><span class="o">=</span><span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">_trialsTiffsSuite2p</span><span class="p">,</span>
                                                       <span class="n">s2pResultsPath</span><span class="o">=</span><span class="n">s2pResultsPath</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
