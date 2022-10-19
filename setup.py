@@ -27,7 +27,8 @@ setup(
         'suite2p',
         'opencv-python',
         'pystackreg',
-        'mpl_point_clicker'
+        'mpl_point_clicker',
+        'pynwb'
     ],
     tests_require=TESTS_REQUIRE,
     zip_safe=False

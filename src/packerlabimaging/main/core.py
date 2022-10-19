@@ -85,6 +85,8 @@ class ImagingTrial:
     tmdata: TemporalData = None             #: Temporal Data for current Imaging Trial
     Suite2p: Suite2pResultsTrial = None     #: Suite2p Results for current Imaging Trial
     Deepinterpolation: Deepinterpolation = None     #: Deepinterpolation (denoising) for current Imaging Trial
+    optical_channel_name: str = 'Imaging Channel'   #: a name of the optical channel collected for current trial (default = Imaging Channel)
+    imaging_plane_name: str = 'Plane 0'   #: a name of the imaging plane collected for current trial (default = Plane 0)
 
     def __post_init__(self):
         self.metainfo = TrialMetainfo(date=self.date, trialID=self.trialID, expID=self.expID, expGroup=self.expGroup,
@@ -404,6 +406,9 @@ class Experiment:
     saveDir: str  #: main dir where the experiment object and the trial objects will be saved to
     comment: str = ''  #: notes related to experiment
     singleImages: Dict[str, SingleImage] = None  #: contains single image frames from each experiment
+    experimenter = ''  #: experimenter performing pertinent data collection or data analysis
+    lab = ''  #: research group with with experiments were performed
+    institution = ''  #: insititution where experiments were performed
 
     def __post_init__(self):
         print(f'***********************')

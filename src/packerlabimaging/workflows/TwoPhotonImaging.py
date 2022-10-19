@@ -13,6 +13,8 @@ from packerlabimaging.processing.imagingMetadata import ImagingMetadata
 class TwoPhotonImaging(ImagingTrial):
     """Two Photon Imaging Experiment Data Analysis Workflow."""
 
+    description = 'Imaging Channel'
+
     def __init__(self, date: str = None, trialID: str = None, expID: str = None, dataPath: str = None,
                  expGroup: str = None, saveDir: str = None, tmdata: PaqData = None, imdata: ImagingData = None,
                  imparams: ImagingMetadata = None, cells: CellAnnotations = None, comment: str = ''):

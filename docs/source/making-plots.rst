@@ -1,7 +1,7 @@
 .. _Making plots:
 
-Plotting of data/analysis
-=========================
+Plotting of data and analyses
+=============================
 
 ``packerlabimaging`` provides a number of convenience plotting functions to create the most commonly made plots for 2photon imaging analysis.
 

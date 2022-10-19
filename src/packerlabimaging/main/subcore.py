@@ -210,6 +210,8 @@ class ImagingData:
 class ImagingMetadata:
     """Metadata about imaging system parameters."""
 
+    PIXEL_SIZE_UNITS: str = 'microns per pixel'  #: units for the values of the size of imaging pixels
+
     def __init__(self, microscope, n_frames, fps, frame_x, frame_y, n_planes, pix_sz_x, pix_sz_y, **kwargs):
         self.microscope = microscope  #: given name of microscope
         self.n_frames = n_frames  #: number of imaging frames in the current trial
@@ -217,8 +219,8 @@ class ImagingMetadata:
         self.frame_x = frame_x  #: num of pixels in the x direction of a single frame
         self.frame_y = frame_y  #: num of pixels in the y direction of a single frame
         self.n_planes = n_planes  #: num of FOV planes in imaging acquisition
-        self.pix_sz_x = pix_sz_x  #: size of a single imaging pixel in x direction (microns)
-        self.pix_sz_y = pix_sz_y  #: size of a single imaging pixel in y direction (microns)
+        self.pix_sz_x = pix_sz_x  #: size of a single imaging pixel in x direction (microns per pixel)
+        self.pix_sz_y = pix_sz_y  #: size of a single imaging pixel in y direction (microns per pixel)
         for key, value in kwargs.items():
             setattr(self, key, value)
 
