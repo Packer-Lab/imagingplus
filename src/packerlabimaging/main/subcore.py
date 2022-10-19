@@ -8,17 +8,20 @@ import pandas as pd
 
 @dataclass
 class TemporalData:
-    """1-D time series datsets corresponding with an imaging trial."""
+    """1-D time series datasets corresponding with an imaging trial. Accomodates all 1-D series that are temporally synchronized to each other."""
     file_path: str  #: path to cellsdata file
     sampling_rate: float  #: rate of cellsdata collection (Hz)
     channels: List[str]  #: list of cellsdata channel names.
     data: pd.DataFrame  #: N columns x Time array of N x 1D cellsdata channels collected over Time at the same sampling rate
+    units: List[str] = None  #: list of units corresponding to channels.
     frame_times: Union[
         list, np.ndarray] = None  #: timestamps representing imaging frame times. must be of same time duration as imaging dataset.
     sparse_data: pd.DataFrame = None  #: dataframe of timeseries channels containing cellsdata keyed at imaging frames for each timeseries channel
-    crop_offset_time: int = 0  #: length of time (secs) of the offset after cropping temporal data
+    crop_offset_time: float = 0.0  #: length of time (secs) of the offset after cropping temporal data
 
     def __post_init__(self):
+        if self.units:
+            if len(self.units) != len(self.channels): raise AttributeError(f'Units must be provided for all channels.')
         print(f"Created new TemporalData of {self.n_channels} x {self.n_timepoints} (sampled at {self.sampling_rate}")
         pass
 
@@ -166,10 +169,9 @@ class CellAnnotations:
         """
         return len(self.annotations)
 
-
     @property
     def cell_id(self):
-        """ID of cells
+        """ID of cells. redundancy of .cells_array
         """
         assert 'cell_id' in self.cellsdata, 'cell_id cannot be found in cells annotations under cellsdata'
         return list(self.cellsdata['cell_id'])

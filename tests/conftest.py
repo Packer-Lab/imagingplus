@@ -5,6 +5,7 @@ import pandas as pd
 import pytest
 
 from packerlabimaging.utils.io import import_obj
+from pynwb.file import Subject
 
 LOCAL_DATA_PATH = '/Users/prajayshah/data/oxford-data-to-process/'
 REMOTE_DATA_PATH = '/home/pshah/mnt/qnap/Data/'
@@ -13,6 +14,18 @@ BASE_PATH = LOCAL_DATA_PATH
 
 SUITE2P_FRAMES_SPONT_t005t006 = [0, 14880]
 SUITE2P_FRAMES_t013 = 103525
+
+
+
+@pytest.fixture(scope='session')
+def new_imaging_nwb_fixture():
+    subject = Subject(age='P60D', subject_id='RL113',
+                      genotype='CamkIIa-GCaMP6s/Niell'
+                      )
+    expobj = import_obj(pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/RL109_analysis.pkl')
+    trialobj = expobj.load_trial('t-013')
+
+    return subject, expobj, trialobj
 
 
 @pytest.fixture(scope="session")
