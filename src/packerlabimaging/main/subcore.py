@@ -215,6 +215,7 @@ class ImagingMetadata:
     """Metadata about imaging system parameters."""
 
     PIXEL_SIZE_UNITS: str = 'microns per pixel'  #: units for the values of the size of imaging pixels
+    IMAGING_SIGNAL_UNITS: str = 'A.U.'  #: set as arbitrary units
 
     def __init__(self, microscope, n_frames, fps, frame_x, frame_y, n_planes, pix_sz_x, pix_sz_y, emission_lambda: float = 0., excitation_lambda: float = 0., **kwargs):
         self.microscope = microscope  #: given name of microscope

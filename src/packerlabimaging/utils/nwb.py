@@ -1,10 +1,16 @@
+# todo:
+#  make tutorial for NWB conversion
+#  add compatibility for SingleImage frames
+
+
 import os.path
 from datetime import datetime
 
-import posixpath
 from dateutil.tz import tzlocal
 
 import numpy as np
+from packerlabimaging.utils.images import ImportTiff
+
 from packerlabimaging.main.subcore import TemporalData
 
 from packerlabimaging.main.core import ImagingTrial
@@ -14,40 +20,7 @@ from pynwb.image import ImageSeries
 from pynwb.ophys import TwoPhotonSeries, OpticalChannel, ImageSegmentation, \
     Fluorescence, CorrectedImageStack, MotionCorrection, RoiResponseSeries
 
-import matplotlib.pyplot as plt
-
 from packerlabimaging import TwoPhotonImaging, Experiment
-
-#### FROM TUTORIAL
-# when we create the imaging trial, we also add modules for parsing simultaneously temporal data (.paq files) and imaging microscope's parameters for this imaging trial
-from packerlabimaging.processing.paq import PaqData
-from packerlabimaging.processing.imagingMetadata import PrairieViewMetadata
-
-# # create trial obj for each trial of experiment
-#
-# trials_list_spont = ['t-005', 't-006']
-# for idx, trial in enumerate(trials_list_spont):
-#     date = '2020-12-19'
-#     prep = 'RL113'
-#
-#     # define paths to retrieve data from disc
-#     paqs_loc = f'/home/pshah/mnt/qnap/Data/2020-12-19/{date}_{prep}_{trial[-3:]}.paq'  # path to the .paq files for the selected trials
-#     dataPath = f'/home/pshah/mnt/qnap/Data/2020-12-19/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif'
-#
-#     # initialize microscope meta-data for current imaging trial using pre-built module for Bruker-PrairieView xml parser
-#     imparams = PrairieViewMetadata(pv_xml_dir=os.path.dirname(dataPath), microscope='Bruker 2pPlus')
-#
-#     # initialize temporal data using pre-built module for .paq parsing
-#     tmdata = PaqData.paqProcessingTwoPhotonImaging(paq_path=paqs_loc, frame_channel='frame_clock', plot=False)
-#
-#     # feed in information into `TwoPhotonImaging` to create a TwoPhotonImaging object
-#     trialobj = TwoPhotonImaging(date=date, trialID=trial, expID=prep, imparams=imparams, tmdata=tmdata,
-#                                 saveDir=f'/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis/',
-#                                 dataPath=dataPath, expGroup="awake spont. 2p imaging + LFP")
-#
-#     # add each Trial to the overall Experiment using the trialobj
-#
-# #### END
 
 
 class WriteImagingNWB(NWBFile):
@@ -57,7 +30,7 @@ class WriteImagingNWB(NWBFile):
 
     """
 
-    def __init__(self, expobj: Experiment, nwb_subject: Subject, trialobj: ImagingTrial, save=True, **kwargs):
+    def __init__(self, expobj: Experiment, nwb_subject: Subject, trialobj: ImagingTrial, add_raw_tiff=False, save=True, **kwargs):
         
         location = kwargs['location'] if 'location' in kwargs else ''
         indicator = kwargs['indicator'] if 'indicator' in kwargs else ''
@@ -103,14 +76,16 @@ class WriteImagingNWB(NWBFile):
         )
 
         # add imaging data
-        if trialobj.imdata:
+        if add_raw_tiff:
+            raw_tiff = ImportTiff(trialobj.data_path)
             image_series = TwoPhotonSeries(
                 name='ImagingTrial',
                 dimension=[trialobj.imparams.frame_x, trialobj.imparams.frame_y],
                 external_file=[trialobj.data_path],
                 imaging_plane=imaging_plane,
                 rate=trialobj.imparams.fps,
-                data=trialobj.imdata.imdata  # todo: i think this is wrong.... i think this is supposed to be the tiff stack!!!!
+                data=raw_tiff,
+                unit=trialobj.imparams.IMAGING_SIGNAL_UNITS
             )
 
         else:
@@ -156,11 +131,11 @@ class WriteImagingNWB(NWBFile):
                 )
 
                 roi_resp_series = RoiResponseSeries(
-                    name='ROI x extracted fluorescence signal',
+                    name='ROIs x extracted fluorescence signal',
                     data=trialobj.Suite2p.imdata,
                     rois=rt_region,
                     rate=trialobj.imparams.fps,
-                    unit='AU'
+                    unit=trialobj.imparams.IMAGING_SIGNAL_UNITS
                 )
 
                 fl = Fluorescence(roi_response_series=roi_resp_series)

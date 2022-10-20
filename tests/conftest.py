@@ -29,6 +29,11 @@ def new_imaging_nwb_fixture():
     return subject, expobj, trialobj
 
 
+@pytest.fixture(scope='session')
+def existing_imaging_nwb_path_fixture():
+    return "/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis/2021-01-31_t-001.nwb"
+
+
 @pytest.fixture(scope="session")
 def twophoton_imaging_trial_new_noPreDoneSuite2p_fixture():
     """apr 30 2022 - newest v0.2.0 structure"""
