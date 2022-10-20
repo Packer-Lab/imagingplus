@@ -2,10 +2,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from packerlabimaging import TwoPhotonImaging
+from imagingplus import TwoPhotonImaging
 
-import packerlabimaging as pli
-from packerlabimaging.processing import anndata
+import imagingplus as pli
+from imagingplus.processing import anndata
 from conftest import anndata_trial_data, existing_trialobj_alloptical_fixture
 
 

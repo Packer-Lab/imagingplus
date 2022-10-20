@@ -1,14 +1,14 @@
 import pytest
 
 # pytest framework
-import packerlabimaging as pli
+import imagingplus as pli
 
-from packerlabimaging.main.core import Experiment
+from imagingplus.main.core import Experiment
 
 
 # test passing
 # @pytest.mark.skip
-from packerlabimaging.utils.io import import_obj
+from imagingplus.utils.io import import_obj
 
 
 def test_Experiment(experiment_fixture):

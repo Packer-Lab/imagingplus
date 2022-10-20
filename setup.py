@@ -5,10 +5,10 @@ from setuptools import setup, find_packages
 TESTS_REQUIRE = Path(f"{os.getcwd()}/requirements_dev.txt").read_text().splitlines()
 
 setup(
-    name='packerlabimaging',
+    name='imagingplus',
     version='0.1-beta',
     description='essential processing and analysis code for imaging experiments in Packer lab',
-    url='https://github.com/Packer-Lab/packerlabimaging.git',
+    url='https://github.com/Packer-Lab/imagingplus.git',
     author='Packer Lab',
     author_email='adampacker@gmail.com',
     license='MIT',

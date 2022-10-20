@@ -1,7 +1,7 @@
 """
 Tests for nwb compatibility and interfacing functions.
 """
-from packerlabimaging.utils.nwb import WriteImagingNWB, readImagingNWB
+from imagingplus.utils.nwb import WriteImagingNWB, readImagingNWB
 
 
 def test_WriteImagingNWB(new_imaging_nwb_fixture):

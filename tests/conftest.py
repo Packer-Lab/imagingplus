@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from packerlabimaging.utils.io import import_obj
+from imagingplus.utils.io import import_obj
 from pynwb.file import Subject
 
 LOCAL_DATA_PATH = '/Users/prajayshah/data/oxford-data-to-process/'
@@ -23,7 +23,7 @@ def new_imaging_nwb_fixture():
                       genotype='CamkIIa-GCaMP6s/Niell'
                       )
     expobj = import_obj(
-        pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis/HF113_analysis.pkl')
+        pkl_path='/mnt/qnap_share/Data/imagingplus-example/imagingplus-test-analysis/HF113_analysis.pkl')
     trialobj = expobj.load_trial(expobj.trialIDs[0])
 
     return subject, expobj, trialobj
@@ -31,7 +31,7 @@ def new_imaging_nwb_fixture():
 
 @pytest.fixture(scope='session')
 def existing_imaging_nwb_path_fixture():
-    return "/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis/2021-01-31_t-001.nwb"
+    return "/mnt/qnap_share/Data/imagingplus-example/imagingplus-test-analysis/2021-01-31_t-001.nwb"
 
 
 @pytest.fixture(scope="session")
@@ -72,11 +72,11 @@ def twophoton_imaging_multitrial_noPreDoneSuite2p_fixture():
 
 @pytest.fixture(scope="session")
 def twophoton_imaging_trial_fixture():
-    expobj = import_obj('/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
+    expobj = import_obj('/home/pshah/Documents/code/imagingplus/tests/RL109_analysis.pkl')
 
     initialization_dict = {
         'dataPath': '/home/pshah/mnt/qnap/Data/2020-12-19',
-        'saveDir': '/home/pshah/Documents/code/packerlabimaging/tests/',
+        'saveDir': '/home/pshah/Documents/code/imagingplus/tests/',
         'microscope': "Bruker",
         "expID": 'RL109',
         'date': '2020-12-19',
@@ -122,7 +122,7 @@ def twophoton_imaging_trial_fixture():
 
 # @pytest.fixture(scope="session")
 def alloptical_trial_fixture():
-    expobj = import_obj('/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
+    expobj = import_obj('/home/pshah/Documents/code/imagingplus/tests/RL109_analysis.pkl')
 
     initialization_dict = {'naparm_path': f'{BASE_PATH}/2020-12-19/photostim/2020-12-19_RL109_ps_014/',
                            'dataPath': f'{BASE_PATH}/2020-12-19/2020-12-19_t-013/2020-12-19_t-013_Cycle00001_Ch3.tif',
@@ -139,8 +139,8 @@ def alloptical_trial_fixture():
 @pytest.fixture(scope="session")
 def experiment_fixture():
     ExperimentMetainfo = {
-        'dataPath': '/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-cellsdata',
-        'saveDir': '/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis',
+        'dataPath': '/mnt/qnap_share/Data/imagingplus-example/imagingplus-test-cellsdata',
+        'saveDir': '/mnt/qnap_share/Data/imagingplus-example/imagingplus-test-analysis',
         "expID": 'HF113',
         'comment': 'two photon imaging + LFP dataset',
     }
@@ -150,21 +150,21 @@ def experiment_fixture():
 @pytest.fixture(scope="session")
 def existing_trialobj_twophotonimaging_fixture():
     expobj = import_obj(
-        pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis/HF113_analysis.pkl')
+        pkl_path='/mnt/qnap_share/Data/imagingplus-example/imagingplus-test-analysis/HF113_analysis.pkl')
     trialobj0 = expobj.load_trial(expobj.trialIDs[0])
     return trialobj0
 
 
 @pytest.fixture(scope="session")
 def existing_trialobj_alloptical_fixture():
-    expobj = import_obj(pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/RL109_analysis.pkl')
+    expobj = import_obj(pkl_path='/mnt/qnap_share/Data/imagingplus-example/RL109_analysis.pkl')
     trialobj = expobj.load_trial('t-013')
     return trialobj
 
 
 @pytest.fixture(scope="session")
 def existing_expobj_fixture():
-    expobj = import_obj(pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis/HF113_analysis.pkl')
+    expobj = import_obj(pkl_path='/mnt/qnap_share/Data/imagingplus-example/imagingplus-test-analysis/HF113_analysis.pkl')
     return expobj
 
 
@@ -173,14 +173,14 @@ def suite2p_results_fixture():
     expobj = import_obj(pkl_path='/home/pshah/mnt/qnap/Analysis/2021-01-31/HF113/HF113_analysis.pkl')
     s2p_path = f'/home/pshah/mnt/qnap/Analysis/2021-01-31/HF113//suite2p//plane0/'
     assert os.path.exists(s2p_path), 's2p path not found...'
-    from packerlabimaging.processing.suite2p import s2p_loader
+    from imagingplus.processing.suite2p import s2p_loader
     FminusFneu, spks, stat, neuropil = s2p_loader(s2p_path=s2p_path)
     return FminusFneu, spks, stat, neuropil
 
 
 @pytest.fixture(scope="session")
 def existing_expobj_nopredones2p_fixture():
-    expobj = import_obj(pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/RL109_analysis.pkl')
+    expobj = import_obj(pkl_path='/mnt/qnap_share/Data/imagingplus-example/RL109_analysis.pkl')
     return expobj
 
 @pytest.fixture(scope="session")
@@ -193,7 +193,7 @@ def anndata_trial_data():
 
 @pytest.fixture(scope='session')
 def existing_anndata():
-    expobj = import_obj(pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
+    expobj = import_obj(pkl_path='/home/pshah/Documents/code/imagingplus/tests/RL109_analysis.pkl')
     trialobj = expobj.load_trial(trialID=expobj.trialIDs[0])
 
     print(trialobj.cellsdata)  # this is the anndata object for this trial

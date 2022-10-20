@@ -16,7 +16,7 @@
 
 
 # -- Project information -----------------------------------------------------
-project = 'packerlabimaging'
+project = 'imagingplus'
 copyright = '2022, Packer Lab'
 author = 'Packer Lab'
 

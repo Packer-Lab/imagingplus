@@ -1,8 +1,8 @@
 import os
 
-import packerlabimaging as pli
+import imagingplus as pli
 from conftest import alloptical_trial_fixture
-from packerlabimaging import AllOpticalTrial
+from imagingplus import AllOpticalTrial
 
 LOCAL_DATA_PATH = '/Users/prajayshah/data/oxford-data-to-process/'
 REMOTE_DATA_PATH = '/home/pshah/mnt/qnap/Data/'
@@ -20,8 +20,8 @@ def test_AllOpticalClass(alloptical_trial_fixture, existing_expobj_nopredones2p_
     :param alloptical_trial_fixture:
     :return:
     """
-    from packerlabimaging.processing.imagingMetadata import PrairieViewMetadata
-    from packerlabimaging.processing.paq import PaqData
+    from imagingplus.processing.imagingMetadata import PrairieViewMetadata
+    from imagingplus.processing.paq import PaqData
 
     paqs_loc = f'{BASE_PATH}/2020-12-19/2020-12-19_RL109_013.paq'  # path to the .paq files for the selected trials
     dataPath = alloptical_trial_fixture['dataPath']
@@ -51,9 +51,9 @@ def test_processing_targets_stims(existing_trialobj_alloptical_fixture):
     self.save()
 
 # %%
-# import packerlabimaging as pkg
+# import imagingplus as pkg
 #
-# expobj = pkg.import_obj('/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
+# expobj = pkg.import_obj('/home/pshah/Documents/code/imagingplus/tests/RL109_analysis.pkl')
 # trial = expobj.load_trial('t-013')
 #
 # trial.cellsdata

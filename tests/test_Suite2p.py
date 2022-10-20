@@ -2,13 +2,13 @@ import numpy as np
 import pandas as pd
 
 from conftest import existing_expobj_nopredones2p_fixture
-from packerlabimaging import Experiment, import_obj
-from packerlabimaging._archive.TwoPhotonImagingMain import TwoPhotonImagingTrial
-from packerlabimaging.processing import suite2p
-from packerlabimaging.processing.suite2p import Suite2pExperiment, Suite2pResultsTrial
+from imagingplus import Experiment, import_obj
+from imagingplus._archive.TwoPhotonImagingMain import TwoPhotonImagingTrial
+from imagingplus.processing import suite2p
+from imagingplus.processing.suite2p import Suite2pExperiment, Suite2pResultsTrial
 
 # todo this test is likely breaking!!
-from packerlabimaging.workflows import TwoPhotonImaging
+from imagingplus.workflows import TwoPhotonImaging
 
 
 def test_Suite2pResultsExperiment(existing_expobj_fixture):
@@ -23,7 +23,7 @@ def test_Suite2pResultsTrial(existing_trialobj_twophotonimaging_fixture, existin
 
     frames = 0
     for n_obj in [trialobj]:
-        from packerlabimaging.processing.suite2p import Suite2pExperiment
+        from imagingplus.processing.suite2p import Suite2pExperiment
         s2p_expobj: Suite2pExperiment = expobj.Suite2p
         n_obj.Suite2p = suite2p.Suite2pResultsTrial(s2pExp=s2p_expobj, trial_frames=(frames, n_obj.n_frames))  # use trial obj's current trial key_frames
         frames += n_obj.n_frames
@@ -34,7 +34,7 @@ def test_Suite2pExp():
     # TODO run test for suite2p without predone results path
     _trialsSuite2p = ['t-005', 't-006']
 
-    from packerlabimaging import import_obj
+    from imagingplus import import_obj
     expobj = import_obj(pkl_path='/home/pshah/mnt/qnap/Analysis/2021-01-25/PS12/PS12_analysis.pkl')
 
     expobj.Suite2p = Suite2pExperiment(trialsTiffsSuite2p=expobj.Suite2p.tiff_paths_to_use_s2p,
@@ -101,7 +101,7 @@ def test_update_ops():
     expobj.Suite2p.update_ops(new_ops)
     expobj.save()
 
-    from packerlabimaging import import_obj
+    from imagingplus import import_obj
     expobj = import_obj(pkl_path='/home/pshah/mnt/qnap/Analysis/2021-01-25/PS12/PS12_analysis.pkl')
     assert expobj.Suite2p.ops['tau'] == 1.15
     print('ops:\n', expobj.Suite2p.ops)
@@ -121,7 +121,7 @@ def test_s2pRun():
 
 
 def test_FrameAverage():
-    from packerlabimaging.utils.io import import_obj
+    from imagingplus.utils.io import import_obj
     expobj = import_obj(pkl_path='/home/pshah/mnt/qnap/Analysis/2021-01-25/PS12/PS12_analysis.pkl')
     trialobj = expobj.load_trial(trialID=expobj.trialIDs[0])
 
@@ -130,7 +130,7 @@ def test_FrameAverage():
 
 
 def test_makeDownSampledTiff():
-    from packerlabimaging.utils.io import import_obj
+    from imagingplus.utils.io import import_obj
     expobj = import_obj(pkl_path='/home/pshah/mnt/qnap/Analysis/2021-01-25/PS12/PS12_analysis.pkl')
     reg_tiff_folder = '/home/pshah/mnt/qnap/Analysis/2021-01-25/PS12/suite2p/reg_tif'
     trialobj = expobj.load_trial(trialID=expobj.trialIDs[0])
