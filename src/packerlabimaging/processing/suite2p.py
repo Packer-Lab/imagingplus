@@ -264,15 +264,16 @@ class Suite2pExperiment:
         for trial, path in tiff_paths_to_use_s2p.items():
             if path is not None:
                 if self.s2pResultExists and hasattr(self, 'output_ops'):
-                    if path in self.output_ops['filelist']: self.trials.append(trial)
-                    else: print(f'\tWARNING: {trial}, {path} not found in suite2p results output_ops filelist. Not added to Suite2p object.')
+                    if path not in self.output_ops['filelist']:
+                        print(f'\tWARNING: {trial}, {path} not found in suite2p results output_ops filelist. Not added to Suite2p object.')
+                    self.trials.append(trial)
             else:
                 tiff_paths_to_use_s2p.pop(trial)
 
-        # todo this is only necessary for running suite2p right?
         self.tiff_paths_to_use_s2p: dict = tiff_paths_to_use_s2p
-        assert len(self.trials) > 0, "no trials found to run suite2p, option available to provide list of trial IDs in " \
-                              "`trialsSuite2P` "
+        assert len(self.trials) > 0, "Failed adding trials to suite2p module. \n" \
+                                     "\t - Ensure that correct trials are provided." \
+                                     "\t - Ensure that file paths provided for each trial correspond to filepaths in output_ops." \
 
         self.db: dict = {}
 
@@ -630,13 +631,13 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
 
     def __repr__(self):
         if self.s2pResultExists:
-            return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} key_frames x {self.n_units} s2p ROIs'
+            return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} key_frames x {self.n_rois} s2p ROIs'
         else:
             return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} key_frames. No Suite2p Results loaded.'
 
     def __str__(self):
         if self.s2pResultExists:
-            return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} key_frames x {self.n_units} s2p ROIs'
+            return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} key_frames x {self.n_rois} s2p ROIs'
         else:
             return f'Suite2p Results (trial level) Object, {self.trial_frames[1] - self.trial_frames[0]} key_frames. No Suite2p Results loaded.'
 

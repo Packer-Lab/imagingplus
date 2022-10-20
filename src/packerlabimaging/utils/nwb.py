@@ -137,7 +137,6 @@ class WriteImagingNWB(NWBFile):
                 name='PlaneSegmentation',
                 description=f'Image segmentation output from {trialobj.imaging_plane_name}',
                 imaging_plane=imaging_plane,
-                units='micrometers'
             )
             ophys_module.add(img_seg)
 
@@ -150,7 +149,7 @@ class WriteImagingNWB(NWBFile):
                 ps.add_roi(pixel_mask=pixel_mask)
 
             # add pre-processed data to nwb file
-            if trialobj.Suite2p.imdata:
+            if trialobj.Suite2p.imdata is not None:
                 rt_region = ps.create_roi_table_region(
                     region=list(np.arange(0, trialobj.Suite2p.n_cells)),
                     description=f'Segmented ROIs'
@@ -160,7 +159,8 @@ class WriteImagingNWB(NWBFile):
                     name='ROI x extracted fluorescence signal',
                     data=trialobj.Suite2p.imdata,
                     rois=rt_region,
-                    rate=trialobj.imparams.fps
+                    rate=trialobj.imparams.fps,
+                    unit='AU'
                 )
 
                 fl = Fluorescence(roi_response_series=roi_resp_series)
@@ -200,7 +200,7 @@ class WriteImagingNWB(NWBFile):
 
             test_ts = TimeSeries(
                 name=channel,
-                data=tmdata.data[channel],
+                data=tuple(tmdata.data[channel]),
                 unit=unit,
                 timestamps=np.linspace(tmdata.crop_offset_time,
                                        (tmdata.n_timepoints / tmdata.sampling_rate) + tmdata.crop_offset_time,

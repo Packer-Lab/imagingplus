@@ -8,6 +8,9 @@ from packerlabimaging.main.core import Experiment
 
 # test passing
 # @pytest.mark.skip
+from packerlabimaging.utils.io import import_obj
+
+
 def test_Experiment(experiment_fixture):
     expobj = Experiment(**experiment_fixture)
     print(expobj)
@@ -22,19 +25,18 @@ def test_add_suite2p(existing_expobj_nopredones2p_fixture):
     return expobj
 
 
+@pytest.mark.skip
 def test_add_suite2p_results(existing_expobj_fixture):
-    # todo run test
+    # test passing
     """test for adding suite2p trials with precompleted results. """
-
     expobj = existing_expobj_fixture
-    s2pResultsPath="/home/pshah/mnt/qnap/Analysis/2020-12-19/suite2p/alloptical-2p-1x-alltrials/plane0/"
+    s2pResultsPath="/home/pshah/mnt/qnap/Analysis/2021-01-31/HF113/suite2p/plane0"
 
     # expobj.add_suite2p(s2p_trials=['t-005', 't-006', 't-013'], s2pResultsPath=s2pResultsPath)
-    expobj.add_suite2p(s2p_trials=['t-013'], s2pResultsPath=s2pResultsPath)
 
+    # # temp fix ///
+    # s2p_trials = expobj.trialIDs
+    # for trial in s2p_trials: expobj.TrialsInformation[trial]['paths']['dataPath'] = expobj.TrialsInformation[trial]['paths']['data_path']
+    # expobj.save()
+    expobj.add_suite2p(s2p_trials='all', s2pResultsPath=s2pResultsPath)
 
-expobj = pli.import_obj(pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/RL109_analysis.pkl')
-
-test_add_suite2p_results(expobj)
-
-# TODO write tests for public Experiment methods - especially now for add_trial

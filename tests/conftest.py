@@ -146,8 +146,8 @@ def experiment_fixture():
 def existing_trialobj_twophotonimaging_fixture():
     expobj = import_obj(
         pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis/HF113_analysis.pkl')
-    trialobj1 = expobj.load_trial(expobj.trialIDs[0])
-    return trialobj1
+    trialobj0 = expobj.load_trial(expobj.trialIDs[0])
+    return trialobj0
 
 
 @pytest.fixture(scope="session")

@@ -9,33 +9,30 @@ from packerlabimaging.workflows.TwoPhotonImaging import TwoPhotonImaging
 
 
 
-@pytest.mark.skip
+# @pytest.mark.skip
 def test_TwoPhotonImagingTrial(twophoton_imaging_multitrial_noPreDoneSuite2p_fixture, existing_expobj_fixture):
     # passing
     """test for TwoPhotonImaging workflow"""
     info = twophoton_imaging_multitrial_noPreDoneSuite2p_fixture
-    expobj, date  = existing_expobj_fixture
+    expobj = existing_expobj_fixture
     date = info['date']
     prep = info['prep']
     trials_paq = info['trials_paq']
 
     for trial, paq in trials_paq.items():
-        if not trial == 't-001':
-            pass
-        else:
-            data_path_base = f'/mnt/qnap_share/Data/packerlabimaging-example/test-data'
+        data_path_base = f'/mnt/qnap_share/Data/packerlabimaging-example/test-data'
 
-            paqs_loc = f'{data_path_base}/{date}_{prep}_{paq}'  # path to the .paq files for the selected trials
-            dataPath = f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif'
+        paqs_loc = f'{data_path_base}/{date}_{prep}_{paq}'  # path to the .paq files for the selected trials
+        dataPath = f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif'
 
-            imparams = PrairieViewMetadata(pv_xml_dir=os.path.dirname(dataPath), microscope='Bruker 2pPlus')
-            tmdata = PaqData.paqProcessingTwoPhotonImaging(paq_path=paqs_loc, frame_channel='frame_clock')
+        imparams = PrairieViewMetadata(pv_xml_dir=os.path.dirname(dataPath), microscope='Bruker 2pPlus')
+        tmdata = PaqData.paqProcessingTwoPhotonImaging(paq_path=paqs_loc, frame_channel='frame_clock')
 
-            trialobj = TwoPhotonImaging(date=date, trialID= trial, expID= prep, imparams =  imparams, tmdata= tmdata,
-                                        saveDir=f'/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis/',
-                                        dataPath= dataPath, expGroup= "awake spont. 2p imaging + LFP")
+        trialobj = TwoPhotonImaging(date=date, trialID= trial, expID= prep, imparams =  imparams, tmdata= tmdata,
+                                    saveDir=f'/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis/',
+                                    dataPath= dataPath, expGroup= "awake spont. 2p imaging + LFP")
 
-            expobj.add_imaging_trial(trialID=trial, trialobj=trialobj)
+        expobj.add_imaging_trial(trialID=trial, trialobj=trialobj)
 
 
 @pytest.mark.skip

@@ -12,25 +12,23 @@ from packerlabimaging.workflows import TwoPhotonImaging
 
 
 def test_Suite2pResultsExperiment(existing_expobj_fixture):
-    expobj: Experiment = existing_expobj_fixture[0]
-    trialSuite2p = existing_expobj_fixture[1]
-    s2pResultsPath = existing_expobj_fixture[2]
+    expobj: Experiment = existing_expobj_fixture
+    expobj.save()
 
-    expobj.Suite2p = suite2p.Suite2pExperiment(trialsTiffsSuite2p=trialSuite2p,
-                                               s2pResultsPath=s2pResultsPath)
-
-# todo this test is likely breaking!!
 def test_Suite2pResultsTrial(existing_trialobj_twophotonimaging_fixture, existing_expobj_fixture,):
                              # existing_trialobj_alloptical_fixture):
     trialobj = existing_trialobj_twophotonimaging_fixture
     # alloptical_trialobj = existing_trialobj_alloptical_fixture
     expobj: Experiment = existing_expobj_fixture
 
+    frames = 0
     for n_obj in [trialobj]:
         from packerlabimaging.processing.suite2p import Suite2pExperiment
         s2p_expobj: Suite2pExperiment = expobj.Suite2p
-        n_obj.Suite2p = suite2p.Suite2pResultsTrial(s2pExp=s2p_expobj, trial_frames=n_obj.Suite2p.trial_frames)  # use trial obj's current trial key_frames
+        n_obj.Suite2p = suite2p.Suite2pResultsTrial(s2pExp=s2p_expobj, trial_frames=(frames, n_obj.n_frames))  # use trial obj's current trial key_frames
+        frames += n_obj.n_frames
         n_obj.save()
+
 
 def test_Suite2pExp():
     # TODO run test for suite2p without predone results path
