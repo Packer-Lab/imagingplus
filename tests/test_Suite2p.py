@@ -20,8 +20,8 @@ def test_Suite2pResultsExperiment(existing_expobj_fixture):
                                                s2pResultsPath=s2pResultsPath)
 
 # todo this test is likely breaking!!
-def test_Suite2pResultsTrial(existing_trialobj_twophotonimaging_fixture, existing_trialobj_alloptical_fixture,
-                             existing_expobj_fixture):
+def test_Suite2pResultsTrial(existing_trialobj_twophotonimaging_fixture, existing_expobj_fixture,):
+                             # existing_trialobj_alloptical_fixture):
     trialobj = existing_trialobj_twophotonimaging_fixture
     # alloptical_trialobj = existing_trialobj_alloptical_fixture
     expobj: Experiment = existing_expobj_fixture

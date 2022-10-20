@@ -764,7 +764,7 @@ class Suite2pResultsTrial(CellAnnotations, ImagingData):
         sorted_paths, first_tiff_offset, last_tiff_offset = self.getRegTiffPaths(reg_tif_folder=reg_tif_folder, frameNum=frameNum)
         data = make_tiff_stack(sorted_paths, save_path=None)
         trial_frames_cropped = data[first_tiff_offset: -last_tiff_offset]
-        SaveDownsampledTiff(stack=trial_frames_cropped, group_by=group_by, save_path=save_path)
+        SaveDownsampledTiff(stack=trial_frames_cropped, group_by=group_by, save_as=save_path)
 
     def getRegTiffPaths(self, reg_tif_folder=None, frameNum: Union[str, int, tuple, list] = 'all'):
         """

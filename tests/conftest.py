@@ -19,11 +19,12 @@ SUITE2P_FRAMES_t013 = 103525
 
 @pytest.fixture(scope='session')
 def new_imaging_nwb_fixture():
-    subject = Subject(age='P60D', subject_id='RL113',
+    subject = Subject(age='P60D', subject_id='HF113',
                       genotype='CamkIIa-GCaMP6s/Niell'
                       )
-    expobj = import_obj(pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/RL109_analysis.pkl')
-    trialobj = expobj.load_trial('t-013')
+    expobj = import_obj(
+        pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis/HF113_analysis.pkl')
+    trialobj = expobj.load_trial(expobj.trialIDs[0])
 
     return subject, expobj, trialobj
 
@@ -149,7 +150,7 @@ def existing_trialobj_twophotonimaging_fixture():
     return trialobj1
 
 
-# @pytest.fixture(scope="session")
+@pytest.fixture(scope="session")
 def existing_trialobj_alloptical_fixture():
     expobj = import_obj(pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/RL109_analysis.pkl')
     trialobj = expobj.load_trial('t-013')
@@ -158,7 +159,7 @@ def existing_trialobj_alloptical_fixture():
 
 @pytest.fixture(scope="session")
 def existing_expobj_fixture():
-    expobj = import_obj(pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/RL109_analysis.pkl')
+    expobj = import_obj(pkl_path='/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis/HF113_analysis.pkl')
     return expobj
 
 
@@ -169,14 +170,7 @@ def suite2p_results_fixture():
     assert os.path.exists(s2p_path), 's2p path not found...'
     from packerlabimaging.processing.suite2p import s2p_loader
     FminusFneu, spks, stat, neuropil = s2p_loader(s2p_path=s2p_path)
-    return FminusFneu, spks, stat, neuropil@pytest.fixture(scope="session")
-
-
-# @pytest.fixture(scope="session")
-# def existing_trialobj_alloptical_fixture():
-#     expobj = import_obj(pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')
-#     trialobj = expobj.load_trial(trialID='t-013')
-#     return trialobj
+    return FminusFneu, spks, stat, neuropil
 
 
 @pytest.fixture(scope="session")

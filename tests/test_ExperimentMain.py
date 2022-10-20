@@ -7,7 +7,7 @@ from packerlabimaging.main.core import Experiment
 
 
 # test passing
-@pytest.mark.skip
+# @pytest.mark.skip
 def test_Experiment(experiment_fixture):
     expobj = Experiment(**experiment_fixture)
     print(expobj)

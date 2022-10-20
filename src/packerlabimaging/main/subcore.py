@@ -171,10 +171,12 @@ class CellAnnotations:
 
     @property
     def cell_id(self):
-        """ID of cells. redundancy of .cells_array
+        """ID of cells. redundancy of .cells_array.
         """
-        assert 'cell_id' in self.cellsdata, 'cell_id cannot be found in cells annotations under cellsdata'
-        return list(self.cellsdata['cell_id'])
+        if 'cell_id' in self.cellsdata:
+            return list(self.cellsdata['cell_id'])
+        else:
+            return list(self.cells_array)
 
     # functions:
 
@@ -214,7 +216,7 @@ class ImagingMetadata:
 
     PIXEL_SIZE_UNITS: str = 'microns per pixel'  #: units for the values of the size of imaging pixels
 
-    def __init__(self, microscope, n_frames, fps, frame_x, frame_y, n_planes, pix_sz_x, pix_sz_y, **kwargs):
+    def __init__(self, microscope, n_frames, fps, frame_x, frame_y, n_planes, pix_sz_x, pix_sz_y, emission_lambda: float = 0., excitation_lambda: float = 0., **kwargs):
         self.microscope = microscope  #: given name of microscope
         self.n_frames = n_frames  #: number of imaging frames in the current trial
         self.fps = fps  #: rate of imaging acquisition (frames per second)
@@ -223,6 +225,8 @@ class ImagingMetadata:
         self.n_planes = n_planes  #: num of FOV planes in imaging acquisition
         self.pix_sz_x = pix_sz_x  #: size of a single imaging pixel in x direction (microns per pixel)
         self.pix_sz_y = pix_sz_y  #: size of a single imaging pixel in y direction (microns per pixel)
+        self.emission_lambda = emission_lambda  #: wavelength of optical channel imaging collection
+        self.excitation_lambda = excitation_lambda  #: wavelength of excitation during imaging
         for key, value in kwargs.items():
             setattr(self, key, value)
 
