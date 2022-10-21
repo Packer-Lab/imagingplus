@@ -9,7 +9,7 @@ data processing for ROI segmentation. It should be completely usable and underst
 
 [//]: # (![Typical Imaging Experiment Diagram]&#40;https://github.com/Packer-Lab/imagingplus/blob/8e76bac42773fd353dd68bd06fe69fa61dcd009f/docs/source/files/Typical-experiment-apr-22-2022.jpeg "Typical Imaging Experiment Diagram"&#41;)
 
-<img src="docs/source/files/Typical-experiment-apr-22-2022.jpeg" width="400" title="Imaging+ experiment diagram" alt="a typical imaging+ neuroscience experiment" align="center" vspace = "50">
+<img src="docs/source/files/Typical-experiment-apr-22-2022.jpeg" title="Imaging+ experiment diagram" alt="a typical imaging+ neuroscience experiment">
 
 We hope that it provides a useful structure to organize your experimental data, and some functionality to interact and process your data in an efficient manner. 
 
