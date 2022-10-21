@@ -4,7 +4,7 @@ imaging+ is a Python package and tool-suite for essential processing and analysi
 Especially, there is a fully implemented pipeline for data structuring, processing, analysis and plotting of 2photon Ca2+ imaging experiments, and experiments based around 2photon imaging such as all optical experiments (i.e. 2photon optogenetic stim or 1photon optogenetic stim, with combined 2photon Ca2+ imaging).
 
 ## Overview
-<img src="docs/source/files/Typical-experiment-apr-22-2022.jpeg" width="500" title="Imaging+ experiment diagram" alt="a typical imaging+ neuroscience experiment" align='right'>
+<img src="docs/source/files/Typical-experiment-apr-22-2022.jpeg" width="500" title="Imaging+ experiment diagram" alt="a typical imaging+ neuroscience experiment" class='right'>
 This package is designed for experiments that follow the general structure of an "imaging+" experiment showed above. We have additionally provided specific sub-modules to suit imaging experiments performed using PackIO, a Bruker 2pPlus microscope and using Suite2p for Ca2+ imaging 
 data processing for ROI segmentation. 
 It should be completely usable and understandable for anyone with the correct data in hand and basic knowledge of Python. 
