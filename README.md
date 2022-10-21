@@ -1,4 +1,4 @@
-# imaging+ <img src="suite2p/logo/logo_unshaded.png"
+# imaging+ <img src="docs/source/files/imagingplus-logo.png" width="250" title="imagingplus logo" alt="a python -x- calcium spike" align="right" vspace = "50">
 
 imaging+ is a Python package and tool-suite for essential processing and analysis of 2photon imaging data. 
 Especially, there is a fully implemented pipeline for data structuring, processing, analysis and plotting of 2photon Ca2+ imaging experiments, and experiments based around 2photon imaging such as all optical experiments (i.e. 2photon optogenetic stim or 1photon optogenetic stim, with combined 2photon Ca2+ imaging).
