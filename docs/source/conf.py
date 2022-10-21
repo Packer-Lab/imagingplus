@@ -55,6 +55,7 @@ exclude_patterns = ['build', '**.ipynb_checkpoints']
 # a list of builtin themes.
 #
 html_theme = 'sphinxdoc'
+html_logo = 'files/imagingplus-logo.png'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

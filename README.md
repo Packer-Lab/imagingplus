@@ -1,6 +1,6 @@
-# imaging+ package
+# imaging+
 
-imaging+ is a simple Python package for essential processing and analysis of 2photon imaging data collected in the Packer Lab. 
+imaging+ is a Python package and tool-suite for essential processing and analysis of 2photon imaging data. 
 Especially, there is a fully implemented pipeline for data structuring, processing, analysis and plotting of 2photon Ca2+ imaging experiments, and experiments based around 2photon imaging such as all optical experiments (i.e. 2photon optogenetic stim or 1photon optogenetic stim, with combined 2photon Ca2+ imaging).
 
 ![Typical Imaging Experiment Diagram](https://github.com/Packer-Lab/imagingplus/blob/8e76bac42773fd353dd68bd06fe69fa61dcd009f/docs/source/files/Typical-experiment-apr-22-2022.jpeg "Typical Imaging Experiment Diagram")

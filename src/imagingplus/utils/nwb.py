@@ -1,5 +1,4 @@
 # todo:
-#  make tutorial for NWB conversion
 #  add compatibility for SingleImage frames
 
 
