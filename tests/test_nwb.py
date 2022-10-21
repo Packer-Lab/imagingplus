@@ -1,7 +1,7 @@
 """
 Tests for nwb compatibility and interfacing functions.
 """
-from imagingplus.utils.nwb import ImagingNWB, readImagingNWB
+from imagingplus.utils.nwb import newImagingNWB, readImagingNWB
 
 
 def test_WriteImagingNWB(new_imaging_nwb_fixture):
@@ -13,7 +13,8 @@ def test_WriteImagingNWB(new_imaging_nwb_fixture):
     expobj.institution = 'oxford'
     trialobj.optical_channel_name = 'gcamp imaging channel'
 
-    ImagingNWB(expobj=expobj, nwb_subject=subject, trialobj=trialobj, save=True, add_raw_tiff=True)
+    inwb = newImagingNWB(expobj=expobj, nwb_subject=subject, trialobj=trialobj, save=True, add_raw_tiff=True)
+    print(inwb)
 
 
 def test_readImagingNWB(existing_imaging_nwb_path_fixture):

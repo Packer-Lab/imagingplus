@@ -20,7 +20,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Tutorial 4 - NWB Conversion" href="Tutorial-4-nwb-conversion.html" />
-    <link rel="prev" title="Tutorial 2 - Data organization inside packerlabimaging" href="Tutorial-2-Organization-of-data-in-package-objects.html" /> 
+    <link rel="prev" title="Tutorial 2 - Data organization inside imagingplus" href="Tutorial-2-Organization-of-data-in-package-objects.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -32,7 +32,7 @@
           <a href="Tutorial-4-nwb-conversion.html" title="Tutorial 4 - NWB Conversion"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="Tutorial-2-Organization-of-data-in-package-objects.html" title="Tutorial 2 - Data organization inside packerlabimaging"
+          <a href="Tutorial-2-Organization-of-data-in-package-objects.html" title="Tutorial 2 - Data organization inside imagingplus"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">imagingplus 0.2-alpha documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../Tutorials-reference.html" accesskey="U">Tutorials</a> &#187;</li>
@@ -299,8 +299,8 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">packerlabimaging</span> <span class="k">as</span> <span class="nn">pkg</span>
-<span class="kn">import</span> <span class="nn">packerlabimaging.plotting</span> <span class="k">as</span> <span class="nn">plotting</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imagingplus</span> <span class="k">as</span> <span class="nn">ip</span>
+<span class="kn">import</span> <span class="nn">imagingplus.plotting</span> <span class="k">as</span> <span class="nn">plotting</span>
 </pre></div>
 </div>
 </div>
@@ -326,7 +326,7 @@ imported packerlabimaging
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># import data as a `trialobj` (here we are importing a TwoPhotonImaging Trial object)</span>
 
-<span class="n">expobj</span> <span class="o">=</span> <span class="n">pkg</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="s1">&#39;/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl&#39;</span><span class="p">)</span>
+<span class="n">expobj</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="s1">&#39;/home/pshah/Documents/code/imagingplus/tests/RL109_analysis.pkl&#39;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">expobj</span><span class="p">)</span>
 <span class="n">trialobj</span> <span class="o">=</span> <span class="n">expobj</span><span class="o">.</span><span class="n">load_trial</span><span class="p">(</span><span class="n">trialID</span><span class="o">=</span><span class="s1">&#39;t-005&#39;</span><span class="p">)</span>
 </pre></div>
@@ -492,7 +492,7 @@ Layers with keys: dFF
   <div>
     <h4>Previous topic</h4>
     <p class="topless"><a href="Tutorial-2-Organization-of-data-in-package-objects.html"
-                          title="previous chapter">Tutorial 2 - Data organization inside packerlabimaging</a></p>
+                          title="previous chapter">Tutorial 2 - Data organization inside imagingplus</a></p>
   </div>
   <div>
     <h4>Next topic</h4>
@@ -530,7 +530,7 @@ Layers with keys: dFF
           <a href="Tutorial-4-nwb-conversion.html" title="Tutorial 4 - NWB Conversion"
              >next</a> |</li>
         <li class="right" >
-          <a href="Tutorial-2-Organization-of-data-in-package-objects.html" title="Tutorial 2 - Data organization inside packerlabimaging"
+          <a href="Tutorial-2-Organization-of-data-in-package-objects.html" title="Tutorial 2 - Data organization inside imagingplus"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">imagingplus 0.2-alpha documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../Tutorials-reference.html" >Tutorials</a> &#187;</li>

@@ -300,22 +300,33 @@ div.rendered_html tbody tr:hover {
 <p>When generated here, the NWB files will automatically store: - Raw imaging data - Imaging microscope parameters - Time series data channels - ROIs and their extracted raw Flu array (if available for imaging+ trial)</p>
 <p>These NWB files can be further modified according to NWB specifications and methods. Please refer to the PyNWB documentation for further additions according to your needs.</p>
 <p>Below, we demonstrate how to generate a NWB file from an existing <code class="docutils literal notranslate"><span class="pre">imaging+</span></code> data object. Note that one .nwb file is created for one imaging trial.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># import necessary modules</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># import necessary modules</span>
 <span class="kn">from</span> <span class="nn">pynwb.file</span> <span class="kn">import</span> <span class="n">Subject</span>
 <span class="kn">from</span> <span class="nn">imagingplus.utils.io</span> <span class="kn">import</span> <span class="n">import_obj</span>
 <span class="kn">from</span> <span class="nn">imagingplus.utils</span> <span class="kn">import</span> <span class="n">nwb</span>
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+imported imagingplus successfully
+        version: 0.2-beta
+
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># setup a Subject corresponding to the imaging trial</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># setup a Subject corresponding to the imaging trial</span>
 <span class="n">subject</span> <span class="o">=</span> <span class="n">Subject</span><span class="p">(</span><span class="n">age</span><span class="o">=</span><span class="s1">&#39;P60D&#39;</span><span class="p">,</span> <span class="n">subject_id</span><span class="o">=</span><span class="s1">&#39;HF113&#39;</span><span class="p">,</span>
                   <span class="n">genotype</span><span class="o">=</span><span class="s1">&#39;CamkIIa-GCaMP6s/Niell&#39;</span>
                   <span class="p">)</span>
@@ -333,39 +344,173 @@ div.rendered_html tbody tr:hover {
 <br/></pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+|- Loaded imagingplus.Experiment object (expID: HF113)agingplus-test-analysis/HF113_analysis.pkl ...
+
+
+|- Loaded &#39;HF113 t-001 (TwoPhotonImagingTrial experimental object)&#39;t-analysis/2021-01-31_t-001.pkl ...
+
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create the nwb file</span>
-<span class="n">inwb</span> <span class="o">=</span> <span class="n">nwb</span><span class="o">.</span><span class="n">ImagingNWB</span><span class="p">(</span><span class="n">expobj</span><span class="o">=</span><span class="n">expobj</span><span class="p">,</span> <span class="n">nwb_subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">trialobj</span><span class="o">=</span><span class="n">trialobj</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">add_raw_tiff</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indicator</span><span class="o">=</span><span class="s1">&#39;GCaMP6s&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create the nwb file</span>
+<span class="n">inwb</span> <span class="o">=</span> <span class="n">nwb</span><span class="o">.</span><span class="n">newImagingNWB</span><span class="p">(</span><span class="n">expobj</span><span class="o">=</span><span class="n">expobj</span><span class="p">,</span> <span class="n">nwb_subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">trialobj</span><span class="o">=</span><span class="n">trialobj</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">add_raw_tiff</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indicator</span><span class="o">=</span><span class="s1">&#39;GCaMP6s&#39;</span><span class="p">)</span>
 
 <span class="c1"># options: set `add_raw_tiff` = False to skip adding the raw imaging tiffstack to the new NWB file.</span>
 <span class="c1"># options: set `save` = False to skip saving the new NWB file.</span>
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[NWB processing]: Adding 2photon imaging series to nwb file ...
+[NWB processing]: Adding temporal series to nwb file ...
+
+         ** Saving nwb file to: /mnt/qnap_share/Data/imagingplus-example/imagingplus-test-analysis/2021-01-31_t-001.nwb
+</pre></div></div>
+</div>
 <p>The NWB file will be saved by default in the same location as the <code class="docutils literal notranslate"><span class="pre">imaging+</span></code> analysis object.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># to save NWB file, optionally provide a filepath to save NWB file under.</span>
-<span class="n">save_path</span> <span class="o">=</span> <span class="s1">&#39;path/to/save/nwbfile.nwb&#39;</span>
-<span class="n">nwb</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">nwbfile</span><span class="o">=</span><span class="n">inwb</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">save_path</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
 <p>To read in a previously collected NWB file, use the <code class="docutils literal notranslate"><span class="pre">readImagingNWB()</span></code> function from the <code class="docutils literal notranslate"><span class="pre">nwb</span></code> module.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="n">nwbfilepath</span> <span class="o">=</span> <span class="s1">&#39;/mnt/qnap_share/Data/imagingplus-example/imagingplus-test-analysis/2021-01-31_t-001.nwb&#39;</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nwbfilepath</span> <span class="o">=</span> <span class="s1">&#39;/mnt/qnap_share/Data/imagingplus-example/imagingplus-test-analysis/2021-01-31_t-001.nwb&#39;</span>
 
 <span class="n">enwb</span> <span class="o">=</span> <span class="n">nwb</span><span class="o">.</span><span class="n">readImagingNWB</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">nwbfilepath</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">enwb</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[NWB processing]: Reading NWB file from:
+         /mnt/qnap_share/Data/imagingplus-example/imagingplus-test-analysis/2021-01-31_t-001.nwb
+root pynwb.file.NWBFile at 0x139712757930928
+Fields:
+  acquisition: {
+    ImagingTrial &lt;class &#39;pynwb.ophys.TwoPhotonSeries&#39;&gt;,
+    frame_clock &lt;class &#39;pynwb.base.TimeSeries&#39;&gt;,
+    opto_loopback &lt;class &#39;pynwb.base.TimeSeries&#39;&gt;,
+    shutter_loopback &lt;class &#39;pynwb.base.TimeSeries&#39;&gt;,
+    voltage &lt;class &#39;pynwb.base.TimeSeries&#39;&gt;
+  }
+  devices: {
+    Bruker 2pPlus &lt;class &#39;pynwb.device.Device&#39;&gt;
+  }
+  experimenter: [&#39;P. Shah&#39;]
+  file_create_date: [datetime.datetime(2022, 10, 21, 17, 5, 6, 732531, tzinfo=tzlocal())]
+  identifier: HF113
+  imaging_planes: {
+    Plane 0 &lt;class &#39;pynwb.ophys.ImagingPlane&#39;&gt;
+  }
+  institution: University of Oxford
+  lab: Packer Lab
+  processing: {
+    Pre-processed imaging data &lt;class &#39;pynwb.base.ProcessingModule&#39;&gt;
+  }
+  session_description: two photon imaging + LFP dataset
+  session_start_time: 2022-10-21 17:05:06.732041+00:00
+  subject: subject pynwb.file.Subject at 0x139712760172704
+Fields:
+  age: P60D
+  genotype: CamkIIa-GCaMP6s/Niell
+  subject_id: HF113
+
+  timestamps_reference_time: 2022-10-21 17:05:06.732041+00:00
+
+</pre></div></div>
+</div>
+<p><strong>Note</strong></p>
+<p>Saving a NWB file: Oddly, once an NWB file is saved, it is difficult to change the location of the NWB file. For example, NWB doesn’t allow the following:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pynwb</span> <span class="kn">import</span> <span class="n">NWBHDF5IO</span>
+<span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;/mnt/qnap_share/Data/imagingplus-example/imagingplus-test-analysis/2021-01-31_t-001_copy.nwb&#39;</span>
+<span class="k">with</span> <span class="n">NWBHDF5IO</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">io</span><span class="p">:</span>
+    <span class="n">io</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">enwb</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">ValueError</span>                                Traceback (most recent call last)
+<span class="ansi-green-fg">/tmp/ipykernel_50119/297517569.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-intense-fg ansi-bold">      2</span> path <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">&#39;/mnt/qnap_share/Data/imagingplus-example/imagingplus-test-analysis/2021-01-31_t-001_copy.nwb&#39;</span>
+<span class="ansi-green-intense-fg ansi-bold">      3</span> <span class="ansi-green-fg">with</span> NWBHDF5IO<span class="ansi-blue-fg">(</span>path<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">&#39;w&#39;</span><span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">as</span> io<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">----&gt; 4</span><span class="ansi-red-fg">     </span>io<span class="ansi-blue-fg">.</span>write<span class="ansi-blue-fg">(</span>enwb<span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">~/anaconda3/envs/plipy39/lib/python3.9/site-packages/hdmf/utils.py</span> in <span class="ansi-cyan-fg">func_call</span><span class="ansi-blue-fg">(*args, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    643</span>             <span class="ansi-green-fg">def</span> func_call<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    644</span>                 pargs <span class="ansi-blue-fg">=</span> _check_args<span class="ansi-blue-fg">(</span>args<span class="ansi-blue-fg">,</span> kwargs<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">--&gt; 645</span><span class="ansi-red-fg">                 </span><span class="ansi-green-fg">return</span> func<span class="ansi-blue-fg">(</span>args<span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>pargs<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    646</span>         <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    647</span>             <span class="ansi-green-fg">def</span> func_call<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">~/anaconda3/envs/plipy39/lib/python3.9/site-packages/hdmf/backends/hdf5/h5tools.py</span> in <span class="ansi-cyan-fg">write</span><span class="ansi-blue-fg">(self, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    356</span>
+<span class="ansi-green-intense-fg ansi-bold">    357</span>         cache_spec <span class="ansi-blue-fg">=</span> popargs<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#39;cache_spec&#39;</span><span class="ansi-blue-fg">,</span> kwargs<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">--&gt; 358</span><span class="ansi-red-fg">         </span>super<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">.</span>write<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    359</span>         <span class="ansi-green-fg">if</span> cache_spec<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    360</span>             self<span class="ansi-blue-fg">.</span>__cache_spec<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">~/anaconda3/envs/plipy39/lib/python3.9/site-packages/hdmf/utils.py</span> in <span class="ansi-cyan-fg">func_call</span><span class="ansi-blue-fg">(*args, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    643</span>             <span class="ansi-green-fg">def</span> func_call<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    644</span>                 pargs <span class="ansi-blue-fg">=</span> _check_args<span class="ansi-blue-fg">(</span>args<span class="ansi-blue-fg">,</span> kwargs<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">--&gt; 645</span><span class="ansi-red-fg">                 </span><span class="ansi-green-fg">return</span> func<span class="ansi-blue-fg">(</span>args<span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>pargs<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    646</span>         <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    647</span>             <span class="ansi-green-fg">def</span> func_call<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">~/anaconda3/envs/plipy39/lib/python3.9/site-packages/hdmf/backends/io.py</span> in <span class="ansi-cyan-fg">write</span><span class="ansi-blue-fg">(self, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">     48</span>         <span class="ansi-blue-fg">&#34;&#34;&#34;Write a container to the IO source.&#34;&#34;&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">     49</span>         container <span class="ansi-blue-fg">=</span> popargs<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#39;container&#39;</span><span class="ansi-blue-fg">,</span> kwargs<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">---&gt; 50</span><span class="ansi-red-fg">         </span>f_builder <span class="ansi-blue-fg">=</span> self<span class="ansi-blue-fg">.</span>__manager<span class="ansi-blue-fg">.</span>build<span class="ansi-blue-fg">(</span>container<span class="ansi-blue-fg">,</span> source<span class="ansi-blue-fg">=</span>self<span class="ansi-blue-fg">.</span>__source<span class="ansi-blue-fg">,</span> root<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">True</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     51</span>         self<span class="ansi-blue-fg">.</span>write_builder<span class="ansi-blue-fg">(</span>f_builder<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     52</span>
+
+<span class="ansi-green-fg">~/anaconda3/envs/plipy39/lib/python3.9/site-packages/hdmf/utils.py</span> in <span class="ansi-cyan-fg">func_call</span><span class="ansi-blue-fg">(*args, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    643</span>             <span class="ansi-green-fg">def</span> func_call<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    644</span>                 pargs <span class="ansi-blue-fg">=</span> _check_args<span class="ansi-blue-fg">(</span>args<span class="ansi-blue-fg">,</span> kwargs<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">--&gt; 645</span><span class="ansi-red-fg">                 </span><span class="ansi-green-fg">return</span> func<span class="ansi-blue-fg">(</span>args<span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>pargs<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    646</span>         <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    647</span>             <span class="ansi-green-fg">def</span> func_call<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">*</span>args<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">**</span>kwargs<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">~/anaconda3/envs/plipy39/lib/python3.9/site-packages/hdmf/build/manager.py</span> in <span class="ansi-cyan-fg">build</span><span class="ansi-blue-fg">(self, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    165</span>                 <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    166</span>                     <span class="ansi-green-fg">if</span> container<span class="ansi-blue-fg">.</span>container_source <span class="ansi-blue-fg">!=</span> source<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">--&gt; 167</span><span class="ansi-red-fg">                         raise ValueError(&#34;Cannot change container_source once set: &#39;%s&#39; %s.%s&#34;
+</span><span class="ansi-green-intense-fg ansi-bold">    168</span>                                          % (container.name, container.__class__.__module__,
+<span class="ansi-green-intense-fg ansi-bold">    169</span>                                             container.__class__.__name__))
+
+<span class="ansi-red-fg">ValueError</span>: Cannot change container_source once set: &#39;root&#39; pynwb.file.NWBFile
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 </div>

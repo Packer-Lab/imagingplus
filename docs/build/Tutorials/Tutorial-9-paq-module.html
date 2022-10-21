@@ -292,11 +292,11 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">packerlabimaging</span> <span class="k">as</span> <span class="nn">pli</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imagingplus</span> <span class="k">as</span> <span class="nn">ip</span>
 <span class="n">prep</span> <span class="o">=</span> <span class="s1">&#39;PS12&#39;</span>
 <span class="n">date</span> <span class="o">=</span> <span class="s1">&#39;2021-01-25&#39;</span>
 
-<span class="n">expobj</span><span class="p">:</span> <span class="n">pli</span><span class="o">.</span><span class="n">Experiment</span> <span class="o">=</span> <span class="n">pli</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;/home/pshah/mnt/qnap/Analysis/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">_analysis.pkl&#39;</span><span class="p">)</span>
+<span class="n">expobj</span><span class="p">:</span> <span class="n">ip</span><span class="o">.</span><span class="n">Experiment</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;/home/pshah/mnt/qnap/Analysis/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">_analysis.pkl&#39;</span><span class="p">)</span>
 
 <span class="n">trialobj</span> <span class="o">=</span> <span class="n">expobj</span><span class="o">.</span><span class="n">load_trial</span><span class="p">(</span><span class="n">trialID</span><span class="o">=</span><span class="n">expobj</span><span class="o">.</span><span class="n">trialIDs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <br/></pre></div>
@@ -308,7 +308,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">packerlabimaging.processing.paq</span> <span class="kn">import</span> <span class="n">PaqData</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">imagingplus.processing.paq</span> <span class="kn">import</span> <span class="n">PaqData</span>
 </pre></div>
 </div>
 </div>
@@ -338,7 +338,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot paq channel data</span>
-<span class="n">pli</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">plot__paq_channel</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s1">&#39;voltage&#39;</span><span class="p">,</span> <span class="n">x_axis</span><span class="o">=</span><span class="s1">&#39;Time (secs)&#39;</span><span class="p">,</span> <span class="n">x_tick_secs</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+<span class="n">ip</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">plot__paq_channel</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s1">&#39;voltage&#39;</span><span class="p">,</span> <span class="n">x_axis</span><span class="o">=</span><span class="s1">&#39;Time (secs)&#39;</span><span class="p">,</span> <span class="n">x_tick_secs</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -370,7 +370,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot to confirm that the cropping executed as expected</span>
-<span class="n">pli</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">plot__paq_channel</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s1">&#39;voltage&#39;</span><span class="p">,</span> <span class="n">x_axis</span><span class="o">=</span><span class="s1">&#39;Time (secs)&#39;</span><span class="p">,</span> <span class="n">x_tick_secs</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+<span class="n">ip</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">plot__paq_channel</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s1">&#39;voltage&#39;</span><span class="p">,</span> <span class="n">x_axis</span><span class="o">=</span><span class="s1">&#39;Time (secs)&#39;</span><span class="p">,</span> <span class="n">x_tick_secs</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

@@ -307,13 +307,13 @@ a <code class="docutils literal notranslate"><span class="pre">obs</span></code>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">packerlabimaging</span> <span class="k">as</span> <span class="nn">pli</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imagingplus</span> <span class="k">as</span> <span class="nn">ip</span>
 
 
-<span class="k">class</span> <span class="nc">InterneuronExp</span><span class="p">(</span><span class="n">pli</span><span class="o">.</span><span class="n">Experiment</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">InterneuronExp</span><span class="p">(</span><span class="n">ip</span><span class="o">.</span><span class="n">Experiment</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initalization_dict</span><span class="p">):</span>
 
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">initalization_dict</span><span class="p">)</span>  <span class="c1"># call to initialize the super-class (i.e. `pli.Experiment`)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">initalization_dict</span><span class="p">)</span>  <span class="c1"># call to initialize the super-class (i.e. `ip.Experiment`)</span>
 
         <span class="c1"># set pre4ap and post4ap experiments:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pre4ap_trials</span> <span class="o">=</span> <span class="p">[]</span>
@@ -369,7 +369,7 @@ a <code class="docutils literal notranslate"><span class="pre">obs</span></code>
                                                  <span class="s1">&#39;frame_channel&#39;</span><span class="p">:</span> <span class="s1">&#39;frame_clock&#39;</span><span class="p">}</span>
                                 <span class="p">}</span>
 
-    <span class="n">trialobj</span> <span class="o">=</span> <span class="n">pli</span><span class="o">.</span><span class="n">TwoPhotonImagingTrial</span><span class="p">(</span><span class="o">**</span><span class="n">TwoPhotonImagingMetainfo</span><span class="p">)</span>
+    <span class="n">trialobj</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">TwoPhotonImagingTrial</span><span class="p">(</span><span class="o">**</span><span class="n">TwoPhotonImagingMetainfo</span><span class="p">)</span>
 
     <span class="c1"># add each Trial to the overall Experiment using the trialobj</span>
     <span class="n">expobj</span><span class="o">.</span><span class="n">add_trial</span><span class="p">(</span><span class="n">trialobj</span><span class="o">=</span><span class="n">trialobj</span><span class="p">)</span>
@@ -389,7 +389,7 @@ a <code class="docutils literal notranslate"><span class="pre">obs</span></code>
                                                  <span class="s1">&#39;frame_channel&#39;</span><span class="p">:</span> <span class="s1">&#39;frame_clock&#39;</span><span class="p">}</span>
                                 <span class="p">}</span>
 
-    <span class="n">trialobj</span> <span class="o">=</span> <span class="n">pli</span><span class="o">.</span><span class="n">TwoPhotonImagingTrial</span><span class="p">(</span><span class="o">**</span><span class="n">TwoPhotonImagingMetainfo</span><span class="p">)</span>
+    <span class="n">trialobj</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">TwoPhotonImagingTrial</span><span class="p">(</span><span class="o">**</span><span class="n">TwoPhotonImagingMetainfo</span><span class="p">)</span>
 
     <span class="c1"># add each Trial to the overall Experiment using the trialobj</span>
     <span class="n">expobj</span><span class="o">.</span><span class="n">add_trial</span><span class="p">(</span><span class="n">trialobj</span><span class="o">=</span><span class="n">trialobj</span><span class="p">)</span>

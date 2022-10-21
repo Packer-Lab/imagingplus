@@ -33,8 +33,8 @@
     }
    ],
    "source": [
-    "import packerlabimaging as pkg\n",
-    "import packerlabimaging.plotting as plotting"
+    "import imagingplus as ip\n",
+    "import imagingplus.plotting as plotting"
    ]
   },
   {
@@ -76,7 +76,7 @@
    "source": [
     "# import data as a `trialobj` (here we are importing a TwoPhotonImaging Trial object)\n",
     "\n",
-    "expobj = pkg.import_obj(pkl_path='/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl')\n",
+    "expobj = ip.import_obj(pkl_path='/home/pshah/Documents/code/imagingplus/tests/RL109_analysis.pkl')\n",
     "print(expobj)\n",
     "trialobj = expobj.load_trial(trialID='t-005')"
    ]

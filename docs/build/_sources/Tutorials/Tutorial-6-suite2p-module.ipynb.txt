@@ -29,8 +29,8 @@
     }
    ],
    "source": [
-    "import packerlabimaging as pli\n",
-    "from packerlabimaging.processing import suite2p\n",
+    "import imagingplus as ip\n",
+    "from imagingplus.processing import suite2p\n",
     "\n",
     "import numpy as np"
    ]
@@ -85,7 +85,7 @@
     "prep = 'PS14'\n",
     "date = '2021-01-28'\n",
     "\n",
-    "expobj: pli.Experiment = pli.import_obj(pkl_path=f'/home/pshah/mnt/qnap/Analysis/{date}/{prep}/{prep}_analysis.pkl')\n",
+    "expobj: ip.Experiment = ip.import_obj(pkl_path=f'/home/pshah/mnt/qnap/Analysis/{date}/{prep}/{prep}_analysis.pkl')\n",
     "\n",
     "# set up new Suite2p submodule\n",
     "expobj.Suite2p = suite2p.Suite2pExperiment(trialsTiffsSuite2p=expobj.Suite2p.tiff_paths_to_use_s2p,\n",
@@ -113,7 +113,7 @@
     "expobj.Suite2p.bad_frames = []\n",
     "for trial in expobj.trialIDs:\n",
     "    if 'post' in expobj.TrialsInformation[trial]['expGroup']:\n",
-    "        trialobj: pli.TwoPhotonImagingTrial = expobj.load_trial(trialID=trial)\n",
+    "        trialobj: ip.TwoPhotonImagingTrial = expobj.load_trial(trialID=trial)\n",
     "\n",
     "        expobj.Suite2p.add_bad_frames(frames=np.arange(trialobj.Suite2p.trial_frames[0], trialobj.Suite2p.trial_frames[1]), bad_frames_npy_loc = expobj.dataPath)"
    ],
@@ -162,7 +162,7 @@
    "execution_count": null,
    "outputs": [],
    "source": [
-    "trialobj: pli.TwoPhotonImagingTrial = expobj.load_trial(trialID=expobj.trialIDs[0])\n",
+    "trialobj: ip.TwoPhotonImagingTrial = expobj.load_trial(trialID=expobj.trialIDs[0])\n",
     "\n",
     "pix_sz_x = trialobj.imparams.pix_sz_x\n",
     "pix_sz_y = trialobj.imparams.pix_sz_y\n",
@@ -318,7 +318,7 @@
     "prep = 'PS14'\n",
     "date = '2021-01-28'\n",
     "\n",
-    "expobj: pli.Experiment = pli.import_obj(pkl_path=f'/home/pshah/mnt/qnap/Analysis/{date}/{prep}/{prep}_analysis.pkl')\n",
+    "expobj: ip.Experiment = ip.import_obj(pkl_path=f'/home/pshah/mnt/qnap/Analysis/{date}/{prep}/{prep}_analysis.pkl')\n",
     "\n",
     "# set up new Suite2p submodule\n",
     "expobj.Suite2p = suite2p.Suite2pExperiment(trialsTiffsSuite2p=expobj.Suite2p.tiff_paths_to_use_s2p,\n",

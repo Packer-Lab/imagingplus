@@ -292,7 +292,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s2">&quot;/home/pshah/Documents/code/packerlabimaging/files/packerlabimaging-anndata-integration-01.jpg&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s2">&quot;/home/pshah/Documents/code/imagingplus/files/imagingplus-anndata-integration-01.jpg&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -313,7 +313,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">packerlabimaging</span> <span class="k">as</span> <span class="nn">pli</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imagingplus</span> <span class="k">as</span> <span class="nn">ip</span>
 </pre></div>
 </div>
 </div>
@@ -335,7 +335,7 @@ imported packerlabimaging successfully
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">expobj</span><span class="p">:</span> <span class="n">pli</span><span class="o">.</span><span class="n">Experiment</span> <span class="o">=</span> <span class="n">pli</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="s1">&#39;/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">expobj</span><span class="p">:</span> <span class="n">ip</span><span class="o">.</span><span class="n">Experiment</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="s1">&#39;/home/pshah/Documents/code/imagingplus/tests/RL109_analysis.pkl&#39;</span><span class="p">)</span>
 <span class="n">trialobj</span> <span class="o">=</span> <span class="n">expobj</span><span class="o">.</span><span class="n">load_trial</span><span class="p">(</span><span class="n">trialID</span><span class="o">=</span><span class="n">expobj</span><span class="o">.</span><span class="n">trialIDs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -1331,7 +1331,7 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#4) Creating a new anndata attribute for the trialobj</span>
 
-<span class="kn">import</span> <span class="nn">packerlabimaging.processing.anndata</span> <span class="k">as</span> <span class="nn">ad</span>  <span class="c1"># from the processing module, import anndata submodule</span>
+<span class="kn">import</span> <span class="nn">imagingplus.processing.anndata</span> <span class="k">as</span> <span class="nn">ad</span>  <span class="c1"># from the processing module, import anndata submodule</span>
 
 <span class="n">trialobj</span><span class="o">.</span><span class="n">new_anndata</span> <span class="o">=</span> <span class="n">ad</span><span class="o">.</span><span class="n">AnnotatedData</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">df</span><span class="p">,</span><span class="n">obs</span><span class="o">=</span><span class="n">obs_meta</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="n">var_meta</span><span class="p">)</span>
 

@@ -19,7 +19,7 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Tutorial 2 - Data organization inside packerlabimaging" href="Tutorial-2-Organization-of-data-in-package-objects.html" />
+    <link rel="next" title="Tutorial 2 - Data organization inside imagingplus" href="Tutorial-2-Organization-of-data-in-package-objects.html" />
     <link rel="prev" title="Tutorials" href="../Tutorials-reference.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -29,7 +29,7 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="Tutorial-2-Organization-of-data-in-package-objects.html" title="Tutorial 2 - Data organization inside packerlabimaging"
+          <a href="Tutorial-2-Organization-of-data-in-package-objects.html" title="Tutorial 2 - Data organization inside imagingplus"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="../Tutorials-reference.html" title="Tutorials"
@@ -308,7 +308,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">packerlabimaging</span> <span class="k">as</span> <span class="nn">pli</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imagingplus</span> <span class="k">as</span> <span class="nn">ip</span>
 </pre></div>
 </div>
 </div>
@@ -325,7 +325,7 @@ imported packerlabimaging successfully
 </div>
 <p>This notebook demonstrates a basic workflow of through packerlabimaging, taking raw input files to create a multi-level pre-processed data object.</p>
 <p>The fundamental types of imaging trials accepted for this workflow are: - 2photon imaging - All Optical Experiment (2photon imaging + optogenetic stimulation) - Suite2p processing results output</p>
-<p>This tutorial is based off an existing 2photon imaging experiment that includes various trials of 2photon imaging and All optical experiments:</p>
+<p>This tutorial is based off an imaging experiment that includes various imaging trials of 2photon imaging only and all optical experiments:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
@@ -342,8 +342,8 @@ imported packerlabimaging successfully
 <img alt="../_images/Tutorials_Tutorial-1-Overview-of-Workflow_4_0.jpg" src="../_images/Tutorials_Tutorial-1-Overview-of-Workflow_4_0.jpg" />
 </div>
 </div>
-<section id="Creating-an-experiment---UPDATED-Aug-4-2022">
-<h2>Creating an experiment - UPDATED Aug 4 2022<a class="headerlink" href="#Creating-an-experiment---UPDATED-Aug-4-2022" title="Permalink to this headline">¶</a></h2>
+<section id="Creating-an-experiment">
+<h2>Creating an experiment<a class="headerlink" href="#Creating-an-experiment" title="Permalink to this headline">¶</a></h2>
 <p>The first step towards starting the analysis pipeline and creating the <code class="docutils literal notranslate"><span class="pre">Experiment</span></code> object is to create a dictionary (<code class="docutils literal notranslate"><span class="pre">ExperimentMetainfo</span></code>) to collect the metadata fields required for initializing <code class="docutils literal notranslate"><span class="pre">Experiment</span></code>. In <code class="docutils literal notranslate"><span class="pre">ExperimentMetainfo</span></code>, we provide initial information about the experiment.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
@@ -358,8 +358,8 @@ imported packerlabimaging successfully
 
 <span class="c1"># create Experiment</span>
 
-<span class="n">expobj</span> <span class="o">=</span> <span class="n">pli</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span><span class="o">**</span><span class="n">ExperimentMetainfo</span><span class="p">)</span>
-<span class="c1"># expobj = pli.import_obj(&#39;/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl&#39;)</span>
+<span class="n">expobj</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span><span class="o">**</span><span class="n">ExperimentMetainfo</span><span class="p">)</span>
+<span class="c1"># expobj = ip.import_obj(&#39;/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl&#39;)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -395,8 +395,8 @@ file path: /mnt/qnap_share/Data/packerlabimaging-example/RL109_analysis.pkl
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># we can now load the new expobj from disk storage using pickle in pli.import_obj():</span>
-<span class="n">expobj</span> <span class="o">=</span> <span class="n">pli</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="s1">&#39;/mnt/qnap_share/Data/packerlabimaging-example/RL109_analysis.pkl&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># we can now load the new expobj from disk storage using pickle in ip.import_obj():</span>
+<span class="n">expobj</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="s1">&#39;/mnt/qnap_share/Data/packerlabimaging-example/RL109_analysis.pkl&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -492,7 +492,7 @@ saving new pkl object at: /mnt/qnap_share/Data/packerlabimaging-example/RL109_du
     <span class="n">tmdata</span> <span class="o">=</span> <span class="n">PaqData</span><span class="o">.</span><span class="n">paqProcessingTwoPhotonImaging</span><span class="p">(</span><span class="n">paq_path</span><span class="o">=</span><span class="n">paqs_loc</span><span class="p">,</span> <span class="n">frame_channel</span><span class="o">=</span><span class="s1">&#39;frame_clock&#39;</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="c1"># feed in information into `TwoPhotonImaging` to create a TwoPhotonImaging object</span>
-    <span class="n">trialobj</span> <span class="o">=</span> <span class="n">pli</span><span class="o">.</span><span class="n">TwoPhotonImaging</span><span class="p">(</span><span class="n">date</span><span class="o">=</span><span class="n">date</span><span class="p">,</span> <span class="n">trialID</span><span class="o">=</span> <span class="n">trial</span><span class="p">,</span> <span class="n">expID</span><span class="o">=</span> <span class="n">prep</span><span class="p">,</span> <span class="n">imparams</span> <span class="o">=</span>  <span class="n">imparams</span><span class="p">,</span> <span class="n">tmdata</span><span class="o">=</span> <span class="n">tmdata</span><span class="p">,</span>
+    <span class="n">trialobj</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">TwoPhotonImaging</span><span class="p">(</span><span class="n">date</span><span class="o">=</span><span class="n">date</span><span class="p">,</span> <span class="n">trialID</span><span class="o">=</span> <span class="n">trial</span><span class="p">,</span> <span class="n">expID</span><span class="o">=</span> <span class="n">prep</span><span class="p">,</span> <span class="n">imparams</span> <span class="o">=</span>  <span class="n">imparams</span><span class="p">,</span> <span class="n">tmdata</span><span class="o">=</span> <span class="n">tmdata</span><span class="p">,</span>
                                 <span class="n">saveDir</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;/mnt/qnap_share/Data/packerlabimaging-example/packerlabimaging-test-analysis/&#39;</span><span class="p">,</span>
                                 <span class="n">dataPath</span><span class="o">=</span> <span class="n">dataPath</span><span class="p">,</span> <span class="n">expGroup</span><span class="o">=</span> <span class="s2">&quot;awake spont. 2p imaging + LFP&quot;</span><span class="p">)</span>
 
@@ -839,7 +839,7 @@ Created new TemporalData of 8 x 11864768 (sampled at 20000
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create the trial</span>
-<span class="n">aotrial</span> <span class="o">=</span> <span class="n">pli</span><span class="o">.</span><span class="n">AllOpticalTrial</span><span class="p">(</span><span class="n">imparams</span><span class="o">=</span><span class="n">imparams</span><span class="p">,</span> <span class="n">tmdata</span><span class="o">=</span><span class="n">tmdata</span><span class="p">,</span> <span class="o">**</span><span class="n">initialization_dict</span><span class="p">)</span>
+<span class="n">aotrial</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">AllOpticalTrial</span><span class="p">(</span><span class="n">imparams</span><span class="o">=</span><span class="n">imparams</span><span class="p">,</span> <span class="n">tmdata</span><span class="o">=</span><span class="n">tmdata</span><span class="p">,</span> <span class="o">**</span><span class="n">initialization_dict</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1196,7 +1196,7 @@ array([[352.13678 , 411.9472  , 280.92416 , ..., 401.3014  , 515.2566  ,
     <h3><a href="../index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">Tutorial 1 - Getting started with data</a><ul>
-<li><a class="reference internal" href="#Creating-an-experiment---UPDATED-Aug-4-2022">Creating an experiment - UPDATED Aug 4 2022</a><ul>
+<li><a class="reference internal" href="#Creating-an-experiment">Creating an experiment</a><ul>
 <li><a class="reference internal" href="#Load-Experiment">Load Experiment</a></li>
 </ul>
 </li>
@@ -1223,7 +1223,7 @@ array([[352.13678 , 411.9472  , 280.92416 , ..., 401.3014  , 515.2566  ,
   <div>
     <h4>Next topic</h4>
     <p class="topless"><a href="Tutorial-2-Organization-of-data-in-package-objects.html"
-                          title="next chapter">Tutorial 2 - Data organization inside packerlabimaging</a></p>
+                          title="next chapter">Tutorial 2 - Data organization inside imagingplus</a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -1253,7 +1253,7 @@ array([[352.13678 , 411.9472  , 280.92416 , ..., 401.3014  , 515.2566  ,
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="Tutorial-2-Organization-of-data-in-package-objects.html" title="Tutorial 2 - Data organization inside packerlabimaging"
+          <a href="Tutorial-2-Organization-of-data-in-package-objects.html" title="Tutorial 2 - Data organization inside imagingplus"
              >next</a> |</li>
         <li class="right" >
           <a href="../Tutorials-reference.html" title="Tutorials"
