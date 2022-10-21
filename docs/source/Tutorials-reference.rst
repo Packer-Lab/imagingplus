@@ -12,6 +12,7 @@ Here are pre-built tutorials that are designed to guide you through the various 
     Tutorials/Tutorial-1-Overview-of-Workflow.ipynb
     Tutorials/Tutorial-2-Organization-of-data-in-package-objects.ipynb
     Tutorials/Tutorial-3-plotting-module.ipynb
+    Tutorials/Tutorial-4-nwb-conversion.ipynb
     Tutorials/Tutorial-6-suite2p-module.ipynb
     Tutorials/Tutorial-8-Extending-built-in-classes.ipynb
 
@@ -20,5 +21,6 @@ Here are pre-built tutorials that are designed to guide you through the various 
     Tutorials/Tutorial-1-Overview-of-Workflow.ipynb
     Tutorials/Tutorial-2-Organization-of-data-in-package-objects.ipynb
     Tutorials/Tutorial-3-plotting-module.ipynb
+    Tutorials/Tutorial-4-nwb-conversion.ipynb
 
 
