@@ -2,14 +2,13 @@ import os
 
 import pytest
 
-from imagingplus._archive import TwoPhotonImagingMain
 from imagingplus.processing.paq import PaqData
 from imagingplus.processing.imagingMetadata import PrairieViewMetadata
 from imagingplus.workflows.TwoPhotonImaging import TwoPhotonImaging
 
 
 
-# @pytest.mark.skip
+@pytest.mark.skip
 def test_TwoPhotonImagingTrial(twophoton_imaging_multitrial_noPreDoneSuite2p_fixture, existing_expobj_fixture):
     # passing
     """test for TwoPhotonImaging workflow"""
@@ -20,25 +19,27 @@ def test_TwoPhotonImagingTrial(twophoton_imaging_multitrial_noPreDoneSuite2p_fix
     trials_paq = info['trials_paq']
 
     for trial, paq in trials_paq.items():
-        data_path_base = f'/mnt/qnap_share/Data/imagingplus-example/test-data'
+        if trial == 't-001':
+            data_path_base = f'/mnt/qnap_share/Data/imagingplus-example/test-data'
 
-        paqs_loc = f'{data_path_base}/{date}_{prep}_{paq}'  # path to the .paq files for the selected trials
-        dataPath = f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif'
+            paqs_loc = f'{data_path_base}/{date}_{prep}_{paq}'  # path to the .paq files for the selected trials
+            dataPath = f'{data_path_base}/{date}_{trial}/{date}_{trial}_Cycle00001_Ch3.tif'
 
-        imparams = PrairieViewMetadata(pv_xml_dir=os.path.dirname(dataPath), microscope='Bruker 2pPlus')
-        tmdata = PaqData.paqProcessingTwoPhotonImaging(paq_path=paqs_loc, frame_channel='frame_clock')
+            imparams = PrairieViewMetadata(pv_xml_dir=os.path.dirname(dataPath), microscope='Bruker 2pPlus')
+            tmdata = PaqData.paqProcessingTwoPhotonImaging(paq_path=paqs_loc, frame_channel='frame_clock')
 
-        trialobj = TwoPhotonImaging(date=date, trialID= trial, expID= prep, imparams =  imparams, tmdata= tmdata,
-                                    saveDir=f'/mnt/qnap_share/Data/imagingplus-example/imagingplus-test-analysis/',
-                                    dataPath= dataPath, expGroup= "awake spont. 2p imaging + LFP")
+            trialobj = TwoPhotonImaging(date=date, trialID= trial, expID= prep, imparams =  imparams, tmdata= tmdata,
+                                        saveDir=f'/mnt/qnap_share/Data/imagingplus-example/imagingplus-test-analysis/',
+                                        dataPath= dataPath, expGroup= "awake spont. 2p imaging + LFP")
 
-        expobj.add_imaging_trial(trialID=trial, trialobj=trialobj)
-
+            expobj.add_imaging_trial(trialID=trial, trialobj=trialobj)
+        else:
+            print('skipping remaining trials becaues those raw data have not been copied over to the qnap_share location.')
 
 @pytest.mark.skip
 def test_meanRawFluTrace(existing_trialobj_twophotonimaging_fixture):
     # passing
-    trialobj: TwoPhotonImagingMain.TwoPhotonImagingTrial = existing_trialobj_twophotonimaging_fixture[0]
+    trialobj: TwoPhotonImaging = existing_trialobj_twophotonimaging_fixture[0]
     trialobj.meanFluImg, trialobj.meanFovFluTrace = trialobj.meanRawFluTrace()
     trialobj.save()
 

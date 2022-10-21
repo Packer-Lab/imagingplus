@@ -11,9 +11,6 @@ import matplotlib as mpl
 import seaborn as sns
 from imagingplus.main.core import ImagingTrial, SingleImage
 
-from imagingplus.workflows.AllOptical import AllOpticalTrial
-from imagingplus._archive.TwoPhotonImagingMain import TwoPhotonImagingTrial
-
 # global plotting params
 params = {'legend.fontsize': 'x-large',
           'axes.labelsize': 'x-large',

@@ -265,7 +265,7 @@ class Suite2pExperiment:
             if path is not None:
                 if self.s2pResultExists and hasattr(self, 'output_ops'):
                     if path not in self.output_ops['filelist']:
-                        print(f'\tWARNING: {trial}, {path} not found in suite2p results output_ops filelist. Not added to Suite2p object.')
+                        print(f'\tWARNING: Path for {trial}, ({path}) was not found in suite2p results output_ops filelist.')
                     self.trials.append(trial)
             else:
                 tiff_paths_to_use_s2p.pop(trial)

@@ -23,21 +23,32 @@ from pynwb.ophys import TwoPhotonSeries, OpticalChannel, ImageSegmentation, \
 from imagingplus import TwoPhotonImaging, Experiment
 
 
-class WriteImagingNWB(NWBFile):
+class ImagingNWB(NWBFile):
     """
     Container for creating a new NWB file.
     Works by extending the base NWBFile container for Imaging+ related requirements and usages.
 
     """
 
-    def __init__(self, expobj: Experiment, nwb_subject: Subject, trialobj: ImagingTrial, add_raw_tiff=False, save=True, **kwargs):
-        
+    def __init__(self, expobj: Experiment, nwb_subject: Subject, trialobj: ImagingTrial, add_raw_tiff=False, save=True,
+                 **kwargs):
+        """
+
+        :param expobj:
+        :param nwb_subject:
+        :param trialobj:
+        :param add_raw_tiff: set True to add the raw imaging tiffstack to the new NWB file
+        :param save: set True to save the new NWB file
+        :param kwargs:
+            location: str; location of imaging in brain
+            indicator: str; indicator used for imaging in brain
+
+        """
         location = kwargs['location'] if 'location' in kwargs else ''
         indicator = kwargs['indicator'] if 'indicator' in kwargs else ''
-        
-        
+
         # initialize the NWB file
-        super().__init__(
+        NWBFile.__init__(
             session_description=expobj.comment,
             identifier=trialobj.expID,
             session_start_time=datetime.now(tzlocal()),
@@ -50,14 +61,15 @@ class WriteImagingNWB(NWBFile):
         device = self.create_device(
             name=trialobj.imparams.microscope
         )
-        
+
         emission_lambda = trialobj.imparams.emission_lambda if hasattr(trialobj.imparams, 'emission_lambda') else 0.0
-        excitation_lambda = trialobj.imparams.excitation_lambda if hasattr(trialobj.imparams, 'excitation_lambda') else 0.0
-        
+        excitation_lambda = trialobj.imparams.excitation_lambda if hasattr(trialobj.imparams,
+                                                                           'excitation_lambda') else 0.0
+
         optical_channel = OpticalChannel(
             name=trialobj.optical_channel_name,
             description=trialobj.optical_channel_name,
-            emission_lambda = emission_lambda
+            emission_lambda=emission_lambda
 
         )
 
@@ -146,26 +158,26 @@ class WriteImagingNWB(NWBFile):
             self._add_temporal_series(trialobj.tmdata)
 
         # save newly generated nwb file
-        self.__nwb_save_path = trialobj.pkl_path[:-4] + '.nwb'
-        self.save() if save else None
+        _nwb_save_path = trialobj.pkl_path[:-4] + '.nwb'
 
-    @property
-    def nwb_path(self):
-        """save path for current nwb file"""
-        return self.__nwb_save_path
-
-    @nwb_path.setter
-    def nwb_path(self, path):
-        """set new save path for current nwb file"""
-        self.__nwb_save_path = path
-
-    def save(self, path: str = None):
-        """save current nwb file. specify path if given, else default to destination of imaging+ analysis save location."""
-        print(f'\n\t ** Saving nwb file to: {self.nwb_path}')
-        path: str = path if path else self.nwb_path
-        os.makedirs(os.path.dirname(path), exist_ok=True)
+        print(f'\n\t ** Saving nwb file to: {_nwb_save_path}')
+        os.makedirs(os.path.dirname(_nwb_save_path), exist_ok=True)
         with NWBHDF5IO(self.nwb_path, 'w') as io:
             io.write(self)
+
+    # def __repr__(self):
+    #     return f'Imaging+ NWB File.'
+    #
+    # @property
+    # def nwb_path(self):
+    #     """save path for current nwb file"""
+    #     return self._nwb_save_path
+    #
+    # @nwb_path.setter
+    # def nwb_path(self, path):
+    #     """set new save path for current nwb file"""
+    #     self._nwb_save_path = path
+    #
 
     def _add_temporal_series(self, tmdata: TemporalData):
         """add temporal series data to the current nwb file using an imaging+ TemporalData input"""
@@ -179,10 +191,22 @@ class WriteImagingNWB(NWBFile):
                 unit=unit,
                 timestamps=np.linspace(tmdata.crop_offset_time,
                                        (tmdata.n_timepoints / tmdata.sampling_rate) + tmdata.crop_offset_time,
-                                       tmdata.n_timepoints)  # account for any cropped time (from the start of the recording)
+                                       tmdata.n_timepoints)
+                # account for any cropped time (from the start of the recording)
             )
 
             self.add_acquisition(test_ts)
+
+
+def save(nwbfile, path: str = None):
+    """save current nwb file. specify path if given
+    :param nwbfile: nwb file to save
+    :param path: .nwb file path to save nwb filepath
+    """
+    print(f'\n\t ** Saving nwb file to: {path}')
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with NWBHDF5IO(path, 'w') as io:
+        io.write(nwbfile)
 
 
 def readImagingNWB(filename):
@@ -193,9 +217,8 @@ def readImagingNWB(filename):
     print(f"[NWB processing]: Reading NWB file from:\n\t {filename}")
 
     with NWBHDF5IO(filename, 'r') as io:
-        nwbfile = io.read()
+        nwbfile: ImagingNWB = io.read()
+
+    # if filename != nwbfile.nwb_path: nwbfile.nwb_path = filename
 
     return nwbfile
-
-
-

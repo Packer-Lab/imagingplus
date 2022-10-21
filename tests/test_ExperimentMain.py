@@ -25,7 +25,7 @@ def test_add_suite2p(existing_expobj_nopredones2p_fixture):
     return expobj
 
 
-@pytest.mark.skip
+# @pytest.mark.skip
 def test_add_suite2p_results(existing_expobj_fixture):
     # test passing
     """test for adding suite2p trials with precompleted results. """
