@@ -1,6 +1,6 @@
 """
 
-imagingplus: an essential data processing and analysis package for getting started with processing and analysis of calcium imaging data.
+imagingplus: integrated tool-suite of essential processing and analysis of imaging+ experiments
 
 """
 
