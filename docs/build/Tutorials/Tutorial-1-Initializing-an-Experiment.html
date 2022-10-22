@@ -2,54 +2,46 @@
 <!DOCTYPE html>
 
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-
-    <title>Tutorial 1 - Initializing an Experiment &#8212; packerlabimaging 0.2-alpha documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Tutorial 2 - Data organization inside packerlabimaging" href="Tutorial-2-Organization-of-data-in-package-objects.html" />
-    <link rel="prev" title="Tutorials" href="../Tutorials-reference.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="Tutorial-2-Organization-of-data-in-package-objects.html" title="Tutorial 2 - Data organization inside packerlabimaging"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="../Tutorials-reference.html" title="Tutorials"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">packerlabimaging 0.2-alpha documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../Tutorials-reference.html" accesskey="U">Tutorials</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Tutorial 1 - Initializing an Experiment</a></li> 
-      </ul>
-    </div>  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>Tutorial 1 - Initializing an Experiment — packerlabimaging 0.2-alpha documentation</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinxdoc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+<script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="Tutorial-2-Organization-of-data-in-package-objects.html" rel="next" title="Tutorial 2 - Data organization inside packerlabimaging"/>
+<link href="../Tutorials-reference.html" rel="prev" title="Tutorials"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="Tutorial-2-Organization-of-data-in-package-objects.html" title="Tutorial 2 - Data organization inside packerlabimaging">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="../Tutorials-reference.html" title="Tutorials">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../index.html">packerlabimaging 0.2-alpha documentation</a> »</li>
+<li class="nav-item nav-item-1"><a accesskey="U" href="../Tutorials-reference.html">Tutorials</a> »</li>
+<li class="nav-item nav-item-this"><a href="">Tutorial 1 - Initializing an Experiment</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
 <style>
 /* CSS for nbsphinx extension */
 
@@ -306,7 +298,7 @@ div.rendered_html tbody tr:hover {
 }
 </style>
 <section id="Tutorial-1---Initializing-an-Experiment">
-<h1>Tutorial 1 - Initializing an Experiment<a class="headerlink" href="#Tutorial-1---Initializing-an-Experiment" title="Permalink to this heading">¶</a></h1>
+<h1>Tutorial 1 - Initializing an Experiment<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Tutorial-1---Initializing-an-Experiment">¶</a></h1>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
@@ -322,7 +314,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s2">&quot;/home/pshah/Documents/code/packerlabimaging/Notebooks/files/Overall Package Flow Diagram.drawio.png&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s2">"/home/pshah/Documents/code/packerlabimaging/Notebooks/files/Overall Package Flow Diagram.drawio.png"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -331,14 +323,14 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/Tutorials_Tutorial-1-Initializing-an-Experiment_3_0.png" src="../_images/Tutorials_Tutorial-1-Initializing-an-Experiment_3_0.png" />
+<img alt="../_images/Tutorials_Tutorial-1-Initializing-an-Experiment_3_0.png" src="../_images/Tutorials_Tutorial-1-Initializing-an-Experiment_3_0.png"/>
 </div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s2">&quot;/home/pshah/Documents/code/packerlabimaging/files/packerlabimaging-tutorial-exp-outline.jpg&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s2">"/home/pshah/Documents/code/packerlabimaging/files/packerlabimaging-tutorial-exp-outline.jpg"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -347,12 +339,12 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/Tutorials_Tutorial-1-Initializing-an-Experiment_4_0.jpg" src="../_images/Tutorials_Tutorial-1-Initializing-an-Experiment_4_0.jpg" />
+<img alt="../_images/Tutorials_Tutorial-1-Initializing-an-Experiment_4_0.jpg" src="../_images/Tutorials_Tutorial-1-Initializing-an-Experiment_4_0.jpg"/>
 </div>
 </div>
 <section id="Creating-an-experiment---UPDATED-MAR-29-2022">
-<h2>Creating an experiment - UPDATED MAR 29 2022<a class="headerlink" href="#Creating-an-experiment---UPDATED-MAR-29-2022" title="Permalink to this heading">¶</a></h2>
-<p>The first step towards starting the analysis pipeline and creating the <code class="docutils literal notranslate"><span class="pre">Experiment</span></code> object is to create a dictionary (<code class="docutils literal notranslate"><span class="pre">ExperimentMetainfo</span></code>) to collect the metadata fields required for initializing <code class="docutils literal notranslate"><span class="pre">Experiment</span></code>. In <code class="docutils literal notranslate"><span class="pre">ExperimentMetainfo</span></code>, we provide initial information about the experiment.</p>
+<h2>Creating an experiment - UPDATED MAR 29 2022<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Creating-an-experiment---UPDATED-MAR-29-2022">¶</a></h2>
+<p>The first step towards starting the analysis pipeline and creating the <code class="docutils literal notranslate">Experiment</code> object is to create a dictionary (<code class="docutils literal notranslate">ExperimentMetainfo</code>) to collect the metadata fields required for initializing <code class="docutils literal notranslate">Experiment</code>. In <code class="docutils literal notranslate">ExperimentMetainfo</code>, we provide initial information about the experiment.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -360,17 +352,17 @@ div.rendered_html tbody tr:hover {
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">packerlabimaging</span> <span class="k">as</span> <span class="nn">pli</span>
 
 <span class="n">ExperimentMetainfo</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;dataPath&#39;</span><span class="p">:</span> <span class="s1">&#39;/home/pshah/mnt/qnap/Data/2020-12-19&#39;</span><span class="p">,</span>  <span class="c1">#: main dir where the imaging data is contained</span>
-    <span class="s1">&#39;saveDir&#39;</span><span class="p">:</span> <span class="s1">&#39;/home/pshah/Documents/code/packerlabimaging/tests/&#39;</span><span class="p">,</span>  <span class="c1">#: main dir where the experiment object and the trial objects will be saved to</span>
-    <span class="s2">&quot;expID&quot;</span><span class="p">:</span> <span class="s1">&#39;RL109&#39;</span><span class="p">,</span>  <span class="c1">#: given identification name for experiment</span>
-    <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="s1">&#39;2020-12-19&#39;</span><span class="p">,</span>  <span class="c1">#: date of experiment data collection</span>
-    <span class="s1">&#39;comments&#39;</span><span class="p">:</span> <span class="s1">&#39;testing out analysis workflow&#39;</span><span class="p">,</span>  <span class="c1">#: notes related to experiment</span>
+    <span class="s1">'dataPath'</span><span class="p">:</span> <span class="s1">'/home/pshah/mnt/qnap/Data/2020-12-19'</span><span class="p">,</span>  <span class="c1">#: main dir where the imaging data is contained</span>
+    <span class="s1">'saveDir'</span><span class="p">:</span> <span class="s1">'/home/pshah/Documents/code/packerlabimaging/tests/'</span><span class="p">,</span>  <span class="c1">#: main dir where the experiment object and the trial objects will be saved to</span>
+    <span class="s2">"expID"</span><span class="p">:</span> <span class="s1">'RL109'</span><span class="p">,</span>  <span class="c1">#: given identification name for experiment</span>
+    <span class="s1">'date'</span><span class="p">:</span> <span class="s1">'2020-12-19'</span><span class="p">,</span>  <span class="c1">#: date of experiment data collection</span>
+    <span class="s1">'comments'</span><span class="p">:</span> <span class="s1">'testing out analysis workflow'</span><span class="p">,</span>  <span class="c1">#: notes related to experiment</span>
 <span class="p">}</span>
 
 <span class="c1"># create Experiment</span>
 
 <span class="c1"># expobj = pli.Experiment(**ExperimentMetainfo)</span>
-<span class="n">expobj</span> <span class="o">=</span> <span class="n">pli</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="s1">&#39;/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl&#39;</span><span class="p">)</span>
+<span class="n">expobj</span> <span class="o">=</span> <span class="n">pli</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="s1">'/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl'</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -380,7 +372,7 @@ div.rendered_html tbody tr:hover {
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Warning: cellpose did not import
-No module named &#39;cellpose&#39;
+No module named 'cellpose'
 cannot use anatomical mode, but otherwise suite2p will run normally
 
 imported packerlabimaging successfully
@@ -397,7 +389,7 @@ imported packerlabimaging successfully
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># we can now load the new expobj from disk storage using pickle in pli.import_obj():</span>
-<span class="n">expobj</span> <span class="o">=</span> <span class="n">pli</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="s1">&#39;/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl&#39;</span><span class="p">)</span>
+<span class="n">expobj</span> <span class="o">=</span> <span class="n">pli</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="s1">'/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -419,7 +411,7 @@ imported packerlabimaging successfully
 <span class="n">expobj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
 <span class="c1"># to save the Experiment with a custom path, simply provide a custom .pkl path and use the .save_pkl() method:</span>
-<span class="n">expobj</span><span class="o">.</span><span class="n">save_pkl</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="s1">&#39;/home/pshah/mnt/qnap/Analysis/2021-01-25/PS12/PS12_new_path.pkl&#39;</span><span class="p">)</span>
+<span class="n">expobj</span><span class="o">.</span><span class="n">save_pkl</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="s1">'/home/pshah/mnt/qnap/Analysis/2021-01-25/PS12/PS12_new_path.pkl'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -434,40 +426,40 @@ imported packerlabimaging successfully
 </div>
 </section>
 <section id="Adding-trials-to-an-experiment">
-<h2>Adding trials to an experiment<a class="headerlink" href="#Adding-trials-to-an-experiment" title="Permalink to this heading">¶</a></h2>
-<p>After creating the initial <code class="docutils literal notranslate"><span class="pre">expobj</span></code> experiment, we move onto loading each trial from the experiment.</p>
-<p>As with the experiment, we create each <code class="docutils literal notranslate"><span class="pre">trialobj</span></code> by creating a Metainfo dictionary that contains basic information about each trial.</p>
-<p>Here we start with two 2-photon imaging trials, and create a dictionary (<code class="docutils literal notranslate"><span class="pre">TwoPhotonImagingMetainfo</span></code>) to create a <code class="docutils literal notranslate"><span class="pre">TwoPhotonImagingTrial</span></code>. The <code class="docutils literal notranslate"><span class="pre">TwoPhotonImagingTrial</span></code> is one of the built-in trial classes. All other built-in trial classes are extensions of the base <code class="docutils literal notranslate"><span class="pre">TwoPhotonImagingTrial</span></code>.</p>
+<h2>Adding trials to an experiment<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Adding-trials-to-an-experiment">¶</a></h2>
+<p>After creating the initial <code class="docutils literal notranslate">expobj</code> experiment, we move onto loading each trial from the experiment.</p>
+<p>As with the experiment, we create each <code class="docutils literal notranslate">trialobj</code> by creating a Metainfo dictionary that contains basic information about each trial.</p>
+<p>Here we start with two 2-photon imaging trials, and create a dictionary (<code class="docutils literal notranslate">TwoPhotonImagingMetainfo</code>) to create a <code class="docutils literal notranslate">TwoPhotonImagingTrial</code>. The <code class="docutils literal notranslate">TwoPhotonImagingTrial</code> is one of the built-in trial classes. All other built-in trial classes are extensions of the base <code class="docutils literal notranslate">TwoPhotonImagingTrial</code>.</p>
 <section id="Two-Photon-Imaging-Trial">
-<h3>Two-Photon Imaging Trial<a class="headerlink" href="#Two-Photon-Imaging-Trial" title="Permalink to this heading">¶</a></h3>
+<h3>Two-Photon Imaging Trial<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Two-Photon-Imaging-Trial">¶</a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create trial obj for each trial of experiment</span>
 
-<span class="n">trials_list_spont</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;t-005&#39;</span><span class="p">,</span> <span class="s1">&#39;t-006&#39;</span><span class="p">]</span>
+<span class="n">trials_list_spont</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'t-005'</span><span class="p">,</span> <span class="s1">'t-006'</span><span class="p">]</span>
 <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">trial</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">trials_list_spont</span><span class="p">):</span>
     <span class="n">date</span> <span class="o">=</span> <span class="n">expobj</span><span class="o">.</span><span class="n">date</span>
     <span class="n">prep</span> <span class="o">=</span> <span class="n">expobj</span><span class="o">.</span><span class="n">expID</span>
-    <span class="n">data_path_base</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;/home/pshah/mnt/qnap/Data/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">&#39;</span>  <span class="c1"># same as above, unclear what this is supposed to be.. (need more clear argument name)</span>
+    <span class="n">data_path_base</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'/home/pshah/mnt/qnap/Data/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">'</span>  <span class="c1"># same as above, unclear what this is supposed to be.. (need more clear argument name)</span>
 
 
     <span class="c1">## everything below should autopopulate</span>
-    <span class="n">paqs_loc</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">data_path_base</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">trial</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span><span class="si">}</span><span class="s1">.paq&#39;</span>  <span class="c1"># path to the .paq files for the selected trials</span>
-    <span class="n">tiffs_loc</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">data_path_base</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">trial</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">trial</span><span class="si">}</span><span class="s1">_Cycle00001_Ch3.tif&#39;</span>
+    <span class="n">paqs_loc</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">data_path_base</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">trial</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span><span class="si">}</span><span class="s1">.paq'</span>  <span class="c1"># path to the .paq files for the selected trials</span>
+    <span class="n">tiffs_loc</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">data_path_base</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">trial</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">trial</span><span class="si">}</span><span class="s1">_Cycle00001_Ch3.tif'</span>
 
 
     <span class="n">TwoPhotonImagingMetainfo</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;date&#39;</span><span class="p">:</span><span class="n">expobj</span><span class="o">.</span><span class="n">date</span><span class="p">,</span>
-        <span class="s1">&#39;trial_id&#39;</span><span class="p">:</span> <span class="n">trial</span><span class="p">,</span>
-        <span class="s1">&#39;exp_id&#39;</span><span class="p">:</span> <span class="n">expobj</span><span class="o">.</span><span class="n">expID</span><span class="p">,</span>
-        <span class="s1">&#39;microscope&#39;</span><span class="p">:</span> <span class="s1">&#39;Bruker 2pPlus&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;tiff_path&#39;</span><span class="p">:</span> <span class="n">tiffs_loc</span><span class="p">,</span>
-        <span class="s1">&#39;saveDir&#39;</span><span class="p">:</span> <span class="n">expobj</span><span class="o">.</span><span class="n">analysisSavePath</span><span class="p">,</span>
-        <span class="s1">&#39;expGroup&#39;</span><span class="p">:</span> <span class="s2">&quot;pre 4ap 2p spont imaging&quot;</span><span class="p">,</span>
-        <span class="s1">&#39;PaqInfoTrial&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;paq_path&#39;</span><span class="p">:</span> <span class="n">paqs_loc</span><span class="p">,</span>
-                          <span class="s1">&#39;frame_channel&#39;</span><span class="p">:</span> <span class="s1">&#39;frame_clock&#39;</span><span class="p">}</span>
+        <span class="s1">'date'</span><span class="p">:</span><span class="n">expobj</span><span class="o">.</span><span class="n">date</span><span class="p">,</span>
+        <span class="s1">'trial_id'</span><span class="p">:</span> <span class="n">trial</span><span class="p">,</span>
+        <span class="s1">'exp_id'</span><span class="p">:</span> <span class="n">expobj</span><span class="o">.</span><span class="n">expID</span><span class="p">,</span>
+        <span class="s1">'microscope'</span><span class="p">:</span> <span class="s1">'Bruker 2pPlus'</span><span class="p">,</span>
+        <span class="s1">'tiff_path'</span><span class="p">:</span> <span class="n">tiffs_loc</span><span class="p">,</span>
+        <span class="s1">'saveDir'</span><span class="p">:</span> <span class="n">expobj</span><span class="o">.</span><span class="n">analysisSavePath</span><span class="p">,</span>
+        <span class="s1">'expGroup'</span><span class="p">:</span> <span class="s2">"pre 4ap 2p spont imaging"</span><span class="p">,</span>
+        <span class="s1">'PaqInfoTrial'</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'paq_path'</span><span class="p">:</span> <span class="n">paqs_loc</span><span class="p">,</span>
+                          <span class="s1">'frame_channel'</span><span class="p">:</span> <span class="s1">'frame_clock'</span><span class="p">}</span>
         <span class="p">}</span>
 
 
@@ -504,15 +496,15 @@ saving new trial object to: /home/pshah/Documents/code/packerlabimaging/tests/20
 
 \- ADDING PAQ MODULE ...
         loading Paq data from: /home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_RL109_005.paq
-        |- loaded 8 channels from .Paq file: [&#39;frame_clock&#39;, &#39;x_galvo_uncaging&#39;, &#39;slm2packio&#39;, &#39;markpoints2packio&#39;, &#39;packio2slm&#39;, &#39;packio2markpoints&#39;, &#39;pycontrol_rsync&#39;, &#39;voltage&#39;]
-        |- adding &#39;frame_clock&#39; channel data as attribute
-        |- adding &#39;x_galvo_uncaging&#39; channel data as attribute
-        |- adding &#39;slm2packio&#39; channel data as attribute
-        |- adding &#39;markpoints2packio&#39; channel data as attribute
-        |- adding &#39;packio2slm&#39; channel data as attribute
-        |- adding &#39;packio2markpoints&#39; channel data as attribute
-        |- adding &#39;pycontrol_rsync&#39; channel data as attribute
-        |- adding &#39;voltage&#39; channel data as attribute
+        |- loaded 8 channels from .Paq file: ['frame_clock', 'x_galvo_uncaging', 'slm2packio', 'markpoints2packio', 'packio2slm', 'packio2markpoints', 'pycontrol_rsync', 'voltage']
+        |- adding 'frame_clock' channel data as attribute
+        |- adding 'x_galvo_uncaging' channel data as attribute
+        |- adding 'slm2packio' channel data as attribute
+        |- adding 'markpoints2packio' channel data as attribute
+        |- adding 'packio2slm' channel data as attribute
+        |- adding 'packio2markpoints' channel data as attribute
+        |- adding 'pycontrol_rsync' channel data as attribute
+        |- adding 'voltage' channel data as attribute
 
 \- PROCESSING PAQDATA ...
 
@@ -542,15 +534,15 @@ saving new trial object to: /home/pshah/Documents/code/packerlabimaging/tests/20
 
 \- ADDING PAQ MODULE ...
         loading Paq data from: /home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_RL109_006.paq
-        |- loaded 8 channels from .Paq file: [&#39;frame_clock&#39;, &#39;x_galvo_uncaging&#39;, &#39;slm2packio&#39;, &#39;markpoints2packio&#39;, &#39;packio2slm&#39;, &#39;packio2markpoints&#39;, &#39;pycontrol_rsync&#39;, &#39;voltage&#39;]
-        |- adding &#39;frame_clock&#39; channel data as attribute
-        |- adding &#39;x_galvo_uncaging&#39; channel data as attribute
-        |- adding &#39;slm2packio&#39; channel data as attribute
-        |- adding &#39;markpoints2packio&#39; channel data as attribute
-        |- adding &#39;packio2slm&#39; channel data as attribute
-        |- adding &#39;packio2markpoints&#39; channel data as attribute
-        |- adding &#39;pycontrol_rsync&#39; channel data as attribute
-        |- adding &#39;voltage&#39; channel data as attribute
+        |- loaded 8 channels from .Paq file: ['frame_clock', 'x_galvo_uncaging', 'slm2packio', 'markpoints2packio', 'packio2slm', 'packio2markpoints', 'pycontrol_rsync', 'voltage']
+        |- adding 'frame_clock' channel data as attribute
+        |- adding 'x_galvo_uncaging' channel data as attribute
+        |- adding 'slm2packio' channel data as attribute
+        |- adding 'markpoints2packio' channel data as attribute
+        |- adding 'packio2slm' channel data as attribute
+        |- adding 'packio2markpoints' channel data as attribute
+        |- adding 'pycontrol_rsync' channel data as attribute
+        |- adding 'voltage' channel data as attribute
 
 \- PROCESSING PAQDATA ...
 
@@ -568,8 +560,8 @@ packerlabimaging Experiment object (last saved: Tue Mar 29 17:17:07 2022), date:
 file path: /home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl
 
 trials in Experiment object:
-        t-005: &#39;TwoPhotonImagingTrial experimental data object&#39;, pre 4ap 2p spont imaging
-        t-006: &#39;TwoPhotonImagingTrial experimental data object&#39;, pre 4ap 2p spont imaging
+        t-005: 'TwoPhotonImagingTrial experimental data object', pre 4ap 2p spont imaging
+        t-006: 'TwoPhotonImagingTrial experimental data object', pre 4ap 2p spont imaging
 
 </pre></div></div>
 </div>
@@ -577,7 +569,7 @@ trials in Experiment object:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># we can access each trial&#39;s information from within the `expobj`</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># we can access each trial's information from within the `expobj`</span>
 <span class="n">expobj</span><span class="o">.</span><span class="n">TrialsInformation</span>
 </pre></div>
 </div>
@@ -588,28 +580,28 @@ trials in Experiment object:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;t-005&#39;: {&#39;_pkl_path&#39;: &#39;/home/pshah/Documents/code/packerlabimaging/tests/2020-12-19_t-005.pkl&#39;,
-  &#39;pkl_path&#39;: &#39;/home/pshah/Documents/code/packerlabimaging/tests/2020-12-19_t-005.pkl&#39;,
-  &#39;tiff_path&#39;: &#39;/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-005/2020-12-19_t-005_Cycle00001_Ch3.tif&#39;,
-  &#39;tiff_path_dir&#39;: &#39;/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-005&#39;,
-  &#39;date&#39;: &#39;2020-12-19&#39;,
-  &#39;trial_id&#39;: &#39;t-005&#39;,
-  &#39;exp_id&#39;: &#39;RL109&#39;,
-  &#39;microscope&#39;: &#39;Bruker 2pPlus&#39;,
-  &#39;expGroup&#39;: &#39;pre 4ap 2p spont imaging&#39;,
-  &#39;series ID&#39;: &#39;RL109 t-005&#39;,
-  &#39;repr&#39;: &#34;&#39;TwoPhotonImagingTrial experimental data object&#39;&#34;},
- &#39;t-006&#39;: {&#39;_pkl_path&#39;: &#39;/home/pshah/Documents/code/packerlabimaging/tests/2020-12-19_t-006.pkl&#39;,
-  &#39;pkl_path&#39;: &#39;/home/pshah/Documents/code/packerlabimaging/tests/2020-12-19_t-006.pkl&#39;,
-  &#39;tiff_path&#39;: &#39;/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-006/2020-12-19_t-006_Cycle00001_Ch3.tif&#39;,
-  &#39;tiff_path_dir&#39;: &#39;/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-006&#39;,
-  &#39;date&#39;: &#39;2020-12-19&#39;,
-  &#39;trial_id&#39;: &#39;t-006&#39;,
-  &#39;exp_id&#39;: &#39;RL109&#39;,
-  &#39;microscope&#39;: &#39;Bruker 2pPlus&#39;,
-  &#39;expGroup&#39;: &#39;pre 4ap 2p spont imaging&#39;,
-  &#39;series ID&#39;: &#39;RL109 t-006&#39;,
-  &#39;repr&#39;: &#34;&#39;TwoPhotonImagingTrial experimental data object&#39;&#34;}}
+{'t-005': {'_pkl_path': '/home/pshah/Documents/code/packerlabimaging/tests/2020-12-19_t-005.pkl',
+  'pkl_path': '/home/pshah/Documents/code/packerlabimaging/tests/2020-12-19_t-005.pkl',
+  'tiff_path': '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-005/2020-12-19_t-005_Cycle00001_Ch3.tif',
+  'tiff_path_dir': '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-005',
+  'date': '2020-12-19',
+  'trial_id': 't-005',
+  'exp_id': 'RL109',
+  'microscope': 'Bruker 2pPlus',
+  'expGroup': 'pre 4ap 2p spont imaging',
+  'series ID': 'RL109 t-005',
+  'repr': "'TwoPhotonImagingTrial experimental data object'"},
+ 't-006': {'_pkl_path': '/home/pshah/Documents/code/packerlabimaging/tests/2020-12-19_t-006.pkl',
+  'pkl_path': '/home/pshah/Documents/code/packerlabimaging/tests/2020-12-19_t-006.pkl',
+  'tiff_path': '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-006/2020-12-19_t-006_Cycle00001_Ch3.tif',
+  'tiff_path_dir': '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-006',
+  'date': '2020-12-19',
+  'trial_id': 't-006',
+  'exp_id': 'RL109',
+  'microscope': 'Bruker 2pPlus',
+  'expGroup': 'pre 4ap 2p spont imaging',
+  'series ID': 'RL109 t-006',
+  'repr': "'TwoPhotonImagingTrial experimental data object'"}}
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -617,7 +609,7 @@ trials in Experiment object:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># we can also load each trial directly from the experiment:</span>
-<span class="n">trialobj</span> <span class="o">=</span> <span class="n">expobj</span><span class="o">.</span><span class="n">load_trial</span><span class="p">(</span><span class="n">trialID</span> <span class="o">=</span> <span class="s1">&#39;t-005&#39;</span><span class="p">)</span>
+<span class="n">trialobj</span> <span class="o">=</span> <span class="n">expobj</span><span class="o">.</span><span class="n">load_trial</span><span class="p">(</span><span class="n">trialID</span> <span class="o">=</span> <span class="s1">'t-005'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -627,22 +619,22 @@ trials in Experiment object:
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 
-|- Loaded &#39;TwoPhotonImagingTrial experimental data object&#39;ts/2020-12-19_t-005.pkl ...
+|- Loaded 'TwoPhotonImagingTrial experimental data object'ts/2020-12-19_t-005.pkl ...
 
 </pre></div></div>
 </div>
 </section>
 </section>
 <section id="Adding-suite2p-for-calcium-imaging-processing-to-Experiment">
-<h2>Adding suite2p for calcium imaging processing to Experiment<a class="headerlink" href="#Adding-suite2p-for-calcium-imaging-processing-to-Experiment" title="Permalink to this heading">¶</a></h2>
+<h2>Adding suite2p for calcium imaging processing to Experiment<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Adding-suite2p-for-calcium-imaging-processing-to-Experiment">¶</a></h2>
 <p>After creating the Experiment and loading each Trial, we can begin data analysis.</p>
-<p>Here, we first start with adding <code class="docutils literal notranslate"><span class="pre">Suite2p</span></code> functionality to our Experiment. We provide helpful wrapper functions that allow us to quickly access <code class="docutils literal notranslate"><span class="pre">Suite2p</span></code> functionality directly from the <code class="docutils literal notranslate"><span class="pre">expobj</span></code> or the <code class="docutils literal notranslate"><span class="pre">trialobj</span></code>.</p>
+<p>Here, we first start with adding <code class="docutils literal notranslate">Suite2p</code> functionality to our Experiment. We provide helpful wrapper functions that allow us to quickly access <code class="docutils literal notranslate">Suite2p</code> functionality directly from the <code class="docutils literal notranslate">expobj</code> or the <code class="docutils literal notranslate">trialobj</code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># we plan to use all trials from the experiment for Suite2p</span>
-<span class="n">expobj</span><span class="o">.</span><span class="n">add_suite2p</span><span class="p">(</span><span class="n">s2p_trials</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+<span class="n">expobj</span><span class="o">.</span><span class="n">add_suite2p</span><span class="p">(</span><span class="n">s2p_trials</span><span class="o">=</span><span class="s1">'all'</span><span class="p">)</span>
 <span class="n">expobj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -654,14 +646,14 @@ trials in Experiment object:
 <div class="highlight"><pre>
 |- ADDED .Suite2p module to Experiment object. ... er .Suite2p
 
-|- Loaded &#39;TwoPhotonImagingTrial experimental data object&#39;ts/2020-12-19_t-005.pkl ...
+|- Loaded 'TwoPhotonImagingTrial experimental data object'ts/2020-12-19_t-005.pkl ...
 
 |- ADDED .Suite2p module to Experiment object. ...
 
         |- current trial frames: (0, 14880) out of 0 total frames processed through suite2p
 
 \----- ADDED .Suite2p module to trial.
-|- Loaded &#39;TwoPhotonImagingTrial experimental data object&#39;ts/2020-12-19_t-006.pkl ...
+|- Loaded 'TwoPhotonImagingTrial experimental data object'ts/2020-12-19_t-006.pkl ...
 
 |- ADDED .Suite2p module to Experiment object. ...
 
@@ -682,7 +674,7 @@ trials in Experiment object:
 </div>
 </section>
 <section id="dFF-normalization-of-Suite2p-data">
-<h2>dFF normalization of Suite2p data<a class="headerlink" href="#dFF-normalization-of-Suite2p-data" title="Permalink to this heading">¶</a></h2>
+<h2>dFF normalization of Suite2p data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#dFF-normalization-of-Suite2p-data">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -694,7 +686,7 @@ trials in Experiment object:
 </div>
 </section>
 <section id="Storing-Suite2p-data-as-anndata-table">
-<h2>Storing Suite2p data as anndata table<a class="headerlink" href="#Storing-Suite2p-data-as-anndata-table" title="Permalink to this heading">¶</a></h2>
+<h2>Storing Suite2p data as anndata table<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Storing-Suite2p-data-as-anndata-table">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -737,76 +729,76 @@ trials in Experiment object:
 </div>
 </div>
 <section id="ARCHIVED-CODE">
-<h3>ARCHIVED CODE<a class="headerlink" href="#ARCHIVED-CODE" title="Permalink to this heading">¶</a></h3>
-<p>The first step towards starting the analysis pipeline and creating the <code class="docutils literal notranslate"><span class="pre">Experiment</span></code> object is to create a dictionary (<code class="docutils literal notranslate"><span class="pre">initialization_dict</span></code>) to collect the metadata fields required for initializing <code class="docutils literal notranslate"><span class="pre">Experiment</span></code>. In <code class="docutils literal notranslate"><span class="pre">initialization_dict</span></code>, we provide information from the experiment.</p>
-<p>Also, we pre-load existing suite2p results for this experiment by providing a valid path to <code class="docutils literal notranslate"><span class="pre">s2pResultsPath</span></code>. It is also possible to create <code class="docutils literal notranslate"><span class="pre">Experiment</span></code> without pre-loading suite2p results, by simply providing True to <code class="docutils literal notranslate"><span class="pre">useSuite2p</span></code>.</p>
+<h3>ARCHIVED CODE<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#ARCHIVED-CODE">¶</a></h3>
+<p>The first step towards starting the analysis pipeline and creating the <code class="docutils literal notranslate">Experiment</code> object is to create a dictionary (<code class="docutils literal notranslate">initialization_dict</code>) to collect the metadata fields required for initializing <code class="docutils literal notranslate">Experiment</code>. In <code class="docutils literal notranslate">initialization_dict</code>, we provide information from the experiment.</p>
+<p>Also, we pre-load existing suite2p results for this experiment by providing a valid path to <code class="docutils literal notranslate">s2pResultsPath</code>. It is also possible to create <code class="docutils literal notranslate">Experiment</code> without pre-loading suite2p results, by simply providing True to <code class="docutils literal notranslate">useSuite2p</code>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">initialization_dict</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;dataPath&#39;</span><span class="p">:</span> <span class="s1">&#39;/home/pshah/mnt/qnap/Data/2020-12-19&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;analysisSavePath&#39;</span><span class="p">:</span> <span class="s1">&#39;/home/pshah/Documents/code/packerlabimaging/tests/&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;microscope&#39;</span><span class="p">:</span> <span class="s2">&quot;Bruker&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;expID&quot;</span><span class="p">:</span> <span class="s1">&#39;RL109&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="s1">&#39;2020-12-19&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;comments&#39;</span><span class="p">:</span> <span class="s1">&#39;testing out analysis workflow&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;TrialsInformation&#39;</span><span class="p">:</span> <span class="p">{},</span>  <span class="c1"># NOTE: this dictionary is populated in the code cells below.</span>
-    <span class="s1">&#39;useSuite2p&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s1">&#39;s2pResultsPath&#39;</span><span class="p">:</span> <span class="s2">&quot;/home/pshah/mnt/qnap/Analysis/2020-12-19/suite2p/alloptical-2p-1x-alltrials/plane0&quot;</span>
+    <span class="s1">'dataPath'</span><span class="p">:</span> <span class="s1">'/home/pshah/mnt/qnap/Data/2020-12-19'</span><span class="p">,</span>
+    <span class="s1">'analysisSavePath'</span><span class="p">:</span> <span class="s1">'/home/pshah/Documents/code/packerlabimaging/tests/'</span><span class="p">,</span>
+    <span class="s1">'microscope'</span><span class="p">:</span> <span class="s2">"Bruker"</span><span class="p">,</span>
+    <span class="s2">"expID"</span><span class="p">:</span> <span class="s1">'RL109'</span><span class="p">,</span>
+    <span class="s1">'date'</span><span class="p">:</span> <span class="s1">'2020-12-19'</span><span class="p">,</span>
+    <span class="s1">'comments'</span><span class="p">:</span> <span class="s1">'testing out analysis workflow'</span><span class="p">,</span>
+    <span class="s1">'TrialsInformation'</span><span class="p">:</span> <span class="p">{},</span>  <span class="c1"># NOTE: this dictionary is populated in the code cells below.</span>
+    <span class="s1">'useSuite2p'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s1">'s2pResultsPath'</span><span class="p">:</span> <span class="s2">"/home/pshah/mnt/qnap/Analysis/2020-12-19/suite2p/alloptical-2p-1x-alltrials/plane0"</span>
 <span class="p">}</span>
 <br/></pre></div>
 </div>
 </div>
-<p>Collect information regarding each trial, and add to <code class="docutils literal notranslate"><span class="pre">initialization_dict['trialsInformation']</span></code> for each individual imaging t-series. Here we start with the two 2-photon imaging only t-series:</p>
+<p>Collect information regarding each trial, and add to <code class="docutils literal notranslate">initialization_dict['trialsInformation']</code> for each individual imaging t-series. Here we start with the two 2-photon imaging only t-series:</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># add information about each trial in experiment to trialsInformation field of the initialization_dict</span>
-<span class="n">trials_list_spont</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;t-005&#39;</span><span class="p">,</span> <span class="s1">&#39;t-006&#39;</span><span class="p">]</span>
+<span class="n">trials_list_spont</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'t-005'</span><span class="p">,</span> <span class="s1">'t-006'</span><span class="p">]</span>
 <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">trial</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">trials_list_spont</span><span class="p">):</span>
-    <span class="n">data_path_base</span> <span class="o">=</span> <span class="s1">&#39;/home/pshah/mnt/qnap/Data/2020-12-19&#39;</span>
-    <span class="n">animal_prep</span> <span class="o">=</span> <span class="n">initialization_dict</span><span class="p">[</span><span class="s1">&#39;expID&#39;</span><span class="p">]</span>
+    <span class="n">data_path_base</span> <span class="o">=</span> <span class="s1">'/home/pshah/mnt/qnap/Data/2020-12-19'</span>
+    <span class="n">animal_prep</span> <span class="o">=</span> <span class="n">initialization_dict</span><span class="p">[</span><span class="s1">'expID'</span><span class="p">]</span>
     <span class="n">date</span> <span class="o">=</span> <span class="n">data_path_base</span><span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">:]</span>
 
     <span class="c1">## everything below should autopopulate</span>
-    <span class="n">paqs_loc</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">.paq&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">data_path_base</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">animal_prep</span><span class="p">,</span> <span class="n">trial</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>  <span class="c1"># path to the .paq files for the selected trials</span>
-    <span class="n">tiffs_loc</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">data_path_base</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">trial</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">trial</span><span class="si">}</span><span class="s1">_Cycle00001_Ch3.tif&#39;</span>
+    <span class="n">paqs_loc</span> <span class="o">=</span> <span class="s1">'</span><span class="si">%s</span><span class="s1">/</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">.paq'</span> <span class="o">%</span> <span class="p">(</span><span class="n">data_path_base</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">animal_prep</span><span class="p">,</span> <span class="n">trial</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>  <span class="c1"># path to the .paq files for the selected trials</span>
+    <span class="n">tiffs_loc</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">data_path_base</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">trial</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">trial</span><span class="si">}</span><span class="s1">_Cycle00001_Ch3.tif'</span>
 
 
-    <span class="n">initialization_dict</span><span class="p">[</span><span class="s2">&quot;TrialsInformation&quot;</span><span class="p">][</span><span class="n">trial</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;trialType&#39;</span><span class="p">:</span> <span class="s1">&#39;TwoPhotonImagingTrial&#39;</span><span class="p">,</span>
-                                       <span class="s1">&#39;tiff_path&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tiffs_loc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                                       <span class="s1">&#39;s2p_use&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                                       <span class="s1">&#39;expGroup&#39;</span><span class="p">:</span> <span class="s2">&quot;pre 4ap 2p spont imaging&quot;</span><span class="p">,</span>
-                                       <span class="s1">&#39;paq_path&#39;</span><span class="p">:</span> <span class="n">paqs_loc</span>
+    <span class="n">initialization_dict</span><span class="p">[</span><span class="s2">"TrialsInformation"</span><span class="p">][</span><span class="n">trial</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'trialType'</span><span class="p">:</span> <span class="s1">'TwoPhotonImagingTrial'</span><span class="p">,</span>
+                                       <span class="s1">'tiff_path'</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tiffs_loc</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                                       <span class="s1">'s2p_use'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                                       <span class="s1">'expGroup'</span><span class="p">:</span> <span class="s2">"pre 4ap 2p spont imaging"</span><span class="p">,</span>
+                                       <span class="s1">'paq_path'</span><span class="p">:</span> <span class="n">paqs_loc</span>
                                                        <span class="p">}</span>
 <br/></pre></div>
 </div>
 </div>
-<p>Next, we add the single All Optical experiment t-series to the same <code class="docutils literal notranslate"><span class="pre">trialsInformation</span></code> dictionary in a similar manner. As with the 2-photon imaging only trials, it is possible to add multiple All Optical experiment t-series, where each t-series is associated with a unique set of .paq, .tiff, and naparm output files.</p>
+<p>Next, we add the single All Optical experiment t-series to the same <code class="docutils literal notranslate">trialsInformation</code> dictionary in a similar manner. As with the 2-photon imaging only trials, it is possible to add multiple All Optical experiment t-series, where each t-series is associated with a unique set of .paq, .tiff, and naparm output files.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">trials_list_alloptical</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;t-013&#39;</span><span class="p">]</span>
-<span class="n">naparm_paths</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;t-013&#39;</span><span class="p">:</span> <span class="s1">&#39;/home/pshah/mnt/qnap/Data/2020-12-19/photostim/2020-12-19_RL109_ps_014/&#39;</span><span class="p">}</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">trials_list_alloptical</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'t-013'</span><span class="p">]</span>
+<span class="n">naparm_paths</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'t-013'</span><span class="p">:</span> <span class="s1">'/home/pshah/mnt/qnap/Data/2020-12-19/photostim/2020-12-19_RL109_ps_014/'</span><span class="p">}</span>
 <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">trial</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">trials_list_alloptical</span><span class="p">):</span>
-    <span class="n">data_path_base</span> <span class="o">=</span> <span class="s1">&#39;/home/pshah/mnt/qnap/Data/2020-12-19&#39;</span>
-    <span class="n">animal_prep</span> <span class="o">=</span> <span class="n">initialization_dict</span><span class="p">[</span><span class="s1">&#39;expID&#39;</span><span class="p">]</span>
+    <span class="n">data_path_base</span> <span class="o">=</span> <span class="s1">'/home/pshah/mnt/qnap/Data/2020-12-19'</span>
+    <span class="n">animal_prep</span> <span class="o">=</span> <span class="n">initialization_dict</span><span class="p">[</span><span class="s1">'expID'</span><span class="p">]</span>
     <span class="n">date</span> <span class="o">=</span> <span class="n">data_path_base</span><span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">:]</span>
 
     <span class="c1">## everything below should autopopulate</span>
-    <span class="n">paqs_loc</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">.paq&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">data_path_base</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">animal_prep</span><span class="p">,</span> <span class="n">trial</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>  <span class="c1"># path to the .paq files for the selected trials</span>
-    <span class="n">tiffs_loc</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">data_path_base</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">trial</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">trial</span><span class="si">}</span><span class="s1">_Cycle00001_Ch3.tif&#39;</span>
+    <span class="n">paqs_loc</span> <span class="o">=</span> <span class="s1">'</span><span class="si">%s</span><span class="s1">/</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">.paq'</span> <span class="o">%</span> <span class="p">(</span><span class="n">data_path_base</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">animal_prep</span><span class="p">,</span> <span class="n">trial</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>  <span class="c1"># path to the .paq files for the selected trials</span>
+    <span class="n">tiffs_loc</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">data_path_base</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">trial</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">trial</span><span class="si">}</span><span class="s1">_Cycle00001_Ch3.tif'</span>
 
 
-    <span class="n">initialization_dict</span><span class="p">[</span><span class="s2">&quot;TrialsInformation&quot;</span><span class="p">][</span><span class="n">trial</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;trialType&#39;</span><span class="p">:</span> <span class="s1">&#39;AllOpticalTrial&#39;</span><span class="p">,</span>
-                                        <span class="s1">&#39;tiff_path&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tiffs_loc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                                        <span class="s1">&#39;s2p_use&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                                        <span class="s1">&#39;expGroup&#39;</span><span class="p">:</span> <span class="s2">&quot;pre 4ap 2p all optical&quot;</span><span class="p">,</span>
-                                        <span class="s1">&#39;paq_path&#39;</span><span class="p">:</span> <span class="n">paqs_loc</span><span class="p">,</span>
-                                        <span class="s1">&#39;naparm_path&#39;</span><span class="p">:</span> <span class="n">naparm_paths</span><span class="p">[</span><span class="n">trial</span><span class="p">]</span>
+    <span class="n">initialization_dict</span><span class="p">[</span><span class="s2">"TrialsInformation"</span><span class="p">][</span><span class="n">trial</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'trialType'</span><span class="p">:</span> <span class="s1">'AllOpticalTrial'</span><span class="p">,</span>
+                                        <span class="s1">'tiff_path'</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tiffs_loc</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                                        <span class="s1">'s2p_use'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                                        <span class="s1">'expGroup'</span><span class="p">:</span> <span class="s2">"pre 4ap 2p all optical"</span><span class="p">,</span>
+                                        <span class="s1">'paq_path'</span><span class="p">:</span> <span class="n">paqs_loc</span><span class="p">,</span>
+                                        <span class="s1">'naparm_path'</span><span class="p">:</span> <span class="n">naparm_paths</span><span class="p">[</span><span class="n">trial</span><span class="p">]</span>
                                                         <span class="p">}</span>
 </pre></div>
 </div>
@@ -849,16 +841,16 @@ saving new trial object to: /home/pshah/Documents/code/packerlabimaging/tests/20
 
 \----- Processing paq file ...
         loading paq data from: /home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_RL109_005.paq
-        |- loaded 8 channels from .paq file: [&#39;frame_clock&#39;, &#39;x_galvo_uncaging&#39;, &#39;slm2packio&#39;, &#39;markpoints2packio&#39;, &#39;packio2slm&#39;, &#39;packio2markpoints&#39;, &#39;pycontrol_rsync&#39;, &#39;voltage&#39;]
+        |- loaded 8 channels from .paq file: ['frame_clock', 'x_galvo_uncaging', 'slm2packio', 'markpoints2packio', 'packio2slm', 'packio2markpoints', 'pycontrol_rsync', 'voltage']
 
 \----- ADDING Suite2p class to Trial object ...
 
 \----- CREATING annotated data object using AnnData:
         AnnData object with n_obs × n_vars = 640 × 14880
-    obs: &#39;original_index&#39;, &#39;footprint&#39;, &#39;mrs&#39;, &#39;mrs0&#39;, &#39;compact&#39;, &#39;med&#39;, &#39;npix&#39;, &#39;radius&#39;, &#39;aspect_ratio&#39;, &#39;npix_norm&#39;, &#39;skew&#39;, &#39;std&#39;
-    var: &#39;frame_clock&#39;, &#39;x_galvo_uncaging&#39;, &#39;slm2packio&#39;, &#39;markpoints2packio&#39;, &#39;packio2slm&#39;, &#39;packio2markpoints&#39;, &#39;pycontrol_rsync&#39;, &#39;voltage&#39;
-    obsm: &#39;ypix&#39;, &#39;xpix&#39;
-    layers: &#39;dFF&#39;
+    obs: 'original_index', 'footprint', 'mrs', 'mrs0', 'compact', 'med', 'npix', 'radius', 'aspect_ratio', 'npix_norm', 'skew', 'std'
+    var: 'frame_clock', 'x_galvo_uncaging', 'slm2packio', 'markpoints2packio', 'packio2slm', 'packio2markpoints', 'pycontrol_rsync', 'voltage'
+    obsm: 'ypix', 'xpix'
+    layers: 'dFF'
 
          -- data object saved to /home/pshah/Documents/code/packerlabimaging/tests/2020-12-19_t-005.pkl --
 
@@ -882,16 +874,16 @@ saving new trial object to: /home/pshah/Documents/code/packerlabimaging/tests/20
 
 \----- Processing paq file ...
         loading paq data from: /home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_RL109_006.paq
-        |- loaded 8 channels from .paq file: [&#39;frame_clock&#39;, &#39;x_galvo_uncaging&#39;, &#39;slm2packio&#39;, &#39;markpoints2packio&#39;, &#39;packio2slm&#39;, &#39;packio2markpoints&#39;, &#39;pycontrol_rsync&#39;, &#39;voltage&#39;]
+        |- loaded 8 channels from .paq file: ['frame_clock', 'x_galvo_uncaging', 'slm2packio', 'markpoints2packio', 'packio2slm', 'packio2markpoints', 'pycontrol_rsync', 'voltage']
 
 \----- ADDING Suite2p class to Trial object ...
 
 \----- CREATING annotated data object using AnnData:
         AnnData object with n_obs × n_vars = 640 × 23173
-    obs: &#39;original_index&#39;, &#39;footprint&#39;, &#39;mrs&#39;, &#39;mrs0&#39;, &#39;compact&#39;, &#39;med&#39;, &#39;npix&#39;, &#39;radius&#39;, &#39;aspect_ratio&#39;, &#39;npix_norm&#39;, &#39;skew&#39;, &#39;std&#39;
-    var: &#39;frame_clock&#39;, &#39;x_galvo_uncaging&#39;, &#39;slm2packio&#39;, &#39;markpoints2packio&#39;, &#39;packio2slm&#39;, &#39;packio2markpoints&#39;, &#39;pycontrol_rsync&#39;, &#39;voltage&#39;
-    obsm: &#39;ypix&#39;, &#39;xpix&#39;
-    layers: &#39;dFF&#39;
+    obs: 'original_index', 'footprint', 'mrs', 'mrs0', 'compact', 'med', 'npix', 'radius', 'aspect_ratio', 'npix_norm', 'skew', 'std'
+    var: 'frame_clock', 'x_galvo_uncaging', 'slm2packio', 'markpoints2packio', 'packio2slm', 'packio2markpoints', 'pycontrol_rsync', 'voltage'
+    obsm: 'ypix', 'xpix'
+    layers: 'dFF'
 
          -- data object saved to /home/pshah/Documents/code/packerlabimaging/tests/2020-12-19_t-006.pkl --
 
@@ -916,22 +908,22 @@ saving new trial object to: /home/pshah/Documents/code/packerlabimaging/tests/20
 
 \----- Processing paq file ...
         loading paq data from: /home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_RL109_013.paq
-        |- loaded 8 channels from .paq file: [&#39;frame_clock&#39;, &#39;x_galvo_uncaging&#39;, &#39;slm2packio&#39;, &#39;markpoints2packio&#39;, &#39;packio2slm&#39;, &#39;packio2markpoints&#39;, &#39;pycontrol_rsync&#39;, &#39;voltage&#39;]
+        |- loaded 8 channels from .paq file: ['frame_clock', 'x_galvo_uncaging', 'slm2packio', 'markpoints2packio', 'packio2slm', 'packio2markpoints', 'pycontrol_rsync', 'voltage']
 
 \----- ADDING Suite2p class to Trial object ...
 
 \----- CREATING annotated data object using AnnData:
         AnnData object with n_obs × n_vars = 640 × 16368
-    obs: &#39;original_index&#39;, &#39;footprint&#39;, &#39;mrs&#39;, &#39;mrs0&#39;, &#39;compact&#39;, &#39;med&#39;, &#39;npix&#39;, &#39;radius&#39;, &#39;aspect_ratio&#39;, &#39;npix_norm&#39;, &#39;skew&#39;, &#39;std&#39;
-    var: &#39;frame_clock&#39;, &#39;x_galvo_uncaging&#39;, &#39;slm2packio&#39;, &#39;markpoints2packio&#39;, &#39;packio2slm&#39;, &#39;packio2markpoints&#39;, &#39;pycontrol_rsync&#39;, &#39;voltage&#39;
-    obsm: &#39;ypix&#39;, &#39;xpix&#39;
-    layers: &#39;dFF&#39;
+    obs: 'original_index', 'footprint', 'mrs', 'mrs0', 'compact', 'med', 'npix', 'radius', 'aspect_ratio', 'npix_norm', 'skew', 'std'
+    var: 'frame_clock', 'x_galvo_uncaging', 'slm2packio', 'markpoints2packio', 'packio2slm', 'packio2markpoints', 'pycontrol_rsync', 'voltage'
+    obsm: 'ypix', 'xpix'
+    layers: 'dFF'
 
          -- data object saved to /home/pshah/Documents/code/packerlabimaging/tests/2020-12-19_t-013.pkl --
 
 \----- parsing Naparm xml file...
 loading NAPARM_xml_path:
-[&#39;/home/pshah/mnt/qnap/Data/2020-12-19/photostim/2020-12-19_RL109_ps_014/2020-12-19_RL109_ps_014.xml&#39;]
+['/home/pshah/mnt/qnap/Data/2020-12-19/photostim/2020-12-19_RL109_ps_014/2020-12-19_RL109_ps_014.xml']
         Numbers of trials: 100
         Number of groups: 4
         Number of shots: 10
@@ -940,7 +932,7 @@ loading NAPARM_xml_path:
         Spiral Duration (ms): 20
 
 \----- parsing Naparm gpl file...
-[&#39;/home/pshah/mnt/qnap/Data/2020-12-19/photostim/2020-12-19_RL109_ps_014/2020-12-19_RL109_ps_014.gpl&#39;]
+['/home/pshah/mnt/qnap/Data/2020-12-19/photostim/2020-12-19_RL109_ps_014/2020-12-19_RL109_ps_014.gpl']
 loading NAPARM_gpl_path:  /home/pshah/mnt/qnap/Data/2020-12-19/photostim/2020-12-19_RL109_ps_014/2020-12-19_RL109_ps_014.gpl
 Single stim dur (ms): 10
 Spiral size .gpl file: 0.047535
@@ -950,7 +942,7 @@ Total stim. Duration per trial (ms):  1000
 
 \----- processing paq file...
         loading paq data from: /home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_RL109_013.paq
-        |- loaded 8 channels from .paq file: [&#39;frame_clock&#39;, &#39;x_galvo_uncaging&#39;, &#39;slm2packio&#39;, &#39;markpoints2packio&#39;, &#39;packio2slm&#39;, &#39;packio2markpoints&#39;, &#39;pycontrol_rsync&#39;, &#39;voltage&#39;]
+        |- loaded 8 channels from .paq file: ['frame_clock', 'x_galvo_uncaging', 'slm2packio', 'markpoints2packio', 'packio2slm', 'packio2markpoints', 'pycontrol_rsync', 'voltage']
 # of stims found on markpoints2packio: 100
 
         \-----Loading up target coordinates...
@@ -990,7 +982,7 @@ trials in Experiment object:
 
 </pre></div></div>
 </div>
-<p>use <code class="docutils literal notranslate"><span class="pre">print(expobj)</span></code> to view the contents of the newly created <code class="docutils literal notranslate"><span class="pre">expobj</span></code>.</p>
+<p>use <code class="docutils literal notranslate">print(expobj)</code> to view the contents of the newly created <code class="docutils literal notranslate">expobj</code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
@@ -1016,17 +1008,15 @@ trials in Experiment object:
 </section>
 </section>
 </section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <div>
-    <h3><a href="../index.html">Table of Contents</a></h3>
-    <ul>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.html">Table of Contents</a></h3>
+<ul>
 <li><a class="reference internal" href="#">Tutorial 1 - Initializing an Experiment</a><ul>
 <li><a class="reference internal" href="#Creating-an-experiment---UPDATED-MAR-29-2022">Creating an experiment - UPDATED MAR 29 2022</a></li>
 <li><a class="reference internal" href="#Adding-trials-to-an-experiment">Adding trials to an experiment</a><ul>
@@ -1042,62 +1032,54 @@ trials in Experiment object:
 </ul>
 </li>
 </ul>
-
-  </div>
-  <div>
-    <h4>Previous topic</h4>
-    <p class="topless"><a href="../Tutorials-reference.html"
-                          title="previous chapter">Tutorials</a></p>
-  </div>
-  <div>
-    <h4>Next topic</h4>
-    <p class="topless"><a href="Tutorial-2-Organization-of-data-in-package-objects.html"
-                          title="next chapter">Tutorial 2 - Data organization inside packerlabimaging</a></p>
-  </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/Tutorials/Tutorial-1-Initializing-an-Experiment.ipynb.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
+</div>
+<div>
+<h4>Previous topic</h4>
+<p class="topless"><a href="../Tutorials-reference.html" title="previous chapter">Tutorials</a></p>
+</div>
+<div>
+<h4>Next topic</h4>
+<p class="topless"><a href="Tutorial-2-Organization-of-data-in-package-objects.html" title="next chapter">Tutorial 2 - Data organization inside packerlabimaging</a></p>
+</div>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../_sources/Tutorials/Tutorial-1-Initializing-an-Experiment.ipynb.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
 </div>
 <script>document.getElementById('searchbox').style.display = "block"</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="Tutorial-2-Organization-of-data-in-package-objects.html" title="Tutorial 2 - Data organization inside packerlabimaging"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="../Tutorials-reference.html" title="Tutorials"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">packerlabimaging 0.2-alpha documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../Tutorials-reference.html" >Tutorials</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Tutorial 1 - Initializing an Experiment</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2022, Packer Lab.
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="Tutorial-2-Organization-of-data-in-package-objects.html" title="Tutorial 2 - Data organization inside packerlabimaging">next</a> |</li>
+<li class="right">
+<a href="../Tutorials-reference.html" title="Tutorials">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../index.html">packerlabimaging 0.2-alpha documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../Tutorials-reference.html">Tutorials</a> »</li>
+<li class="nav-item nav-item-this"><a href="">Tutorial 1 - Initializing an Experiment</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright 2022, Packer Lab.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
     </div>
-  </body>
+</body>
 </html>

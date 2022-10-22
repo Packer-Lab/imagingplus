@@ -2,42 +2,38 @@
 <!DOCTYPE html>
 
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>packerlabimaging.processing.anndata &#8212; packerlabimaging 0.2-alpha documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sphinxdoc.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">packerlabimaging 0.2-alpha documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">packerlabimaging.processing.anndata</a></li> 
-      </ul>
-    </div>  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <h1>Source code for packerlabimaging.processing.anndata</h1><div class="highlight"><pre>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>packerlabimaging.processing.anndata — packerlabimaging 0.2-alpha documentation</title>
+<link href="../../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../../_static/sphinxdoc.css" rel="stylesheet" type="text/css"/>
+<link href="../../../_static/sg_gallery.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+<script src="../../../_static/jquery.js"></script>
+<script src="../../../_static/underscore.js"></script>
+<script src="../../../_static/doctools.js"></script>
+<script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+<link href="../../../genindex.html" rel="index" title="Index"/>
+<link href="../../../search.html" rel="search" title="Search"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../../index.html">packerlabimaging 0.2-alpha documentation</a> »</li>
+<li class="nav-item nav-item-1"><a accesskey="U" href="../../index.html">Module code</a> »</li>
+<li class="nav-item nav-item-this"><a href="">packerlabimaging.processing.anndata</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<h1>Source code for packerlabimaging.processing.anndata</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">anndata</span> <span class="k">as</span> <span class="nn">ad</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Literal</span>
 
@@ -46,112 +42,112 @@
 
 
 <div class="viewcode-block" id="AnnotatedData"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.anndata.AnnotatedData">[docs]</a><span class="k">class</span> <span class="nc">AnnotatedData</span><span class="p">(</span><span class="n">ad</span><span class="o">.</span><span class="n">AnnData</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates annotated cellsdata (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial.&quot;&quot;&quot;</span>
+    <span class="sd">"""Creates annotated cellsdata (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial."""</span>
 
 <div class="viewcode-block" id="AnnotatedData.__init__"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.anndata.AnnotatedData.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">adata_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">X</span><span class="p">,</span> <span class="s1">&#39;obs&#39;</span><span class="p">:</span> <span class="n">obs</span><span class="p">,</span> <span class="s1">&#39;var&#39;</span><span class="p">:</span> <span class="n">var</span><span class="p">}</span>
+        <span class="n">adata_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'X'</span><span class="p">:</span> <span class="n">X</span><span class="p">,</span> <span class="s1">'obs'</span><span class="p">:</span> <span class="n">obs</span><span class="p">,</span> <span class="s1">'var'</span><span class="p">:</span> <span class="n">var</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="o">*</span><span class="n">kwargs</span><span class="p">]:</span>
             <span class="n">adata_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
         <span class="n">ad</span><span class="o">.</span><span class="n">AnnData</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">adata_dict</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_label</span> <span class="o">=</span> <span class="n">data_label</span> <span class="k">if</span> <span class="n">data_label</span> <span class="k">else</span> <span class="kc">None</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created AnnData object: </span><span class="se">\n\t</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Created AnnData object: </span><span class="se">\n\t</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s2">&quot;extensive information about the AnnotatedData cellsdata structure&quot;</span>
+        <span class="s2">"extensive information about the AnnotatedData cellsdata structure"</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">:</span>
-            <span class="n">backed_at</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; backed at </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span><span class="si">!r}</span><span class="s2">&quot;</span>
+            <span class="n">backed_at</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">" backed at </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span><span class="si">!r}</span><span class="s2">"</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">backed_at</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">backed_at</span> <span class="o">=</span> <span class="s2">""</span>
 
-        <span class="n">descr</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Annotated Data of n_obs × n_vars = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_obs</span><span class="si">}</span><span class="s2"> × </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_vars</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">backed_at</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="n">descr</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">available attributes: &quot;</span>
+        <span class="n">descr</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Annotated Data of n_obs × n_vars = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_obs</span><span class="si">}</span><span class="s2"> × </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_vars</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">backed_at</span><span class="si">}</span><span class="s2">"</span>
+        <span class="n">descr</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">available attributes: "</span>
 
-        <span class="n">descr</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">.X (primary datamatrix) of .data_label: </span><span class="se">\n\t\t</span><span class="s2">|- </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_label</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_label</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">.X (primary datamatrix)&quot;</span>
-        <span class="n">descr</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">.obs (obs metadata): </span><span class="se">\n\t\t</span><span class="s2">|- </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">keys</span><span class="p">()))[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="n">descr</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">.var (vars metadata): </span><span class="se">\n\t\t</span><span class="s2">|- </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">keys</span><span class="p">()))[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">descr</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="se">\n\t</span><span class="s2">.X (primary datamatrix) of .data_label: </span><span class="se">\n\t\t</span><span class="s2">|- </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_label</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_label</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"</span><span class="se">\n\t</span><span class="s2">.X (primary datamatrix)"</span>
+        <span class="n">descr</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="se">\n\t</span><span class="s2">.obs (obs metadata): </span><span class="se">\n\t\t</span><span class="s2">|- </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">keys</span><span class="p">()))[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+        <span class="n">descr</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="se">\n\t</span><span class="s2">.var (vars metadata): </span><span class="se">\n\t\t</span><span class="s2">|- </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">keys</span><span class="p">()))[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="s2">&quot;.uns&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;.obsm&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;.varm&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;.layers&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;.obsp&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;.varp&quot;</span><span class="p">,</span>
+            <span class="s2">".uns"</span><span class="p">,</span>
+            <span class="s2">".obsm"</span><span class="p">,</span>
+            <span class="s2">".varm"</span><span class="p">,</span>
+            <span class="s2">".layers"</span><span class="p">,</span>
+            <span class="s2">".obsp"</span><span class="p">,</span>
+            <span class="s2">".varp"</span><span class="p">,</span>
         <span class="p">]:</span>
             <span class="n">keys</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">descr</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">: </span><span class="se">\n\t\t</span><span class="s2">|- </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">keys</span><span class="p">))[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">descr</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="se">\n\t</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">: </span><span class="se">\n\t\t</span><span class="s2">|- </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">keys</span><span class="p">))[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">return</span> <span class="n">descr</span>
 
     <span class="k">def</span> <span class="nf">_gen_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_obs</span><span class="p">,</span> <span class="n">n_vars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># overriding base method from AnnData</span>
-        <span class="sd">&quot;&quot;&quot;overrides the default anndata _gen_repr_() method for imaging cellsdata usage.</span>
+        <span class="sd">"""overrides the default anndata _gen_repr_() method for imaging cellsdata usage.</span>
 
 <span class="sd">        :param n_obs: number of observations in anndata table</span>
 <span class="sd">        :param n_vars: number of variables in anndata table</span>
 <span class="sd">        :return:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Annotated Data of n_obs (# ROIs) × n_vars (# Frames) = </span><span class="si">{</span><span class="n">n_obs</span><span class="si">}</span><span class="s2"> × </span><span class="si">{</span><span class="n">n_vars</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Annotated Data of n_obs (# ROIs) × n_vars (# Frames) = </span><span class="si">{</span><span class="n">n_obs</span><span class="si">}</span><span class="s2"> × </span><span class="si">{</span><span class="n">n_vars</span><span class="si">}</span><span class="s2">"</span>
 
 <div class="viewcode-block" id="AnnotatedData.add_obs"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.anndata.AnnotatedData.add_obs">[docs]</a>    <span class="k">def</span> <span class="nf">add_obs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;adds values to the observations of an anndata object, under the key obs_name</span>
+        <span class="sd">"""adds values to the observations of an anndata object, under the key obs_name</span>
 
 <span class="sd">        :param obs_name: name of new observation field to add to anndata table</span>
 <span class="sd">        :param values: list of data values to add under new observation field</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;# of values to add doesn&#39;t match # of observations in anndata array&quot;</span>
+<span class="sd">        """</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="sa">f</span><span class="s2">"# of values to add doesn't match # of observations in anndata array"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="n">obs_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span></div>
 
 <div class="viewcode-block" id="AnnotatedData.del_obs"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.anndata.AnnotatedData.del_obs">[docs]</a>    <span class="k">def</span> <span class="nf">del_obs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;removes a key from observations from an anndata object, of the key obs_name</span>
+        <span class="sd">"""removes a key from observations from an anndata object, of the key obs_name</span>
 
 <span class="sd">        :param obs_name: name of observation to remove</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">obs_name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AnnotatedData.add_var"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.anndata.AnnotatedData.add_var">[docs]</a>    <span class="k">def</span> <span class="nf">add_var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;adds values to the variables of an anndata object, under the key var_name</span>
+        <span class="sd">"""adds values to the variables of an anndata object, under the key var_name</span>
 
 <span class="sd">        :param var_name: name of new variable field to add to anndata table</span>
 <span class="sd">        :param values: list of data values to add under new variable field</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;# of values to add doesn&#39;t match # of observations in anndata array&quot;</span>
+<span class="sd">        """</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="sa">f</span><span class="s2">"# of values to add doesn't match # of observations in anndata array"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">var</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span></div>
 
 <div class="viewcode-block" id="AnnotatedData.del_var"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.anndata.AnnotatedData.del_var">[docs]</a>    <span class="k">def</span> <span class="nf">del_var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;removes a key from variables from an anndata object, of the key var_name</span>
+        <span class="sd">"""removes a key from variables from an anndata object, of the key var_name</span>
 
 <span class="sd">        :param var_name: name of variable to remove</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">var_name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AnnotatedData.extend_anndata"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.anndata.AnnotatedData.extend_anndata">[docs]</a>    <span class="k">def</span> <span class="nf">extend_anndata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">additional_adata</span><span class="p">:</span> <span class="n">ad</span><span class="o">.</span><span class="n">AnnData</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">"""</span>
 <span class="sd">        Extend with an additional anndata object. Specify axis to extend. Ensure that new anndata object matches number of variables or observations depending on</span>
 <span class="sd">        which axis is being extended.</span>
 
 <span class="sd">        :param additional_adata: an anndata object with matching observations or variables (depending on which axis is being extended).</span>
 <span class="sd">        :param axis: axis on which to extend</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">adata</span> <span class="o">=</span> <span class="n">ad</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="bp">self</span><span class="p">,</span> <span class="n">additional_adata</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">adata</span></div>
 
 <div class="viewcode-block" id="AnnotatedData.convert_to_df"><a class="viewcode-back" href="../../../reference.html#packerlabimaging.processing.anndata.AnnotatedData.convert_to_df">[docs]</a>    <span class="k">def</span> <span class="nf">convert_to_df</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">"""</span>
 <span class="sd">        Convert anndata object into a long-form pandas dataframe. primary purpose is to allow access to pandas and seaborn functionality more directly.</span>
 
 <span class="sd">        - overall seems to be working well. just need to test with a dataset with &gt;1 obs and var keys(), and to test with the whole larger dataset.</span>
 <span class="sd">        :return: long-form pandas dataframe</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">\- converting anndata cellsdata matrix to long-form pandas dataframe ... [in progress]&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">\- converting anndata cellsdata matrix to long-form pandas dataframe ... [in progress]"</span><span class="p">)</span>
 
         <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obs_keys</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">var_keys</span><span class="p">()[</span><span class="mi">0</span><span class="p">]]</span>
         <span class="n">cols</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obs_keys</span><span class="p">()[</span><span class="mi">1</span><span class="p">:])</span>
         <span class="n">cols</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">var_keys</span><span class="p">()[</span><span class="mi">1</span><span class="p">:])</span>
-        <span class="n">cols</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">data_label</span><span class="p">])</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="s1">&#39;&#39;</span> <span class="k">else</span> <span class="n">cols</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="s1">&#39;data_values&#39;</span><span class="p">)</span>
+        <span class="n">cols</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">data_label</span><span class="p">])</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="s1">''</span> <span class="k">else</span> <span class="n">cols</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="s1">'data_values'</span><span class="p">)</span>
 
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">cols</span><span class="p">)</span>
         <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
@@ -168,17 +164,17 @@
                 <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">dict_</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])])</span>
                 <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|- converting anndata cellsdata matrix to long-form pandas dataframe ... [finished]&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">|- converting anndata cellsdata matrix to long-form pandas dataframe ... [finished]"</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">df</span></div></div>
 
     <span class="c1"># @classmethod</span>
     <span class="c1"># def create_anndata(cls, trial: ImagingTrial):</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     """</span>
     <span class="c1">#     Alternative constructor to create anndata object using ImagingTrial as input.</span>
     <span class="c1">#     Creates annotated cellsdata (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial.</span>
     <span class="c1">#</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     """</span>
     <span class="c1">#     if trial.cells and trial.tmdata and trial.imdata:</span>
     <span class="c1">#         # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata</span>
     <span class="c1">#         # build dataframe for obs_meta from suite2p stat information</span>
@@ -186,61 +182,58 @@
     <span class="c1">#</span>
     <span class="c1">#         var_meta = trial.tmdata.cellsdata</span>
     <span class="c1">#</span>
-    <span class="c1">#         assert obs_meta.shape[0] == trial.imdata.cellsdata.shape[1], &#39;.cells.cellsdata shape does not match .imdata.cellsdata shape that are being set together.&#39;</span>
+    <span class="c1">#         assert obs_meta.shape[0] == trial.imdata.cellsdata.shape[1], '.cells.cellsdata shape does not match .imdata.cellsdata shape that are being set together.'</span>
     <span class="c1">#         if var_meta.shape[0] == trial.imdata.cellsdata.shape[0]:</span>
     <span class="c1">#             var_meta = var_meta.T</span>
     <span class="c1">#         elif var_meta.shape[1] != trial.imdata.cellsdata.shape[0]:</span>
-    <span class="c1">#             raise ValueError(&#39;.tmdata.cellsdata shape does not match .imdata.cellsdata shape that are being set together.&#39;)</span>
+    <span class="c1">#             raise ValueError('.tmdata.cellsdata shape does not match .imdata.cellsdata shape that are being set together.')</span>
     <span class="c1">#</span>
     <span class="c1">#</span>
-    <span class="c1">#         print(f&quot;\n\----- CREATING annotated cellsdata object using AnnData:&quot;)</span>
+    <span class="c1">#         print(f"\n\----- CREATING annotated cellsdata object using AnnData:")</span>
     <span class="c1">#         adata = cls(X=trial.imdata.cellsdata, obs=obs_meta, var=var_meta.T)</span>
     <span class="c1">#</span>
-    <span class="c1">#         print(f&quot;\n{adata}&quot;)</span>
+    <span class="c1">#         print(f"\n{adata}")</span>
     <span class="c1">#         return adata</span>
     <span class="c1">#</span>
     <span class="c1">#     else:</span>
     <span class="c1">#         Warning(</span>
-    <span class="c1">#             &#39;did not create anndata. anndata creation only available if experiments were processed with suite2p and .Paq file(s) provided for temporal synchronization&#39;)</span>
+    <span class="c1">#             'did not create anndata. anndata creation only available if experiments were processed with suite2p and .Paq file(s) provided for temporal synchronization')</span>
 </pre></div>
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
 </div>
 <script>$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">packerlabimaging 0.2-alpha documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">packerlabimaging.processing.anndata</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2022, Packer Lab.
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../../index.html">packerlabimaging 0.2-alpha documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../../index.html">Module code</a> »</li>
+<li class="nav-item nav-item-this"><a href="">packerlabimaging.processing.anndata</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright 2022, Packer Lab.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
     </div>
-  </body>
+</body>
 </html>

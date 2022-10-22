@@ -1,54 +1,149 @@
 
 <!DOCTYPE html>
 
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>Tutorial 7 - Integration with PACKIO outputs (.paq data) &#8212; imaging+ 0.2-beta documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Tutorial 8 - Extending built in classes" href="Tutorial-8-Extending-built-in-classes.html" />
-    <link rel="prev" title="Tutorial 6 - Annotated Data Module" href="Tutorial-6-anndata-module.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="Tutorial-8-Extending-built-in-classes.html" title="Tutorial 8 - Extending built in classes"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="Tutorial-6-anndata-module.html" title="Tutorial 6 - Annotated Data Module"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../Tutorials-reference.html" accesskey="U">Tutorials</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Tutorial 7 - Integration with PACKIO outputs (.paq data)</a></li> 
-      </ul>
-    </div>  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  
+<html lang="en">
+<head>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta charset="utf-8"/>
+<meta content="Docutils 0.17.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>Tutorial 7 - Integration with PACKIO outputs (.paq data) | imaging+ 0.2-beta documentation</title>
+<link href="../_static/pygments.css" rel="stylesheet"/>
+<link href="../_static/theme.9297a650d9dd3016d913.css" rel="stylesheet"/>
+<link href="../_static/sg_gallery.css" rel="stylesheet"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="Tutorial-8-Extending-built-in-classes.html" rel="next" title="Tutorial 8 - Extending built in classes"/>
+<link href="Tutorial-6-anndata-module.html" rel="prev" title="Tutorial 6 - Annotated Data Module"/>
+</head>
+<body class="antialiased text-gray scroll-smooth">
+<div class="min-h-screen xl:h-screen flex flex-col xl:grid xl:grid-layout print:block print:h-auto" data-action="keydown@window-&gt;search#focus " data-controller="sidebar search " id="page">
+<a class="block transition -translate-x-full focus:translate-x-0 opacity-0 focus:opacity-100 text-xl bg-white p-4 z-20 absolute top-0 left-0 h-14" href="#tutorial-7-integration-with-packio-outputs-paq-data" title="Skip navigation links">Skip to content</a>
+<header class="grid-area-header z-10 h-14 fixed w-full top-0 print:hidden">
+<div class="bg-gray-dark shadow-md flex items-center h-full xl:px-2 relative"><div class="flex items-center">
+<button class="xl:hidden h-14 w-14 leading-14 text-gray-100 hover:bg-gray-700 hover:text-brand focus:outline-none focus:bg-gray-700 focus:text-brand" data-action="sidebar#open" data-sidebar-target="hamburger">
+<span class="sr-only">Open navigation menu</span>
+<svg aria-hidden="true" class="fill-current h-8 w-8" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
+</button><a class="hover:bg-gray-700 focus:bg-gray-700 focus:outline-none" href="../index.html" title="Back to homepage"><img alt="Logo" class="h-14 w-14 p-3 inline-block" src="../_static/imagingplus-logo.png"/><span class="hidden lg:inline-block shrink-0 font-medium text-gray-100 mx-5 leading-14 tracking-wider">imaging+ 0.2-beta documentation</span>
+</a></div><div class="flex justify-end items-center flex-1"><form action="../search.html" class="flex print:hidden justify-between items-center leading-14 md:ml-4 bg-gray-dark text-gray-300 focus-within:bg-gray-50 focus-within:text-gray-800 focus-within:absolute focus-within:inset-x-0 focus-within:top-0 md:focus-within:w-full md:focus-within:static z-10" data-action="click-&gt;search#focusSearchInput" id="searchbox" method="get">
+<button aria-label="Get search results" class="text-inherit h-14 w-14" tabindex="-1">
+<svg aria-hidden="true" class="fill-current stroke-current h-8 w-8" stroke-width="0.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+</button>
+<input aria-label="Search the docs" class="pr-2 bg-transparent text-inherit focus:outline-none w-0 md:w-auto focus:w-full transition-all duration-100" data-search-target="searchInput" id="search-input" name="q" placeholder="Search the docs" type="search"/>
+</form></div>
+</div>
+</header>
+<aside class="grid-area-sidebar h-full fixed pt-14 xl:relative inset-y-0 left-0 z-20 xl:z-0 print:hidden overflow-y-auto transition-all transform transform-gpu -translate-x-full opacity-0 duration-300 xl:translate-x-0 xl:opacity-100" data-sidebar-target="sidebar">
+<nav class="h-full overflow-y-auto bg-white text-gray-600 pt-8 flex flex-col" role="navigation">
+<div class="nav-toc flex-1 pl-6"><ul class="current">
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../installation.html">Installation</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../installation.html#installation">Installation</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../installation.html#test-import-installation">Test/Import Installation</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../installation.html#dependencies">Dependencies</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../installation.html#next">Next</a></div></li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../quick-start-guide.html">Quick start guide</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../quick-start-guide.html#key-structures">Key Structures</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../quick-start-guide.html#next">Next</a></div></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../overview.html">Overview</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../overview.html#modular-data-processing-analysis-and-visualisation"><strong>Modular Data Processing, Analysis and Visualisation</strong></a></div></li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../overview.html#extensibility"><strong>Extensibility</strong></a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../overview.html#next">Next</a></div></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current expanded"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../Tutorials-reference.html">Tutorials</a></div><ul class="current">
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-1-Overview-of-Workflow.html">Tutorial 1 - Getting started with data</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-1-Overview-of-Workflow.html#Creating-an-experiment">Creating an experiment</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-1-Overview-of-Workflow.html#Adding-trials-to-an-experiment">Adding trials to an experiment</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-1-Overview-of-Workflow.html#Adding-calcium-imaging-processing-to-Experiment">Adding calcium imaging processing to Experiment</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-1-Overview-of-Workflow.html#Storing-Suite2p-processed-data-as-an-anndata-structure">Storing Suite2p processed data as an anndata structure</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-2-Organization-of-data-in-package-objects.html">Tutorial 2 - Data organization inside imaging+</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-2-Organization-of-data-in-package-objects.html#Importing-data-analysis-objects">Importing data analysis objects</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-2-Organization-of-data-in-package-objects.html#paq-data">paq data</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-2-Organization-of-data-in-package-objects.html#Annotated-Data">Annotated Data</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-3-plotting-module.html">Tutorial 3 - Making Useful Plots</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-3-plotting-module.html#plot-Suite2p-ROIs-location">plot Suite2p ROIs location</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-3-plotting-module.html#plot-default-output-images-from-Suite2p">plot default output images from Suite2p</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-3-plotting-module.html#plot-individual-cell’s-flu-or-dFF-trace">plot individual cell’s flu or dFF trace</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-3-plotting-module.html#Raw-average-trace-of-FOV">Raw average trace of FOV</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-4-nwb-conversion.html">Tutorial 4 - NWB Conversion</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-5-suite2p-module.html">Tutorial 5 - Integrating with Suite2p (running Suite2p pipeline and storing results)</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-5-suite2p-module.html#Adding-the-Suite2p-module">Adding the Suite2p module</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-5-suite2p-module.html#Prepare-for-Suite2p-run">Prepare for Suite2p run</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-5-suite2p-module.html#Run-Suite2p">Run Suite2p</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-5-suite2p-module.html#Explore-suite2p-results---next-steps-after-running-Suite2p">Explore suite2p results - next steps after running Suite2p</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-5-suite2p-module.html#Import-suite2p-results-directly">Import suite2p results directly</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-6-anndata-module.html">Tutorial 6 - Annotated Data Module</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-6-anndata-module.html#storage-of-Flu-data">storage of Flu data</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-6-anndata-module.html#observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">observations (Suite2p ROIs metadata and associated processing info)</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-6-anndata-module.html#variables-(temporal-synchronization-of-paq-channels-and-imaging)">variables (temporal synchronization of paq channels and imaging)</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2 current expanded"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="current reference internal" data-action="click-&gt;sidebar#close" href="#">Tutorial 7 - Integration with PACKIO outputs (.paq data)</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="#adding-paqdata-module-to-the-trialobj">adding paqdata module to the trialobj</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="#Processing-paq-data">Processing paq data</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="#Synchronizing-.paq-data-with-imaging-frames">Synchronizing .paq data with imaging frames</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-8-Extending-built-in-classes.html">Tutorial 8 - Extending built in classes</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-8-Extending-built-in-classes.html#Creating-a-custom-class-for-Interneuron-Gcamp-imaging-during-seizures">Creating a custom class for Interneuron Gcamp imaging during seizures</a></div></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../organization-of-modules.html">Main Modules</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../organization-of-modules.html#main">Main</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../organization-of-modules.html#processing">Processing</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../organization-of-modules.html#workflow">Workflow</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../organization-of-modules.html#utils">Utils</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../organization-of-modules.html#plotting">Plotting</a></div></li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../data-structure-details.html">Data structure details</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../data-structure-details.html#anndata-object-for-storing-multi-modal-data"><em>AnnData</em> object for storing multi-modal data</a></div></li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../making-plots.html">Making plots</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../making-plots.html#module-imagingplus.plotting.plotting">Available plotting functions:</a></div></li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../reference.html">API Reference</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../reference.html#module-imagingplus.main.core">core</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../reference.html#module-imagingplus.main.subcore">subcore</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../reference.html#module-imagingplus.plotting.plotting">plotting</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../reference.html#module-imagingplus.processing.anndata">processing</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../reference.html#workflows-alloptical">workflows (AllOptical)</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../reference.html#module-imagingplus.utils.io">utils</a></div></li>
+</ul>
+</li>
+</ul>
+</div>
+<button class="text-4xl text-gray-800 p-4 bottom-0 hover:text-brand xl:hidden focus:text-brand self-center" data-action="sidebar#close" title="Close navigation menu">
+<span class="sr-only">Close navigation menu</span>
+<svg aria-hidden="true" class="fill-current stroke-current h-6 w-6" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+</button>
+</nav>
+</aside>
+<main class="px-4 pt-14 xl:ml-fluid grid-area-main overflow-y-auto flex flex-col flex-1 h-full mx-0 md:mx-auto xl:mr-0"><nav aria-label="breadcrumbs" class="print:hidden mt-12 text-sm text-gray-light" role="navigation">
+<a class="text-gray-light text-sm hover:text-gray-dark font-medium focus:text-gray-dark" href="../index.html">imaging+ 0.2-beta documentation</a>
+<span class="mr-1">/</span><a class="text-gray-light text-sm hover:text-gray-dark" href="../Tutorials-reference.html">Tutorials</a>
+<span class="mr-1">/</span><span aria-current="page">Tutorial 7 - Integration with PACKIO outputs (.paq data)</span>
+</nav>
+<article class="flex-1" role="main">
 <style>
 /* CSS for nbsphinx extension */
 
@@ -297,202 +392,185 @@ div.rendered_html tbody tr:hover {
 }
 </style>
 <section id="Tutorial-7---Integration-with-PACKIO-outputs-(.paq-data)">
-<h1>Tutorial 7 - Integration with PACKIO outputs (.paq data)<a class="headerlink" href="#Tutorial-7---Integration-with-PACKIO-outputs-(.paq-data)" title="Permalink to this headline">¶</a></h1>
-<p>PACKIO is a software for temporal synchronization of experimental data acquisition and simultaneous hardware triggering. More information can be found at: <a class="reference external" href="https://github.com/apacker83/PackIO">https://github.com/apacker83/PackIO</a></p>
+<h1>Tutorial 7 - Integration with PACKIO outputs (.paq data)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Tutorial-7---Integration-with-PACKIO-outputs-(.paq-data)">¶</a></h1>
+<p>PACKIO is a software for temporal synchronization of experimental data acquisition and simultaneous hardware triggering. More information can be found at: <a class="reference external" href="https://github.com/apacker83/PackIO" rel="nofollow noopener">https://github.com/apacker83/PackIO<svg aria-hidden="true" class="external-link-icon" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 19H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path></svg></a></p>
 <p>The outputs of PACKIO is a .paq file that contains data across all channels collected.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imagingplus</span> <span class="k">as</span> <span class="nn">ip</span>
-<span class="n">prep</span> <span class="o">=</span> <span class="s1">&#39;PS12&#39;</span>
-<span class="n">date</span> <span class="o">=</span> <span class="s1">&#39;2021-01-25&#39;</span>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[ ]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython2</span></div>
+<div class="highlight"><pre><code><span class="kn">import</span> <span class="nn">imagingplus</span> <span class="k">as</span> <span class="nn">ip</span>
+<span class="n">prep</span> <span class="o">=</span> <span class="s1">'PS12'</span>
+<span class="n">date</span> <span class="o">=</span> <span class="s1">'2021-01-25'</span>
 
-<span class="n">expobj</span><span class="p">:</span> <span class="n">ip</span><span class="o">.</span><span class="n">Experiment</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;/home/pshah/mnt/qnap/Analysis/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">_analysis.pkl&#39;</span><span class="p">)</span>
+<span class="n">expobj</span><span class="p">:</span> <span class="n">ip</span><span class="o">.</span><span class="n">Experiment</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="sa">f</span><span class="s1">'/home/pshah/mnt/qnap/Analysis/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">_analysis.pkl'</span><span class="p">)</span>
 
 <span class="n">trialobj</span> <span class="o">=</span> <span class="n">expobj</span><span class="o">.</span><span class="n">load_trial</span><span class="p">(</span><span class="n">trialID</span><span class="o">=</span><span class="n">expobj</span><span class="o">.</span><span class="n">trialIDs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<br/></pre></div>
-</div>
+</code></pre></div></div>
 </div>
 <section id="adding-paqdata-module-to-the-trialobj">
-<h2>adding paqdata module to the trialobj<a class="headerlink" href="#adding-paqdata-module-to-the-trialobj" title="Permalink to this headline">¶</a></h2>
+<h2>adding paqdata module to the trialobj<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#adding-paqdata-module-to-the-trialobj">¶</a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">imagingplus.processing.paq</span> <span class="kn">import</span> <span class="n">PaqData</span>
-</pre></div>
-</div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[ ]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython2</span></div>
+<div class="highlight"><pre><code><span class="kn">from</span> <span class="nn">imagingplus.processing.paq</span> <span class="kn">import</span> <span class="n">PaqData</span>
+</code></pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># adding paqdata to the trialobj</span>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[ ]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython2</span></div>
+<div class="highlight"><pre><code><span class="c1"># adding paqdata to the trialobj</span>
 
-<span class="n">paq_path</span> <span class="o">=</span> <span class="s1">&#39;/home/pshah/mnt/qnap/Data/2021-01-25/2021-01-25_PS12_001.paq&#39;</span>
+<span class="n">paq_path</span> <span class="o">=</span> <span class="s1">'/home/pshah/mnt/qnap/Data/2021-01-25/2021-01-25_PS12_001.paq'</span>
 <span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">PaqData</span><span class="o">.</span><span class="n">import_paqdata</span><span class="p">(</span><span class="n">paq_path</span><span class="o">=</span><span class="n">paq_path</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
+</code></pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># inspect the newly created .Paq module</span>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[ ]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython2</span></div>
+<div class="highlight"><pre><code><span class="c1"># inspect the newly created .Paq module</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="p">)</span>
-</pre></div>
+</code></pre></div></div>
 </div>
-</div>
-<p>We can perform a quick plot of paq data channel for quick visualization using the <code class="docutils literal notranslate"><span class="pre">plot__paq_channel()</span></code> function from the <code class="docutils literal notranslate"><span class="pre">plotting</span></code> submodule.</p>
+<p>We can perform a quick plot of paq data channel for quick visualization using the <code class="docutils literal notranslate">plot__paq_channel()</code> function from the <code class="docutils literal notranslate">plotting</code> submodule.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot paq channel data</span>
-<span class="n">ip</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">plot__paq_channel</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s1">&#39;voltage&#39;</span><span class="p">,</span> <span class="n">x_axis</span><span class="o">=</span><span class="s1">&#39;Time (secs)&#39;</span><span class="p">,</span> <span class="n">x_tick_secs</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[ ]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython2</span></div>
+<div class="highlight"><pre><code><span class="c1"># plot paq channel data</span>
+<span class="n">ip</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">plot__paq_channel</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s1">'voltage'</span><span class="p">,</span> <span class="n">x_axis</span><span class="o">=</span><span class="s1">'Time (secs)'</span><span class="p">,</span> <span class="n">x_tick_secs</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+</code></pre></div></div>
 </div>
 </section>
 <section id="Processing-paq-data">
-<h2>Processing paq data<a class="headerlink" href="#Processing-paq-data" title="Permalink to this headline">¶</a></h2>
+<h2>Processing paq data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Processing-paq-data">¶</a></h2>
 <p>In this paq data, one of the channels recorded the microscope imaging frame clock. We can retrieve these frame clock times to retrieve the paq clock timestamps when the imaging period began and finished.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># finding frame times of imaging from the frame clock channel (&quot;frame_clock&quot;).</span>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[ ]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython2</span></div>
+<div class="highlight"><pre><code><span class="c1"># finding frame times of imaging from the frame clock channel ("frame_clock").</span>
 
-<span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">frame_times</span> <span class="o">=</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">paq_frame_times</span><span class="p">(</span><span class="n">frame_channel</span><span class="o">=</span><span class="s1">&#39;frame_clock&#39;</span><span class="p">)</span>
-<br/></pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># crop all channels in paq data to the start and finish of the imaging period within the trial.</span>
-<span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">cropPaqData</span><span class="p">(</span><span class="n">begin</span><span class="o">=</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">frame_times</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">end</span><span class="o">=</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">frame_times</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">channels</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+<span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">frame_times</span> <span class="o">=</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">paq_frame_times</span><span class="p">(</span><span class="n">frame_channel</span><span class="o">=</span><span class="s1">'frame_clock'</span><span class="p">)</span>
+</code></pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[ ]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython2</span></div>
+<div class="highlight"><pre><code><span class="c1"># crop all channels in paq data to the start and finish of the imaging period within the trial.</span>
+<span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">cropPaqData</span><span class="p">(</span><span class="n">begin</span><span class="o">=</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">frame_times</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">end</span><span class="o">=</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">frame_times</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">channels</span><span class="o">=</span><span class="s1">'all'</span><span class="p">)</span>
+</code></pre></div></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot to confirm that the cropping executed as expected</span>
-<span class="n">ip</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">plot__paq_channel</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s1">&#39;voltage&#39;</span><span class="p">,</span> <span class="n">x_axis</span><span class="o">=</span><span class="s1">&#39;Time (secs)&#39;</span><span class="p">,</span> <span class="n">x_tick_secs</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="nbinput nblast docutils container">
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[ ]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython2</span></div>
+<div class="highlight"><pre><code><span class="c1"># plot to confirm that the cropping executed as expected</span>
+<span class="n">ip</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">plot__paq_channel</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s1">'voltage'</span><span class="p">,</span> <span class="n">x_axis</span><span class="o">=</span><span class="s1">'Time (secs)'</span><span class="p">,</span> <span class="n">x_tick_secs</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+</code></pre></div></div>
 </div>
 </section>
 <section id="Synchronizing-.paq-data-with-imaging-frames">
-<h2>Synchronizing .paq data with imaging frames<a class="headerlink" href="#Synchronizing-.paq-data-with-imaging-frames" title="Permalink to this headline">¶</a></h2>
-<p>Since, imaging is generally performed at multiple orders of magnitude slower data collection speed, we have provided the <code class="docutils literal notranslate"><span class="pre">get_sparse_paq()</span></code> method in the .Paq module to collect paq data from channels at timepoints synchronized with only the imaging frames (found under <code class="docutils literal notranslate"><span class="pre">.Paq.frame_times</span></code>.</p>
+<h2>Synchronizing .paq data with imaging frames<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Synchronizing-.paq-data-with-imaging-frames">¶</a></h2>
+<p>Since, imaging is generally performed at multiple orders of magnitude slower data collection speed, we have provided the <code class="docutils literal notranslate">get_sparse_paq()</code> method in the .Paq module to collect paq data from channels at timepoints synchronized with only the imaging frames (found under <code class="docutils literal notranslate">.Paq.frame_times</code>.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">get_sparse_paq</span><span class="p">(</span><span class="n">frame_clock</span><span class="o">=</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">frame_times</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[ ]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython2</span></div>
+<div class="highlight"><pre><code><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">get_sparse_paq</span><span class="p">(</span><span class="n">frame_clock</span><span class="o">=</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">frame_times</span><span class="p">)</span>
+</code></pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[ ]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython2</span></div>
+<div class="highlight"><pre><code>
+</code></pre></div></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
+<div class="nbinput nblast docutils container">
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[ ]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython2</span></div>
+<div class="highlight"><pre><code>
+</code></pre></div></div>
 </div>
 </section>
 </section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="../index.html">
-              <img class="logo" src="../_static/imagingplus-logo.png" alt="Logo"/>
-            </a></p>
-  <div>
-    <h3><a href="../index.html">Table of Contents</a></h3>
-    <ul>
-<li><a class="reference internal" href="#">Tutorial 7 - Integration with PACKIO outputs (.paq data)</a><ul>
-<li><a class="reference internal" href="#adding-paqdata-module-to-the-trialobj">adding paqdata module to the trialobj</a></li>
-<li><a class="reference internal" href="#Processing-paq-data">Processing paq data</a></li>
-<li><a class="reference internal" href="#Synchronizing-.paq-data-with-imaging-frames">Synchronizing .paq data with imaging frames</a></li>
-</ul>
-</li>
-</ul>
-
-  </div>
-  <div>
-    <h4>Previous topic</h4>
-    <p class="topless"><a href="Tutorial-6-anndata-module.html"
-                          title="previous chapter">Tutorial 6 - Annotated Data Module</a></p>
-  </div>
-  <div>
-    <h4>Next topic</h4>
-    <p class="topless"><a href="Tutorial-8-Extending-built-in-classes.html"
-                          title="next chapter">Tutorial 8 - Extending built in classes</a></p>
-  </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/Tutorials/Tutorial-7-paq-module.ipynb.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
+</article>
+<footer>
+<div class="mt-20 mb-4 text-sm text-gray-700 print:mt-4">© 2022, Packer Lab Made with <a href="https://www.sphinx-doc.org">Sphinx 4.4.0</a></div>
+</footer></main>
+<button class="fixed bottom-0 right-0 z-20 opacity-0 p-4 m-4 tracking-wide bg-gray-900 text-gray-100 transition transform transform-gpu duration-500 translate-y-full" data-action="search#hideSnackbar" data-search-target="snackbar">
+  Clear highlights
+</button><div class="fixed hidden inset-0 bg-black bg-opacity-50" data-action="click-&gt;sidebar#close" data-sidebar-target="screen">
 </div>
-<script>$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="Tutorial-8-Extending-built-in-classes.html" title="Tutorial 8 - Extending built in classes"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="Tutorial-6-anndata-module.html" title="Tutorial 6 - Annotated Data Module"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../Tutorials-reference.html" >Tutorials</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Tutorial 7 - Integration with PACKIO outputs (.paq data)</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2022, Packer Lab.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
-    </div>
-  </body>
+</div>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/doctools.js"></script>
+<script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+<script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="../_static/theme.3051a0ec24cad00d4d88.js"></script>
+</body>
 </html>

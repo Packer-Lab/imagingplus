@@ -2,42 +2,38 @@
 <!DOCTYPE html>
 
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>imagingplus.main.subcore &#8212; imaging+ 0.2-beta documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sphinxdoc.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">imagingplus.main.subcore</a></li> 
-      </ul>
-    </div>  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <h1>Source code for imagingplus.main.subcore</h1><div class="highlight"><pre>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>imagingplus.main.subcore — imaging+ 0.2-beta documentation</title>
+<link href="../../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../../_static/sphinxdoc.css" rel="stylesheet" type="text/css"/>
+<link href="../../../_static/sg_gallery.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+<script src="../../../_static/jquery.js"></script>
+<script src="../../../_static/underscore.js"></script>
+<script src="../../../_static/doctools.js"></script>
+<script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+<link href="../../../genindex.html" rel="index" title="Index"/>
+<link href="../../../search.html" rel="search" title="Search"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../../index.html">imaging+ 0.2-beta documentation</a> »</li>
+<li class="nav-item nav-item-1"><a accesskey="U" href="../../index.html">Module code</a> »</li>
+<li class="nav-item nav-item-this"><a href="">imagingplus.main.subcore</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<h1>Source code for imagingplus.main.subcore</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">MutableMapping</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TypedDict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
@@ -48,7 +44,7 @@
 
 <div class="viewcode-block" id="TemporalData"><a class="viewcode-back" href="../../../reference.html#imagingplus.main.subcore.TemporalData">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">TemporalData</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;1-D time series datasets corresponding with an imaging trial. Accomodates all 1-D series that are temporally synchronized to each other.&quot;&quot;&quot;</span>
+    <span class="sd">"""1-D time series datasets corresponding with an imaging trial. Accomodates all 1-D series that are temporally synchronized to each other."""</span>
     <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1">#: path to cellsdata file</span>
     <span class="n">sampling_rate</span><span class="p">:</span> <span class="nb">float</span>  <span class="c1">#: rate of cellsdata collection (Hz)</span>
     <span class="n">channels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>  <span class="c1">#: list of cellsdata channel names.</span>
@@ -61,83 +57,83 @@
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">):</span> <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Units must be provided for all channels.&#39;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created new TemporalData of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="si">}</span><span class="s2"> x </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_timepoints</span><span class="si">}</span><span class="s2"> (sampled at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sampling_rate</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">):</span> <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Units must be provided for all channels.'</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Created new TemporalData of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="si">}</span><span class="s2"> x </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_timepoints</span><span class="si">}</span><span class="s2"> (sampled at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sampling_rate</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">pass</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;TemporalData module, containing </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_timepoints</span><span class="si">}</span><span class="s2"> timepoints and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="si">}</span><span class="s2"> channels.&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"TemporalData module, containing </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_timepoints</span><span class="si">}</span><span class="s2"> timepoints and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="si">}</span><span class="s2"> channels."</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;TemporalData module, containing </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_timepoints</span><span class="si">}</span><span class="s2"> timepoints and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="si">}</span><span class="s2"> channels: </span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"TemporalData module, containing </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_timepoints</span><span class="si">}</span><span class="s2"> timepoints and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="si">}</span><span class="s2"> channels: </span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;number of timed imaging frames</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">"""number of timed imaging frames</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_times</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_timepoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;number of cellsdata collection timepoints</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">"""number of cellsdata collection timepoints</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;number of cellsdata collection channels</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">"""number of cellsdata collection channels</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="TemporalData.get_sparse_data"><a class="viewcode-back" href="../../../reference.html#imagingplus.main.subcore.TemporalData.get_sparse_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_sparse_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_times</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">"""</span>
 <span class="sd">        Returns dictionary of numpy array keyed on channels from paq_data timed to 2photon imaging frame_times.</span>
 <span class="sd">        In effect this works as a downsampling algorithm.</span>
 
 <span class="sd">        :param frame_times: imaging frame timestamps to use for collecting sparse temporal data</span>
 <span class="sd">        :return: Dataframe of sparse temporal data across all temporal data channels collected</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                       <span class="s1">&#39;frame_times&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">frame_times</span><span class="p">,</span> <span class="s1">&#39;no frame_times given to retrieve temporal sync. data from those timestamps.&#39;</span>
+                       <span class="s1">'frame_times'</span><span class="p">)</span> <span class="ow">or</span> <span class="n">frame_times</span><span class="p">,</span> <span class="s1">'no frame_times given to retrieve temporal sync. data from those timestamps.'</span>
 
         <span class="n">frame_times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_times</span> <span class="k">if</span> <span class="n">frame_times</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">frame_times</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">\- Getting imaging key frames timed cellsdata from </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">frame_times</span><span class="p">)</span><span class="si">}</span><span class="s2"> frames ... &quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n\t</span><span class="s2">\- Getting imaging key frames timed cellsdata from </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">frame_times</span><span class="p">)</span><span class="si">}</span><span class="s2"> frames ... "</span><span class="p">)</span>
 
         <span class="c1"># read in and save sparse version of all tmdata channels (only save tmdata from timepoints at frame clock times)</span>
         <span class="n">sparse_data</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">chan</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t\t</span><span class="s1">\- Adding sparse tmdata for channel: </span><span class="si">{</span><span class="n">chan</span><span class="si">}</span><span class="s1"> &#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="se">\t\t</span><span class="s1">\- Adding sparse tmdata for channel: </span><span class="si">{</span><span class="n">chan</span><span class="si">}</span><span class="s1"> '</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">frame_times</span><span class="p">,</span> <span class="n">chan</span><span class="p">]</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                <span class="c1"># assert self.crop_offset_time == 0, &#39;not able to collect sparse data from cropped data.&#39;</span>
+                <span class="c1"># assert self.crop_offset_time == 0, 'not able to collect sparse data from cropped data.'</span>
                 <span class="n">frame_idxs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_times</span><span class="p">)</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">frame_idxs</span><span class="p">,</span> <span class="n">idx</span><span class="p">]</span>
             <span class="n">sparse_data</span><span class="p">[</span><span class="n">chan</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
 
         <span class="n">sparse_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">sparse_data</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">|- Collected sparse data:  </span><span class="si">{</span><span class="n">sparse_data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> ... &quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\t</span><span class="s2">|- Collected sparse data:  </span><span class="si">{</span><span class="n">sparse_data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> ... "</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">sparse_data</span></div>
 
-<div class="viewcode-block" id="TemporalData.cropData"><a class="viewcode-back" href="../../../reference.html#imagingplus.main.subcore.TemporalData.cropData">[docs]</a>    <span class="k">def</span> <span class="nf">cropData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">begin</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">channels</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">replace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="TemporalData.cropData"><a class="viewcode-back" href="../../../reference.html#imagingplus.main.subcore.TemporalData.cropData">[docs]</a>    <span class="k">def</span> <span class="nf">cropData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">begin</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">channels</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">'all'</span><span class="p">,</span> <span class="n">replace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">"""</span>
 <span class="sd">        Crops saved temporal cellsdata channels to the timestamps of begin and end.</span>
 
-<span class="sd">        :param channels: channels to crop cellsdata, default is &#39;all&#39; (all channels in dataset).</span>
+<span class="sd">        :param channels: channels to crop cellsdata, default is 'all' (all channels in dataset).</span>
 <span class="sd">        :param begin: timestamp to begin cropping at</span>
 <span class="sd">        :param end: timestamp to end cropping at</span>
 <span class="sd">        :param replace: if True, then replace .cellsdata attribute with newly cropped cellsdata. if False, return the cropped dataframe.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
-        <span class="n">channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span> <span class="k">if</span> <span class="n">channels</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span> <span class="k">else</span> <span class="n">channels</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;\- cropping </span><span class="si">{</span><span class="n">channels</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">begin</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">end</span><span class="si">}</span><span class="s2"> paq clock times.&quot;</span><span class="p">)</span>
+        <span class="n">channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span> <span class="k">if</span> <span class="n">channels</span> <span class="o">==</span> <span class="s1">'all'</span> <span class="k">else</span> <span class="n">channels</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"\- cropping </span><span class="si">{</span><span class="n">channels</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">begin</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">end</span><span class="si">}</span><span class="s2"> paq clock times."</span><span class="p">)</span>
 
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="p">(</span>
-                <span class="n">end</span> <span class="o">-</span> <span class="n">begin</span><span class="p">),</span> <span class="sa">f</span><span class="s1">&#39;Not enough time series samples in cellsdata to crop between the provided times.&#39;</span>
+                <span class="n">end</span> <span class="o">-</span> <span class="n">begin</span><span class="p">),</span> <span class="sa">f</span><span class="s1">'Not enough time series samples in cellsdata to crop between the provided times.'</span>
         <span class="n">data_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">begin</span><span class="p">:</span> <span class="n">end</span><span class="p">,</span> <span class="n">channels</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">replace</span><span class="p">:</span>
@@ -149,72 +145,72 @@
 
         <span class="c1"># older approach...</span>
         <span class="c1"># for channel in channels:</span>
-        <span class="c1">#     print(f&quot;\- cropping {channel} to {begin} and {end} paq clock times.&quot;)</span>
+        <span class="c1">#     print(f"\- cropping {channel} to {begin} and {end} paq clock times.")</span>
         <span class="c1">#     cellsdata = self.cellsdata[channel].to_numpy()</span>
-        <span class="c1">#     assert len(cellsdata) &gt;= (end - begin), f&#39;{channel} paq cellsdata is not long enough to crop between the provided clock times.&#39;</span>
+        <span class="c1">#     assert len(cellsdata) &gt;= (end - begin), f'{channel} paq cellsdata is not long enough to crop between the provided clock times.'</span>
         <span class="c1">#     cropdata = cellsdata[begin: end]</span>
         <span class="c1">#     setattr(self, channel, cropdata)</span>
 
 
 <div class="viewcode-block" id="CellAnnotations"><a class="viewcode-back" href="../../../reference.html#imagingplus.main.subcore.CellAnnotations">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">CellAnnotations</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Annotations of cells in an imaging trial.&quot;&quot;&quot;</span>
+    <span class="sd">"""Annotations of cells in an imaging trial."""</span>
 
 <div class="viewcode-block" id="CellAnnotations.__init__"><a class="viewcode-back" href="../../../reference.html#imagingplus.main.subcore.CellAnnotations.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cells_array</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">RangeIndex</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">annotations</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">],</span>
                  <span class="n">cellsdata</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">],</span> <span class="n">multidim_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">"""</span>
 
 <span class="sd">        :param cells_array: ID of all cells in imaging dataset. must be of same cell length as imaging dataset.</span>
 <span class="sd">        :param annotations: list of names of annotations</span>
 <span class="sd">        :param cellsdata: M x Cells array of an arbritrary number (M) 1D annotations channels collected for all Cells. must contain same number of cells as cells_array.</span>
 <span class="sd">        :param multidim_data: annotations with cellsdata of unconstrained dimensions for all cells. Structured as dictionary with keys corresponding to annotation name and a list of the length of cells containing cellsdata in any format.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">cells_array</span> <span class="o">=</span> <span class="n">cells_array</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="n">annotations</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cellsdata</span> <span class="o">=</span> <span class="n">cellsdata</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">multidim_data</span> <span class="o">=</span> <span class="n">multidim_data</span>
 
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cellsdata</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_cells</span><span class="p">,</span> <span class="s1">&#39;mismatch of # of cells and cellsdata field.&#39;</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;\- added CellAnnotations module. consisting of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_annotations</span><span class="si">}</span><span class="s1"> annotations x </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_cells</span><span class="si">}</span><span class="s1"> cells.&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cellsdata</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_cells</span><span class="p">,</span> <span class="s1">'mismatch of # of cells and cellsdata field.'</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'\- added CellAnnotations module. consisting of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_annotations</span><span class="si">}</span><span class="s1"> annotations x </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_cells</span><span class="si">}</span><span class="s1"> cells.'</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">multidim_data</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">multidim_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_cells</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;length of </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> of multidimdata does not match number of cells.&quot;</span><span class="p">)</span></div>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"length of </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> of multidimdata does not match number of cells."</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;CellAnnotations module, containing </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_cells</span><span class="si">}</span><span class="s2"> cells and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_annotations</span><span class="si">}</span><span class="s2"> annotations.&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"CellAnnotations module, containing </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_cells</span><span class="si">}</span><span class="s2"> cells and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_annotations</span><span class="si">}</span><span class="s2"> annotations."</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;CellAnnotations module, containing </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_cells</span><span class="si">}</span><span class="s2"> cells and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_annotations</span><span class="si">}</span><span class="s2"> annotations: </span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"CellAnnotations module, containing </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_cells</span><span class="si">}</span><span class="s2"> cells and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_annotations</span><span class="si">}</span><span class="s2"> annotations: </span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="c1"># constructors:</span>
     <span class="c1"># @classmethod</span>
     <span class="c1"># def s2p_to_CellAnnotations(cls, s2pTrial):</span>
-    <span class="c1">#     &quot;&quot;&quot;alternative constructor for CellAnnotations from suite2p results.&quot;&quot;&quot;</span>
+    <span class="c1">#     """alternative constructor for CellAnnotations from suite2p results."""</span>
     <span class="c1">#     cellsdata = s2pTrial.setCellsAnnotations()</span>
-    <span class="c1">#     obj = cls(cells_array=cellsdata[&#39;original_index&#39;], annotations=cellsdata.columns, cellsdata=cellsdata)</span>
+    <span class="c1">#     obj = cls(cells_array=cellsdata['original_index'], annotations=cellsdata.columns, cellsdata=cellsdata)</span>
     <span class="c1">#     return obj</span>
 
     <span class="c1"># properties:</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_cells</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;number of cells</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">"""number of cells</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cells_array</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;number of annotations</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">"""number of annotations</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">cell_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;ID of cells. redundancy of .cells_array.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="s1">&#39;cell_id&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cellsdata</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cellsdata</span><span class="p">[</span><span class="s1">&#39;cell_id&#39;</span><span class="p">])</span>
+        <span class="sd">"""ID of cells. redundancy of .cells_array.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="s1">'cell_id'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cellsdata</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cellsdata</span><span class="p">[</span><span class="s1">'cell_id'</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cells_array</span><span class="p">)</span></div>
 
@@ -223,39 +219,39 @@
 
 <div class="viewcode-block" id="ImagingData"><a class="viewcode-back" href="../../../reference.html#imagingplus.main.subcore.ImagingData">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">ImagingData</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Imaging dataset.&quot;&quot;&quot;</span>
+    <span class="sd">"""Imaging dataset."""</span>
 
 <div class="viewcode-block" id="ImagingData.__init__"><a class="viewcode-back" href="../../../reference.html#imagingplus.main.subcore.ImagingData.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imdata</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">"""</span>
 <span class="sd">        Imaging dataset.</span>
 
 <span class="sd">        :param imdata: N rois x num_frames, table of imaging data of cells (N) collected over time (Frames)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">imdata</span> <span class="o">=</span> <span class="n">imdata</span>  <span class="c1">#: N rois x num_frames, table of imaging data of cells (N) collected over time (Frames)</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;\- added ImagingData module. consisting of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">imdata</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1"> ROIs x Frames.&#39;</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'\- added ImagingData module. consisting of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">imdata</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1"> ROIs x Frames.'</span><span class="p">)</span></div>
 
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;number of imaging frames in imaging data</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">"""number of imaging frames in imaging data</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">imdata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_rois</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;number of ROIs in imaging data</span>
+        <span class="sd">"""number of ROIs in imaging data</span>
 <span class="sd">        :return:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">imdata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="ImagingMetadata"><a class="viewcode-back" href="../../../reference.html#imagingplus.main.subcore.ImagingMetadata">[docs]</a><span class="k">class</span> <span class="nc">ImagingMetadata</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Metadata about imaging system parameters.&quot;&quot;&quot;</span>
+    <span class="sd">"""Metadata about imaging system parameters."""</span>
 
-    <span class="n">PIXEL_SIZE_UNITS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;microns per pixel&#39;</span>  <span class="c1">#: units for the values of the size of imaging pixels</span>
-    <span class="n">IMAGING_SIGNAL_UNITS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;A.U.&#39;</span>  <span class="c1">#: set as arbitrary units</span>
+    <span class="n">PIXEL_SIZE_UNITS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'microns per pixel'</span>  <span class="c1">#: units for the values of the size of imaging pixels</span>
+    <span class="n">IMAGING_SIGNAL_UNITS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'A.U.'</span>  <span class="c1">#: set as arbitrary units</span>
 
 <div class="viewcode-block" id="ImagingMetadata.__init__"><a class="viewcode-back" href="../../../reference.html#imagingplus.main.subcore.ImagingMetadata.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">microscope</span><span class="p">,</span> <span class="n">n_frames</span><span class="p">,</span> <span class="n">fps</span><span class="p">,</span> <span class="n">frame_x</span><span class="p">,</span> <span class="n">frame_y</span><span class="p">,</span> <span class="n">n_planes</span><span class="p">,</span> <span class="n">pix_sz_x</span><span class="p">,</span> <span class="n">pix_sz_y</span><span class="p">,</span> <span class="n">emission_lambda</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">excitation_lambda</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">microscope</span> <span class="o">=</span> <span class="n">microscope</span>  <span class="c1">#: given name of microscope</span>
@@ -272,57 +268,54 @@
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;ImagingMetadata for imaging cellsdata collected with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">microscope</span><span class="si">}</span><span class="s1">.&#39;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'ImagingMetadata for imaging cellsdata collected with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">microscope</span><span class="si">}</span><span class="s1">.'</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">fov_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">x_length_um</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">pix_sz_x</span>
         <span class="n">y_length_um</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_y</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">pix_sz_y</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;FOV size: (X): </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">x_length_um</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s1">microns, (Y): </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">y_length_um</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s1">microns&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'FOV size: (X): </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">x_length_um</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s1">microns, (Y): </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">y_length_um</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s1">microns'</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">x_length_um</span><span class="p">,</span> <span class="n">y_length_um</span></div>
 
 </pre></div>
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="../../../index.html">
-              <img class="logo" src="../../../_static/imagingplus-logo.png" alt="Logo"/>
-            </a></p>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<p class="logo"><a href="../../../index.html">
+<img alt="Logo" class="logo" src="../../../_static/imagingplus-logo.png"/>
+</a></p>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
 </div>
 <script>$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">imagingplus.main.subcore</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2022, Packer Lab.
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../../index.html">imaging+ 0.2-beta documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../../index.html">Module code</a> »</li>
+<li class="nav-item nav-item-this"><a href="">imagingplus.main.subcore</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright 2022, Packer Lab.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
     </div>
-  </body>
+</body>
 </html>

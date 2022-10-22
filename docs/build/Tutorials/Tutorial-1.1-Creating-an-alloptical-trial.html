@@ -2,45 +2,39 @@
 <!DOCTYPE html>
 
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-
-    <title>Creating an experiment - UPDATED MAR 29 2022 &#8212; packerlabimaging 0.2-alpha documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">packerlabimaging 0.2-alpha documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Creating an experiment - UPDATED MAR 29 2022</a></li> 
-      </ul>
-    </div>  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>Creating an experiment - UPDATED MAR 29 2022 — packerlabimaging 0.2-alpha documentation</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinxdoc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+<script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="../search.html" rel="search" title="Search"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="nav-item nav-item-0"><a href="../index.html">packerlabimaging 0.2-alpha documentation</a> »</li>
+<li class="nav-item nav-item-this"><a href="">Creating an experiment - UPDATED MAR 29 2022</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
 <style>
 /* CSS for nbsphinx extension */
 
@@ -305,8 +299,8 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <section id="Creating-an-experiment---UPDATED-MAR-29-2022">
-<h1>Creating an experiment - UPDATED MAR 29 2022<a class="headerlink" href="#Creating-an-experiment---UPDATED-MAR-29-2022" title="Permalink to this heading">¶</a></h1>
-<p>The first step towards starting the analysis pipeline and creating the <code class="docutils literal notranslate"><span class="pre">Experiment</span></code> object is to create a dictionary (<code class="docutils literal notranslate"><span class="pre">ExperimentMetainfo</span></code>) to collect the metadata fields required for initializing <code class="docutils literal notranslate"><span class="pre">Experiment</span></code>. In <code class="docutils literal notranslate"><span class="pre">ExperimentMetainfo</span></code>, we provide initial information about the experiment.</p>
+<h1>Creating an experiment - UPDATED MAR 29 2022<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Creating-an-experiment---UPDATED-MAR-29-2022">¶</a></h1>
+<p>The first step towards starting the analysis pipeline and creating the <code class="docutils literal notranslate">Experiment</code> object is to create a dictionary (<code class="docutils literal notranslate">ExperimentMetainfo</code>) to collect the metadata fields required for initializing <code class="docutils literal notranslate">Experiment</code>. In <code class="docutils literal notranslate">ExperimentMetainfo</code>, we provide initial information about the experiment.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -317,15 +311,15 @@ div.rendered_html tbody tr:hover {
 <span class="kn">from</span> <span class="nn">packerlabimaging.main.paq</span> <span class="kn">import</span> <span class="n">PaqData</span>
 <span class="kn">from</span> <span class="nn">packerlabimaging.processing.imagingMetadata</span> <span class="kn">import</span> <span class="n">PrairieViewMetadata</span>
 
-<span class="n">LOCAL_DATA_PATH</span> <span class="o">=</span> <span class="s1">&#39;/Users/prajayshah/data/oxford-data-to-process/&#39;</span>
-<span class="n">REMOTE_DATA_PATH</span> <span class="o">=</span> <span class="s1">&#39;/home/pshah/mnt/qnap/Data/&#39;</span>
+<span class="n">LOCAL_DATA_PATH</span> <span class="o">=</span> <span class="s1">'/Users/prajayshah/data/oxford-data-to-process/'</span>
+<span class="n">REMOTE_DATA_PATH</span> <span class="o">=</span> <span class="s1">'/home/pshah/mnt/qnap/Data/'</span>
 <span class="n">BASE_PATH</span> <span class="o">=</span> <span class="n">LOCAL_DATA_PATH</span>
 
 <span class="n">ExperimentMetainfo</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;dataPath&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BASE_PATH</span><span class="si">}</span><span class="s1">/2020-12-19/2020-12-19_t-013/2020-12-19_t-013_Cycle00001_Ch3.tif&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;saveDir&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BASE_PATH</span><span class="si">}</span><span class="s1">/2020-12-19/&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;expID&#39;</span><span class="p">:</span> <span class="s1">&#39;RL109&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;comment&#39;</span><span class="p">:</span> <span class="s1">&#39;two photon imaging + alloptical trials&#39;</span><span class="p">,</span>
+    <span class="s1">'dataPath'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">BASE_PATH</span><span class="si">}</span><span class="s1">/2020-12-19/2020-12-19_t-013/2020-12-19_t-013_Cycle00001_Ch3.tif'</span><span class="p">,</span>
+    <span class="s1">'saveDir'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">BASE_PATH</span><span class="si">}</span><span class="s1">/2020-12-19/'</span><span class="p">,</span>
+    <span class="s1">'expID'</span><span class="p">:</span> <span class="s1">'RL109'</span><span class="p">,</span>
+    <span class="s1">'comment'</span><span class="p">:</span> <span class="s1">'two photon imaging + alloptical trials'</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="c1"># create the experiment</span>
@@ -339,7 +333,7 @@ div.rendered_html tbody tr:hover {
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Warning: cellpose did not import
-No module named &#39;cellpose&#39;
+No module named 'cellpose'
 cannot use anatomical mode, but otherwise suite2p will run normally
 
 imported packerlabimaging successfully
@@ -356,7 +350,7 @@ imported packerlabimaging successfully
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># we can now load the new expobj from disk storage using pickle in pli.import_obj():</span>
-<span class="n">expobj</span> <span class="o">=</span> <span class="n">pli</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="s1">&#39;/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl&#39;</span><span class="p">)</span>
+<span class="n">expobj</span> <span class="o">=</span> <span class="n">pli</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="s1">'/home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -378,7 +372,7 @@ imported packerlabimaging successfully
 <span class="n">expobj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
 <span class="c1"># to save the Experiment with a custom path, simply provide a custom .pkl path and use the .save_pkl() method:</span>
-<span class="n">expobj</span><span class="o">.</span><span class="n">save_pkl</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="s1">&#39;/home/pshah/mnt/qnap/Analysis/2021-01-25/PS12/PS12_new_path.pkl&#39;</span><span class="p">)</span>
+<span class="n">expobj</span><span class="o">.</span><span class="n">save_pkl</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="s1">'/home/pshah/mnt/qnap/Analysis/2021-01-25/PS12/PS12_new_path.pkl'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -393,22 +387,22 @@ imported packerlabimaging successfully
 </div>
 </section>
 <section id="Adding-trials-to-an-experiment">
-<h1>Adding trials to an experiment<a class="headerlink" href="#Adding-trials-to-an-experiment" title="Permalink to this heading">¶</a></h1>
-<p>After creating the initial <code class="docutils literal notranslate"><span class="pre">expobj</span></code> experiment, we move onto loading each trial from the experiment.</p>
-<p>There is a built-in <code class="docutils literal notranslate"><span class="pre">ImagingTrial</span></code> workflow for data processing and analysis of an all optical imaging experiment trial called <code class="docutils literal notranslate"><span class="pre">AllOpticalTrial</span></code>. This extends the <code class="docutils literal notranslate"><span class="pre">TwoPhotonImaging</span></code> trial workflow.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">AllOpticalTrial</span></code> is setup in an analogous manner as the <code class="docutils literal notranslate"><span class="pre">TwoPhotonImaging</span></code> workflow. In addition to the fields required for the <code class="docutils literal notranslate"><span class="pre">TwoPhotonImaging</span></code> trial, we supply additional fields that allow for addition of all-optical specific sub-modules. In particular, we supply a <code class="docutils literal notranslate"><span class="pre">naparm_path</span></code> which triggers the workflow to run the <code class="docutils literal notranslate"><span class="pre">naparm</span></code> analysis sub-module for analysis of 2-photon photostimulation protocols setup by NAPARM during the all-optical experiment.</p>
+<h1>Adding trials to an experiment<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Adding-trials-to-an-experiment">¶</a></h1>
+<p>After creating the initial <code class="docutils literal notranslate">expobj</code> experiment, we move onto loading each trial from the experiment.</p>
+<p>There is a built-in <code class="docutils literal notranslate">ImagingTrial</code> workflow for data processing and analysis of an all optical imaging experiment trial called <code class="docutils literal notranslate">AllOpticalTrial</code>. This extends the <code class="docutils literal notranslate">TwoPhotonImaging</code> trial workflow.</p>
+<p>The <code class="docutils literal notranslate">AllOpticalTrial</code> is setup in an analogous manner as the <code class="docutils literal notranslate">TwoPhotonImaging</code> workflow. In addition to the fields required for the <code class="docutils literal notranslate">TwoPhotonImaging</code> trial, we supply additional fields that allow for addition of all-optical specific sub-modules. In particular, we supply a <code class="docutils literal notranslate">naparm_path</code> which triggers the workflow to run the <code class="docutils literal notranslate">naparm</code> analysis sub-module for analysis of 2-photon photostimulation protocols setup by NAPARM during the all-optical experiment.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="n">initialization_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;naparm_path&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BASE_PATH</span><span class="si">}</span><span class="s1">/2020-12-19/photostim/2020-12-19_RL109_ps_014/&#39;</span><span class="p">,</span>
-                               <span class="s1">&#39;dataPath&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BASE_PATH</span><span class="si">}</span><span class="s1">/2020-12-19/2020-12-19_t-013/2020-12-19_t-013_Cycle00001_Ch3.tif&#39;</span><span class="p">,</span>
-                               <span class="s1">&#39;saveDir&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BASE_PATH</span><span class="si">}</span><span class="s1">/2020-12-19/&#39;</span><span class="p">,</span>
-                               <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="s1">&#39;2020-12-19&#39;</span><span class="p">,</span>
-                               <span class="s1">&#39;trialID&#39;</span><span class="p">:</span> <span class="s1">&#39;t-013&#39;</span><span class="p">,</span>
-                               <span class="s1">&#39;expID&#39;</span><span class="p">:</span> <span class="s1">&#39;RL109&#39;</span><span class="p">,</span>
-                               <span class="s1">&#39;expGroup&#39;</span><span class="p">:</span> <span class="s1">&#39;all optical trial with LFP&#39;</span><span class="p">,</span>
-                               <span class="s1">&#39;comment&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="n">initialization_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'naparm_path'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">BASE_PATH</span><span class="si">}</span><span class="s1">/2020-12-19/photostim/2020-12-19_RL109_ps_014/'</span><span class="p">,</span>
+                               <span class="s1">'dataPath'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">BASE_PATH</span><span class="si">}</span><span class="s1">/2020-12-19/2020-12-19_t-013/2020-12-19_t-013_Cycle00001_Ch3.tif'</span><span class="p">,</span>
+                               <span class="s1">'saveDir'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">BASE_PATH</span><span class="si">}</span><span class="s1">/2020-12-19/'</span><span class="p">,</span>
+                               <span class="s1">'date'</span><span class="p">:</span> <span class="s1">'2020-12-19'</span><span class="p">,</span>
+                               <span class="s1">'trialID'</span><span class="p">:</span> <span class="s1">'t-013'</span><span class="p">,</span>
+                               <span class="s1">'expID'</span><span class="p">:</span> <span class="s1">'RL109'</span><span class="p">,</span>
+                               <span class="s1">'expGroup'</span><span class="p">:</span> <span class="s1">'all optical trial with LFP'</span><span class="p">,</span>
+                               <span class="s1">'comment'</span><span class="p">:</span> <span class="s1">''</span><span class="p">}</span>
 <br/></pre></div>
 </div>
 </div>
@@ -419,26 +413,26 @@ imported packerlabimaging successfully
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">packerlabimaging</span> <span class="kn">import</span> <span class="n">AllOpticalTrial</span>
 
 <span class="c1"># create the all optical trial</span>
-<span class="n">paqs_loc</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BASE_PATH</span><span class="si">}</span><span class="s1">/2020-12-19/2020-12-19_RL109_013.paq&#39;</span>  <span class="c1"># path to the .paq files for the selected trials</span>
-<span class="n">dataPath</span> <span class="o">=</span> <span class="n">initialization_dict</span><span class="p">[</span><span class="s1">&#39;dataPath&#39;</span><span class="p">]</span>
+<span class="n">paqs_loc</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">BASE_PATH</span><span class="si">}</span><span class="s1">/2020-12-19/2020-12-19_RL109_013.paq'</span>  <span class="c1"># path to the .paq files for the selected trials</span>
+<span class="n">dataPath</span> <span class="o">=</span> <span class="n">initialization_dict</span><span class="p">[</span><span class="s1">'dataPath'</span><span class="p">]</span>
 
-<span class="n">imparams</span> <span class="o">=</span> <span class="n">PrairieViewMetadata</span><span class="p">(</span><span class="n">pv_xml_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">dataPath</span><span class="p">),</span> <span class="n">microscope</span><span class="o">=</span><span class="s1">&#39;Bruker 2pPlus&#39;</span><span class="p">)</span>
-<span class="n">tmdata</span> <span class="o">=</span> <span class="n">PaqData</span><span class="o">.</span><span class="n">paqProcessingTwoPhotonImaging</span><span class="p">(</span><span class="n">paq_path</span><span class="o">=</span><span class="n">paqs_loc</span><span class="p">,</span> <span class="n">frame_channel</span><span class="o">=</span><span class="s1">&#39;frame_clock&#39;</span><span class="p">)</span>
+<span class="n">imparams</span> <span class="o">=</span> <span class="n">PrairieViewMetadata</span><span class="p">(</span><span class="n">pv_xml_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">dataPath</span><span class="p">),</span> <span class="n">microscope</span><span class="o">=</span><span class="s1">'Bruker 2pPlus'</span><span class="p">)</span>
+<span class="n">tmdata</span> <span class="o">=</span> <span class="n">PaqData</span><span class="o">.</span><span class="n">paqProcessingTwoPhotonImaging</span><span class="p">(</span><span class="n">paq_path</span><span class="o">=</span><span class="n">paqs_loc</span><span class="p">,</span> <span class="n">frame_channel</span><span class="o">=</span><span class="s1">'frame_clock'</span><span class="p">)</span>
 
 <span class="n">aotrial</span> <span class="o">=</span> <span class="n">AllOpticalTrial</span><span class="p">(</span><span class="n">imparams</span><span class="o">=</span><span class="n">imparams</span><span class="p">,</span> <span class="n">tmdata</span><span class="o">=</span><span class="n">tmdata</span><span class="p">,</span> <span class="o">**</span><span class="n">initialization_dict</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
-<p>Load in the newly created <code class="docutils literal notranslate"><span class="pre">AllOpticalTrial</span></code> object:</p>
+<p>Load in the newly created <code class="docutils literal notranslate">AllOpticalTrial</code> object:</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="n">aotrial</span> <span class="o">=</span> <span class="n">pli</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="n">aotrial</span> <span class="o">=</span> <span class="n">pli</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p>As with all other <code class="docutils literal notranslate"><span class="pre">ImagingTrial</span></code> objects, each <code class="docutils literal notranslate"><span class="pre">AllOpticalTrial</span></code> object is added to the overall experiment.</p>
+<p>As with all other <code class="docutils literal notranslate">ImagingTrial</code> objects, each <code class="docutils literal notranslate">AllOpticalTrial</code> object is added to the overall experiment.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -456,59 +450,53 @@ imported packerlabimaging successfully
 </div>
 </div>
 </section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <div>
-    <h3><a href="../index.html">Table of Contents</a></h3>
-    <ul>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.html">Table of Contents</a></h3>
+<ul>
 <li><a class="reference internal" href="#">Creating an experiment - UPDATED MAR 29 2022</a></li>
 <li><a class="reference internal" href="#Adding-trials-to-an-experiment">Adding trials to an experiment</a></li>
 </ul>
-
-  </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/Tutorials/Tutorial-1.1-Creating-an-alloptical-trial.ipynb.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
+</div>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../_sources/Tutorials/Tutorial-1.1-Creating-an-alloptical-trial.ipynb.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
 </div>
 <script>document.getElementById('searchbox').style.display = "block"</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">packerlabimaging 0.2-alpha documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Creating an experiment - UPDATED MAR 29 2022</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2022, Packer Lab.
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="nav-item nav-item-0"><a href="../index.html">packerlabimaging 0.2-alpha documentation</a> »</li>
+<li class="nav-item nav-item-this"><a href="">Creating an experiment - UPDATED MAR 29 2022</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright 2022, Packer Lab.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
     </div>
-  </body>
+</body>
 </html>

@@ -2,41 +2,36 @@
 <!DOCTYPE html>
 
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>Integration with PACKIO outputs (.paq data) &#8212; imaging+ 0.2-beta documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="nav-item nav-item-0"><a href="../index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Integration with PACKIO outputs (.paq data)</a></li> 
-      </ul>
-    </div>  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.17.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>Integration with PACKIO outputs (.paq data) — imaging+ 0.2-beta documentation</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinxdoc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/doctools.js"></script>
+<script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+<script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="../search.html" rel="search" title="Search"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.html" title="General Index">index</a></li>
+<li class="nav-item nav-item-0"><a href="../index.html">imaging+ 0.2-beta documentation</a> »</li>
+<li class="nav-item nav-item-this"><a href="">Integration with PACKIO outputs (.paq data)</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
 <style>
 /* CSS for nbsphinx extension */
 
@@ -285,25 +280,25 @@ div.rendered_html tbody tr:hover {
 }
 </style>
 <section id="Integration-with-PACKIO-outputs-(.paq-data)">
-<h1>Integration with PACKIO outputs (.paq data)<a class="headerlink" href="#Integration-with-PACKIO-outputs-(.paq-data)" title="Permalink to this headline">¶</a></h1>
-<p>PACKIO is a software for temporal synchronization of experimental data acquisition and simultaneous hardware triggering. More information can be found at: <a class="reference external" href="https://github.com/apacker83/PackIO">https://github.com/apacker83/PackIO</a></p>
+<h1>Integration with PACKIO outputs (.paq data)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Integration-with-PACKIO-outputs-(.paq-data)">¶</a></h1>
+<p>PACKIO is a software for temporal synchronization of experimental data acquisition and simultaneous hardware triggering. More information can be found at: <a class="reference external" href="https://github.com/apacker83/PackIO" rel="nofollow noopener">https://github.com/apacker83/PackIO</a></p>
 <p>The outputs of PACKIO is a .paq file that contains data across all channels collected.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imagingplus</span> <span class="k">as</span> <span class="nn">ip</span>
-<span class="n">prep</span> <span class="o">=</span> <span class="s1">&#39;PS12&#39;</span>
-<span class="n">date</span> <span class="o">=</span> <span class="s1">&#39;2021-01-25&#39;</span>
+<span class="n">prep</span> <span class="o">=</span> <span class="s1">'PS12'</span>
+<span class="n">date</span> <span class="o">=</span> <span class="s1">'2021-01-25'</span>
 
-<span class="n">expobj</span><span class="p">:</span> <span class="n">ip</span><span class="o">.</span><span class="n">Experiment</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;/home/pshah/mnt/qnap/Analysis/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">_analysis.pkl&#39;</span><span class="p">)</span>
+<span class="n">expobj</span><span class="p">:</span> <span class="n">ip</span><span class="o">.</span><span class="n">Experiment</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="sa">f</span><span class="s1">'/home/pshah/mnt/qnap/Analysis/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">_analysis.pkl'</span><span class="p">)</span>
 
 <span class="n">trialobj</span> <span class="o">=</span> <span class="n">expobj</span><span class="o">.</span><span class="n">load_trial</span><span class="p">(</span><span class="n">trialID</span><span class="o">=</span><span class="n">expobj</span><span class="o">.</span><span class="n">trialIDs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <br/></pre></div>
 </div>
 </div>
 <section id="adding-paqdata-module-to-the-trialobj">
-<h2>adding paqdata module to the trialobj<a class="headerlink" href="#adding-paqdata-module-to-the-trialobj" title="Permalink to this headline">¶</a></h2>
+<h2>adding paqdata module to the trialobj<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#adding-paqdata-module-to-the-trialobj">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -318,7 +313,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># adding paqdata to the trialobj</span>
 
-<span class="n">paq_path</span> <span class="o">=</span> <span class="s1">&#39;/home/pshah/mnt/qnap/Data/2021-01-25/2021-01-25_PS12_001.paq&#39;</span>
+<span class="n">paq_path</span> <span class="o">=</span> <span class="s1">'/home/pshah/mnt/qnap/Data/2021-01-25/2021-01-25_PS12_001.paq'</span>
 <span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">PaqData</span><span class="o">.</span><span class="n">import_paqdata</span><span class="p">(</span><span class="n">paq_path</span><span class="o">=</span><span class="n">paq_path</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -332,27 +327,27 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<p>We can perform a quick plot of paq data channel for quick visualization using the <code class="docutils literal notranslate"><span class="pre">plot__paq_channel()</span></code> function from the <code class="docutils literal notranslate"><span class="pre">plotting</span></code> submodule.</p>
+<p>We can perform a quick plot of paq data channel for quick visualization using the <code class="docutils literal notranslate">plot__paq_channel()</code> function from the <code class="docutils literal notranslate">plotting</code> submodule.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot paq channel data</span>
-<span class="n">ip</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">plot__paq_channel</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s1">&#39;voltage&#39;</span><span class="p">,</span> <span class="n">x_axis</span><span class="o">=</span><span class="s1">&#39;Time (secs)&#39;</span><span class="p">,</span> <span class="n">x_tick_secs</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+<span class="n">ip</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">plot__paq_channel</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s1">'voltage'</span><span class="p">,</span> <span class="n">x_axis</span><span class="o">=</span><span class="s1">'Time (secs)'</span><span class="p">,</span> <span class="n">x_tick_secs</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </section>
 <section id="Processing-paq-data">
-<h2>Processing paq data<a class="headerlink" href="#Processing-paq-data" title="Permalink to this headline">¶</a></h2>
+<h2>Processing paq data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Processing-paq-data">¶</a></h2>
 <p>In this paq data, one of the channels recorded the microscope imaging frame clock. We can retrieve these frame clock times to retrieve the paq clock timestamps when the imaging period began and finished.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># finding frame times of imaging from the frame clock channel (&quot;frame_clock&quot;).</span>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># finding frame times of imaging from the frame clock channel ("frame_clock").</span>
 
-<span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">frame_times</span> <span class="o">=</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">paq_frame_times</span><span class="p">(</span><span class="n">frame_channel</span><span class="o">=</span><span class="s1">&#39;frame_clock&#39;</span><span class="p">)</span>
+<span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">frame_times</span> <span class="o">=</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">paq_frame_times</span><span class="p">(</span><span class="n">frame_channel</span><span class="o">=</span><span class="s1">'frame_clock'</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -361,7 +356,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># crop all channels in paq data to the start and finish of the imaging period within the trial.</span>
-<span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">cropPaqData</span><span class="p">(</span><span class="n">begin</span><span class="o">=</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">frame_times</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">end</span><span class="o">=</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">frame_times</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">channels</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+<span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">cropPaqData</span><span class="p">(</span><span class="n">begin</span><span class="o">=</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">frame_times</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">end</span><span class="o">=</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">frame_times</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">channels</span><span class="o">=</span><span class="s1">'all'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -370,14 +365,14 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot to confirm that the cropping executed as expected</span>
-<span class="n">ip</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">plot__paq_channel</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s1">&#39;voltage&#39;</span><span class="p">,</span> <span class="n">x_axis</span><span class="o">=</span><span class="s1">&#39;Time (secs)&#39;</span><span class="p">,</span> <span class="n">x_tick_secs</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+<span class="n">ip</span><span class="o">.</span><span class="n">plotting</span><span class="o">.</span><span class="n">plot__paq_channel</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Paq</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s1">'voltage'</span><span class="p">,</span> <span class="n">x_axis</span><span class="o">=</span><span class="s1">'Time (secs)'</span><span class="p">,</span> <span class="n">x_tick_secs</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </section>
 <section id="Synchronizing-.paq-data-with-imaging-frames">
-<h2>Synchronizing .paq data with imaging frames<a class="headerlink" href="#Synchronizing-.paq-data-with-imaging-frames" title="Permalink to this headline">¶</a></h2>
-<p>Since, imaging is generally performed at multiple orders of magnitude slower data collection speed, we have provided the <code class="docutils literal notranslate"><span class="pre">get_sparse_paq()</span></code> method in the .Paq module to collect paq data from channels at timepoints synchronized with only the imaging frames (found under <code class="docutils literal notranslate"><span class="pre">.Paq.frame_times</span></code>.</p>
+<h2>Synchronizing .paq data with imaging frames<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Synchronizing-.paq-data-with-imaging-frames">¶</a></h2>
+<p>Since, imaging is generally performed at multiple orders of magnitude slower data collection speed, we have provided the <code class="docutils literal notranslate">get_sparse_paq()</code> method in the .Paq module to collect paq data from channels at timepoints synchronized with only the imaging frames (found under <code class="docutils literal notranslate">.Paq.frame_times</code>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -404,20 +399,18 @@ div.rendered_html tbody tr:hover {
 </div>
 </section>
 </section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="../index.html">
-              <img class="logo" src="../_static/imagingplus-logo.png" alt="Logo"/>
-            </a></p>
-  <div>
-    <h3><a href="../index.html">Table of Contents</a></h3>
-    <ul>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<p class="logo"><a href="../index.html">
+<img alt="Logo" class="logo" src="../_static/imagingplus-logo.png"/>
+</a></p>
+<div>
+<h3><a href="../index.html">Table of Contents</a></h3>
+<ul>
 <li><a class="reference internal" href="#">Integration with PACKIO outputs (.paq data)</a><ul>
 <li><a class="reference internal" href="#adding-paqdata-module-to-the-trialobj">adding paqdata module to the trialobj</a></li>
 <li><a class="reference internal" href="#Processing-paq-data">Processing paq data</a></li>
@@ -425,42 +418,39 @@ div.rendered_html tbody tr:hover {
 </ul>
 </li>
 </ul>
-
-  </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/Tutorials/Tutorial-9-paq-module.ipynb.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
+</div>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../_sources/Tutorials/Tutorial-9-paq-module.ipynb.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
 </div>
 <script>$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="nav-item nav-item-0"><a href="../index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Integration with PACKIO outputs (.paq data)</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2022, Packer Lab.
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.html" title="General Index">index</a></li>
+<li class="nav-item nav-item-0"><a href="../index.html">imaging+ 0.2-beta documentation</a> »</li>
+<li class="nav-item nav-item-this"><a href="">Integration with PACKIO outputs (.paq data)</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright 2022, Packer Lab.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
     </div>
-  </body>
+</body>
 </html>

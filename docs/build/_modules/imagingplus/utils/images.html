@@ -2,42 +2,38 @@
 <!DOCTYPE html>
 
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>imagingplus.utils.images &#8212; imaging+ 0.2-beta documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sphinxdoc.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">imagingplus.utils.images</a></li> 
-      </ul>
-    </div>  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <h1>Source code for imagingplus.utils.images</h1><div class="highlight"><pre>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>imagingplus.utils.images — imaging+ 0.2-beta documentation</title>
+<link href="../../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../../_static/sphinxdoc.css" rel="stylesheet" type="text/css"/>
+<link href="../../../_static/sg_gallery.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+<script src="../../../_static/jquery.js"></script>
+<script src="../../../_static/underscore.js"></script>
+<script src="../../../_static/doctools.js"></script>
+<script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+<link href="../../../genindex.html" rel="index" title="Index"/>
+<link href="../../../search.html" rel="search" title="Search"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../../index.html">imaging+ 0.2-beta documentation</a> »</li>
+<li class="nav-item nav-item-1"><a accesskey="U" href="../../index.html">Module code</a> »</li>
+<li class="nav-item nav-item-this"><a href="">imagingplus.utils.images</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<h1>Source code for imagingplus.utils.images</h1><div class="highlight"><pre>
 <span></span><span class="c1"># image processing</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
@@ -52,7 +48,7 @@
 <span class="c1"># simple ZProfile function for any sized square in the frame (equivalent to ZProfile function in Fiji)</span>
 <div class="viewcode-block" id="ZProfile"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.images.ZProfile">[docs]</a><span class="k">def</span> <span class="nf">ZProfile</span><span class="p">(</span><span class="n">stack</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">area_center_coords</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">area_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">plot_trace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
              <span class="n">plot_frame</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">vasc_image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">"""</span>
 <span class="sd">    Plot a z-profile of a stack, averaged over space inside a square area. </span>
 <span class="sd">    by S. Armstrong.</span>
 
@@ -66,11 +62,11 @@
 <span class="sd">            ax_trace: matplotlib axis object for plotting z-profile signal</span>
 <span class="sd">            ax_ref: matplotlib axis object for plotting reference image</span>
 <span class="sd">    :return: z-profile trace signal</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">stack</span> <span class="o">=</span> <span class="n">ImportTiff</span><span class="p">(</span><span class="n">tiff_path</span><span class="o">=</span><span class="n">stack</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;\- plotting zprofile for TIFF of shape: &#39;</span><span class="p">,</span> <span class="n">stack</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'\- plotting zprofile for TIFF of shape: '</span><span class="p">,</span> <span class="n">stack</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
     <span class="c1"># assume 15fps for 1024x1024 stacks and 30fps imaging for 512x512 stacks</span>
     <span class="k">if</span> <span class="n">stack</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1024</span><span class="p">:</span>
@@ -80,11 +76,11 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">img_fps</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">assert</span> <span class="n">area_size</span> <span class="o">&lt;=</span> <span class="n">stack</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">area_size</span> <span class="o">&lt;=</span> <span class="n">stack</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s2">&quot;area_size must be smaller than the image&quot;</span>
+    <span class="k">assert</span> <span class="n">area_size</span> <span class="o">&lt;=</span> <span class="n">stack</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">area_size</span> <span class="o">&lt;=</span> <span class="n">stack</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s2">"area_size must be smaller than the image"</span>
     <span class="k">if</span> <span class="n">area_size</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>  <span class="c1"># this parameter used to plot whole FOV area</span>
         <span class="n">area_size</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">area_center_coords</span> <span class="o">=</span> <span class="p">(</span><span class="n">stack</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">stack</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">area_size</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;pls give an even area size&quot;</span>
+    <span class="k">assert</span> <span class="n">area_size</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"pls give an even area size"</span>
 
     <span class="n">x</span> <span class="o">=</span> <span class="n">area_center_coords</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">area_center_coords</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
@@ -94,44 +90,44 @@
     <span class="n">y2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">area_size</span><span class="p">)</span>
     <span class="n">smol_stack</span> <span class="o">=</span> <span class="n">stack</span><span class="p">[:,</span> <span class="n">y1</span><span class="p">:</span><span class="n">y2</span><span class="p">,</span> <span class="n">x1</span><span class="p">:</span><span class="n">x2</span><span class="p">]</span>
     <span class="n">smol_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">smol_stack</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;|- Output shape for z profile: &#39;</span><span class="p">,</span> <span class="n">smol_mean</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'|- Output shape for z profile: '</span><span class="p">,</span> <span class="n">smol_mean</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">plot_frame</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">f</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-        <span class="k">if</span> <span class="s1">&#39;ax_ref&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;ax_ref&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">'ax_ref'</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">'ax_ref'</span><span class="p">]</span>
         <span class="n">ref_frame</span> <span class="o">=</span> <span class="n">stack</span><span class="p">[</span><span class="n">plot_frame</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
         <span class="k">if</span> <span class="n">vasc_image</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="n">vasc_image</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">stack</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="s1">&#39;vasculature image has incompatible dimensions&#39;</span>
-            <span class="n">ax1</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">vasc_image</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;binary_r&quot;</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">vasc_image</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">stack</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="s1">'vasculature image has incompatible dimensions'</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">vasc_image</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">"binary_r"</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">ax1</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">ref_frame</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;binary_r&quot;</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">ref_frame</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">"binary_r"</span><span class="p">)</span>
 
         <span class="n">rect1</span> <span class="o">=</span> <span class="n">patches</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">(</span>
-            <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">),</span> <span class="n">area_size</span><span class="p">,</span> <span class="n">area_size</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">),</span> <span class="n">area_size</span><span class="p">,</span> <span class="n">area_size</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">'r'</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s2">"none"</span><span class="p">)</span>
 
         <span class="n">ax1</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">rect1</span><span class="p">)</span>
-        <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Z-profile area&quot;</span><span class="p">)</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">show</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;ax_ref&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Z-profile area"</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">show</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="s1">'ax_ref'</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="k">if</span> <span class="n">plot_trace</span><span class="p">:</span>
         <span class="n">fig</span><span class="p">,</span> <span class="n">ax2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
-        <span class="k">if</span> <span class="s1">&#39;ax_trace&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span> <span class="n">ax2</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;ax_trace&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">'ax_trace'</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span> <span class="n">ax2</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">'ax_trace'</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">img_fps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">smol_mean</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">img_fps</span><span class="p">,</span> <span class="n">smol_mean</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
-            <span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time (sec)&#39;</span><span class="p">)</span>
+            <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">smol_mean</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">img_fps</span><span class="p">,</span> <span class="n">smol_mean</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">)</span>
+            <span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'Time (sec)'</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">smol_mean</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
-            <span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;frames&#39;</span><span class="p">)</span>
-        <span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Flu (a.u.)&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s1">&#39;title&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span> <span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span>
-        <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;ax_trace&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">smol_mean</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">)</span>
+            <span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'frames'</span><span class="p">)</span>
+        <span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'Flu (a.u.)'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">'title'</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span> <span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">'title'</span><span class="p">])</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="s1">'ax_trace'</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="k">return</span> <span class="n">smol_mean</span></div>
 
 
 <div class="viewcode-block" id="subselect_tiff"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.images.subselect_tiff">[docs]</a><span class="k">def</span> <span class="nf">subselect_tiff</span><span class="p">(</span><span class="n">tiff_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tiff_stack</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">select_frames</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
                    <span class="n">save_as</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">"""</span>
 <span class="sd">    Crop multi-stack tiff to requested frames (`select_frames`).</span>
 
 <span class="sd">    :param tiff_path:</span>
@@ -139,29 +135,29 @@
 <span class="sd">    :param select_frames:</span>
 <span class="sd">    :param save_as:</span>
 <span class="sd">    :return:</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">tiff_stack</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># open tiff file</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">\-subselecting tiffs from </span><span class="si">{</span><span class="n">tiff_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">\-subselecting tiffs from </span><span class="si">{</span><span class="n">tiff_path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="n">tiff_stack</span> <span class="o">=</span> <span class="n">ImportTiff</span><span class="p">(</span><span class="n">tiff_path</span><span class="p">)</span>
 
     <span class="n">stack_cropped</span> <span class="o">=</span> <span class="n">tiff_stack</span><span class="p">[</span><span class="n">select_frames</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">select_frames</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
 
     <span class="k">if</span> <span class="n">save_as</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">tf</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">save_as</span><span class="p">,</span> <span class="n">stack_cropped</span><span class="p">,</span> <span class="n">photometric</span><span class="o">=</span><span class="s1">&#39;minisblack&#39;</span><span class="p">)</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">save_as</span><span class="p">,</span> <span class="n">stack_cropped</span><span class="p">,</span> <span class="n">photometric</span><span class="o">=</span><span class="s1">'minisblack'</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">stack_cropped</span></div>
 
 
 <div class="viewcode-block" id="convert_to_8bit"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.images.convert_to_8bit">[docs]</a><span class="k">def</span> <span class="nf">convert_to_8bit</span><span class="p">(</span><span class="n">img</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">output_min</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">output_max</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">255</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">"""</span>
 <span class="sd">    Convert input image to 8-bit depth. Optionally, set low/high thresholds for output image.</span>
 
 <span class="sd">    :param img: input image</span>
 <span class="sd">    :param output_min: minimum threshold for pixel intensity (at 8-bit depth)</span>
 <span class="sd">    :param output_max: maximum threshold for pixel intensity (at 8-bit depth)</span>
 <span class="sd">    :return: image converted to 8-bit depth</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">imin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
     <span class="n">imax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
 
@@ -172,19 +168,19 @@
 
 
 <div class="viewcode-block" id="fourierImage"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.images.fourierImage">[docs]</a><span class="k">def</span> <span class="nf">fourierImage</span><span class="p">(</span><span class="n">img</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">"""</span>
 <span class="sd">    Fast-fourier transform on input image.</span>
 
 <span class="sd">    :param img: input image</span>
-<span class="sd">    :return: numpy&#39;s fft transform</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    :return: numpy's fft transform</span>
+<span class="sd">    """</span>
     <span class="n">dft</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">dft</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">img</span><span class="p">),</span> <span class="n">flags</span><span class="o">=</span><span class="n">cv</span><span class="o">.</span><span class="n">DFT_COMPLEX_OUTPUT</span><span class="p">)</span>
     <span class="n">dft_shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">dft</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dft_shift</span></div>
 
 
 <div class="viewcode-block" id="highPass"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.images.highPass">[docs]</a><span class="k">def</span> <span class="nf">highPass</span><span class="p">(</span><span class="n">img</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">fshift</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;high pass filtering of image&quot;&quot;&quot;</span>
+    <span class="sd">"""high pass filtering of image"""</span>
     <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">crow</span><span class="p">,</span> <span class="n">ccol</span> <span class="o">=</span> <span class="n">rows</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">cols</span> <span class="o">//</span> <span class="mi">2</span>
 
@@ -238,7 +234,7 @@
 
 <div class="viewcode-block" id="z_score_img"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.images.z_score_img">[docs]</a><span class="k">def</span> <span class="nf">z_score_img</span><span class="p">(</span><span class="n">key_img</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">mean_img</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">std_img</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="n">normal_img_stack</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">"""</span>
 <span class="sd">    z-score normalization of the input key_img to the input mean img and std img, or to image stack provided in normal_img_stack.</span>
 
 <span class="sd">    :param key_img: input image</span>
@@ -246,24 +242,24 @@
 <span class="sd">    :param std_img: input std image</span>
 <span class="sd">    :param normal_img_stack: input stack of images to normalize the key image to.</span>
 <span class="sd">    :return:</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">mean_img</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">std_img</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="n">normal_img_stack</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;must provide normal_img_stack to use as baseline to z-normalize to.&#39;</span>
-        <span class="k">assert</span> <span class="n">normal_img_stack</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;normal_img_stack must be a stack of 2-D arrays.&#39;</span>
+        <span class="k">assert</span> <span class="n">normal_img_stack</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">'must provide normal_img_stack to use as baseline to z-normalize to.'</span>
+        <span class="k">assert</span> <span class="n">normal_img_stack</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'normal_img_stack must be a stack of 2-D arrays.'</span>
         <span class="n">mean_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">normal_img_stack</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">std_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">normal_img_stack</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">key_img</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">mean_img</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">std_img</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">&#39;Shape of key_img must match mean_img and std_img&#39;</span>
+        <span class="k">assert</span> <span class="n">key_img</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">mean_img</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">std_img</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">'Shape of key_img must match mean_img and std_img'</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="n">key_img</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">mean_img</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">std_img</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">&#39;Shape of key_img must match mean_img and std_img&#39;</span>
+        <span class="k">assert</span> <span class="n">key_img</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">mean_img</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">std_img</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">'Shape of key_img must match mean_img and std_img'</span>
 
     <span class="n">z_scored</span> <span class="o">=</span> <span class="p">(</span><span class="n">key_img</span> <span class="o">-</span> <span class="n">mean_img</span><span class="p">)</span> <span class="o">/</span> <span class="n">std_img</span>
-    <span class="k">if</span> <span class="n">plot</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">z_scored</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;bwr&#39;</span><span class="p">),</span> <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(),</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">plot</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">z_scored</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'bwr'</span><span class="p">),</span> <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(),</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">z_scored</span></div>
 
 
 <div class="viewcode-block" id="makeFrameAverageTiff"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.images.makeFrameAverageTiff">[docs]</a><span class="k">def</span> <span class="nf">makeFrameAverageTiff</span><span class="p">(</span><span class="n">frames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">],</span> <span class="n">tiff_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">stack</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                          <span class="n">peri_frames</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">save_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">to_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from either the provided tiff_path or the stack array.</span>
+    <span class="sd">"""Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from either the provided tiff_path or the stack array.</span>
 
 <span class="sd">    :param frames: key frames to create peri-average frames.</span>
 <span class="sd">    :param tiff_path: path to tiff file for collecting images.</span>
@@ -273,7 +269,7 @@
 <span class="sd">    :param to_plot: if true, show peri-frame average image</span>
 <span class="sd">    :param kwargs: see kwargs under imagingplus.plotting.plotting.plotImg</span>
 <span class="sd">    :return: peri-frame averaged array images</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">frames</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
         <span class="n">frames</span> <span class="o">=</span> <span class="p">[</span><span class="n">frames</span><span class="p">]</span>
@@ -282,7 +278,7 @@
 
     <span class="n">imgs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">frame</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">frames</span><span class="p">):</span>
-        <span class="c1"># im_batch_reg = tf.imread(tif_path, key=range(0, self.output_ops[&#39;batch_size&#39;]))</span>
+        <span class="c1"># im_batch_reg = tf.imread(tif_path, key=range(0, self.output_ops['batch_size']))</span>
 
         <span class="k">if</span> <span class="mi">0</span> <span class="o">&gt;</span> <span class="n">frame</span> <span class="o">-</span> <span class="n">peri_frames</span> <span class="o">//</span> <span class="mi">2</span><span class="p">:</span>
             <span class="n">peri_frames_low</span> <span class="o">=</span> <span class="n">frame</span>
@@ -300,16 +296,16 @@
         <span class="n">avg_sub</span> <span class="o">=</span> <span class="n">convert_to_8bit</span><span class="p">(</span><span class="n">avg_sub</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">save_dir</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s1">&#39;.tif&#39;</span> <span class="ow">in</span> <span class="n">save_dir</span><span class="p">:</span> <span class="n">save_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">save_dir</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span>
-            <span class="n">save_path</span> <span class="o">=</span> <span class="n">save_dir</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;/</span><span class="si">{</span><span class="n">frames</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">}</span><span class="s1">_s2preg_frame_avg.tif&#39;</span>
+            <span class="k">if</span> <span class="s1">'.tif'</span> <span class="ow">in</span> <span class="n">save_dir</span><span class="p">:</span> <span class="n">save_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">save_dir</span><span class="p">)</span> <span class="o">+</span> <span class="s1">'/'</span>
+            <span class="n">save_path</span> <span class="o">=</span> <span class="n">save_dir</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">'/</span><span class="si">{</span><span class="n">frames</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">}</span><span class="s1">_s2preg_frame_avg.tif'</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">save_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">\- Saving averaged s2p registered tiff for frame: </span><span class="si">{</span><span class="n">frames</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">}</span><span class="s2">, to: </span><span class="si">{</span><span class="n">save_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">tf</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="n">avg_sub</span><span class="p">,</span> <span class="n">photometric</span><span class="o">=</span><span class="s1">&#39;minisblack&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\t</span><span class="s2">\- Saving averaged s2p registered tiff for frame: </span><span class="si">{</span><span class="n">frames</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">}</span><span class="s2">, to: </span><span class="si">{</span><span class="n">save_path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="n">tf</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="n">avg_sub</span><span class="p">,</span> <span class="n">photometric</span><span class="o">=</span><span class="s1">'minisblack'</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">to_plot</span><span class="p">:</span>  <span class="c1"># todo replace with proper plotting average tiff frame code</span>
-            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">peri_frames</span><span class="si">}</span><span class="s1"> key_frames avg from s2p reg tif, frame: </span><span class="si">{</span><span class="n">frames</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">[</span>
-                <span class="s1">&#39;title&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">'title'</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">peri_frames</span><span class="si">}</span><span class="s1"> key_frames avg from s2p reg tif, frame: </span><span class="si">{</span><span class="n">frames</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">[</span>
+                <span class="s1">'title'</span><span class="p">]</span> <span class="k">else</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">'title'</span><span class="p">]</span>
             <span class="kn">from</span> <span class="nn">imagingplus.plotting.plotting</span> <span class="kn">import</span> <span class="n">plotImg</span>
             <span class="n">plotImg</span><span class="p">(</span><span class="n">img</span><span class="o">=</span><span class="n">avg_sub</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -319,13 +315,13 @@
 
 
 <div class="viewcode-block" id="ImportTiff"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.images.ImportTiff">[docs]</a><span class="k">def</span> <span class="nf">ImportTiff</span><span class="p">(</span><span class="n">tiff_path</span><span class="p">,</span> <span class="n">frames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">"""</span>
 <span class="sd">    Import multi-frame tiff file from provided `tiff_path`, between specified frames (if provided, optional).</span>
 
 <span class="sd">    :param tiff_path: path to multi-frame tiff file to load</span>
 <span class="sd">    :param frames: optional, load frames between frames specified, or load single frame if int provided.</span>
 <span class="sd">    :return: stack of tiff images</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">frames</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">frames</span><span class="p">)</span> <span class="o">==</span> <span class="nb">tuple</span><span class="p">:</span>
         <span class="n">im_stack</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">tiff_path</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">frames</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">frames</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
     <span class="k">elif</span> <span class="n">frames</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">frames</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
@@ -346,15 +342,15 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">im_stack</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> <span class="n">im_stack</span> <span class="o">=</span> <span class="n">im_stack</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">im_stack</span> <span class="o">=</span> <span class="n">skio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">tiff_path</span><span class="p">,</span> <span class="n">plugin</span><span class="o">=</span><span class="s1">&#39;pil&#39;</span><span class="p">)</span>
+                <span class="n">im_stack</span> <span class="o">=</span> <span class="n">skio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">tiff_path</span><span class="p">,</span> <span class="n">plugin</span><span class="o">=</span><span class="s1">'pil'</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;unknown error in loading tiff stack.&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">'unknown error in loading tiff stack.'</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">im_stack</span></div>
 
 
 <div class="viewcode-block" id="SaveDownsampledTiff"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.images.SaveDownsampledTiff">[docs]</a><span class="k">def</span> <span class="nf">SaveDownsampledTiff</span><span class="p">(</span><span class="n">tiff_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">stack</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">group_by</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">save_as</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">"""</span>
 <span class="sd">    Create and save a downsampled version of the original tiff file. Original tiff file can be given as a numpy array stack</span>
 <span class="sd">    or a str path to the tiff.</span>
 
@@ -364,18 +360,18 @@
 <span class="sd">    :param save_as: .tif path to save the downsampled tiff to, if none provided it will save to the same parent directory as the provided tiff_path</span>
 <span class="sd">    :param plot_zprofile: if True, plot the zaxis profile using the full TIFF stack provided.</span>
 <span class="sd">    :return: numpy array containing the downsampled TIFF stack</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;\- downsampling tiff stack </span><span class="si">{</span><span class="n">stack</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">...&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">stack</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+<span class="sd">    """</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'\- downsampling tiff stack </span><span class="si">{</span><span class="n">stack</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">...'</span><span class="p">)</span> <span class="k">if</span> <span class="n">stack</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="k">if</span> <span class="n">save_as</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="n">tiff_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;please provide a save path to save_as&quot;</span>
-        <span class="n">save_as</span> <span class="o">=</span> <span class="n">tiff_path</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">group_by</span><span class="si">}</span><span class="s1">x_downsampled.tif&#39;</span>
+        <span class="k">assert</span> <span class="n">tiff_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"please provide a save path to save_as"</span>
+        <span class="n">save_as</span> <span class="o">=</span> <span class="n">tiff_path</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">group_by</span><span class="si">}</span><span class="s1">x_downsampled.tif'</span>
 
     <span class="k">if</span> <span class="n">stack</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">tiff_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># open tiff file</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;|- working on... </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">tiff_path</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'|- working on... </span><span class="si">%s</span><span class="s1">'</span> <span class="o">%</span> <span class="n">tiff_path</span><span class="p">)</span>
         <span class="n">stack</span> <span class="o">=</span> <span class="n">ImportTiff</span><span class="p">(</span><span class="n">tiff_path</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;\- downsampling tiff stack [</span><span class="si">{</span><span class="n">stack</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">]...&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">stack</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'\- downsampling tiff stack [</span><span class="si">{</span><span class="n">stack</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">]...'</span><span class="p">)</span> <span class="k">if</span> <span class="n">stack</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="n">resolution</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
@@ -388,8 +384,8 @@
 
     <span class="c1"># grouped average by specified interval</span>
     <span class="n">num_frames</span> <span class="o">=</span> <span class="n">stack8</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="n">group_by</span>
-    <span class="c1"># avgd_stack = np.empty((num_frames, resolution, resolution), dtype=&#39;uint16&#39;)</span>
-    <span class="n">avgd_stack</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">num_frames</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">resolution</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;uint8&#39;</span><span class="p">)</span>
+    <span class="c1"># avgd_stack = np.empty((num_frames, resolution, resolution), dtype='uint16')</span>
+    <span class="n">avgd_stack</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">num_frames</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">resolution</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">'uint8'</span><span class="p">)</span>
     <span class="n">frame_count</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">stack8</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">group_by</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_frames</span><span class="p">):</span>
         <span class="n">frame</span> <span class="o">=</span> <span class="n">frame_count</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
@@ -410,91 +406,88 @@
         <span class="n">final_stack</span> <span class="o">=</span> <span class="n">avgd_stack</span>
 
     <span class="c1"># write output</span>
-    <span class="c1"># print(f&quot;\n\- saving [{final_stack.shape}] tiff to... {save_as}&quot;)</span>
+    <span class="c1"># print(f"\n\- saving [{final_stack.shape}] tiff to... {save_as}")</span>
     <span class="n">WriteTiff</span><span class="p">(</span><span class="n">save_path</span><span class="o">=</span><span class="n">save_as</span><span class="p">,</span> <span class="n">stack</span><span class="o">=</span><span class="n">final_stack</span><span class="p">)</span> <span class="k">if</span> <span class="n">save_as</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="k">return</span> <span class="n">final_stack</span></div>
 
 
 <div class="viewcode-block" id="WriteTiff"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.images.WriteTiff">[docs]</a><span class="k">def</span> <span class="nf">WriteTiff</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="n">stack</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;use Tifffile imwrite function to save a numpy array to tiff file</span>
+    <span class="sd">"""use Tifffile imwrite function to save a numpy array to tiff file</span>
 <span class="sd">    </span>
 <span class="sd">    :param save_path: path to save .tiff file (include .tiff extension in path name)</span>
 <span class="sd">    :param stack: array to save as .tiff file</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">\- saving array [</span><span class="si">{</span><span class="n">stack</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">] to: </span><span class="si">{</span><span class="n">save_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">\- saving array [</span><span class="si">{</span><span class="n">stack</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">] to: </span><span class="si">{</span><span class="n">save_path</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">"</span><span class="se">\r</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">save_path</span><span class="p">)):</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">save_path</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">tf</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">save_path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">stack</span><span class="p">,</span> <span class="n">photometric</span><span class="o">=</span><span class="s1">&#39;minisblack&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">|- saved array [</span><span class="si">{</span><span class="n">stack</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">] to: </span><span class="si">{</span><span class="n">save_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+    <span class="n">tf</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">save_path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">stack</span><span class="p">,</span> <span class="n">photometric</span><span class="o">=</span><span class="s1">'minisblack'</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">|- saved array [</span><span class="si">{</span><span class="n">stack</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">] to: </span><span class="si">{</span><span class="n">save_path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="make_tiff_stack"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.images.make_tiff_stack">[docs]</a><span class="k">def</span> <span class="nf">make_tiff_stack</span><span class="p">(</span><span class="n">tiff_paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">save_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">"""</span>
 <span class="sd">    Concatenate &gt;1 tiff files from `tiff_paths`, and save the output under the .tif file path given under save_path.</span>
 
 <span class="sd">    :param tiff_paths: list of tiff paths to stack together. </span>
 <span class="sd">    :param save_path: .tif file path to where the tif should be saved</span>
 <span class="sd">    :return: stacked images array</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">num_tiffs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tiff_paths</span><span class="p">)</span>
     <span class="c1"># TEST_TIFFS = tiff_paths[:5]</span>
     <span class="c1"># tiff_paths = TEST_TIFFS</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;working on tifs to stack: &#39;</span><span class="p">,</span> <span class="n">num_tiffs</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'working on tifs to stack: '</span><span class="p">,</span> <span class="n">num_tiffs</span><span class="p">)</span>
 
     <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">tif_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tiff_paths</span><span class="p">):</span>
         <span class="n">img</span> <span class="o">=</span> <span class="n">ImportTiff</span><span class="p">(</span><span class="n">tiff_path</span><span class="o">=</span><span class="n">tif_</span><span class="p">)</span>
-        <span class="c1"># print(f&#39;imported tif stack: {img.shape}&#39;)</span>
+        <span class="c1"># print(f'imported tif stack: {img.shape}')</span>
         <span class="n">data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
-        <span class="c1"># print(&#39;length of data: &#39;, len(data))</span>
+        <span class="c1"># print('length of data: ', len(data))</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;\- made tiff stack: </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'\- made tiff stack: </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
     <span class="n">WriteTiff</span><span class="p">(</span><span class="n">save_path</span><span class="o">=</span><span class="n">save_path</span><span class="p">,</span> <span class="n">stack</span><span class="o">=</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="n">save_path</span> <span class="k">else</span> <span class="kc">None</span>
     <span class="k">return</span> <span class="n">data</span></div>
 </pre></div>
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="../../../index.html">
-              <img class="logo" src="../../../_static/imagingplus-logo.png" alt="Logo"/>
-            </a></p>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<p class="logo"><a href="../../../index.html">
+<img alt="Logo" class="logo" src="../../../_static/imagingplus-logo.png"/>
+</a></p>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
 </div>
 <script>$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">imagingplus.utils.images</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2022, Packer Lab.
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../../index.html">imaging+ 0.2-beta documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../../index.html">Module code</a> »</li>
+<li class="nav-item nav-item-this"><a href="">imagingplus.utils.images</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright 2022, Packer Lab.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
     </div>
-  </body>
+</body>
 </html>

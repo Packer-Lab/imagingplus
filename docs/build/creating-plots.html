@@ -2,122 +2,108 @@
 <!DOCTYPE html>
 
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>Plotting of data/analysis &#8212; packerlabimaging 0.1-alpha documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API reference" href="reference.html" />
-    <link rel="prev" title="Data Structure Inside Trial objects" href="data-structure-details.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="reference.html" title="API reference"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="data-structure-details.html" title="Data Structure Inside Trial objects"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">packerlabimaging 0.1-alpha documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Plotting of data/analysis</a></li> 
-      </ul>
-    </div>  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <section id="plotting-of-data-analysis">
-<span id="making-plots"></span><h1>Plotting of data/analysis<a class="headerlink" href="#plotting-of-data-analysis" title="Permalink to this headline">¶</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code> provides a number of convenience plotting functions to create the most commonly made plots for 2photon imaging analysis.</p>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.17.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>Plotting of data/analysis — packerlabimaging 0.1-alpha documentation</title>
+<link href="_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="_static/sphinxdoc.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+<script src="_static/jquery.js"></script>
+<script src="_static/underscore.js"></script>
+<script src="_static/doctools.js"></script>
+<link href="genindex.html" rel="index" title="Index"/>
+<link href="search.html" rel="search" title="Search"/>
+<link href="reference.html" rel="next" title="API reference"/>
+<link href="data-structure-details.html" rel="prev" title="Data Structure Inside Trial objects"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a accesskey="N" href="reference.html" title="API reference">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="data-structure-details.html" title="Data Structure Inside Trial objects">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="index.html">packerlabimaging 0.1-alpha documentation</a> »</li>
+<li class="nav-item nav-item-this"><a href="">Plotting of data/analysis</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="plotting-of-data-analysis">
+<span id="making-plots"></span><h1>Plotting of data/analysis<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#plotting-of-data-analysis">¶</a></h1>
+<p><code class="docutils literal notranslate">packerlabimaging</code> provides a number of convenience plotting functions to create the most commonly made plots for 2photon imaging analysis.</p>
 <p>All of these pre-built plots are demo’ed in the <a class="reference internal" href="Tutorials-reference.html#tutorials"><span class="std std-ref">Tutorials</span></a> page.</p>
 <p><strong>Available plotting functions:</strong></p>
 <ol class="arabic simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">plot_SLMtargets_Locs()</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">plot_cells_loc()</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">s2pRoiImage()</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">plot_flu_trace()</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">plotMeanRawFluTrace()</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">plot_s2p_raw()</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">plotLfpSignal()</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">plot_SLMtargets_Locs()</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">plot_photostim_traces()</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">plot_photostim_traces_overlap()</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">plot_periphotostim_avg2()</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">plot_periphotostim_avg()</span></code></p></li>
+<li><p><code class="docutils literal notranslate">plot_SLMtargets_Locs()</code></p></li>
+<li><p><code class="docutils literal notranslate">plot_cells_loc()</code></p></li>
+<li><p><code class="docutils literal notranslate">s2pRoiImage()</code></p></li>
+<li><p><code class="docutils literal notranslate">plot_flu_trace()</code></p></li>
+<li><p><code class="docutils literal notranslate">plotMeanRawFluTrace()</code></p></li>
+<li><p><code class="docutils literal notranslate">plot_s2p_raw()</code></p></li>
+<li><p><code class="docutils literal notranslate">plotLfpSignal()</code></p></li>
+<li><p><code class="docutils literal notranslate">plot_SLMtargets_Locs()</code></p></li>
+<li><p><code class="docutils literal notranslate">plot_photostim_traces()</code></p></li>
+<li><p><code class="docutils literal notranslate">plot_photostim_traces_overlap()</code></p></li>
+<li><p><code class="docutils literal notranslate">plot_periphotostim_avg2()</code></p></li>
+<li><p><code class="docutils literal notranslate">plot_periphotostim_avg()</code></p></li>
 </ol>
 </section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <div>
-    <h4>Previous topic</h4>
-    <p class="topless"><a href="data-structure-details.html"
-                          title="previous chapter">Data Structure Inside Trial objects</a></p>
-  </div>
-  <div>
-    <h4>Next topic</h4>
-    <p class="topless"><a href="reference.html"
-                          title="next chapter">API reference</a></p>
-  </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/creating-plots.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h4>Previous topic</h4>
+<p class="topless"><a href="data-structure-details.html" title="previous chapter">Data Structure Inside Trial objects</a></p>
+</div>
+<div>
+<h4>Next topic</h4>
+<p class="topless"><a href="reference.html" title="next chapter">API reference</a></p>
+</div>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="_sources/creating-plots.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
 </div>
 <script>$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="reference.html" title="API reference"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="data-structure-details.html" title="Data Structure Inside Trial objects"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">packerlabimaging 0.1-alpha documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Plotting of data/analysis</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2022, Packer Lab.
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="reference.html" title="API reference">next</a> |</li>
+<li class="right">
+<a href="data-structure-details.html" title="Data Structure Inside Trial objects">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="index.html">packerlabimaging 0.1-alpha documentation</a> »</li>
+<li class="nav-item nav-item-this"><a href="">Plotting of data/analysis</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright 2022, Packer Lab.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
     </div>
-  </body>
+</body>
 </html>

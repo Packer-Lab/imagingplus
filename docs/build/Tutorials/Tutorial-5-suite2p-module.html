@@ -1,54 +1,149 @@
 
 <!DOCTYPE html>
 
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>Tutorial 5 - Integrating with Suite2p (running Suite2p pipeline and storing results) &#8212; imaging+ 0.2-beta documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Annotated Data" href="Tutorial-6-anndata-module.html" />
-    <link rel="prev" title="Tutorial 4 - NWB Conversion" href="Tutorial-4-nwb-conversion.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="Tutorial-6-anndata-module.html" title="Annotated Data"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="Tutorial-4-nwb-conversion.html" title="Tutorial 4 - NWB Conversion"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../Tutorials-reference.html" accesskey="U">Tutorials</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Tutorial 5 - Integrating with Suite2p (running Suite2p pipeline and storing results)</a></li> 
-      </ul>
-    </div>  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  
+<html lang="en">
+<head>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta charset="utf-8"/>
+<meta content="Docutils 0.17.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>Tutorial 5 - Integrating with Suite2p (running Suite2p pipeline and storing results) | imaging+ 0.2-beta documentation</title>
+<link href="../_static/pygments.css" rel="stylesheet"/>
+<link href="../_static/theme.9297a650d9dd3016d913.css" rel="stylesheet"/>
+<link href="../_static/sg_gallery.css" rel="stylesheet"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="Tutorial-6-anndata-module.html" rel="next" title="Tutorial 6 - Annotated Data Module"/>
+<link href="Tutorial-4-nwb-conversion.html" rel="prev" title="Tutorial 4 - NWB Conversion"/>
+</head>
+<body class="antialiased text-gray scroll-smooth">
+<div class="min-h-screen xl:h-screen flex flex-col xl:grid xl:grid-layout print:block print:h-auto" data-action="keydown@window-&gt;search#focus " data-controller="sidebar search " id="page">
+<a class="block transition -translate-x-full focus:translate-x-0 opacity-0 focus:opacity-100 text-xl bg-white p-4 z-20 absolute top-0 left-0 h-14" href="#tutorial-5-integrating-with-suite2p-running-suite2p-pipeline-and-storing-results" title="Skip navigation links">Skip to content</a>
+<header class="grid-area-header z-10 h-14 fixed w-full top-0 print:hidden">
+<div class="bg-gray-dark shadow-md flex items-center h-full xl:px-2 relative"><div class="flex items-center">
+<button class="xl:hidden h-14 w-14 leading-14 text-gray-100 hover:bg-gray-700 hover:text-brand focus:outline-none focus:bg-gray-700 focus:text-brand" data-action="sidebar#open" data-sidebar-target="hamburger">
+<span class="sr-only">Open navigation menu</span>
+<svg aria-hidden="true" class="fill-current h-8 w-8" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
+</button><a class="hover:bg-gray-700 focus:bg-gray-700 focus:outline-none" href="../index.html" title="Back to homepage"><img alt="Logo" class="h-14 w-14 p-3 inline-block" src="../_static/imagingplus-logo.png"/><span class="hidden lg:inline-block shrink-0 font-medium text-gray-100 mx-5 leading-14 tracking-wider">imaging+ 0.2-beta documentation</span>
+</a></div><div class="flex justify-end items-center flex-1"><form action="../search.html" class="flex print:hidden justify-between items-center leading-14 md:ml-4 bg-gray-dark text-gray-300 focus-within:bg-gray-50 focus-within:text-gray-800 focus-within:absolute focus-within:inset-x-0 focus-within:top-0 md:focus-within:w-full md:focus-within:static z-10" data-action="click-&gt;search#focusSearchInput" id="searchbox" method="get">
+<button aria-label="Get search results" class="text-inherit h-14 w-14" tabindex="-1">
+<svg aria-hidden="true" class="fill-current stroke-current h-8 w-8" stroke-width="0.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+</button>
+<input aria-label="Search the docs" class="pr-2 bg-transparent text-inherit focus:outline-none w-0 md:w-auto focus:w-full transition-all duration-100" data-search-target="searchInput" id="search-input" name="q" placeholder="Search the docs" type="search"/>
+</form></div>
+</div>
+</header>
+<aside class="grid-area-sidebar h-full fixed pt-14 xl:relative inset-y-0 left-0 z-20 xl:z-0 print:hidden overflow-y-auto transition-all transform transform-gpu -translate-x-full opacity-0 duration-300 xl:translate-x-0 xl:opacity-100" data-sidebar-target="sidebar">
+<nav class="h-full overflow-y-auto bg-white text-gray-600 pt-8 flex flex-col" role="navigation">
+<div class="nav-toc flex-1 pl-6"><ul class="current">
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../installation.html">Installation</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../installation.html#installation">Installation</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../installation.html#test-import-installation">Test/Import Installation</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../installation.html#dependencies">Dependencies</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../installation.html#next">Next</a></div></li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../quick-start-guide.html">Quick start guide</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../quick-start-guide.html#key-structures">Key Structures</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../quick-start-guide.html#next">Next</a></div></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../overview.html">Overview</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../overview.html#modular-data-processing-analysis-and-visualisation"><strong>Modular Data Processing, Analysis and Visualisation</strong></a></div></li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../overview.html#extensibility"><strong>Extensibility</strong></a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../overview.html#next">Next</a></div></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current expanded"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../Tutorials-reference.html">Tutorials</a></div><ul class="current">
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-1-Overview-of-Workflow.html">Tutorial 1 - Getting started with data</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-1-Overview-of-Workflow.html#Creating-an-experiment">Creating an experiment</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-1-Overview-of-Workflow.html#Adding-trials-to-an-experiment">Adding trials to an experiment</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-1-Overview-of-Workflow.html#Adding-calcium-imaging-processing-to-Experiment">Adding calcium imaging processing to Experiment</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-1-Overview-of-Workflow.html#Storing-Suite2p-processed-data-as-an-anndata-structure">Storing Suite2p processed data as an anndata structure</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-2-Organization-of-data-in-package-objects.html">Tutorial 2 - Data organization inside imaging+</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-2-Organization-of-data-in-package-objects.html#Importing-data-analysis-objects">Importing data analysis objects</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-2-Organization-of-data-in-package-objects.html#paq-data">paq data</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-2-Organization-of-data-in-package-objects.html#Annotated-Data">Annotated Data</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-3-plotting-module.html">Tutorial 3 - Making Useful Plots</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-3-plotting-module.html#plot-Suite2p-ROIs-location">plot Suite2p ROIs location</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-3-plotting-module.html#plot-default-output-images-from-Suite2p">plot default output images from Suite2p</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-3-plotting-module.html#plot-individual-cell’s-flu-or-dFF-trace">plot individual cell’s flu or dFF trace</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-3-plotting-module.html#Raw-average-trace-of-FOV">Raw average trace of FOV</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-4-nwb-conversion.html">Tutorial 4 - NWB Conversion</a></div></li>
+<li class="toctree-l2 current expanded"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="current reference internal" data-action="click-&gt;sidebar#close" href="#">Tutorial 5 - Integrating with Suite2p (running Suite2p pipeline and storing results)</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="#Adding-the-Suite2p-module">Adding the Suite2p module</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="#Prepare-for-Suite2p-run">Prepare for Suite2p run</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="#Run-Suite2p">Run Suite2p</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="#Explore-suite2p-results---next-steps-after-running-Suite2p">Explore suite2p results - next steps after running Suite2p</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="#Import-suite2p-results-directly">Import suite2p results directly</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-6-anndata-module.html">Tutorial 6 - Annotated Data Module</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-6-anndata-module.html#storage-of-Flu-data">storage of Flu data</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-6-anndata-module.html#observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">observations (Suite2p ROIs metadata and associated processing info)</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-6-anndata-module.html#variables-(temporal-synchronization-of-paq-channels-and-imaging)">variables (temporal synchronization of paq channels and imaging)</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-7-paq-module.html">Tutorial 7 - Integration with PACKIO outputs (.paq data)</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-7-paq-module.html#adding-paqdata-module-to-the-trialobj">adding paqdata module to the trialobj</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-7-paq-module.html#Processing-paq-data">Processing paq data</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-7-paq-module.html#Synchronizing-.paq-data-with-imaging-frames">Synchronizing .paq data with imaging frames</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-8-Extending-built-in-classes.html">Tutorial 8 - Extending built in classes</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-8-Extending-built-in-classes.html#Creating-a-custom-class-for-Interneuron-Gcamp-imaging-during-seizures">Creating a custom class for Interneuron Gcamp imaging during seizures</a></div></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../organization-of-modules.html">Main Modules</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../organization-of-modules.html#main">Main</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../organization-of-modules.html#processing">Processing</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../organization-of-modules.html#workflow">Workflow</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../organization-of-modules.html#utils">Utils</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../organization-of-modules.html#plotting">Plotting</a></div></li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../data-structure-details.html">Data structure details</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../data-structure-details.html#anndata-object-for-storing-multi-modal-data"><em>AnnData</em> object for storing multi-modal data</a></div></li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../making-plots.html">Making plots</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../making-plots.html#module-imagingplus.plotting.plotting">Available plotting functions:</a></div></li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../reference.html">API Reference</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../reference.html#module-imagingplus.main.core">core</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../reference.html#module-imagingplus.main.subcore">subcore</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../reference.html#module-imagingplus.plotting.plotting">plotting</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../reference.html#module-imagingplus.processing.anndata">processing</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../reference.html#workflows-alloptical">workflows (AllOptical)</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../reference.html#module-imagingplus.utils.io">utils</a></div></li>
+</ul>
+</li>
+</ul>
+</div>
+<button class="text-4xl text-gray-800 p-4 bottom-0 hover:text-brand xl:hidden focus:text-brand self-center" data-action="sidebar#close" title="Close navigation menu">
+<span class="sr-only">Close navigation menu</span>
+<svg aria-hidden="true" class="fill-current stroke-current h-6 w-6" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+</button>
+</nav>
+</aside>
+<main class="px-4 pt-14 xl:ml-fluid grid-area-main overflow-y-auto flex flex-col flex-1 h-full mx-0 md:mx-auto xl:mr-0"><nav aria-label="breadcrumbs" class="print:hidden mt-12 text-sm text-gray-light" role="navigation">
+<a class="text-gray-light text-sm hover:text-gray-dark font-medium focus:text-gray-dark" href="../index.html">imaging+ 0.2-beta documentation</a>
+<span class="mr-1">/</span><a class="text-gray-light text-sm hover:text-gray-dark" href="../Tutorials-reference.html">Tutorials</a>
+<span class="mr-1">/</span><span aria-current="page">Tutorial 5 - Integrating with Suite2p (running Suite2p pipeline and storing results)</span>
+</nav>
+<article class="flex-1" role="main">
 <style>
 /* CSS for nbsphinx extension */
 
@@ -297,17 +392,21 @@ div.rendered_html tbody tr:hover {
 }
 </style>
 <section id="Tutorial-5---Integrating-with-Suite2p-(running-Suite2p-pipeline-and-storing-results)">
-<h1>Tutorial 5 - Integrating with Suite2p (running Suite2p pipeline and storing results)<a class="headerlink" href="#Tutorial-5---Integrating-with-Suite2p-(running-Suite2p-pipeline-and-storing-results)" title="Permalink to this headline">¶</a></h1>
+<h1>Tutorial 5 - Integrating with Suite2p (running Suite2p pipeline and storing results)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Tutorial-5---Integrating-with-Suite2p-(running-Suite2p-pipeline-and-storing-results)">¶</a></h1>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imagingplus</span> <span class="k">as</span> <span class="nn">ip</span>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[1]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="kn">import</span> <span class="nn">imagingplus</span> <span class="k">as</span> <span class="nn">ip</span>
 <span class="kn">from</span> <span class="nn">imagingplus.processing</span> <span class="kn">import</span> <span class="n">suite2p</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-</pre></div>
-</div>
+</code></pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -315,221 +414,183 @@ div.rendered_html tbody tr:hover {
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Warning: cellpose did not import
-No module named &#39;cellpose&#39;
+No module named 'cellpose'
 cannot use anatomical mode, but otherwise suite2p will run normally
 </pre></div></div>
 </div>
-<p>In this tutorial, we add the Suite2p submodule to an existing <code class="docutils literal notranslate"><span class="pre">expobj</span></code>. We also show how to run the suite2p pipeline using the <code class="docutils literal notranslate"><span class="pre">.Suite2p</span></code> submodule. Finally, we show how to access and use Suite2p results once the pipeline is run. Note: it is also possible to directly import independently run Suite2p results for this experiment (this is demonstrated in the final section).</p>
-<p>Suite2p provides an excellent cell (ROI) detection algorithm for calcium imaging datasets. The pipeline includes registration and spike deconvolution as well. Please familiarize yourself with the basic functionality of Suite2p using their documentation (found <a class="reference external" href="https://suite2p.readthedocs.io/en/latest/index.html">here</a>) before proceeding with these examples below.</p>
+<p>In this tutorial, we add the Suite2p submodule to an existing <code class="docutils literal notranslate">expobj</code>. We also show how to run the suite2p pipeline using the <code class="docutils literal notranslate">.Suite2p</code> submodule. Finally, we show how to access and use Suite2p results once the pipeline is run. Note: it is also possible to directly import independently run Suite2p results for this experiment (this is demonstrated in the final section).</p>
+<p>Suite2p provides an excellent cell (ROI) detection algorithm for calcium imaging datasets. The pipeline includes registration and spike deconvolution as well. Please familiarize yourself with the basic functionality of Suite2p using their documentation (found <a class="reference external" href="https://suite2p.readthedocs.io/en/latest/index.html" rel="nofollow noopener">here<svg aria-hidden="true" class="external-link-icon" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 19H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path></svg></a>) before proceeding with these examples below.</p>
 <section id="Adding-the-Suite2p-module">
-<h2>Adding the Suite2p module<a class="headerlink" href="#Adding-the-Suite2p-module" title="Permalink to this headline">¶</a></h2>
+<h2>Adding the Suite2p module<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Adding-the-Suite2p-module">¶</a></h2>
 <section id="Import-data-analysis-object">
-<h3>Import data analysis object<a class="headerlink" href="#Import-data-analysis-object" title="Permalink to this headline">¶</a></h3>
+<h3>Import data analysis object<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Import-data-analysis-object">¶</a></h3>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># specify the .pkl path to import expobj</span>
-<span class="n">prep</span> <span class="o">=</span> <span class="s1">&#39;PS14&#39;</span>
-<span class="n">date</span> <span class="o">=</span> <span class="s1">&#39;2021-01-28&#39;</span>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[ ]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="c1"># specify the .pkl path to import expobj</span>
+<span class="n">prep</span> <span class="o">=</span> <span class="s1">'PS14'</span>
+<span class="n">date</span> <span class="o">=</span> <span class="s1">'2021-01-28'</span>
 
-<span class="n">expobj</span><span class="p">:</span> <span class="n">ip</span><span class="o">.</span><span class="n">Experiment</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;/home/pshah/mnt/qnap/Analysis/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">_analysis.pkl&#39;</span><span class="p">)</span>
+<span class="n">expobj</span><span class="p">:</span> <span class="n">ip</span><span class="o">.</span><span class="n">Experiment</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="sa">f</span><span class="s1">'/home/pshah/mnt/qnap/Analysis/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">_analysis.pkl'</span><span class="p">)</span>
 
 <span class="c1"># set up new Suite2p submodule</span>
 <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span> <span class="o">=</span> <span class="n">suite2p</span><span class="o">.</span><span class="n">Suite2pExperiment</span><span class="p">(</span><span class="n">trialsTiffsSuite2p</span><span class="o">=</span><span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">tiff_paths_to_use_s2p</span><span class="p">,</span>
                                           <span class="n">s2pResultsPath</span><span class="o">=</span><span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">s2pResultsPath</span><span class="p">)</span>
-</pre></div>
+</code></pre></div></div>
 </div>
-</div>
-<p>Set any necessary <code class="docutils literal notranslate"><span class="pre">bad_frames</span></code> to Suite2p. These frames will be ignored during the ROI detection step. In this example, we set all frames from trials from the <code class="docutils literal notranslate"><span class="pre">post-4ap</span></code> experiment group (<code class="docutils literal notranslate"><span class="pre">expGroup</span></code>) as bad frames. In other experiments, like for example all-optical experiments, we use this feature to set all photostimulation frames as <code class="docutils literal notranslate"><span class="pre">bad_frames</span></code></p>
+<p>Set any necessary <code class="docutils literal notranslate">bad_frames</code> to Suite2p. These frames will be ignored during the ROI detection step. In this example, we set all frames from trials from the <code class="docutils literal notranslate">post-4ap</code> experiment group (<code class="docutils literal notranslate">expGroup</code>) as bad frames. In other experiments, like for example all-optical experiments, we use this feature to set all photostimulation frames as <code class="docutils literal notranslate">bad_frames</code></p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># add Suite2p bad frames from post4ap trials</span>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[ ]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="c1"># add Suite2p bad frames from post4ap trials</span>
 <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">bad_frames</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">trial</span> <span class="ow">in</span> <span class="n">expobj</span><span class="o">.</span><span class="n">trialIDs</span><span class="p">:</span>
-    <span class="k">if</span> <span class="s1">&#39;post&#39;</span> <span class="ow">in</span> <span class="n">expobj</span><span class="o">.</span><span class="n">TrialsInformation</span><span class="p">[</span><span class="n">trial</span><span class="p">][</span><span class="s1">&#39;expGroup&#39;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="s1">'post'</span> <span class="ow">in</span> <span class="n">expobj</span><span class="o">.</span><span class="n">TrialsInformation</span><span class="p">[</span><span class="n">trial</span><span class="p">][</span><span class="s1">'expGroup'</span><span class="p">]:</span>
         <span class="n">trialobj</span><span class="p">:</span> <span class="n">ip</span><span class="o">.</span><span class="n">TwoPhotonImagingTrial</span> <span class="o">=</span> <span class="n">expobj</span><span class="o">.</span><span class="n">load_trial</span><span class="p">(</span><span class="n">trialID</span><span class="o">=</span><span class="n">trial</span><span class="p">)</span>
 
         <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">add_bad_frames</span><span class="p">(</span><span class="n">frames</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">bad_frames_npy_loc</span> <span class="o">=</span> <span class="n">expobj</span><span class="o">.</span><span class="n">dataPath</span><span class="p">)</span>
-</pre></div>
-</div>
+</code></pre></div></div>
 </div>
 </section>
 </section>
 <section id="Prepare-for-Suite2p-run">
-<h2>Prepare for Suite2p run<a class="headerlink" href="#Prepare-for-Suite2p-run" title="Permalink to this headline">¶</a></h2>
-<p>We next need to setup the Suite2p settings to run for our particular imaging experiment. Use the <code class="docutils literal notranslate"><span class="pre">.Suite2p.update_ops(dict)</span></code> method to update any <code class="docutils literal notranslate"><span class="pre">ops</span></code> options before running to Suite2p.</p>
-<p>To get the necessary imaging metadata parameters, here we use one of the <code class="docutils literal notranslate"><span class="pre">trialobj</span></code> contained within the present <code class="docutils literal notranslate"><span class="pre">expobj</span></code> to retrieve that information.</p>
+<h2>Prepare for Suite2p run<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Prepare-for-Suite2p-run">¶</a></h2>
+<p>We next need to setup the Suite2p settings to run for our particular imaging experiment. Use the <code class="docutils literal notranslate">.Suite2p.update_ops(dict)</code> method to update any <code class="docutils literal notranslate">ops</code> options before running to Suite2p.</p>
+<p>To get the necessary imaging metadata parameters, here we use one of the <code class="docutils literal notranslate">trialobj</code> contained within the present <code class="docutils literal notranslate">expobj</code> to retrieve that information.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">trialobj</span><span class="p">:</span> <span class="n">ip</span><span class="o">.</span><span class="n">TwoPhotonImagingTrial</span> <span class="o">=</span> <span class="n">expobj</span><span class="o">.</span><span class="n">load_trial</span><span class="p">(</span><span class="n">trialID</span><span class="o">=</span><span class="n">expobj</span><span class="o">.</span><span class="n">trialIDs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[ ]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="n">trialobj</span><span class="p">:</span> <span class="n">ip</span><span class="o">.</span><span class="n">TwoPhotonImagingTrial</span> <span class="o">=</span> <span class="n">expobj</span><span class="o">.</span><span class="n">load_trial</span><span class="p">(</span><span class="n">trialID</span><span class="o">=</span><span class="n">expobj</span><span class="o">.</span><span class="n">trialIDs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
 <span class="n">pix_sz_x</span> <span class="o">=</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">pix_sz_x</span>
 <span class="n">pix_sz_y</span> <span class="o">=</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">pix_sz_y</span>
 <span class="n">diameter_x</span> <span class="o">=</span> <span class="mi">13</span> <span class="o">/</span> <span class="n">pix_sz_x</span>
 <span class="n">diameter_y</span> <span class="o">=</span> <span class="mi">13</span> <span class="o">/</span> <span class="n">pix_sz_y</span>
 <span class="n">diameter</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">diameter_x</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">diameter_y</span><span class="p">))</span> <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">diameter_y</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">(</span><span class="n">diameter_x</span><span class="p">)</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">diameter_x</span><span class="p">)</span>
-<br/></pre></div>
+</code></pre></div></div>
 </div>
-</div>
-<p>Set the new values for Suite2p by using <code class="docutils literal notranslate"><span class="pre">.Suite2p.update_ops(dict)</span></code></p>
+<p>Set the new values for Suite2p by using <code class="docutils literal notranslate">.Suite2p.update_ops(dict)</code></p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># new values for ops dictionary</span>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[ ]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="c1"># new values for ops dictionary</span>
 <span class="n">new_ops</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;fs&#39;</span><span class="p">:</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">fps</span><span class="p">,</span>
-    <span class="s1">&#39;tau&#39;</span><span class="p">:</span> <span class="mf">0.70</span><span class="p">,</span>
-    <span class="s1">&#39;num_workers&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
-    <span class="s1">&#39;diameter&#39;</span><span class="p">:</span> <span class="n">diameter</span><span class="p">,</span>
-    <span class="s1">&#39;delete_bin&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># temporary not deleting binaries in case needed for further testing!</span>
-    <span class="s1">&#39;batch_size&#39;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span>  <span class="c1"># larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images</span>
-    <span class="s1">&#39;save_folder&#39;</span><span class="p">:</span> <span class="n">expobj</span><span class="o">.</span><span class="n">suite2p_save_path</span>
+    <span class="s1">'fs'</span><span class="p">:</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">fps</span><span class="p">,</span>
+    <span class="s1">'tau'</span><span class="p">:</span> <span class="mf">0.70</span><span class="p">,</span>
+    <span class="s1">'num_workers'</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="s1">'diameter'</span><span class="p">:</span> <span class="n">diameter</span><span class="p">,</span>
+    <span class="s1">'delete_bin'</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># temporary not deleting binaries in case needed for further testing!</span>
+    <span class="s1">'batch_size'</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span>  <span class="c1"># larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images</span>
+    <span class="s1">'save_folder'</span><span class="p">:</span> <span class="n">expobj</span><span class="o">.</span><span class="n">suite2p_save_path</span>
 <span class="p">}</span>
 
 <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">update_ops</span><span class="p">(</span><span class="n">new_ops</span><span class="p">)</span>
 <span class="n">expobj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ops:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">ops</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;db:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">db</span><span class="p">)</span>
-</pre></div>
-</div>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'ops:</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span> <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">ops</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'db:</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span> <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">db</span><span class="p">)</span>
+</code></pre></div></div>
 </div>
 </section>
 <section id="Run-Suite2p">
-<h2>Run Suite2p<a class="headerlink" href="#Run-Suite2p" title="Permalink to this headline">¶</a></h2>
-<p>Now, we are all set to run Suite2p. We have provided the <code class="docutils literal notranslate"><span class="pre">.Suite2p.s2pRun</span></code> method as a wrapper to run the Suite2p on the current <code class="docutils literal notranslate"><span class="pre">expobj</span></code>.</p>
+<h2>Run Suite2p<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Run-Suite2p">¶</a></h2>
+<p>Now, we are all set to run Suite2p. We have provided the <code class="docutils literal notranslate">.Suite2p.s2pRun</code> method as a wrapper to run the Suite2p on the current <code class="docutils literal notranslate">expobj</code>.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># run the suite2p pipeline</span>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[ ]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="c1"># run the suite2p pipeline</span>
 <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">s2pRun</span><span class="p">(</span><span class="n">expobj</span><span class="o">=</span><span class="n">expobj</span><span class="p">)</span>
-</pre></div>
-</div>
+</code></pre></div></div>
 </div>
 </section>
 <section id="Explore-suite2p-results---next-steps-after-running-Suite2p">
-<h2>Explore suite2p results - next steps after running Suite2p<a class="headerlink" href="#Explore-suite2p-results---next-steps-after-running-Suite2p" title="Permalink to this headline">¶</a></h2>
+<h2>Explore suite2p results - next steps after running Suite2p<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Explore-suite2p-results---next-steps-after-running-Suite2p">¶</a></h2>
 <p>TODO</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[ ]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code>
+</code></pre></div></div>
 </div>
 </section>
 <section id="Import-suite2p-results-directly">
-<h2>Import suite2p results directly<a class="headerlink" href="#Import-suite2p-results-directly" title="Permalink to this headline">¶</a></h2>
-<p>If we had run suite2p on our experiment independent of creating the <code class="docutils literal notranslate"><span class="pre">expobj</span></code>, we can add that Suite2p output to the present <code class="docutils literal notranslate"><span class="pre">expobj</span></code> by providing a valid path to the <code class="docutils literal notranslate"><span class="pre">s2pResultsPath</span></code> argument when setting up the <code class="docutils literal notranslate"><span class="pre">.Suite2p</span></code> submodule on our <code class="docutils literal notranslate"><span class="pre">expobj</span></code>.</p>
-<p>Note: the output that is required in <code class="docutils literal notranslate"><span class="pre">s2pResultsPath</span></code> is the path to <code class="docutils literal notranslate"><span class="pre">&lt;../plane0/&gt;</span></code> of the Suite2p results output.</p>
+<h2>Import suite2p results directly<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Import-suite2p-results-directly">¶</a></h2>
+<p>If we had run suite2p on our experiment independent of creating the <code class="docutils literal notranslate">expobj</code>, we can add that Suite2p output to the present <code class="docutils literal notranslate">expobj</code> by providing a valid path to the <code class="docutils literal notranslate">s2pResultsPath</code> argument when setting up the <code class="docutils literal notranslate">.Suite2p</code> submodule on our <code class="docutils literal notranslate">expobj</code>.</p>
+<p>Note: the output that is required in <code class="docutils literal notranslate">s2pResultsPath</code> is the path to <code class="docutils literal notranslate">&lt;../plane0/&gt;</code> of the Suite2p results output.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># specify the .pkl path to import expobj</span>
-<span class="n">prep</span> <span class="o">=</span> <span class="s1">&#39;PS14&#39;</span>
-<span class="n">date</span> <span class="o">=</span> <span class="s1">&#39;2021-01-28&#39;</span>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[ ]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="c1"># specify the .pkl path to import expobj</span>
+<span class="n">prep</span> <span class="o">=</span> <span class="s1">'PS14'</span>
+<span class="n">date</span> <span class="o">=</span> <span class="s1">'2021-01-28'</span>
 
-<span class="n">expobj</span><span class="p">:</span> <span class="n">ip</span><span class="o">.</span><span class="n">Experiment</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;/home/pshah/mnt/qnap/Analysis/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">_analysis.pkl&#39;</span><span class="p">)</span>
+<span class="n">expobj</span><span class="p">:</span> <span class="n">ip</span><span class="o">.</span><span class="n">Experiment</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="sa">f</span><span class="s1">'/home/pshah/mnt/qnap/Analysis/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">_analysis.pkl'</span><span class="p">)</span>
 
 <span class="c1"># set up new Suite2p submodule</span>
 <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span> <span class="o">=</span> <span class="n">suite2p</span><span class="o">.</span><span class="n">Suite2pExperiment</span><span class="p">(</span><span class="n">trialsTiffsSuite2p</span><span class="o">=</span><span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">tiff_paths_to_use_s2p</span><span class="p">,</span>
-                                          <span class="n">s2pResultsPath</span><span class="o">=</span><span class="s1">&#39;&lt;path/to/suite2p/output&gt;&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+                                          <span class="n">s2pResultsPath</span><span class="o">=</span><span class="s1">'&lt;path/to/suite2p/output&gt;'</span><span class="p">)</span>
+</code></pre></div></div>
 </div>
 </section>
 </section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="../index.html">
-              <img class="logo" src="../_static/imagingplus-logo.png" alt="Logo"/>
-            </a></p>
-  <div>
-    <h3><a href="../index.html">Table of Contents</a></h3>
-    <ul>
-<li><a class="reference internal" href="#">Tutorial 5 - Integrating with Suite2p (running Suite2p pipeline and storing results)</a><ul>
-<li><a class="reference internal" href="#Adding-the-Suite2p-module">Adding the Suite2p module</a><ul>
-<li><a class="reference internal" href="#Import-data-analysis-object">Import data analysis object</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#Prepare-for-Suite2p-run">Prepare for Suite2p run</a></li>
-<li><a class="reference internal" href="#Run-Suite2p">Run Suite2p</a></li>
-<li><a class="reference internal" href="#Explore-suite2p-results---next-steps-after-running-Suite2p">Explore suite2p results - next steps after running Suite2p</a></li>
-<li><a class="reference internal" href="#Import-suite2p-results-directly">Import suite2p results directly</a></li>
-</ul>
-</li>
-</ul>
-
-  </div>
-  <div>
-    <h4>Previous topic</h4>
-    <p class="topless"><a href="Tutorial-4-nwb-conversion.html"
-                          title="previous chapter">Tutorial 4 - NWB Conversion</a></p>
-  </div>
-  <div>
-    <h4>Next topic</h4>
-    <p class="topless"><a href="Tutorial-6-anndata-module.html"
-                          title="next chapter">Annotated Data</a></p>
-  </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/Tutorials/Tutorial-5-suite2p-module.ipynb.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
+</article>
+<footer>
+<div class="mt-20 mb-4 text-sm text-gray-700 print:mt-4">© 2022, Packer Lab Made with <a href="https://www.sphinx-doc.org">Sphinx 4.4.0</a></div>
+</footer></main>
+<button class="fixed bottom-0 right-0 z-20 opacity-0 p-4 m-4 tracking-wide bg-gray-900 text-gray-100 transition transform transform-gpu duration-500 translate-y-full" data-action="search#hideSnackbar" data-search-target="snackbar">
+  Clear highlights
+</button><div class="fixed hidden inset-0 bg-black bg-opacity-50" data-action="click-&gt;sidebar#close" data-sidebar-target="screen">
 </div>
-<script>$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="Tutorial-6-anndata-module.html" title="Annotated Data"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="Tutorial-4-nwb-conversion.html" title="Tutorial 4 - NWB Conversion"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../Tutorials-reference.html" >Tutorials</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Tutorial 5 - Integrating with Suite2p (running Suite2p pipeline and storing results)</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2022, Packer Lab.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
-    </div>
-  </body>
+</div>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/doctools.js"></script>
+<script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+<script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="../_static/theme.3051a0ec24cad00d4d88.js"></script>
+</body>
 </html>

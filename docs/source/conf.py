@@ -33,7 +33,8 @@ extensions = ["sphinx.ext.autodoc",
               "sphinx.ext.viewcode",
               "nbsphinx",
               "sphinx_gallery.load_style",
-              "sphinx.ext.napoleon"
+              "sphinx.ext.napoleon",
+              "sphinxawesome_theme"
 ]
 autodoc_default_options = {
     'members':         True,
@@ -54,7 +55,7 @@ exclude_patterns = ['build', '**.ipynb_checkpoints']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = "sphinxawesome_theme"
 html_logo = 'files/imagingplus-logo.png'
 
 # Add any paths that contain custom static files (such as style sheets) here,

@@ -1,60 +1,159 @@
 
 <!DOCTYPE html>
 
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>Plotting of data and analyses &#8212; imaging+ 0.2-beta documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API reference" href="reference.html" />
-    <link rel="prev" title="Data Structure Inside Trial objects" href="data-structure-details.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="reference.html" title="API reference"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="data-structure-details.html" title="Data Structure Inside Trial objects"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Plotting of data and analyses</a></li> 
-      </ul>
-    </div>  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <section id="plotting-of-data-and-analyses">
-<span id="making-plots"></span><h1>Plotting of data and analyses<a class="headerlink" href="#plotting-of-data-and-analyses" title="Permalink to this headline">¶</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">packerlabimaging</span></code> provides a number of convenience plotting functions to create the most commonly made plots for 2photon imaging analysis.</p>
+<html lang="en">
+<head>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta charset="utf-8"/>
+<meta content="Docutils 0.17.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>Plotting of data and analyses | imaging+ 0.2-beta documentation</title>
+<link href="_static/pygments.css" rel="stylesheet"/>
+<link href="_static/theme.9297a650d9dd3016d913.css" rel="stylesheet"/>
+<link href="_static/sg_gallery.css" rel="stylesheet"/>
+<link href="search.html" rel="search" title="Search"/>
+<link href="genindex.html" rel="index" title="Index"/>
+<link href="reference.html" rel="next" title="API reference"/>
+<link href="data-structure-details.html" rel="prev" title="Data Structure Inside Trial objects"/>
+</head>
+<body class="antialiased text-gray scroll-smooth">
+<div class="min-h-screen xl:h-screen flex flex-col xl:grid xl:grid-layout print:block print:h-auto" data-action="keydown@window-&gt;search#focus " data-controller="sidebar search " id="page">
+<a class="block transition -translate-x-full focus:translate-x-0 opacity-0 focus:opacity-100 text-xl bg-white p-4 z-20 absolute top-0 left-0 h-14" href="#plotting-of-data-and-analyses" title="Skip navigation links">Skip to content</a>
+<header class="grid-area-header z-10 h-14 fixed w-full top-0 print:hidden">
+<div class="bg-gray-dark shadow-md flex items-center h-full xl:px-2 relative"><div class="flex items-center">
+<button class="xl:hidden h-14 w-14 leading-14 text-gray-100 hover:bg-gray-700 hover:text-brand focus:outline-none focus:bg-gray-700 focus:text-brand" data-action="sidebar#open" data-sidebar-target="hamburger">
+<span class="sr-only">Open navigation menu</span>
+<svg aria-hidden="true" class="fill-current h-8 w-8" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
+</button><a class="hover:bg-gray-700 focus:bg-gray-700 focus:outline-none" href="index.html" title="Back to homepage"><img alt="Logo" class="h-14 w-14 p-3 inline-block" src="_static/imagingplus-logo.png"/><span class="hidden lg:inline-block shrink-0 font-medium text-gray-100 mx-5 leading-14 tracking-wider">imaging+ 0.2-beta documentation</span>
+</a></div><div class="flex justify-end items-center flex-1"><form action="search.html" class="flex print:hidden justify-between items-center leading-14 md:ml-4 bg-gray-dark text-gray-300 focus-within:bg-gray-50 focus-within:text-gray-800 focus-within:absolute focus-within:inset-x-0 focus-within:top-0 md:focus-within:w-full md:focus-within:static z-10" data-action="click-&gt;search#focusSearchInput" id="searchbox" method="get">
+<button aria-label="Get search results" class="text-inherit h-14 w-14" tabindex="-1">
+<svg aria-hidden="true" class="fill-current stroke-current h-8 w-8" stroke-width="0.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+</button>
+<input aria-label="Search the docs" class="pr-2 bg-transparent text-inherit focus:outline-none w-0 md:w-auto focus:w-full transition-all duration-100" data-search-target="searchInput" id="search-input" name="q" placeholder="Search the docs" type="search"/>
+</form></div>
+</div>
+</header>
+<aside class="grid-area-sidebar h-full fixed pt-14 xl:relative inset-y-0 left-0 z-20 xl:z-0 print:hidden overflow-y-auto transition-all transform transform-gpu -translate-x-full opacity-0 duration-300 xl:translate-x-0 xl:opacity-100" data-sidebar-target="sidebar">
+<nav class="h-full overflow-y-auto bg-white text-gray-600 pt-8 flex flex-col" role="navigation">
+<div class="nav-toc flex-1 pl-6"><ul class="current">
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="installation.html">Installation</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="installation.html#installation">Installation</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="installation.html#test-import-installation">Test/Import Installation</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="installation.html#dependencies">Dependencies</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="installation.html#next">Next</a></div></li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="quick-start-guide.html">Quick start guide</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="quick-start-guide.html#key-structures">Key Structures</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="quick-start-guide.html#next">Next</a></div></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="overview.html">Overview</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="overview.html#modular-data-processing-analysis-and-visualisation"><strong>Modular Data Processing, Analysis and Visualisation</strong></a></div></li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="overview.html#extensibility"><strong>Extensibility</strong></a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="overview.html#next">Next</a></div></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials-reference.html">Tutorials</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-1-Overview-of-Workflow.html">Tutorial 1 - Getting started with data</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-1-Overview-of-Workflow.html#Creating-an-experiment">Creating an experiment</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-1-Overview-of-Workflow.html#Adding-trials-to-an-experiment">Adding trials to an experiment</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-1-Overview-of-Workflow.html#Adding-calcium-imaging-processing-to-Experiment">Adding calcium imaging processing to Experiment</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-1-Overview-of-Workflow.html#Storing-Suite2p-processed-data-as-an-anndata-structure">Storing Suite2p processed data as an anndata structure</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-2-Organization-of-data-in-package-objects.html">Tutorial 2 - Data organization inside imaging+</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-2-Organization-of-data-in-package-objects.html#Importing-data-analysis-objects">Importing data analysis objects</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-2-Organization-of-data-in-package-objects.html#paq-data">paq data</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-2-Organization-of-data-in-package-objects.html#Annotated-Data">Annotated Data</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-3-plotting-module.html">Tutorial 3 - Making Useful Plots</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-3-plotting-module.html#plot-Suite2p-ROIs-location">plot Suite2p ROIs location</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-3-plotting-module.html#plot-default-output-images-from-Suite2p">plot default output images from Suite2p</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-3-plotting-module.html#plot-individual-cell’s-flu-or-dFF-trace">plot individual cell’s flu or dFF trace</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-3-plotting-module.html#Raw-average-trace-of-FOV">Raw average trace of FOV</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-4-nwb-conversion.html">Tutorial 4 - NWB Conversion</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-5-suite2p-module.html">Tutorial 5 - Integrating with Suite2p (running Suite2p pipeline and storing results)</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-5-suite2p-module.html#Adding-the-Suite2p-module">Adding the Suite2p module</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-5-suite2p-module.html#Prepare-for-Suite2p-run">Prepare for Suite2p run</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-5-suite2p-module.html#Run-Suite2p">Run Suite2p</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-5-suite2p-module.html#Explore-suite2p-results---next-steps-after-running-Suite2p">Explore suite2p results - next steps after running Suite2p</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-5-suite2p-module.html#Import-suite2p-results-directly">Import suite2p results directly</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-6-anndata-module.html">Tutorial 6 - Annotated Data Module</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-6-anndata-module.html#storage-of-Flu-data">storage of Flu data</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-6-anndata-module.html#observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">observations (Suite2p ROIs metadata and associated processing info)</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-6-anndata-module.html#variables-(temporal-synchronization-of-paq-channels-and-imaging)">variables (temporal synchronization of paq channels and imaging)</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-7-paq-module.html">Tutorial 7 - Integration with PACKIO outputs (.paq data)</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-7-paq-module.html#adding-paqdata-module-to-the-trialobj">adding paqdata module to the trialobj</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-7-paq-module.html#Processing-paq-data">Processing paq data</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-7-paq-module.html#Synchronizing-.paq-data-with-imaging-frames">Synchronizing .paq data with imaging frames</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-8-Extending-built-in-classes.html">Tutorial 8 - Extending built in classes</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-8-Extending-built-in-classes.html#Creating-a-custom-class-for-Interneuron-Gcamp-imaging-during-seizures">Creating a custom class for Interneuron Gcamp imaging during seizures</a></div></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="organization-of-modules.html">Main Modules</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="organization-of-modules.html#main">Main</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="organization-of-modules.html#processing">Processing</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="organization-of-modules.html#workflow">Workflow</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="organization-of-modules.html#utils">Utils</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="organization-of-modules.html#plotting">Plotting</a></div></li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="data-structure-details.html">Data structure details</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="data-structure-details.html#anndata-object-for-storing-multi-modal-data"><em>AnnData</em> object for storing multi-modal data</a></div></li>
+</ul>
+</li>
+<li class="toctree-l1 current expanded"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="current reference internal" data-action="click-&gt;sidebar#close" href="#">Making plots</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="#module-imagingplus.plotting.plotting">Available plotting functions:</a></div></li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="reference.html">API Reference</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="reference.html#module-imagingplus.main.core">core</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="reference.html#module-imagingplus.main.subcore">subcore</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="reference.html#module-imagingplus.plotting.plotting">plotting</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="reference.html#module-imagingplus.processing.anndata">processing</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="reference.html#workflows-alloptical">workflows (AllOptical)</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="reference.html#module-imagingplus.utils.io">utils</a></div></li>
+</ul>
+</li>
+</ul>
+</div>
+<button class="text-4xl text-gray-800 p-4 bottom-0 hover:text-brand xl:hidden focus:text-brand self-center" data-action="sidebar#close" title="Close navigation menu">
+<span class="sr-only">Close navigation menu</span>
+<svg aria-hidden="true" class="fill-current stroke-current h-6 w-6" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+</button>
+</nav>
+</aside>
+<main class="px-4 pt-14 xl:ml-fluid grid-area-main overflow-y-auto flex flex-col flex-1 h-full mx-0 md:mx-auto xl:mr-0"><nav aria-label="breadcrumbs" class="print:hidden mt-12 text-sm text-gray-light" role="navigation">
+<a class="text-gray-light text-sm hover:text-gray-dark font-medium focus:text-gray-dark" href="index.html">imaging+ 0.2-beta documentation</a>
+<span class="mr-1">/</span><span aria-current="page">Plotting of data and analyses</span>
+</nav>
+<article class="flex-1" role="main">
+<section id="plotting-of-data-and-analyses">
+<span id="making-plots"></span><h1>Plotting of data and analyses<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#plotting-of-data-and-analyses">¶</a></h1>
+<p><code class="docutils literal notranslate">packerlabimaging</code> provides a number of convenience plotting functions to create the most commonly made plots for 2photon imaging analysis.</p>
 <p>All of these pre-built plots are demo’ed in a tutorial in <a class="reference internal" href="Tutorials-reference.html#tutorials"><span class="std std-ref">Tutorials</span></a>.</p>
 <section id="module-imagingplus.plotting.plotting">
-<span id="available-plotting-functions"></span><h2>Available plotting functions:<a class="headerlink" href="#module-imagingplus.plotting.plotting" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
+<span id="available-plotting-functions"></span><h2>Available plotting functions:<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#module-imagingplus.plotting.plotting">¶</a></h2>
+<dl class="py function code-definition">
 <dt class="sig sig-object py" id="imagingplus.plotting.plotting.plotImg">
-<span class="sig-prename descclassname"><span class="pre">imagingplus.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plotImg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#plotImg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imagingplus.plotting.plotting.plotImg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot image in grayscale.</p>
+<code class="sig-prename descclassname">imagingplus.plotting.plotting.</code><code class="sig-name descname">plotImg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">img</span><span class="p">:</span><span class="w"> </span><span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#plotImg"><span class="viewcode-link">[source]</span></a><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#imagingplus.plotting.plotting.plotImg">¶</a></dt>
+<dd>
+<p>Plot image in grayscale.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -72,11 +171,11 @@
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py function">
+<dl class="py function code-definition">
 <dt class="sig sig-object py" id="imagingplus.plotting.plotting.plotRoiLocations">
-<span class="sig-prename descclassname"><span class="pre">imagingplus.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plotRoiLocations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">imagingplus.workflows.TwoPhotonImaging.TwoPhotonImaging</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suite2p_rois</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#plotRoiLocations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imagingplus.plotting.plotting.plotRoiLocations" title="Permalink to this definition">¶</a></dt>
-<dd><p>plots an image of the FOV to show the locations of cells given in cells ls.</p>
+<code class="sig-prename descclassname">imagingplus.plotting.plotting.</code><code class="sig-name descname">plotRoiLocations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trialobj</span><span class="p">:</span><span class="w"> </span><span class="n">imagingplus.workflows.TwoPhotonImaging.TwoPhotonImaging</span></em>, <em class="sig-param"><span class="n">suite2p_rois</span><span class="p">:</span><span class="w"> </span><span class="n">Union<span class="p">[</span>list<span class="p">,</span><span class="w"> </span>str<span class="p">]</span></span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">background</span><span class="p">:</span><span class="w"> </span><span class="n">numpy.ndarray</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#plotRoiLocations"><span class="viewcode-link">[source]</span></a><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#imagingplus.plotting.plotting.plotRoiLocations">¶</a></dt>
+<dd>
+<p>plots an image of the FOV to show the locations of cells given in cells ls.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -101,11 +200,11 @@
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py function">
+<dl class="py function code-definition">
 <dt class="sig sig-object py" id="imagingplus.plotting.plotting.makeSuite2pPlots">
-<span class="sig-prename descclassname"><span class="pre">imagingplus.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">makeSuite2pPlots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="reference.html#imagingplus.main.core.Experiment" title="imagingplus.main.core.Experiment"><span class="pre">imagingplus.main.core.Experiment</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">imagingplus.workflows.TwoPhotonImaging.TwoPhotonImaging</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#makeSuite2pPlots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imagingplus.plotting.plotting.makeSuite2pPlots" title="Permalink to this definition">¶</a></dt>
-<dd><p>Makes four plots that are created by Suite2p output.</p>
+<code class="sig-prename descclassname">imagingplus.plotting.plotting.</code><code class="sig-name descname">makeSuite2pPlots</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span><span class="p">:</span><span class="w"> </span><span class="n">Union<span class="p">[</span><a class="reference internal" href="reference.html#imagingplus.main.core.Experiment" title="imagingplus.main.core.Experiment">imagingplus.main.core.Experiment</a><span class="p">,</span><span class="w"> </span>imagingplus.workflows.TwoPhotonImaging.TwoPhotonImaging<span class="p">]</span></span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#makeSuite2pPlots"><span class="viewcode-link">[source]</span></a><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#imagingplus.plotting.plotting.makeSuite2pPlots">¶</a></dt>
+<dd>
+<p>Makes four plots that are created by Suite2p output.</p>
 <p>credit: run_s2p tutorial on Mouseland/Suite2p on github</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -120,11 +219,11 @@
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py function">
+<dl class="py function code-definition">
 <dt class="sig sig-object py" id="imagingplus.plotting.plotting.plot_flu_trace">
-<span class="sig-prename descclassname"><span class="pre">imagingplus.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_flu_trace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">imagingplus.workflows.TwoPhotonImaging.TwoPhotonImaging</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'raw'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#plot_flu_trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imagingplus.plotting.plotting.plot_flu_trace" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot individual cell’s flu or dFF trace, with photostim. timings for that cell. Accesses the object’s anndata data storage.</p>
+<code class="sig-prename descclassname">imagingplus.plotting.plotting.</code><code class="sig-name descname">plot_flu_trace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trialobj</span><span class="p">:</span><span class="w"> </span><span class="n">imagingplus.workflows.TwoPhotonImaging.TwoPhotonImaging</span></em>, <em class="sig-param"><span class="n">cell</span><span class="p">:</span><span class="w"> </span><span class="n">int</span></em>, <em class="sig-param"><span class="n">to_plot</span><span class="o">=</span><span class="default_value">'raw'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#plot_flu_trace"><span class="viewcode-link">[source]</span></a><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#imagingplus.plotting.plotting.plot_flu_trace">¶</a></dt>
+<dd>
+<p>Plot individual cell’s flu or dFF trace, with photostim. timings for that cell. Accesses the object’s anndata data storage.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -141,11 +240,11 @@
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py function">
+<dl class="py function code-definition">
 <dt class="sig sig-object py" id="imagingplus.plotting.plotting.plot__channel">
-<span class="sig-prename descclassname"><span class="pre">imagingplus.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot__channel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmdata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#imagingplus.main.subcore.TemporalData" title="imagingplus.main.subcore.TemporalData"><span class="pre">imagingplus.main.subcore.TemporalData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#plot__channel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imagingplus.plotting.plotting.plot__channel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot the saved signal from the specified channel from a PaqData submodule.</p>
+<code class="sig-prename descclassname">imagingplus.plotting.plotting.</code><code class="sig-name descname">plot__channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tmdata</span><span class="p">:</span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#imagingplus.main.subcore.TemporalData" title="imagingplus.main.subcore.TemporalData">imagingplus.main.subcore.TemporalData</a></span></em>, <em class="sig-param"><span class="n">channel</span><span class="p">:</span><span class="w"> </span><span class="n">str</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#plot__channel"><span class="viewcode-link">[source]</span></a><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#imagingplus.plotting.plotting.plot__channel">¶</a></dt>
+<dd>
+<p>Plot the saved signal from the specified channel from a PaqData submodule.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -167,11 +266,11 @@
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py function">
+<dl class="py function code-definition">
 <dt class="sig sig-object py" id="imagingplus.plotting.plotting.MeanProject">
-<span class="sig-prename descclassname"><span class="pre">imagingplus.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">MeanProject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiff_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imstack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#MeanProject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imagingplus.plotting.plotting.MeanProject" title="Permalink to this definition">¶</a></dt>
-<dd><p>Mean Projection function.
+<code class="sig-prename descclassname">imagingplus.plotting.plotting.</code><code class="sig-name descname">MeanProject</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tiff_path</span><span class="p">:</span><span class="w"> </span><span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">frames</span><span class="p">:</span><span class="w"> </span><span class="n">Optional<span class="p">[</span>tuple<span class="p">]</span></span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_path</span><span class="p">:</span><span class="w"> </span><span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">imstack</span><span class="p">:</span><span class="w"> </span><span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint">numpy.ndarray</span></span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#MeanProject"><span class="viewcode-link">[source]</span></a><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#imagingplus.plotting.plotting.MeanProject">¶</a></dt>
+<dd>
+<p>Mean Projection function.
 Creates, plots and (optionally) saves a Mean Projection image of the loaded tiff. If frames are provided, tiff is cropped to those frames.</p>
 <p>Note: saves as 8-bit grayscale image.</p>
 <dl class="field-list simple">
@@ -198,11 +297,11 @@ Creates, plots and (optionally) saves a Mean Projection image of the loaded tiff
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py function">
+<dl class="py function code-definition">
 <dt class="sig sig-object py" id="imagingplus.plotting.plotting.MaxProject">
-<span class="sig-prename descclassname"><span class="pre">imagingplus.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">MaxProject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiff_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imstack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#MaxProject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imagingplus.plotting.plotting.MaxProject" title="Permalink to this definition">¶</a></dt>
-<dd><p>Maximum projection function.
+<code class="sig-prename descclassname">imagingplus.plotting.plotting.</code><code class="sig-name descname">MaxProject</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tiff_path</span><span class="p">:</span><span class="w"> </span><span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">frames</span><span class="p">:</span><span class="w"> </span><span class="n">Optional<span class="p">[</span>tuple<span class="p">]</span></span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_path</span><span class="p">:</span><span class="w"> </span><span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">imstack</span><span class="p">:</span><span class="w"> </span><span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint">numpy.ndarray</span></span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#MaxProject"><span class="viewcode-link">[source]</span></a><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#imagingplus.plotting.plotting.MaxProject">¶</a></dt>
+<dd>
+<p>Maximum projection function.
 Creates, plots and (optionally) saves an average image of the loaded tiff. If frames are provided, tiff is cropped to those frames.</p>
 <p>Note: saves as 8-bit grayscale image.</p>
 <dl class="field-list simple">
@@ -229,11 +328,11 @@ Creates, plots and (optionally) saves an average image of the loaded tiff. If fr
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py function">
+<dl class="py function code-definition">
 <dt class="sig sig-object py" id="imagingplus.plotting.plotting.StdevProject">
-<span class="sig-prename descclassname"><span class="pre">imagingplus.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">StdevProject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiff_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imstack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#StdevProject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imagingplus.plotting.plotting.StdevProject" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates, plots and (optionally) saves an average image of the loaded tiff. If frames are provided, tiff is cropped to those frames.</p>
+<code class="sig-prename descclassname">imagingplus.plotting.plotting.</code><code class="sig-name descname">StdevProject</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tiff_path</span><span class="p">:</span><span class="w"> </span><span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">frames</span><span class="p">:</span><span class="w"> </span><span class="n">Optional<span class="p">[</span>tuple<span class="p">]</span></span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_path</span><span class="p">:</span><span class="w"> </span><span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">imstack</span><span class="p">:</span><span class="w"> </span><span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#StdevProject"><span class="viewcode-link">[source]</span></a><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#imagingplus.plotting.plotting.StdevProject">¶</a></dt>
+<dd>
+<p>Creates, plots and (optionally) saves an average image of the loaded tiff. If frames are provided, tiff is cropped to those frames.</p>
 <p>Note: saves as 8-bit grayscale image.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -259,11 +358,11 @@ Creates, plots and (optionally) saves an average image of the loaded tiff. If fr
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py function">
+<dl class="py function code-definition">
 <dt class="sig sig-object py" id="imagingplus.plotting.plotting.InspectTiff">
-<span class="sig-prename descclassname"><span class="pre">imagingplus.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">InspectTiff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiff_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imstack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#InspectTiff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imagingplus.plotting.plotting.InspectTiff" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot stdev, max and mean project of input image.</p>
+<code class="sig-prename descclassname">imagingplus.plotting.plotting.</code><code class="sig-name descname">InspectTiff</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tiff_path</span><span class="p">:</span><span class="w"> </span><span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">frames</span><span class="p">:</span><span class="w"> </span><span class="n">Optional<span class="p">[</span>tuple<span class="p">]</span></span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">imstack</span><span class="p">:</span><span class="w"> </span><span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#InspectTiff"><span class="viewcode-link">[source]</span></a><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#imagingplus.plotting.plotting.InspectTiff">¶</a></dt>
+<dd>
+<p>Plot stdev, max and mean project of input image.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -283,11 +382,11 @@ Creates, plots and (optionally) saves an average image of the loaded tiff. If fr
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py function">
+<dl class="py function code-definition">
 <dt class="sig sig-object py" id="imagingplus.plotting.plotting.FrameAverage">
-<span class="sig-prename descclassname"><span class="pre">imagingplus.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">FrameAverage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tiff_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imstack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peri_frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#FrameAverage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imagingplus.plotting.plotting.FrameAverage" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from a multipage imaging TIFF file.</p>
+<code class="sig-prename descclassname">imagingplus.plotting.plotting.</code><code class="sig-name descname">FrameAverage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key_frames</span><span class="p">:</span><span class="w"> </span><span class="n">Union<span class="p">[</span>int<span class="p">,</span><span class="w"> </span>list<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">tiff_path</span><span class="p">:</span><span class="w"> </span><span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">imstack</span><span class="p">:</span><span class="w"> </span><span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">peri_frames</span><span class="p">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">save_path</span><span class="p">:</span><span class="w"> </span><span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint">numpy.ndarray</span></span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#FrameAverage"><span class="viewcode-link">[source]</span></a><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#imagingplus.plotting.plotting.FrameAverage">¶</a></dt>
+<dd>
+<p>Creates, plots and/or saves an average image of the specified number of peri-key_frames around the given frame from a multipage imaging TIFF file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -304,11 +403,11 @@ Creates, plots and (optionally) saves an average image of the loaded tiff. If fr
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py function">
+<dl class="py function code-definition">
 <dt class="sig sig-object py" id="imagingplus.plotting.plotting.SingleFrame">
-<span class="sig-prename descclassname"><span class="pre">imagingplus.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">SingleFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiff_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imstack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.array</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#SingleFrame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imagingplus.plotting.plotting.SingleFrame" title="Permalink to this definition">¶</a></dt>
-<dd><p>plots an image of a single specified tiff frame after reading using tifffile.</p>
+<code class="sig-prename descclassname">imagingplus.plotting.plotting.</code><code class="sig-name descname">SingleFrame</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tiff_path</span><span class="p">:</span><span class="w"> </span><span class="n">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">frame_num</span><span class="p">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">title</span><span class="p">:</span><span class="w"> </span><span class="n">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">imstack</span><span class="p">:</span><span class="w"> </span><span class="n">numpy.array</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#SingleFrame"><span class="viewcode-link">[source]</span></a><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#imagingplus.plotting.plotting.SingleFrame">¶</a></dt>
+<dd>
+<p>plots an image of a single specified tiff frame after reading using tifffile.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -322,11 +421,11 @@ Creates, plots and (optionally) saves an average image of the loaded tiff. If fr
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py function">
+<dl class="py function code-definition">
 <dt class="sig sig-object py" id="imagingplus.plotting.plotting.plotMeanFovFluTrace">
-<span class="sig-prename descclassname"><span class="pre">imagingplus.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plotMeanFovFluTrace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">imagingplus.workflows.TwoPhotonImaging.TwoPhotonImaging</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#plotMeanFovFluTrace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imagingplus.plotting.plotting.plotMeanFovFluTrace" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make plot of mean fluorescence trace averaged over the whole FOV</p>
+<code class="sig-prename descclassname">imagingplus.plotting.plotting.</code><code class="sig-name descname">plotMeanFovFluTrace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trialobj</span><span class="p">:</span><span class="w"> </span><span class="n">imagingplus.workflows.TwoPhotonImaging.TwoPhotonImaging</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#plotMeanFovFluTrace"><span class="viewcode-link">[source]</span></a><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#imagingplus.plotting.plotting.plotMeanFovFluTrace">¶</a></dt>
+<dd>
+<p>Make plot of mean fluorescence trace averaged over the whole FOV</p>
 <p>NOTE: this function will use the underlying timing that is found under trialobj.tmdata (if that is defined). If there is a mismatch in the number of frame timestamps collected and
 the number of imaging frames data, the shorter length will be used for plotting (with no warning printed, as it is often the case that there are dropped frames from the microscope).</p>
 <dl class="field-list simple">
@@ -343,11 +442,11 @@ the number of imaging frames data, the shorter length will be used for plotting 
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py function">
+<dl class="py function code-definition">
 <dt class="sig sig-object py" id="imagingplus.plotting.plotting.plot_photostim_traces_overlap">
-<span class="sig-prename descclassname"><span class="pre">imagingplus.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_photostim_traces_overlap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#imagingplus.workflows.AllOptical.AllOpticalTrial" title="imagingplus.workflows.AllOptical.AllOpticalTrial"><span class="pre">imagingplus.workflows.AllOptical.AllOpticalTrial</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_spacing_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Time</span> <span class="pre">(seconds)'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#plot_photostim_traces_overlap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imagingplus.plotting.plotting.plot_photostim_traces_overlap" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot fluorescence traces of alloptical stimulated cells on one plot.</p>
+<code class="sig-prename descclassname">imagingplus.plotting.plotting.</code><code class="sig-name descname">plot_photostim_traces_overlap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">array</span></em>, <em class="sig-param"><span class="n">trialobj</span><span class="p">:</span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#imagingplus.workflows.AllOptical.AllOpticalTrial" title="imagingplus.workflows.AllOptical.AllOpticalTrial">imagingplus.workflows.AllOptical.AllOpticalTrial</a></span></em>, <em class="sig-param"><span class="n">exclude_id</span><span class="p">:</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">y_spacing_factor</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">x_axis</span><span class="o">=</span><span class="default_value">'Time (seconds)'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#plot_photostim_traces_overlap"><span class="viewcode-link">[source]</span></a><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#imagingplus.plotting.plotting.plot_photostim_traces_overlap">¶</a></dt>
+<dd>
+<p>Plot fluorescence traces of alloptical stimulated cells on one plot.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -367,11 +466,11 @@ the number of imaging frames data, the shorter length will be used for plotting 
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py function">
+<dl class="py function code-definition">
 <dt class="sig sig-object py" id="imagingplus.plotting.plotting.plot_periphotostim_avg2">
-<span class="sig-prename descclassname"><span class="pre">imagingplus.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_periphotostim_avg2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avg_with_std</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'high</span> <span class="pre">quality</span> <span class="pre">plot'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_stim_sec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#plot_periphotostim_avg2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imagingplus.plotting.plotting.plot_periphotostim_avg2" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
+<code class="sig-prename descclassname">imagingplus.plotting.plotting.</code><code class="sig-name descname">plot_periphotostim_avg2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">fps</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">legend_labels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">colors</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">avg_with_std</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">'high quality plot'</span></em>, <em class="sig-param"><span class="n">pre_stim_sec</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ylim</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fig</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#plot_periphotostim_avg2"><span class="viewcode-link">[source]</span></a><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#imagingplus.plotting.plotting.plot_periphotostim_avg2">¶</a></dt>
+<dd>
+<dl class="simple">
 <dt>TODO fill documentation and add parameters</dt><dd><dl class="field-list simple">
 <dt class="field-odd">param dataset</dt>
 <dd class="field-odd"><p></p></dd>
@@ -399,11 +498,11 @@ the number of imaging frames data, the shorter length will be used for plotting 
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py function">
+<dl class="py function code-definition">
 <dt class="sig sig-object py" id="imagingplus.plotting.plotting.plot_periphotostim_avg">
-<span class="sig-prename descclassname"><span class="pre">imagingplus.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_periphotostim_avg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#imagingplus.workflows.AllOptical.AllOpticalTrial" title="imagingplus.workflows.AllOptical.AllOpticalTrial"><span class="pre">imagingplus.workflows.AllOptical.AllOpticalTrial</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_stim_sec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_stim_sec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avg_only</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#plot_periphotostim_avg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imagingplus.plotting.plotting.plot_periphotostim_avg" title="Permalink to this definition">¶</a></dt>
-<dd><p>plot trace across all stims
+<code class="sig-prename descclassname">imagingplus.plotting.plotting.</code><code class="sig-name descname">plot_periphotostim_avg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">arr</span><span class="p">:</span><span class="w"> </span><span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">trialobj</span><span class="p">:</span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#imagingplus.workflows.AllOptical.AllOpticalTrial" title="imagingplus.workflows.AllOptical.AllOpticalTrial">imagingplus.workflows.AllOptical.AllOpticalTrial</a></span></em>, <em class="sig-param"><span class="n">pre_stim_sec</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">post_stim_sec</span><span class="o">=</span><span class="default_value">3.0</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">avg_only</span><span class="p">:</span><span class="w"> </span><span class="n">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">x_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">y_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pad</span><span class="o">=</span><span class="default_value">20</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#plot_periphotostim_avg"><span class="viewcode-link">[source]</span></a><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#imagingplus.plotting.plotting.plot_periphotostim_avg">¶</a></dt>
+<dd>
+<p>plot trace across all stims
 :param arr: Flu traces to plot (will be plotted as individual traces unless avg_only is True) dimensions should be cells x stims x key_frames
 :param trialobj: instance object of AllOpticalTrial
 :param pre_stim_sec: seconds of array to plot for pre-stim period
@@ -435,11 +534,11 @@ the number of imaging frames data, the shorter length will be used for plotting 
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py function">
+<dl class="py function code-definition">
 <dt class="sig sig-object py" id="imagingplus.plotting.plotting.plot_SLMtargets_Locs">
-<span class="sig-prename descclassname"><span class="pre">imagingplus.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_SLMtargets_Locs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trialobj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#imagingplus.workflows.AllOptical.AllOpticalTrial" title="imagingplus.workflows.AllOptical.AllOpticalTrial"><span class="pre">imagingplus.workflows.AllOptical.AllOpticalTrial</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets_coords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#plot_SLMtargets_Locs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imagingplus.plotting.plotting.plot_SLMtargets_Locs" title="Permalink to this definition">¶</a></dt>
-<dd><p>plot SLM target coordinate locations</p>
+<code class="sig-prename descclassname">imagingplus.plotting.plotting.</code><code class="sig-name descname">plot_SLMtargets_Locs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trialobj</span><span class="p">:</span><span class="w"> </span><span class="n"><a class="reference internal" href="reference.html#imagingplus.workflows.AllOptical.AllOpticalTrial" title="imagingplus.workflows.AllOptical.AllOpticalTrial">imagingplus.workflows.AllOptical.AllOpticalTrial</a></span></em>, <em class="sig-param"><span class="n">targets_coords</span><span class="p">:</span><span class="w"> </span><span class="n">Union<span class="p">[</span>list<span class="p">,</span><span class="w"> </span>str<span class="p">]</span></span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">background</span><span class="p">:</span><span class="w"> </span><span class="n">numpy.ndarray</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#plot_SLMtargets_Locs"><span class="viewcode-link">[source]</span></a><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#imagingplus.plotting.plotting.plot_SLMtargets_Locs">¶</a></dt>
+<dd>
+<p>plot SLM target coordinate locations</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -457,97 +556,36 @@ the number of imaging frames data, the shorter length will be used for plotting 
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py function">
+<dl class="py function code-definition">
 <dt class="sig sig-object py" id="imagingplus.plotting.plotting.plot_s2pMasks">
-<span class="sig-prename descclassname"><span class="pre">imagingplus.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_s2pMasks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#plot_s2pMasks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imagingplus.plotting.plotting.plot_s2pMasks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates some images of SLM targets to suite2p cells.</p>
+<code class="sig-prename descclassname">imagingplus.plotting.plotting.</code><code class="sig-name descname">plot_s2pMasks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#plot_s2pMasks"><span class="viewcode-link">[source]</span></a><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#imagingplus.plotting.plotting.plot_s2pMasks">¶</a></dt>
+<dd>
+<p>Creates some images of SLM targets to suite2p cells.</p>
 </dd></dl>
-
-<dl class="py function">
+<dl class="py function code-definition">
 <dt class="sig sig-object py" id="imagingplus.plotting.plotting.export_klicker_to_csv">
-<span class="sig-prename descclassname"><span class="pre">imagingplus.plotting.plotting.</span></span><span class="sig-name descname"><span class="pre">export_klicker_to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">klicker</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">mpl_point_clicker._clicker.clicker</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#export_klicker_to_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#imagingplus.plotting.plotting.export_klicker_to_csv" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save point cellsdata from mplpointclicker klicker to .csv
+<code class="sig-prename descclassname">imagingplus.plotting.plotting.</code><code class="sig-name descname">export_klicker_to_csv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">klicker</span><span class="p">:</span><span class="w"> </span><span class="n">mpl_point_clicker._clicker.clicker</span></em>, <em class="sig-param"><span class="n">csv_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imagingplus/plotting/plotting.html#export_klicker_to_csv"><span class="viewcode-link">[source]</span></a><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#imagingplus.plotting.plotting.export_klicker_to_csv">¶</a></dt>
+<dd>
+<p>Save point cellsdata from mplpointclicker klicker to .csv
 :param klicker: mplpointclicker klicker object
 :param csv_path: path to save csv file of klicker points</p>
 </dd></dl>
-
 </section>
 </section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="index.html">
-              <img class="logo" src="_static/imagingplus-logo.png" alt="Logo"/>
-            </a></p>
-  <div>
-    <h3><a href="index.html">Table of Contents</a></h3>
-    <ul>
-<li><a class="reference internal" href="#">Plotting of data and analyses</a><ul>
-<li><a class="reference internal" href="#module-imagingplus.plotting.plotting">Available plotting functions:</a></li>
-</ul>
-</li>
-</ul>
-
-  </div>
-  <div>
-    <h4>Previous topic</h4>
-    <p class="topless"><a href="data-structure-details.html"
-                          title="previous chapter">Data Structure Inside Trial objects</a></p>
-  </div>
-  <div>
-    <h4>Next topic</h4>
-    <p class="topless"><a href="reference.html"
-                          title="next chapter">API reference</a></p>
-  </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/making-plots.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
+</article>
+<footer>
+<div class="mt-20 mb-4 text-sm text-gray-700 print:mt-4">© 2022, Packer Lab Made with <a href="https://www.sphinx-doc.org">Sphinx 4.4.0</a></div>
+</footer></main>
+<button class="fixed bottom-0 right-0 z-20 opacity-0 p-4 m-4 tracking-wide bg-gray-900 text-gray-100 transition transform transform-gpu duration-500 translate-y-full" data-action="search#hideSnackbar" data-search-target="snackbar">
+  Clear highlights
+</button><div class="fixed hidden inset-0 bg-black bg-opacity-50" data-action="click-&gt;sidebar#close" data-sidebar-target="screen">
 </div>
-<script>$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="reference.html" title="API reference"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="data-structure-details.html" title="Data Structure Inside Trial objects"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Plotting of data and analyses</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2022, Packer Lab.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
-    </div>
-  </body>
+</div>
+<script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+<script src="_static/jquery.js"></script>
+<script src="_static/underscore.js"></script>
+<script src="_static/doctools.js"></script>
+<script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+<script src="_static/theme.3051a0ec24cad00d4d88.js"></script>
+</body>
 </html>

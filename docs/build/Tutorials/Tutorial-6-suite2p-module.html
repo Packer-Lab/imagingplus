@@ -2,50 +2,43 @@
 <!DOCTYPE html>
 
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>Tutorial 6 - Integrating with Suite2p (running Suite2p pipeline and storing results) &#8212; imaging+ 0.2-beta documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Tutorial 8 - Extending built in classes" href="Tutorial-8-Extending-built-in-classes.html" />
-    <link rel="prev" title="Tutorial 4 - NWB Conversion" href="Tutorial-4-nwb-conversion.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="Tutorial-8-Extending-built-in-classes.html" title="Tutorial 8 - Extending built in classes"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="Tutorial-4-nwb-conversion.html" title="Tutorial 4 - NWB Conversion"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../Tutorials-reference.html" accesskey="U">Tutorials</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Tutorial 6 - Integrating with Suite2p (running Suite2p pipeline and storing results)</a></li> 
-      </ul>
-    </div>  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.17.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>Tutorial 6 - Integrating with Suite2p (running Suite2p pipeline and storing results) — imaging+ 0.2-beta documentation</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinxdoc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/sg_gallery.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/doctools.js"></script>
+<script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+<script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="Tutorial-8-Extending-built-in-classes.html" rel="next" title="Tutorial 8 - Extending built in classes"/>
+<link href="Tutorial-4-nwb-conversion.html" rel="prev" title="Tutorial 4 - NWB Conversion"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a accesskey="N" href="Tutorial-8-Extending-built-in-classes.html" title="Tutorial 8 - Extending built in classes">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="Tutorial-4-nwb-conversion.html" title="Tutorial 4 - NWB Conversion">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../index.html">imaging+ 0.2-beta documentation</a> »</li>
+<li class="nav-item nav-item-1"><a accesskey="U" href="../Tutorials-reference.html">Tutorials</a> »</li>
+<li class="nav-item nav-item-this"><a href="">Tutorial 6 - Integrating with Suite2p (running Suite2p pipeline and storing results)</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
 <style>
 /* CSS for nbsphinx extension */
 
@@ -294,7 +287,7 @@ div.rendered_html tbody tr:hover {
 }
 </style>
 <section id="Tutorial-6---Integrating-with-Suite2p-(running-Suite2p-pipeline-and-storing-results)">
-<h1>Tutorial 6 - Integrating with Suite2p (running Suite2p pipeline and storing results)<a class="headerlink" href="#Tutorial-6---Integrating-with-Suite2p-(running-Suite2p-pipeline-and-storing-results)" title="Permalink to this headline">¶</a></h1>
+<h1>Tutorial 6 - Integrating with Suite2p (running Suite2p pipeline and storing results)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Tutorial-6---Integrating-with-Suite2p-(running-Suite2p-pipeline-and-storing-results)">¶</a></h1>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -312,25 +305,25 @@ div.rendered_html tbody tr:hover {
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Warning: cellpose did not import
-No module named &#39;cellpose&#39;
+No module named 'cellpose'
 cannot use anatomical mode, but otherwise suite2p will run normally
 </pre></div></div>
 </div>
-<p>In this tutorial, we add the Suite2p submodule to an existing <code class="docutils literal notranslate"><span class="pre">expobj</span></code>. We also show how to run the suite2p pipeline using the <code class="docutils literal notranslate"><span class="pre">.Suite2p</span></code> submodule. Finally, we show how to access and use Suite2p results once the pipeline is run. Note: it is also possible to directly import independently run Suite2p results for this experiment (this is demonstrated in the final section).</p>
-<p>Suite2p provides an excellent cell (ROI) detection algorithm for calcium imaging datasets. The pipeline includes registration and spike deconvolution as well. Please familiarize yourself with the basic functionality of Suite2p using their documentation (found <a class="reference external" href="https://suite2p.readthedocs.io/en/latest/index.html">here</a>) before proceeding with these examples below.</p>
+<p>In this tutorial, we add the Suite2p submodule to an existing <code class="docutils literal notranslate">expobj</code>. We also show how to run the suite2p pipeline using the <code class="docutils literal notranslate">.Suite2p</code> submodule. Finally, we show how to access and use Suite2p results once the pipeline is run. Note: it is also possible to directly import independently run Suite2p results for this experiment (this is demonstrated in the final section).</p>
+<p>Suite2p provides an excellent cell (ROI) detection algorithm for calcium imaging datasets. The pipeline includes registration and spike deconvolution as well. Please familiarize yourself with the basic functionality of Suite2p using their documentation (found <a class="reference external" href="https://suite2p.readthedocs.io/en/latest/index.html" rel="nofollow noopener">here</a>) before proceeding with these examples below.</p>
 <section id="Adding-the-Suite2p-module">
-<h2>Adding the Suite2p module<a class="headerlink" href="#Adding-the-Suite2p-module" title="Permalink to this headline">¶</a></h2>
+<h2>Adding the Suite2p module<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Adding-the-Suite2p-module">¶</a></h2>
 <section id="Import-data-analysis-object">
-<h3>Import data analysis object<a class="headerlink" href="#Import-data-analysis-object" title="Permalink to this headline">¶</a></h3>
+<h3>Import data analysis object<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Import-data-analysis-object">¶</a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># specify the .pkl path to import expobj</span>
-<span class="n">prep</span> <span class="o">=</span> <span class="s1">&#39;PS14&#39;</span>
-<span class="n">date</span> <span class="o">=</span> <span class="s1">&#39;2021-01-28&#39;</span>
+<span class="n">prep</span> <span class="o">=</span> <span class="s1">'PS14'</span>
+<span class="n">date</span> <span class="o">=</span> <span class="s1">'2021-01-28'</span>
 
-<span class="n">expobj</span><span class="p">:</span> <span class="n">ip</span><span class="o">.</span><span class="n">Experiment</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;/home/pshah/mnt/qnap/Analysis/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">_analysis.pkl&#39;</span><span class="p">)</span>
+<span class="n">expobj</span><span class="p">:</span> <span class="n">ip</span><span class="o">.</span><span class="n">Experiment</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="sa">f</span><span class="s1">'/home/pshah/mnt/qnap/Analysis/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">_analysis.pkl'</span><span class="p">)</span>
 
 <span class="c1"># set up new Suite2p submodule</span>
 <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span> <span class="o">=</span> <span class="n">suite2p</span><span class="o">.</span><span class="n">Suite2pExperiment</span><span class="p">(</span><span class="n">trialsTiffsSuite2p</span><span class="o">=</span><span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">tiff_paths_to_use_s2p</span><span class="p">,</span>
@@ -338,7 +331,7 @@ cannot use anatomical mode, but otherwise suite2p will run normally
 </pre></div>
 </div>
 </div>
-<p>Set any necessary <code class="docutils literal notranslate"><span class="pre">bad_frames</span></code> to Suite2p. These frames will be ignored during the ROI detection step. In this example, we set all frames from trials from the <code class="docutils literal notranslate"><span class="pre">post-4ap</span></code> experiment group (<code class="docutils literal notranslate"><span class="pre">expGroup</span></code>) as bad frames. In other experiments, like for example all-optical experiments, we use this feature to set all photostimulation frames as <code class="docutils literal notranslate"><span class="pre">bad_frames</span></code></p>
+<p>Set any necessary <code class="docutils literal notranslate">bad_frames</code> to Suite2p. These frames will be ignored during the ROI detection step. In this example, we set all frames from trials from the <code class="docutils literal notranslate">post-4ap</code> experiment group (<code class="docutils literal notranslate">expGroup</code>) as bad frames. In other experiments, like for example all-optical experiments, we use this feature to set all photostimulation frames as <code class="docutils literal notranslate">bad_frames</code></p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -346,7 +339,7 @@ cannot use anatomical mode, but otherwise suite2p will run normally
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># add Suite2p bad frames from post4ap trials</span>
 <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">bad_frames</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">trial</span> <span class="ow">in</span> <span class="n">expobj</span><span class="o">.</span><span class="n">trialIDs</span><span class="p">:</span>
-    <span class="k">if</span> <span class="s1">&#39;post&#39;</span> <span class="ow">in</span> <span class="n">expobj</span><span class="o">.</span><span class="n">TrialsInformation</span><span class="p">[</span><span class="n">trial</span><span class="p">][</span><span class="s1">&#39;expGroup&#39;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="s1">'post'</span> <span class="ow">in</span> <span class="n">expobj</span><span class="o">.</span><span class="n">TrialsInformation</span><span class="p">[</span><span class="n">trial</span><span class="p">][</span><span class="s1">'expGroup'</span><span class="p">]:</span>
         <span class="n">trialobj</span><span class="p">:</span> <span class="n">ip</span><span class="o">.</span><span class="n">TwoPhotonImagingTrial</span> <span class="o">=</span> <span class="n">expobj</span><span class="o">.</span><span class="n">load_trial</span><span class="p">(</span><span class="n">trialID</span><span class="o">=</span><span class="n">trial</span><span class="p">)</span>
 
         <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">add_bad_frames</span><span class="p">(</span><span class="n">frames</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">bad_frames_npy_loc</span> <span class="o">=</span> <span class="n">expobj</span><span class="o">.</span><span class="n">dataPath</span><span class="p">)</span>
@@ -356,9 +349,9 @@ cannot use anatomical mode, but otherwise suite2p will run normally
 </section>
 </section>
 <section id="Prepare-for-Suite2p-run">
-<h2>Prepare for Suite2p run<a class="headerlink" href="#Prepare-for-Suite2p-run" title="Permalink to this headline">¶</a></h2>
-<p>We next need to setup the Suite2p settings to run for our particular imaging experiment. Use the <code class="docutils literal notranslate"><span class="pre">.Suite2p.update_ops(dict)</span></code> method to update any <code class="docutils literal notranslate"><span class="pre">ops</span></code> options before running to Suite2p.</p>
-<p>To get the necessary imaging metadata parameters, here we use one of the <code class="docutils literal notranslate"><span class="pre">trialobj</span></code> contained within the present <code class="docutils literal notranslate"><span class="pre">expobj</span></code> to retrieve that information.</p>
+<h2>Prepare for Suite2p run<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Prepare-for-Suite2p-run">¶</a></h2>
+<p>We next need to setup the Suite2p settings to run for our particular imaging experiment. Use the <code class="docutils literal notranslate">.Suite2p.update_ops(dict)</code> method to update any <code class="docutils literal notranslate">ops</code> options before running to Suite2p.</p>
+<p>To get the necessary imaging metadata parameters, here we use one of the <code class="docutils literal notranslate">trialobj</code> contained within the present <code class="docutils literal notranslate">expobj</code> to retrieve that information.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -373,34 +366,34 @@ cannot use anatomical mode, but otherwise suite2p will run normally
 <br/></pre></div>
 </div>
 </div>
-<p>Set the new values for Suite2p by using <code class="docutils literal notranslate"><span class="pre">.Suite2p.update_ops(dict)</span></code></p>
+<p>Set the new values for Suite2p by using <code class="docutils literal notranslate">.Suite2p.update_ops(dict)</code></p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># new values for ops dictionary</span>
 <span class="n">new_ops</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;fs&#39;</span><span class="p">:</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">fps</span><span class="p">,</span>
-    <span class="s1">&#39;tau&#39;</span><span class="p">:</span> <span class="mf">0.70</span><span class="p">,</span>
-    <span class="s1">&#39;num_workers&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
-    <span class="s1">&#39;diameter&#39;</span><span class="p">:</span> <span class="n">diameter</span><span class="p">,</span>
-    <span class="s1">&#39;delete_bin&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># temporary not deleting binaries in case needed for further testing!</span>
-    <span class="s1">&#39;batch_size&#39;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span>  <span class="c1"># larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images</span>
-    <span class="s1">&#39;save_folder&#39;</span><span class="p">:</span> <span class="n">expobj</span><span class="o">.</span><span class="n">suite2p_save_path</span>
+    <span class="s1">'fs'</span><span class="p">:</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">fps</span><span class="p">,</span>
+    <span class="s1">'tau'</span><span class="p">:</span> <span class="mf">0.70</span><span class="p">,</span>
+    <span class="s1">'num_workers'</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="s1">'diameter'</span><span class="p">:</span> <span class="n">diameter</span><span class="p">,</span>
+    <span class="s1">'delete_bin'</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># temporary not deleting binaries in case needed for further testing!</span>
+    <span class="s1">'batch_size'</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span>  <span class="c1"># larger frames will be more RAM intensive, scale user batch size based on num pixels in 512x512 images</span>
+    <span class="s1">'save_folder'</span><span class="p">:</span> <span class="n">expobj</span><span class="o">.</span><span class="n">suite2p_save_path</span>
 <span class="p">}</span>
 
 <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">update_ops</span><span class="p">(</span><span class="n">new_ops</span><span class="p">)</span>
 <span class="n">expobj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ops:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">ops</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;db:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">db</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'ops:</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span> <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">ops</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'db:</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span> <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">db</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </section>
 <section id="Run-Suite2p">
-<h2>Run Suite2p<a class="headerlink" href="#Run-Suite2p" title="Permalink to this headline">¶</a></h2>
-<p>Now, we are all set to run Suite2p. We have provided the <code class="docutils literal notranslate"><span class="pre">.Suite2p.s2pRun</span></code> method as a wrapper to run the Suite2p on the current <code class="docutils literal notranslate"><span class="pre">expobj</span></code>.</p>
+<h2>Run Suite2p<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Run-Suite2p">¶</a></h2>
+<p>Now, we are all set to run Suite2p. We have provided the <code class="docutils literal notranslate">.Suite2p.s2pRun</code> method as a wrapper to run the Suite2p on the current <code class="docutils literal notranslate">expobj</code>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -412,7 +405,7 @@ cannot use anatomical mode, but otherwise suite2p will run normally
 </div>
 </section>
 <section id="Explore-suite2p-results---next-steps-after-running-Suite2p">
-<h2>Explore suite2p results - next steps after running Suite2p<a class="headerlink" href="#Explore-suite2p-results---next-steps-after-running-Suite2p" title="Permalink to this headline">¶</a></h2>
+<h2>Explore suite2p results - next steps after running Suite2p<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Explore-suite2p-results---next-steps-after-running-Suite2p">¶</a></h2>
 <p>TODO</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -424,41 +417,39 @@ cannot use anatomical mode, but otherwise suite2p will run normally
 </div>
 </section>
 <section id="Import-suite2p-results-directly">
-<h2>Import suite2p results directly<a class="headerlink" href="#Import-suite2p-results-directly" title="Permalink to this headline">¶</a></h2>
-<p>If we had run suite2p on our experiment independent of creating the <code class="docutils literal notranslate"><span class="pre">expobj</span></code>, we can add that Suite2p output to the present <code class="docutils literal notranslate"><span class="pre">expobj</span></code> by providing a valid path to the <code class="docutils literal notranslate"><span class="pre">s2pResultsPath</span></code> argument when setting up the <code class="docutils literal notranslate"><span class="pre">.Suite2p</span></code> submodule on our <code class="docutils literal notranslate"><span class="pre">expobj</span></code>.</p>
-<p>Note: the output that is required in <code class="docutils literal notranslate"><span class="pre">s2pResultsPath</span></code> is the path to <code class="docutils literal notranslate"><span class="pre">&lt;../plane0/&gt;</span></code> of the Suite2p results output.</p>
+<h2>Import suite2p results directly<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Import-suite2p-results-directly">¶</a></h2>
+<p>If we had run suite2p on our experiment independent of creating the <code class="docutils literal notranslate">expobj</code>, we can add that Suite2p output to the present <code class="docutils literal notranslate">expobj</code> by providing a valid path to the <code class="docutils literal notranslate">s2pResultsPath</code> argument when setting up the <code class="docutils literal notranslate">.Suite2p</code> submodule on our <code class="docutils literal notranslate">expobj</code>.</p>
+<p>Note: the output that is required in <code class="docutils literal notranslate">s2pResultsPath</code> is the path to <code class="docutils literal notranslate">&lt;../plane0/&gt;</code> of the Suite2p results output.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># specify the .pkl path to import expobj</span>
-<span class="n">prep</span> <span class="o">=</span> <span class="s1">&#39;PS14&#39;</span>
-<span class="n">date</span> <span class="o">=</span> <span class="s1">&#39;2021-01-28&#39;</span>
+<span class="n">prep</span> <span class="o">=</span> <span class="s1">'PS14'</span>
+<span class="n">date</span> <span class="o">=</span> <span class="s1">'2021-01-28'</span>
 
-<span class="n">expobj</span><span class="p">:</span> <span class="n">ip</span><span class="o">.</span><span class="n">Experiment</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;/home/pshah/mnt/qnap/Analysis/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">_analysis.pkl&#39;</span><span class="p">)</span>
+<span class="n">expobj</span><span class="p">:</span> <span class="n">ip</span><span class="o">.</span><span class="n">Experiment</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="sa">f</span><span class="s1">'/home/pshah/mnt/qnap/Analysis/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">prep</span><span class="si">}</span><span class="s1">_analysis.pkl'</span><span class="p">)</span>
 
 <span class="c1"># set up new Suite2p submodule</span>
 <span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span> <span class="o">=</span> <span class="n">suite2p</span><span class="o">.</span><span class="n">Suite2pExperiment</span><span class="p">(</span><span class="n">trialsTiffsSuite2p</span><span class="o">=</span><span class="n">expobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">tiff_paths_to_use_s2p</span><span class="p">,</span>
-                                          <span class="n">s2pResultsPath</span><span class="o">=</span><span class="s1">&#39;&lt;path/to/suite2p/output&gt;&#39;</span><span class="p">)</span>
+                                          <span class="n">s2pResultsPath</span><span class="o">=</span><span class="s1">'&lt;path/to/suite2p/output&gt;'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </section>
 </section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="../index.html">
-              <img class="logo" src="../_static/imagingplus-logo.png" alt="Logo"/>
-            </a></p>
-  <div>
-    <h3><a href="../index.html">Table of Contents</a></h3>
-    <ul>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<p class="logo"><a href="../index.html">
+<img alt="Logo" class="logo" src="../_static/imagingplus-logo.png"/>
+</a></p>
+<div>
+<h3><a href="../index.html">Table of Contents</a></h3>
+<ul>
 <li><a class="reference internal" href="#">Tutorial 6 - Integrating with Suite2p (running Suite2p pipeline and storing results)</a><ul>
 <li><a class="reference internal" href="#Adding-the-Suite2p-module">Adding the Suite2p module</a><ul>
 <li><a class="reference internal" href="#Import-data-analysis-object">Import data analysis object</a></li>
@@ -471,59 +462,52 @@ cannot use anatomical mode, but otherwise suite2p will run normally
 </ul>
 </li>
 </ul>
-
-  </div>
-  <div>
-    <h4>Previous topic</h4>
-    <p class="topless"><a href="Tutorial-4-nwb-conversion.html"
-                          title="previous chapter">Tutorial 4 - NWB Conversion</a></p>
-  </div>
-  <div>
-    <h4>Next topic</h4>
-    <p class="topless"><a href="Tutorial-8-Extending-built-in-classes.html"
-                          title="next chapter">Tutorial 8 - Extending built in classes</a></p>
-  </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/Tutorials/Tutorial-6-suite2p-module.ipynb.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
+</div>
+<div>
+<h4>Previous topic</h4>
+<p class="topless"><a href="Tutorial-4-nwb-conversion.html" title="previous chapter">Tutorial 4 - NWB Conversion</a></p>
+</div>
+<div>
+<h4>Next topic</h4>
+<p class="topless"><a href="Tutorial-8-Extending-built-in-classes.html" title="next chapter">Tutorial 8 - Extending built in classes</a></p>
+</div>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../_sources/Tutorials/Tutorial-6-suite2p-module.ipynb.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
 </div>
 <script>$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="Tutorial-8-Extending-built-in-classes.html" title="Tutorial 8 - Extending built in classes"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="Tutorial-4-nwb-conversion.html" title="Tutorial 4 - NWB Conversion"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../Tutorials-reference.html" >Tutorials</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Tutorial 6 - Integrating with Suite2p (running Suite2p pipeline and storing results)</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2022, Packer Lab.
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="Tutorial-8-Extending-built-in-classes.html" title="Tutorial 8 - Extending built in classes">next</a> |</li>
+<li class="right">
+<a href="Tutorial-4-nwb-conversion.html" title="Tutorial 4 - NWB Conversion">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../index.html">imaging+ 0.2-beta documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../Tutorials-reference.html">Tutorials</a> »</li>
+<li class="nav-item nav-item-this"><a href="">Tutorial 6 - Integrating with Suite2p (running Suite2p pipeline and storing results)</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright 2022, Packer Lab.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
     </div>
-  </body>
+</body>
 </html>

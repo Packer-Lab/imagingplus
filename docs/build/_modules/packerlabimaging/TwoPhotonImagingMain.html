@@ -2,42 +2,38 @@
 <!DOCTYPE html>
 
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>packerlabimaging.TwoPhotonImagingMain &#8212; packerlabimaging 0.1-alpha documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinxdoc.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">packerlabimaging 0.1-alpha documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">packerlabimaging.TwoPhotonImagingMain</a></li> 
-      </ul>
-    </div>  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <h1>Source code for packerlabimaging.TwoPhotonImagingMain</h1><div class="highlight"><pre>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>packerlabimaging.TwoPhotonImagingMain — packerlabimaging 0.1-alpha documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/sphinxdoc.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/sg_gallery.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">packerlabimaging 0.1-alpha documentation</a> »</li>
+<li class="nav-item nav-item-1"><a accesskey="U" href="../index.html">Module code</a> »</li>
+<li class="nav-item nav-item-this"><a href="">packerlabimaging.TwoPhotonImagingMain</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<h1>Source code for packerlabimaging.TwoPhotonImagingMain</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
@@ -54,7 +50,7 @@
 
 <span class="kn">import</span> <span class="nn">tifffile</span> <span class="k">as</span> <span class="nn">tf</span>
 
-<span class="c1"># grabbing functions from .utils_funcs that are used in this script - Prajay&#39;s edits (review based on need)</span>
+<span class="c1"># grabbing functions from .utils_funcs that are used in this script - Prajay's edits (review based on need)</span>
 <span class="kn">from</span> <span class="nn">packerlabimaging.processing.imagingMetadata</span> <span class="kn">import</span> <span class="n">PrairieViewMetadata</span><span class="p">,</span> <span class="n">ImagingMetadata</span>
 <span class="kn">from</span> <span class="nn">packerlabimaging.utils.utils</span> <span class="kn">import</span> <span class="n">SaveDownsampledTiff</span><span class="p">,</span> <span class="n">showSingleTiffFrame</span>
 <span class="kn">from</span> <span class="nn">packerlabimaging.utils.classes</span> <span class="kn">import</span> <span class="n">UnavailableOptionError</span><span class="p">,</span> <span class="n">PaqInfoTrial</span>
@@ -73,63 +69,63 @@
 
 
 <div class="viewcode-block" id="TwoPhotonImagingTrial"><a class="viewcode-back" href="../../reference.html#packerlabimaging.TwoPhotonImagingTrial">[docs]</a><span class="k">class</span> <span class="nc">TwoPhotonImagingTrial</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Two Photon Imaging Experiment Data Analysis Workflow.&quot;&quot;&quot;</span>
+    <span class="sd">"""Two Photon Imaging Experiment Data Analysis Workflow."""</span>
 
 <div class="viewcode-block" id="TwoPhotonImagingTrial.__init__"><a class="viewcode-back" href="../../reference.html#packerlabimaging.TwoPhotonImagingTrial.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">trial_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">exp_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">microscope</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tiff_path</span><span class="p">:</span> <span class="nb">str</span>  <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">expGroup</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">save_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">PaqInfoTrial</span><span class="p">:</span> <span class="n">PaqInfoTrial</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">imagingMicroscopeMetadata</span><span class="p">:</span> <span class="n">ImagingMetadata</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 
     <span class="c1"># def __post_init__(self):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">"""</span>
 <span class="sd">        TODO update function docstring for approp args</span>
 <span class="sd">        :param metainfo: TypedDict containing meta-information field needed for this experiment. Please see TwoPhotonImagingMetainfo for type hints on accepted keys.</span>
 <span class="sd">        :param paq_options: TypedDict containing meta-information about .paq file associated with current trial</span>
 <span class="sd">        :param analysis_save_path: path of where to save the experiment analysis object</span>
-<span class="sd">        :param microscope: name of microscope used to record imaging (options: &quot;Bruker&quot; (default), &quot;other&quot;)</span>
+<span class="sd">        :param microscope: name of microscope used to record imaging (options: "Bruker" (default), "other")</span>
 <span class="sd">        :param imagingMicroscopeMetadata: provide ImagingMetadata object (see ImagingMetadata class).</span>
 <span class="sd">        :param suite2p_experiment_obj: provide Suite2p Experiment Object as variable in order to process Suite2p data for current trial</span>
 <span class="sd">        :param total_frames_stitched: provide frame number on which current trial starts in Suite2p Experiment Object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="c1"># Initialize Attributes:</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_metainfo</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">date</span><span class="p">,</span>
-                           <span class="s1">&#39;trial_id&#39;</span><span class="p">:</span> <span class="n">trial_id</span><span class="p">,</span>
-                           <span class="s1">&#39;exp_id&#39;</span><span class="p">:</span> <span class="n">exp_id</span><span class="p">,</span>
-                           <span class="s1">&#39;microscope&#39;</span><span class="p">:</span> <span class="n">microscope</span><span class="p">,</span>
-                           <span class="s1">&#39;expGroup&#39;</span><span class="p">:</span> <span class="n">expGroup</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_metainfo</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'date'</span><span class="p">:</span> <span class="n">date</span><span class="p">,</span>
+                           <span class="s1">'trial_id'</span><span class="p">:</span> <span class="n">trial_id</span><span class="p">,</span>
+                           <span class="s1">'exp_id'</span><span class="p">:</span> <span class="n">exp_id</span><span class="p">,</span>
+                           <span class="s1">'microscope'</span><span class="p">:</span> <span class="n">microscope</span><span class="p">,</span>
+                           <span class="s1">'expGroup'</span><span class="p">:</span> <span class="n">expGroup</span><span class="p">}</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;\----- CREATING TwoPhotonImagingTrial for trial: </span><span class="se">\n\t</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trialID</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'\----- CREATING TwoPhotonImagingTrial for trial: </span><span class="se">\n\t</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trialID</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">tiff_path</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_metainfo</span><span class="p">[</span><span class="s1">&#39;tiff_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tiff_path</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_metainfo</span><span class="p">[</span><span class="s1">'tiff_path'</span><span class="p">]</span> <span class="o">=</span> <span class="n">tiff_path</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;tiff_path does not exist: </span><span class="si">{</span><span class="n">tiff_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"tiff_path does not exist: </span><span class="si">{</span><span class="n">tiff_path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="c1"># set, create analysis save path directory and create pkl object</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span> <span class="o">=</span> <span class="n">save_dir</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pkl_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trialID</span><span class="si">}</span><span class="s2">.pkl&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pkl_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trialID</span><span class="si">}</span><span class="s2">.pkl"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save_pkl</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pkl_path</span><span class="p">)</span>  <span class="c1"># save experiment object to pkl_path</span>
 
         <span class="c1"># get imaging setup parameters</span>
-        <span class="k">if</span> <span class="s1">&#39;Bruker&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">microscope</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">'Bruker'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">microscope</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">imparams</span> <span class="o">=</span> <span class="n">PrairieViewMetadata</span><span class="p">(</span><span class="n">tiff_path_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tiff_path_dir</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">imagingMicroscopeMetadata</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">imparams</span> <span class="o">=</span> <span class="n">imagingMicroscopeMetadata</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="ne">Warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NO imaging microscope parameters set. follow imagingMetadata to create a custom imagingMicroscopeMetadata class.&quot;</span><span class="p">)</span>
+            <span class="ne">Warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"NO imaging microscope parameters set. follow imagingMetadata to create a custom imagingMicroscopeMetadata class."</span><span class="p">)</span>
 
         <span class="c1"># run Paq processing if paq_path is provided for trial</span>
         <span class="k">if</span> <span class="n">PaqInfoTrial</span><span class="p">:</span>
-            <span class="n">paq_path</span> <span class="o">=</span> <span class="n">PaqInfoTrial</span><span class="p">[</span><span class="s1">&#39;paq_path&#39;</span><span class="p">]</span>
+            <span class="n">paq_path</span> <span class="o">=</span> <span class="n">PaqInfoTrial</span><span class="p">[</span><span class="s1">'paq_path'</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">paq_path</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_use_paq</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;paq_path does not exist: </span><span class="si">{</span><span class="n">paq_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"paq_path does not exist: </span><span class="si">{</span><span class="n">paq_path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-            <span class="n">frame_channel</span> <span class="o">=</span> <span class="n">PaqInfoTrial</span><span class="p">[</span><span class="s1">&#39;frame_channel&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;frame_channel&#39;</span> <span class="ow">in</span> <span class="p">[</span><span class="o">*</span><span class="n">PaqInfoTrial</span><span class="p">]</span> <span class="k">else</span> <span class="ne">KeyError</span><span class="p">(</span>
-                <span class="s1">&#39;No frame_channel specified for .paq processing&#39;</span><span class="p">)</span>  <span class="c1"># channel on Paq file to read for determining stims</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">Paq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paqProcessingTwoPhotonImaging</span><span class="p">(</span><span class="n">paq_path</span><span class="o">=</span><span class="n">PaqInfoTrial</span><span class="p">[</span><span class="s1">&#39;paq_path&#39;</span><span class="p">],</span>
+            <span class="n">frame_channel</span> <span class="o">=</span> <span class="n">PaqInfoTrial</span><span class="p">[</span><span class="s1">'frame_channel'</span><span class="p">]</span> <span class="k">if</span> <span class="s1">'frame_channel'</span> <span class="ow">in</span> <span class="p">[</span><span class="o">*</span><span class="n">PaqInfoTrial</span><span class="p">]</span> <span class="k">else</span> <span class="ne">KeyError</span><span class="p">(</span>
+                <span class="s1">'No frame_channel specified for .paq processing'</span><span class="p">)</span>  <span class="c1"># channel on Paq file to read for determining stims</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Paq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paqProcessingTwoPhotonImaging</span><span class="p">(</span><span class="n">paq_path</span><span class="o">=</span><span class="n">PaqInfoTrial</span><span class="p">[</span><span class="s1">'paq_path'</span><span class="p">],</span>
                                                            <span class="n">frame_channel</span><span class="o">=</span><span class="n">frame_channel</span><span class="p">)</span>  <span class="c1">#: Paq data submodule for trial</span>
 
         <span class="c1"># collect mean FOV Trace</span>
@@ -144,88 +140,88 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pkl_path</span><span class="p">:</span>
             <span class="n">lastmod</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getmtime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pkl_path</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">lastmod</span> <span class="o">=</span> <span class="s2">&quot;(unsaved pkl object)&quot;</span>
-        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">t_series_name</span><span class="si">}</span><span class="s2">) TwoPhotonImagingTrial experimental data object, last saved: </span><span class="si">{</span><span class="n">lastmod</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">lastmod</span> <span class="o">=</span> <span class="s2">"(unsaved pkl object)"</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">t_series_name</span><span class="si">}</span><span class="s2">) TwoPhotonImagingTrial experimental data object, last saved: </span><span class="si">{</span><span class="n">lastmod</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TwoPhotonImagingTrial experimental data object&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="sa">f</span><span class="s2">"TwoPhotonImagingTrial experimental data object"</span><span class="p">)</span>
 
     <span class="c1"># @property</span>
     <span class="c1"># def fig_save_path(self):</span>
-    <span class="c1">#     &quot;&quot;&quot;path for saving figures&quot;&quot;&quot;</span>
-    <span class="c1">#     today_date = datetime.today().strftime(&#39;%Y-%m-%d&#39;)</span>
-    <span class="c1">#     return self.save_dir + f&#39;Results_fig/{today_date}/&#39;</span>
+    <span class="c1">#     """path for saving figures"""</span>
+    <span class="c1">#     today_date = datetime.today().strftime('%Y-%m-%d')</span>
+    <span class="c1">#     return self.save_dir + f'Results_fig/{today_date}/'</span>
     <span class="c1">#</span>
     <span class="c1"># @fig_save_path.setter</span>
     <span class="c1"># def fig_save_path(self, value: str):</span>
-    <span class="c1">#     &quot;&quot;&quot;set new default fig save path for data object&quot;&quot;&quot;</span>
+    <span class="c1">#     """set new default fig save path for data object"""</span>
     <span class="c1">#     self.fig_save_path = value</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">date</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;date of the experiment datacollection&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metainfo</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span>
+        <span class="sd">"""date of the experiment datacollection"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metainfo</span><span class="p">[</span><span class="s1">'date'</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">microscope</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;name of imagign data acquisition microscope&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metainfo</span><span class="p">[</span><span class="s1">&#39;microscope&#39;</span><span class="p">]</span>
+        <span class="sd">"""name of imagign data acquisition microscope"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metainfo</span><span class="p">[</span><span class="s1">'microscope'</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">expID</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;experiment ID of current trial object&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metainfo</span><span class="p">[</span><span class="s1">&#39;exp_id&#39;</span><span class="p">]</span>
+        <span class="sd">"""experiment ID of current trial object"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metainfo</span><span class="p">[</span><span class="s1">'exp_id'</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">trialID</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;trial ID of current trial object&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metainfo</span><span class="p">[</span><span class="s1">&#39;trial_id&#39;</span><span class="p">]</span>
+        <span class="sd">"""trial ID of current trial object"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metainfo</span><span class="p">[</span><span class="s1">'trial_id'</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tiff_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;tiff path of current trial object&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metainfo</span><span class="p">[</span><span class="s1">&#39;tiff_path&#39;</span><span class="p">]</span>
+        <span class="sd">"""tiff path of current trial object"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metainfo</span><span class="p">[</span><span class="s1">'tiff_path'</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">t_series_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="s2">&quot;exp_id&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metainfo</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="s2">&quot;trial_id&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metainfo</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_metainfo</span><span class="p">[</span><span class="s2">&quot;exp_id&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_metainfo</span><span class="p">[</span><span class="s2">&quot;trial_id&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">if</span> <span class="s2">"exp_id"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metainfo</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="s2">"trial_id"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metainfo</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_metainfo</span><span class="p">[</span><span class="s2">"exp_id"</span><span class="p">]</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_metainfo</span><span class="p">[</span><span class="s2">"trial_id"</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;no information found to retrieve t series id&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'no information found to retrieve t series id'</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tiff_path_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tiff_path</span><span class="p">[:[(</span><span class="n">s</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">s</span><span class="o">.</span><span class="n">end</span><span class="p">())</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tiff_path</span><span class="p">)][</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tiff_path</span><span class="p">[:[(</span><span class="n">s</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">s</span><span class="o">.</span><span class="n">end</span><span class="p">())</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tiff_path</span><span class="p">)][</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span>
             <span class="mi">0</span><span class="p">]]</span>  <span class="c1"># this is the directory where the Bruker xml files associated with the 2p imaging TIFF are located</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">pkl_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;path in Analysis folder to save pkl object&quot;&quot;&quot;</span>
+        <span class="sd">"""path in Analysis folder to save pkl object"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pkl_path</span>
 
     <span class="nd">@pkl_path</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">pkl_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pkl_path</span> <span class="o">=</span> <span class="n">path</span>
 
-    <span class="k">def</span> <span class="nf">_getImagingParameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">microscope</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Bruker&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;retrieves imaging metadata parameters. If using Bruker microscope and PrairieView, then _prairieview module is used to collect this data.</span>
+    <span class="k">def</span> <span class="nf">_getImagingParameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">microscope</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'Bruker'</span><span class="p">):</span>
+        <span class="sd">"""retrieves imaging metadata parameters. If using Bruker microscope and PrairieView, then _prairieview module is used to collect this data.</span>
 
 <span class="sd">        :param microscope: name of the microscope, currently the only supported microscope for parsing metadata directly is Bruker/PrairieView imaging setup.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="s1">&#39;Bruker&#39;</span> <span class="ow">in</span> <span class="n">microscope</span><span class="p">:</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="s1">'Bruker'</span> <span class="ow">in</span> <span class="n">microscope</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">PrairieViewMetadata</span><span class="p">(</span><span class="n">tiff_path_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tiff_path_dir</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">ImagingMetadata</span><span class="p">(</span><span class="o">**</span><span class="n">metadata</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-                <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;required key not present in metadata&#39;</span><span class="p">)</span>
+                <span class="ne">Exception</span><span class="p">(</span><span class="s1">'required key not present in metadata'</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">paq_frame_clock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Paq</span><span class="p">,</span> <span class="s2">&quot;frame_times&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Paq</span><span class="p">,</span> <span class="s2">"frame_times"</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">frame_times</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Frame clock timings couldnt be retrieved from .Paq submodule.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Frame clock timings couldnt be retrieved from .Paq submodule.'</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -235,18 +231,18 @@
             <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
 
     <span class="k">def</span> <span class="nf">_paqProcessingTwoPhotonImaging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">paq_path</span><span class="p">,</span> <span class="n">frame_channel</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">"""</span>
 <span class="sd">        Add and further process paq data for current trial.</span>
 <span class="sd">        :param paq_path: path to .paq file</span>
 <span class="sd">        :param frame_channel: channel to use for measuring frame times from .paq data</span>
 
 <span class="sd">        :return: PAQ data object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">\- ADDING PAQ MODULE ... &quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">\- ADDING PAQ MODULE ... "</span><span class="p">)</span>
         <span class="n">paq_data_obj</span><span class="p">,</span> <span class="n">paqdata</span> <span class="o">=</span> <span class="n">PaqData</span><span class="o">.</span><span class="n">import_paqdata</span><span class="p">(</span><span class="n">paq_path</span><span class="o">=</span><span class="n">paq_path</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">\- PROCESSING PAQDATA ... &quot;</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">frame_channel</span> <span class="ow">in</span> <span class="n">paq_data_obj</span><span class="o">.</span><span class="n">paq_channels</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;frame_channel argument: &#39;</span><span class="si">{</span><span class="n">frame_channel</span><span class="si">}</span><span class="s2">&#39;, not found in channels in .paq data.&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">\- PROCESSING PAQDATA ... "</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">frame_channel</span> <span class="ow">in</span> <span class="n">paq_data_obj</span><span class="o">.</span><span class="n">paq_channels</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"frame_channel argument: '</span><span class="si">{</span><span class="n">frame_channel</span><span class="si">}</span><span class="s2">', not found in channels in .paq data."</span>
         <span class="n">paq_data_obj</span><span class="o">.</span><span class="n">frame_times_channame</span> <span class="o">=</span> <span class="n">frame_channel</span>
         <span class="n">paq_data_obj</span><span class="o">.</span><span class="n">frame_times</span> <span class="o">=</span> <span class="n">paq_data_obj</span><span class="o">.</span><span class="n">paq_frame_times</span><span class="p">(</span><span class="n">frame_channel</span><span class="o">=</span><span class="n">frame_channel</span><span class="p">)</span>
         <span class="n">paq_data_obj</span><span class="o">.</span><span class="n">sparse_paq_data</span> <span class="o">=</span> <span class="n">paq_data_obj</span><span class="o">.</span><span class="n">get_sparse_paq</span><span class="p">(</span><span class="n">frame_clock</span><span class="o">=</span><span class="n">paq_data_obj</span><span class="o">.</span><span class="n">frame_times</span><span class="p">)</span>
@@ -254,9 +250,9 @@
         <span class="k">return</span> <span class="n">paq_data_obj</span>
 
     <span class="k">def</span> <span class="nf">stitch_s2p_reg_tiff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c1">## TODO refactoring in new code from the Suite2p class script?</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">_s2pResultExists</span><span class="p">,</span> <span class="n">UnavailableOptionError</span><span class="p">(</span><span class="s1">&#39;stitch_s2p_reg_tiff&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">_s2pResultExists</span><span class="p">,</span> <span class="n">UnavailableOptionError</span><span class="p">(</span><span class="s1">'stitch_s2p_reg_tiff'</span><span class="p">)</span>
 
-        <span class="n">tif_path_save2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;reg_tiff_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">t_series_name</span><span class="si">}</span><span class="s1">_r.tif&#39;</span>
+        <span class="n">tif_path_save2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">'reg_tiff_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">t_series_name</span><span class="si">}</span><span class="s1">_r.tif'</span>
 
         <span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2000</span>  <span class="c1"># 2000 because that is the batch size for suite2p run</span>
         <span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2000</span> <span class="o">+</span> <span class="mi">1</span>
@@ -264,117 +260,117 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">tif_path_save2</span><span class="p">):</span>
             <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">TiffWriter</span><span class="p">(</span><span class="n">tif_path_save2</span><span class="p">,</span> <span class="n">bigtiff</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">tif</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">TiffFile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">reg_tiff_path</span><span class="p">,</span> <span class="n">multifile</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">input_tif</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;cropping registered tiff&#39;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">'cropping registered tiff'</span><span class="p">)</span>
                     <span class="n">data</span> <span class="o">=</span> <span class="n">input_tif</span><span class="o">.</span><span class="n">asarray</span><span class="p">()</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;shape of stitched tiff: &#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">'shape of stitched tiff: '</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
                 <span class="n">reg_tif_crop</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">start</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">s2p_run_batch</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">trial_frames</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">trial_frames</span> <span class="o">-</span> <span class="n">start</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">s2p_run_batch</span><span class="p">)]</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;saving cropped tiff &#39;</span><span class="p">,</span> <span class="n">reg_tif_crop</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">'saving cropped tiff '</span><span class="p">,</span> <span class="n">reg_tif_crop</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
                 <span class="n">tif</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">reg_tif_crop</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TwoPhotonImagingTrial.create_anndata"><a class="viewcode-back" href="../../reference.html#packerlabimaging.TwoPhotonImagingTrial.create_anndata">[docs]</a>    <span class="k">def</span> <span class="nf">create_anndata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">"""</span>
 <span class="sd">        Creates annotated data (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">_s2pResultExists</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">Paq</span><span class="p">:</span>
             <span class="c1"># SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata</span>
             <span class="c1"># build dataframe for obs_meta from suite2p stat information</span>
             <span class="n">obs_meta</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-                <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;original_index&#39;</span><span class="p">,</span> <span class="s1">&#39;footprint&#39;</span><span class="p">,</span> <span class="s1">&#39;mrs&#39;</span><span class="p">,</span> <span class="s1">&#39;mrs0&#39;</span><span class="p">,</span> <span class="s1">&#39;compact&#39;</span><span class="p">,</span> <span class="s1">&#39;med&#39;</span><span class="p">,</span> <span class="s1">&#39;npix&#39;</span><span class="p">,</span> <span class="s1">&#39;radius&#39;</span><span class="p">,</span>
-                         <span class="s1">&#39;aspect_ratio&#39;</span><span class="p">,</span> <span class="s1">&#39;npix_norm&#39;</span><span class="p">,</span> <span class="s1">&#39;skew&#39;</span><span class="p">,</span> <span class="s1">&#39;std&#39;</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">stat</span><span class="p">)))</span>
+                <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">'original_index'</span><span class="p">,</span> <span class="s1">'footprint'</span><span class="p">,</span> <span class="s1">'mrs'</span><span class="p">,</span> <span class="s1">'mrs0'</span><span class="p">,</span> <span class="s1">'compact'</span><span class="p">,</span> <span class="s1">'med'</span><span class="p">,</span> <span class="s1">'npix'</span><span class="p">,</span> <span class="s1">'radius'</span><span class="p">,</span>
+                         <span class="s1">'aspect_ratio'</span><span class="p">,</span> <span class="s1">'npix_norm'</span><span class="p">,</span> <span class="s1">'skew'</span><span class="p">,</span> <span class="s1">'std'</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">stat</span><span class="p">)))</span>
             <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">__stat</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">stat</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">__column</span> <span class="ow">in</span> <span class="n">obs_meta</span><span class="p">:</span>
                     <span class="n">obs_meta</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="n">__column</span><span class="p">]</span> <span class="o">=</span> <span class="n">__stat</span><span class="p">[</span><span class="n">__column</span><span class="p">]</span>
 
             <span class="c1"># build numpy array for multidimensional obs metadata</span>
-            <span class="n">obs_m</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ypix&#39;</span><span class="p">:</span> <span class="p">[],</span>
-                     <span class="s1">&#39;xpix&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+            <span class="n">obs_m</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'ypix'</span><span class="p">:</span> <span class="p">[],</span>
+                     <span class="s1">'xpix'</span><span class="p">:</span> <span class="p">[]}</span>
             <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="o">*</span><span class="n">obs_m</span><span class="p">]:</span>
                 <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">__stat</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">stat</span><span class="p">):</span>
                     <span class="n">obs_m</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">__stat</span><span class="p">[</span><span class="n">col</span><span class="p">])</span>
                 <span class="n">obs_m</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">obs_m</span><span class="p">[</span><span class="n">col</span><span class="p">])</span>
 
             <span class="c1"># SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata</span>
-            <span class="c1"># build dataframe for var annot&#39;s from Paq file</span>
+            <span class="c1"># build dataframe for var annot's from Paq file</span>
             <span class="n">var_meta</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">frame_times_channame</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">n_frames</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">fr_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">n_frames</span><span class="p">):</span>
                 <span class="n">var_meta</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">frame_times_channame</span><span class="p">,</span> <span class="n">fr_idx</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Paq</span><span class="o">.</span><span class="n">frame_times</span><span class="p">[</span><span class="n">fr_idx</span><span class="p">]</span>
 
             <span class="c1"># BUILD LAYERS TO ADD TO anndata OBJECT</span>
-            <span class="n">layers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;dFF&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dFF</span>
+            <span class="n">layers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'dFF'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dFF</span>
                       <span class="p">}</span>
 
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">\----- CREATING annotated data object using AnnData:&quot;</span><span class="p">)</span>
-            <span class="n">_data_type</span> <span class="o">=</span> <span class="s1">&#39;Suite2p Raw (neuropil substracted)&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">subtract_neuropil</span> <span class="k">else</span> <span class="s1">&#39;Suite2p Raw&#39;</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">\----- CREATING annotated data object using AnnData:"</span><span class="p">)</span>
+            <span class="n">_data_type</span> <span class="o">=</span> <span class="s1">'Suite2p Raw (neuropil substracted)'</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">subtract_neuropil</span> <span class="k">else</span> <span class="s1">'Suite2p Raw'</span>
             <span class="n">adata</span> <span class="o">=</span> <span class="n">ad</span><span class="o">.</span><span class="n">AnnotatedData</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">raw</span><span class="p">,</span> <span class="n">obs</span><span class="o">=</span><span class="n">obs_meta</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="n">var_meta</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">obsm</span><span class="o">=</span><span class="n">obs_m</span><span class="p">,</span> <span class="n">layers</span><span class="o">=</span><span class="n">layers</span><span class="p">,</span>
                                      <span class="n">data_label</span><span class="o">=</span><span class="n">_data_type</span><span class="p">)</span>
 
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">adata</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="si">{</span><span class="n">adata</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">adata</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="ne">Warning</span><span class="p">(</span>
-                <span class="s1">&#39;did not create anndata. anndata creation only available if experiments were processed with suite2p and .Paq file(s) provided for temporal synchronization&#39;</span><span class="p">)</span></div>
+                <span class="s1">'did not create anndata. anndata creation only available if experiments were processed with suite2p and .Paq file(s) provided for temporal synchronization'</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TwoPhotonImagingTrial.dfof"><a class="viewcode-back" href="../../reference.html#packerlabimaging.TwoPhotonImagingTrial.dfof">[docs]</a>    <span class="k">def</span> <span class="nf">dfof</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;(delta F)/F normalization of raw Suite2p data of trial.&quot;&quot;&quot;</span>
+        <span class="sd">"""(delta F)/F normalization of raw Suite2p data of trial."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">_s2pResultExists</span><span class="p">:</span>
             <span class="n">dFF</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize_dff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">raw</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">dFF</span></div>
 
 <div class="viewcode-block" id="TwoPhotonImagingTrial.importTrialTiff"><a class="viewcode-back" href="../../reference.html#packerlabimaging.TwoPhotonImagingTrial.importTrialTiff">[docs]</a>    <span class="k">def</span> <span class="nf">importTrialTiff</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Import current trial&#39;s microscope imaging tiff in full.</span>
+        <span class="sd">"""</span>
+<span class="sd">        Import current trial's microscope imaging tiff in full.</span>
 
 <span class="sd">        :return: imaging tiff as numpy array</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">\- loading raw TIFF file from: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tiff_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">\- loading raw TIFF file from: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tiff_path</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">'</span><span class="se">\r</span><span class="s1">'</span><span class="p">)</span>
         <span class="n">im_stack</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tiff_path</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">n_frames</span><span class="p">))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;|- Loaded experiment tiff of shape: &#39;</span><span class="p">,</span> <span class="n">im_stack</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'|- Loaded experiment tiff of shape: '</span><span class="p">,</span> <span class="n">im_stack</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">im_stack</span></div>
 
 <div class="viewcode-block" id="TwoPhotonImagingTrial.meanRawFluTrace"><a class="viewcode-back" href="../../reference.html#packerlabimaging.TwoPhotonImagingTrial.meanRawFluTrace">[docs]</a>    <span class="k">def</span> <span class="nf">meanRawFluTrace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">"""</span>
 <span class="sd">        Collects the raw mean of FOV fluorescence trace across the t-series.</span>
 
 <span class="sd">        :return: mean fluorescence trace</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">im_stack</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">importTrialTiff</span><span class="p">()</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">-----collecting mean raw flu trace from tiff file...&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">-----collecting mean raw flu trace from tiff file...'</span><span class="p">)</span>
         <span class="n">mean_flu_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">im_stack</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">mean_fov_flutrace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">im_stack</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">mean_flu_img</span><span class="p">,</span> <span class="n">mean_fov_flutrace</span></div>
 
 <div class="viewcode-block" id="TwoPhotonImagingTrial.makeDownsampledTiff"><a class="viewcode-back" href="../../reference.html#packerlabimaging.TwoPhotonImagingTrial.makeDownsampledTiff">[docs]</a>    <span class="k">def</span> <span class="nf">makeDownsampledTiff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Import current trial tiff, create downsampled tiff and save in default analysis directory.&quot;&quot;&quot;</span>
+        <span class="sd">"""Import current trial tiff, create downsampled tiff and save in default analysis directory."""</span>
 
         <span class="n">stack</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">importTrialTiff</span><span class="p">()</span>
-        <span class="n">SaveDownsampledTiff</span><span class="p">(</span><span class="n">stack</span><span class="o">=</span><span class="n">stack</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trialID</span><span class="si">}</span><span class="s2">_downsampled.tif&quot;</span><span class="p">)</span></div>
+        <span class="n">SaveDownsampledTiff</span><span class="p">(</span><span class="n">stack</span><span class="o">=</span><span class="n">stack</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trialID</span><span class="si">}</span><span class="s2">_downsampled.tif"</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TwoPhotonImagingTrial.plotSingleImageFrame"><a class="viewcode-back" href="../../reference.html#packerlabimaging.TwoPhotonImagingTrial.plotSingleImageFrame">[docs]</a>    <span class="k">def</span> <span class="nf">plotSingleImageFrame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_num</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">"""</span>
 <span class="sd">        plots an image of a single specified tiff frame after reading using tifffile.</span>
 <span class="sd">        :param frame_num: frame # from 2p imaging tiff to show (default is 0 - i.e. the first frame)</span>
 <span class="sd">        :param title: (optional) give a string to use as title</span>
 <span class="sd">        :return: matplotlib imshow plot</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">stack</span> <span class="o">=</span> <span class="n">showSingleTiffFrame</span><span class="p">(</span><span class="n">tiff_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tiff_path</span><span class="p">,</span> <span class="n">frame_num</span><span class="o">=</span><span class="n">frame_num</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">)</span>
 
         <span class="c1"># stack = tf.imread(self.tiff_path, key=frame_num)</span>
-        <span class="c1"># plt.imshow(stack, cmap=&#39;gray&#39;)</span>
-        <span class="c1"># plt.suptitle(title) if title is not None else plt.suptitle(f&#39;frame num: {frame_num}&#39;)</span>
+        <span class="c1"># plt.imshow(stack, cmap='gray')</span>
+        <span class="c1"># plt.suptitle(title) if title is not None else plt.suptitle(f'frame num: {frame_num}')</span>
         <span class="c1"># plt.show()</span>
         <span class="k">return</span> <span class="n">stack</span></div>
 
 <div class="viewcode-block" id="TwoPhotonImagingTrial.normalize_dff"><a class="viewcode-back" href="../../reference.html#packerlabimaging.TwoPhotonImagingTrial.normalize_dff">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">normalize_dff</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">threshold_pct</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">threshold_val</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;normalize given array (cells x time) to the mean of the fluorescence values below given threshold. Threshold</span>
-<span class="sd">        will refer to the that lower percentile of the given trace.&quot;&quot;&quot;</span>
+        <span class="sd">"""normalize given array (cells x time) to the mean of the fluorescence values below given threshold. Threshold</span>
+<span class="sd">        will refer to the that lower percentile of the given trace."""</span>
 
         <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">threshold_val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -385,7 +381,7 @@
             <span class="c1"># mean_ = abs(arr[arr &lt; a].mean())</span>
             <span class="n">new_array</span> <span class="o">=</span> <span class="p">((</span><span class="n">arr</span> <span class="o">-</span> <span class="n">mean_</span><span class="p">)</span> <span class="o">/</span> <span class="n">mean_</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">new_array</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="ne">Warning</span><span class="p">(</span><span class="s1">&#39;Cell (unknown) contains nan, normalization factor: </span><span class="si">%s</span><span class="s1"> &#39;</span> <span class="o">%</span> <span class="n">mean_</span><span class="p">)</span>
+                <span class="ne">Warning</span><span class="p">(</span><span class="s1">'Cell (unknown) contains nan, normalization factor: </span><span class="si">%s</span><span class="s1"> '</span> <span class="o">%</span> <span class="n">mean_</span><span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="n">new_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
@@ -398,79 +394,76 @@
                 <span class="n">new_array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">mean_</span><span class="p">)</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">mean_</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span>
 
                 <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">new_array</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Warning:&#39;</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Cell </span><span class="si">%d</span><span class="s1">: contains nan&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;      Mean of the sub-threshold for this cell: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">mean_</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">'Warning:'</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">'Cell </span><span class="si">%d</span><span class="s1">: contains nan'</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">'      Mean of the sub-threshold for this cell: </span><span class="si">%s</span><span class="s1">'</span> <span class="o">%</span> <span class="n">mean_</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">new_array</span></div>
 
 <div class="viewcode-block" id="TwoPhotonImagingTrial.save_pkl"><a class="viewcode-back" href="../../reference.html#packerlabimaging.TwoPhotonImagingTrial.save_pkl">[docs]</a>    <span class="k">def</span> <span class="nf">save_pkl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkl_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">"""</span>
 <span class="sd">        Alias method for saving current object to pickle file.</span>
 
 <span class="sd">        :param pkl_path: (optional) provide path to save object to pickle file.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">pkl_path</span><span class="p">:</span>
             <span class="n">parent</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pkl_path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">parent</span><span class="p">):</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;saving new trial object to: </span><span class="si">{</span><span class="n">pkl_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'saving new trial object to: </span><span class="si">{</span><span class="n">pkl_path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">pkl_path</span> <span class="o">=</span> <span class="n">pkl_path</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parent directory path: `</span><span class="si">{</span><span class="n">parent</span><span class="si">}</span><span class="s2">` was not found for saving .pkl&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Parent directory path: `</span><span class="si">{</span><span class="n">parent</span><span class="si">}</span><span class="s2">` was not found for saving .pkl"</span><span class="p">)</span>
 
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pkl_path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pkl_path</span><span class="p">,</span> <span class="s1">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2"> -- data object saved to </span><span class="si">%s</span><span class="s2"> -- &quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">pkl_path</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n\t</span><span class="s2"> -- data object saved to </span><span class="si">%s</span><span class="s2"> -- "</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">pkl_path</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TwoPhotonImagingTrial.save"><a class="viewcode-back" href="../../reference.html#packerlabimaging.TwoPhotonImagingTrial.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">"""</span>
 <span class="sd">        Alias method for saving current object as pickle file.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save_pkl</span><span class="p">()</span></div></div>
 
 
 
 
 </pre></div>
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
 </div>
 <script>$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">packerlabimaging 0.1-alpha documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">packerlabimaging.TwoPhotonImagingMain</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2022, Packer Lab.
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">packerlabimaging 0.1-alpha documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">Module code</a> »</li>
+<li class="nav-item nav-item-this"><a href="">packerlabimaging.TwoPhotonImagingMain</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright 2022, Packer Lab.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
     </div>
-  </body>
+</body>
 </html>

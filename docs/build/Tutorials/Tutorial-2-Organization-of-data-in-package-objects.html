@@ -1,51 +1,149 @@
 
 <!DOCTYPE html>
 
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>Tutorial 2 - Data organization inside imaging+ &#8212; imaging+ 0.2-beta documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Tutorial 3 - Making Useful Plots" href="Tutorial-3-plotting-module.html" />
-    <link rel="prev" title="Tutorial 1 - Getting started with data" href="Tutorial-1-Overview-of-Workflow.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="Tutorial-3-plotting-module.html" title="Tutorial 3 - Making Useful Plots"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="Tutorial-1-Overview-of-Workflow.html" title="Tutorial 1 - Getting started with data"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../Tutorials-reference.html" accesskey="U">Tutorials</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Tutorial 2 - Data organization inside imaging+</a></li> 
-      </ul>
-    </div>  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  
+<html lang="en">
+<head>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta charset="utf-8"/>
+<meta content="Docutils 0.17.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>Tutorial 2 - Data organization inside imaging+ | imaging+ 0.2-beta documentation</title>
+<link href="../_static/pygments.css" rel="stylesheet"/>
+<link href="../_static/theme.9297a650d9dd3016d913.css" rel="stylesheet"/>
+<link href="../_static/sg_gallery.css" rel="stylesheet"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="Tutorial-3-plotting-module.html" rel="next" title="Tutorial 3 - Making Useful Plots"/>
+<link href="Tutorial-1-Overview-of-Workflow.html" rel="prev" title="Tutorial 1 - Getting started with data"/>
+</head>
+<body class="antialiased text-gray scroll-smooth">
+<div class="min-h-screen xl:h-screen flex flex-col xl:grid xl:grid-layout print:block print:h-auto" data-action="keydown@window-&gt;search#focus " data-controller="sidebar search " id="page">
+<a class="block transition -translate-x-full focus:translate-x-0 opacity-0 focus:opacity-100 text-xl bg-white p-4 z-20 absolute top-0 left-0 h-14" href="#tutorial-2-data-organization-inside-imaging" title="Skip navigation links">Skip to content</a>
+<header class="grid-area-header z-10 h-14 fixed w-full top-0 print:hidden">
+<div class="bg-gray-dark shadow-md flex items-center h-full xl:px-2 relative"><div class="flex items-center">
+<button class="xl:hidden h-14 w-14 leading-14 text-gray-100 hover:bg-gray-700 hover:text-brand focus:outline-none focus:bg-gray-700 focus:text-brand" data-action="sidebar#open" data-sidebar-target="hamburger">
+<span class="sr-only">Open navigation menu</span>
+<svg aria-hidden="true" class="fill-current h-8 w-8" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
+</button><a class="hover:bg-gray-700 focus:bg-gray-700 focus:outline-none" href="../index.html" title="Back to homepage"><img alt="Logo" class="h-14 w-14 p-3 inline-block" src="../_static/imagingplus-logo.png"/><span class="hidden lg:inline-block shrink-0 font-medium text-gray-100 mx-5 leading-14 tracking-wider">imaging+ 0.2-beta documentation</span>
+</a></div><div class="flex justify-end items-center flex-1"><form action="../search.html" class="flex print:hidden justify-between items-center leading-14 md:ml-4 bg-gray-dark text-gray-300 focus-within:bg-gray-50 focus-within:text-gray-800 focus-within:absolute focus-within:inset-x-0 focus-within:top-0 md:focus-within:w-full md:focus-within:static z-10" data-action="click-&gt;search#focusSearchInput" id="searchbox" method="get">
+<button aria-label="Get search results" class="text-inherit h-14 w-14" tabindex="-1">
+<svg aria-hidden="true" class="fill-current stroke-current h-8 w-8" stroke-width="0.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+</button>
+<input aria-label="Search the docs" class="pr-2 bg-transparent text-inherit focus:outline-none w-0 md:w-auto focus:w-full transition-all duration-100" data-search-target="searchInput" id="search-input" name="q" placeholder="Search the docs" type="search"/>
+</form></div>
+</div>
+</header>
+<aside class="grid-area-sidebar h-full fixed pt-14 xl:relative inset-y-0 left-0 z-20 xl:z-0 print:hidden overflow-y-auto transition-all transform transform-gpu -translate-x-full opacity-0 duration-300 xl:translate-x-0 xl:opacity-100" data-sidebar-target="sidebar">
+<nav class="h-full overflow-y-auto bg-white text-gray-600 pt-8 flex flex-col" role="navigation">
+<div class="nav-toc flex-1 pl-6"><ul class="current">
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../installation.html">Installation</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../installation.html#installation">Installation</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../installation.html#test-import-installation">Test/Import Installation</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../installation.html#dependencies">Dependencies</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../installation.html#next">Next</a></div></li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../quick-start-guide.html">Quick start guide</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../quick-start-guide.html#key-structures">Key Structures</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../quick-start-guide.html#next">Next</a></div></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../overview.html">Overview</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../overview.html#modular-data-processing-analysis-and-visualisation"><strong>Modular Data Processing, Analysis and Visualisation</strong></a></div></li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../overview.html#extensibility"><strong>Extensibility</strong></a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../overview.html#next">Next</a></div></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current expanded"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../Tutorials-reference.html">Tutorials</a></div><ul class="current">
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-1-Overview-of-Workflow.html">Tutorial 1 - Getting started with data</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-1-Overview-of-Workflow.html#Creating-an-experiment">Creating an experiment</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-1-Overview-of-Workflow.html#Adding-trials-to-an-experiment">Adding trials to an experiment</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-1-Overview-of-Workflow.html#Adding-calcium-imaging-processing-to-Experiment">Adding calcium imaging processing to Experiment</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-1-Overview-of-Workflow.html#Storing-Suite2p-processed-data-as-an-anndata-structure">Storing Suite2p processed data as an anndata structure</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2 current expanded"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="current reference internal" data-action="click-&gt;sidebar#close" href="#">Tutorial 2 - Data organization inside imaging+</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="#Importing-data-analysis-objects">Importing data analysis objects</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="#paq-data">paq data</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="#Annotated-Data">Annotated Data</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-3-plotting-module.html">Tutorial 3 - Making Useful Plots</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-3-plotting-module.html#plot-Suite2p-ROIs-location">plot Suite2p ROIs location</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-3-plotting-module.html#plot-default-output-images-from-Suite2p">plot default output images from Suite2p</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-3-plotting-module.html#plot-individual-cell’s-flu-or-dFF-trace">plot individual cell’s flu or dFF trace</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-3-plotting-module.html#Raw-average-trace-of-FOV">Raw average trace of FOV</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-4-nwb-conversion.html">Tutorial 4 - NWB Conversion</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-5-suite2p-module.html">Tutorial 5 - Integrating with Suite2p (running Suite2p pipeline and storing results)</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-5-suite2p-module.html#Adding-the-Suite2p-module">Adding the Suite2p module</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-5-suite2p-module.html#Prepare-for-Suite2p-run">Prepare for Suite2p run</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-5-suite2p-module.html#Run-Suite2p">Run Suite2p</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-5-suite2p-module.html#Explore-suite2p-results---next-steps-after-running-Suite2p">Explore suite2p results - next steps after running Suite2p</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-5-suite2p-module.html#Import-suite2p-results-directly">Import suite2p results directly</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-6-anndata-module.html">Tutorial 6 - Annotated Data Module</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-6-anndata-module.html#storage-of-Flu-data">storage of Flu data</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-6-anndata-module.html#observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">observations (Suite2p ROIs metadata and associated processing info)</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-6-anndata-module.html#variables-(temporal-synchronization-of-paq-channels-and-imaging)">variables (temporal synchronization of paq channels and imaging)</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-7-paq-module.html">Tutorial 7 - Integration with PACKIO outputs (.paq data)</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-7-paq-module.html#adding-paqdata-module-to-the-trialobj">adding paqdata module to the trialobj</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-7-paq-module.html#Processing-paq-data">Processing paq data</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-7-paq-module.html#Synchronizing-.paq-data-with-imaging-frames">Synchronizing .paq data with imaging frames</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-8-Extending-built-in-classes.html">Tutorial 8 - Extending built in classes</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-8-Extending-built-in-classes.html#Creating-a-custom-class-for-Interneuron-Gcamp-imaging-during-seizures">Creating a custom class for Interneuron Gcamp imaging during seizures</a></div></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../organization-of-modules.html">Main Modules</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../organization-of-modules.html#main">Main</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../organization-of-modules.html#processing">Processing</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../organization-of-modules.html#workflow">Workflow</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../organization-of-modules.html#utils">Utils</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../organization-of-modules.html#plotting">Plotting</a></div></li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../data-structure-details.html">Data structure details</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../data-structure-details.html#anndata-object-for-storing-multi-modal-data"><em>AnnData</em> object for storing multi-modal data</a></div></li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../making-plots.html">Making plots</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../making-plots.html#module-imagingplus.plotting.plotting">Available plotting functions:</a></div></li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../reference.html">API Reference</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../reference.html#module-imagingplus.main.core">core</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../reference.html#module-imagingplus.main.subcore">subcore</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../reference.html#module-imagingplus.plotting.plotting">plotting</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../reference.html#module-imagingplus.processing.anndata">processing</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../reference.html#workflows-alloptical">workflows (AllOptical)</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../reference.html#module-imagingplus.utils.io">utils</a></div></li>
+</ul>
+</li>
+</ul>
+</div>
+<button class="text-4xl text-gray-800 p-4 bottom-0 hover:text-brand xl:hidden focus:text-brand self-center" data-action="sidebar#close" title="Close navigation menu">
+<span class="sr-only">Close navigation menu</span>
+<svg aria-hidden="true" class="fill-current stroke-current h-6 w-6" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+</button>
+</nav>
+</aside>
+<main class="px-4 pt-14 xl:ml-fluid grid-area-main overflow-y-auto flex flex-col flex-1 h-full mx-0 md:mx-auto xl:mr-0"><nav aria-label="breadcrumbs" class="print:hidden mt-12 text-sm text-gray-light" role="navigation">
+<a class="text-gray-light text-sm hover:text-gray-dark font-medium focus:text-gray-dark" href="../index.html">imaging+ 0.2-beta documentation</a>
+<span class="mr-1">/</span><a class="text-gray-light text-sm hover:text-gray-dark" href="../Tutorials-reference.html">Tutorials</a>
+<span class="mr-1">/</span><span aria-current="page">Tutorial 2 - Data organization inside imaging+</span>
+</nav>
+<article class="flex-1" role="main">
 <style>
 /* CSS for nbsphinx extension */
 
@@ -294,22 +392,30 @@ div.rendered_html tbody tr:hover {
 }
 </style>
 <section id="Tutorial-2---Data-organization-inside-imaging+">
-<h1>Tutorial 2 - Data organization inside imaging+<a class="headerlink" href="#Tutorial-2---Data-organization-inside-imaging+" title="Permalink to this headline">¶</a></h1>
+<h1>Tutorial 2 - Data organization inside imaging+<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Tutorial-2---Data-organization-inside-imaging+">¶</a></h1>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython</span> <span class="kn">import</span> <span class="n">display</span>
-</pre></div>
-</div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[1]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="kn">from</span> <span class="nn">IPython</span> <span class="kn">import</span> <span class="n">display</span>
+</code></pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imagingplus</span> <span class="k">as</span> <span class="nn">ip</span>
-</pre></div>
-</div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[2]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="kn">import</span> <span class="nn">imagingplus</span> <span class="k">as</span> <span class="nn">ip</span>
+</code></pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -317,7 +423,7 @@ div.rendered_html tbody tr:hover {
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Warning: cellpose did not import
-No module named &#39;cellpose&#39;
+No module named 'cellpose'
 cannot use anatomical mode, but otherwise suite2p will run normally
 
 imported packerlabimaging
@@ -327,18 +433,22 @@ imported packerlabimaging
 </div>
 <p><em>This notebook demonstrates the basics of how data is organized inside of a trial object.</em></p>
 <section id="Importing-data-analysis-objects">
-<h2>Importing data analysis objects<a class="headerlink" href="#Importing-data-analysis-objects" title="Permalink to this headline">¶</a></h2>
-<p>The first step to begin using the data analysis objects is to import the previously created objects. In general, it is advised to import th high-level <code class="docutils literal notranslate"><span class="pre">Experiment</span></code> object first, and then use the <code class="docutils literal notranslate"><span class="pre">.load_trial</span></code> method to load an individual <code class="docutils literal notranslate"><span class="pre">-Trial</span></code> object.</p>
+<h2>Importing data analysis objects<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Importing-data-analysis-objects">¶</a></h2>
+<p>The first step to begin using the data analysis objects is to import the previously created objects. In general, it is advised to import th high-level <code class="docutils literal notranslate">Experiment</code> object first, and then use the <code class="docutils literal notranslate">.load_trial</code> method to load an individual <code class="docutils literal notranslate">-Trial</code> object.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># import experiment obj and TwoPhotonImagingTrial object</span>
-<span class="n">expobj</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="s1">&#39;/home/pshah/Documents/code/imagingplus/tests/RL109_analysis.pkl&#39;</span><span class="p">)</span>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[3]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="c1"># import experiment obj and TwoPhotonImagingTrial object</span>
+<span class="n">expobj</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="s1">'/home/pshah/Documents/code/imagingplus/tests/RL109_analysis.pkl'</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">expobj</span><span class="p">)</span>
-<span class="n">trialobj</span> <span class="o">=</span> <span class="n">expobj</span><span class="o">.</span><span class="n">load_trial</span><span class="p">(</span><span class="n">trialID</span><span class="o">=</span><span class="s1">&#39;t-013&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+<span class="n">trialobj</span> <span class="o">=</span> <span class="n">expobj</span><span class="o">.</span><span class="n">load_trial</span><span class="p">(</span><span class="n">trialID</span><span class="o">=</span><span class="s1">'t-013'</span><span class="p">)</span>
+</code></pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -359,16 +469,20 @@ trials in Experiment object:
 </div>
 </section>
 <section id="paq-data">
-<h2>paq data<a class="headerlink" href="#paq-data" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">paq</span></code> sub-module is used to retrieve and store data from the .paq file for each trial. It can be accessed by <code class="docutils literal notranslate"><span class="pre">trialobj.paq</span></code>:</p>
+<h2>paq data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#paq-data">¶</a></h2>
+<p>The <code class="docutils literal notranslate">paq</code> sub-module is used to retrieve and store data from the .paq file for each trial. It can be accessed by <code class="docutils literal notranslate">trialobj.paq</code>:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># show all attributes saved in `trialobj.paq`</span>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[6]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="c1"># show all attributes saved in `trialobj.paq`</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">paq</span><span class="p">)</span>
-</pre></div>
-</div>
+</code></pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -379,66 +493,82 @@ packerlabimaging.processing.paq.paqData:
         frame_times: [  139577   140252   140925 ... 11142935 11143607 11144280]
         frame_times_channame: frame_clock
         paq_path: /home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_RL109_013.paq
-        paq_channels: [&#39;frame_clock&#39;, &#39;x_galvo_uncaging&#39;, &#39;slm2packio&#39;, &#39;markpoints2packio&#39;, &#39;packio2slm&#39;, &#39;packio2markpoints&#39;, &#39;pycontrol_rsync&#39;, &#39;voltage&#39;]
+        paq_channels: ['frame_clock', 'x_galvo_uncaging', 'slm2packio', 'markpoints2packio', 'packio2slm', 'packio2markpoints', 'pycontrol_rsync', 'voltage']
         paq_rate: 20000
         voltage: [0.0551814  0.053866   0.05616795 ... 3.4617312  3.4610734  3.4614022 ]
 </pre></div></div>
 </div>
-<p>We can see that the ‘frame_clock’ paq channel was used as the primary channel for retrieving imaging frame timestamps synchronized to the paq clock. There are a number of other channels associated with this .paq file (however their data is not saved in this object to save space). Data from any of the other channels can stored directly to the <code class="docutils literal notranslate"><span class="pre">.paq</span></code> object using the <code class="docutils literal notranslate"><span class="pre">.storePaqChannel()</span></code> object method. In this case, the ‘voltage’ paq channel was stored in its entirety under <code class="docutils literal notranslate"><span class="pre">.paq.voltage</span></code>.</p>
+<p>We can see that the ‘frame_clock’ paq channel was used as the primary channel for retrieving imaging frame timestamps synchronized to the paq clock. There are a number of other channels associated with this .paq file (however their data is not saved in this object to save space). Data from any of the other channels can stored directly to the <code class="docutils literal notranslate">.paq</code> object using the <code class="docutils literal notranslate">.storePaqChannel()</code> object method. In this case, the ‘voltage’ paq channel was stored in its entirety under <code class="docutils literal notranslate">.paq.voltage</code>.</p>
 </section>
 <section id="Annotated-Data">
-<h2>Annotated Data<a class="headerlink" href="#Annotated-Data" title="Permalink to this headline">¶</a></h2>
-<p>The AnnData library is the primary protocol that is used to store imaging data in an efficient, multi-functional format. It is created using the <code class="docutils literal notranslate"><span class="pre">anndata</span></code> sub-module and can be accessed using <code class="docutils literal notranslate"><span class="pre">trialobj.data</span></code>. By default, <code class="docutils literal notranslate"><span class="pre">trialobj.data</span></code> is a data array generated from Suite2p processed data. For all guidance on AnnData objects, visit: <a class="reference external" href="https://anndata.readthedocs.io/en/latest/index.html">https://anndata.readthedocs.io/en/latest/index.html</a>.</p>
-<p>The AnnData object is built around the raw Flu matrix of each <code class="docutils literal notranslate"><span class="pre">trialobj</span></code> . In keeping with AnnData conventions, the data structure is organized in <em>n</em> observations (obs) x <em>m</em> variables (var), where observations are suite2p ROIs and variables are imaging frame timepoints.</p>
+<h2>Annotated Data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Annotated-Data">¶</a></h2>
+<p>The AnnData library is the primary protocol that is used to store imaging data in an efficient, multi-functional format. It is created using the <code class="docutils literal notranslate">anndata</code> sub-module and can be accessed using <code class="docutils literal notranslate">trialobj.data</code>. By default, <code class="docutils literal notranslate">trialobj.data</code> is a data array generated from Suite2p processed data. For all guidance on AnnData objects, visit: <a class="reference external" href="https://anndata.readthedocs.io/en/latest/index.html" rel="nofollow noopener">https://anndata.readthedocs.io/en/latest/index.html<svg aria-hidden="true" class="external-link-icon" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 19H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path></svg></a>.</p>
+<p>The AnnData object is built around the raw Flu matrix of each <code class="docutils literal notranslate">trialobj</code> . In keeping with AnnData conventions, the data structure is organized in <em>n</em> observations (obs) x <em>m</em> variables (var), where observations are suite2p ROIs and variables are imaging frame timepoints.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s2">&quot;/home/pshah/Documents/code/imagingplus/files/imagingplus-anndata-integration-01.jpg&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[4]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s2">"/home/pshah/Documents/code/imagingplus/files/imagingplus-anndata-integration-01.jpg"</span><span class="p">)</span>
+</code></pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[4]:
+</code></pre></div></div>
 <div class="output_area docutils container">
-<img alt="../_images/Tutorials_Tutorial-2-Organization-of-data-in-package-objects_11_0.jpg" src="../_images/Tutorials_Tutorial-2-Organization-of-data-in-package-objects_11_0.jpg" />
+<img alt="../_images/Tutorials_Tutorial-2-Organization-of-data-in-package-objects_11_0.jpg" src="../_images/Tutorials_Tutorial-2-Organization-of-data-in-package-objects_11_0.jpg"/>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span>  <span class="c1"># this is the anndata object for this trial</span>
-</pre></div>
-</div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[5]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span>  <span class="c1"># this is the anndata object for this trial</span>
+</code></pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[5]:
+</code></pre></div></div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 AnnData object with n_obs × n_vars = 640 × 16368
-    obs: &#39;original_index&#39;, &#39;footprint&#39;, &#39;mrs&#39;, &#39;mrs0&#39;, &#39;compact&#39;, &#39;med&#39;, &#39;npix&#39;, &#39;radius&#39;, &#39;aspect_ratio&#39;, &#39;npix_norm&#39;, &#39;skew&#39;, &#39;std&#39;
-    var: &#39;frame_clock&#39;, &#39;x_galvo_uncaging&#39;, &#39;slm2packio&#39;, &#39;markpoints2packio&#39;, &#39;packio2slm&#39;, &#39;packio2markpoints&#39;, &#39;pycontrol_rsync&#39;, &#39;voltage&#39;, &#39;photostim&#39;
-    obsm: &#39;ypix&#39;, &#39;xpix&#39;
-    layers: &#39;dFF&#39;
+    obs: 'original_index', 'footprint', 'mrs', 'mrs0', 'compact', 'med', 'npix', 'radius', 'aspect_ratio', 'npix_norm', 'skew', 'std'
+    var: 'frame_clock', 'x_galvo_uncaging', 'slm2packio', 'markpoints2packio', 'packio2slm', 'packio2markpoints', 'pycontrol_rsync', 'voltage', 'photostim'
+    obsm: 'ypix', 'xpix'
+    layers: 'dFF'
 </pre></div></div>
 </div>
 <section id="storage-of-Flu-data">
-<h3>storage of Flu data<a class="headerlink" href="#storage-of-Flu-data" title="Permalink to this headline">¶</a></h3>
-<p>The raw data is stored in <code class="docutils literal notranslate"><span class="pre">.X</span></code></p>
+<h3>storage of Flu data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#storage-of-Flu-data">¶</a></h3>
+<p>The raw data is stored in <code class="docutils literal notranslate">.X</code></p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">X</span><span class="p">)</span>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[6]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="nb">print</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">X</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;shape: &#39;</span><span class="p">,</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-</pre></div>
-</div>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'shape: '</span><span class="p">,</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</code></pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -461,33 +591,43 @@ AnnData object with n_obs × n_vars = 640 × 16368
 shape:  (640, 16368)
 </pre></div></div>
 </div>
-<p>Processed data is added to <code class="docutils literal notranslate"><span class="pre">trialobj.data</span></code> as a unique <code class="docutils literal notranslate"><span class="pre">layers</span></code> key.</p>
+<p>Processed data is added to <code class="docutils literal notranslate">trialobj.data</code> as a unique <code class="docutils literal notranslate">layers</code> key.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">layers</span>
-</pre></div>
-</div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[7]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">layers</span>
+</code></pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
-</div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[7]:
+</code></pre></div></div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Layers with keys: dFF
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="s1">&#39;dFF&#39;</span><span class="p">])</span>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[8]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="nb">print</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="s1">'dFF'</span><span class="p">])</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;shape: &#39;</span><span class="p">,</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="s1">&#39;dFF&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<br/></pre></div>
-</div>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'shape: '</span><span class="p">,</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="s1">'dFF'</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</code></pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -513,23 +653,29 @@ shape:  (640, 16368)
 <p>The rest of the AnnData data object is built according to the dimensions of the original Flu data input.</p>
 </section>
 <section id="observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">
-<h3>observations (Suite2p ROIs metadata and associated processing info)<a class="headerlink" href="#observations-(Suite2p-ROIs-metadata-and-associated-processing-info)" title="Permalink to this headline">¶</a></h3>
-<p>For instance, the metadata for each suite2p ROI stored in Suite2p’s stat.npy output is added to <code class="docutils literal notranslate"><span class="pre">trialobject.data</span></code> under <code class="docutils literal notranslate"><span class="pre">obs</span></code> and <code class="docutils literal notranslate"><span class="pre">obsm</span></code> (1D and &gt;1-D observations annotations, respectively).</p>
+<h3>observations (Suite2p ROIs metadata and associated processing info)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">¶</a></h3>
+<p>For instance, the metadata for each suite2p ROI stored in Suite2p’s stat.npy output is added to <code class="docutils literal notranslate">trialobject.data</code> under <code class="docutils literal notranslate">obs</code> and <code class="docutils literal notranslate">obsm</code> (1D and &gt;1-D observations annotations, respectively).</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">obs</span>
-</pre></div>
-</div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[9]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">obs</span>
+</code></pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[9]:
+</code></pre></div></div>
 <div class="output_area rendered_html docutils container">
 <div>
-<style scoped>
+<style scoped="">
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
@@ -543,219 +689,229 @@ shape:  (640, 16368)
     }
 </style>
 <table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>original_index</th>
-      <th>footprint</th>
-      <th>mrs</th>
-      <th>mrs0</th>
-      <th>compact</th>
-      <th>med</th>
-      <th>npix</th>
-      <th>radius</th>
-      <th>aspect_ratio</th>
-      <th>npix_norm</th>
-      <th>skew</th>
-      <th>std</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>0</td>
-      <td>1.0</td>
-      <td>0.909815</td>
-      <td>2.604203</td>
-      <td>1.00197</td>
-      <td>[105.0, 459.0]</td>
-      <td>48</td>
-      <td>3.565604</td>
-      <td>1.051397</td>
-      <td>0.649175</td>
-      <td>3.016955</td>
-      <td>353.675049</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>1</td>
-      <td>1.0</td>
-      <td>0.912076</td>
-      <td>2.543516</td>
-      <td>1.028426</td>
-      <td>[48.5, 119.0]</td>
-      <td>46</td>
-      <td>3.538468</td>
-      <td>1.074428</td>
-      <td>0.622126</td>
-      <td>3.784652</td>
-      <td>422.922577</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>2</td>
-      <td>1.0</td>
-      <td>1.088559</td>
-      <td>3.09209</td>
-      <td>1.009662</td>
-      <td>[22.0, 204.0]</td>
-      <td>68</td>
-      <td>4.124215</td>
-      <td>1.027475</td>
-      <td>0.919665</td>
-      <td>3.603348</td>
-      <td>342.368134</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>3</td>
-      <td>1.0</td>
-      <td>1.561322</td>
-      <td>3.716985</td>
-      <td>1.204697</td>
-      <td>[53.0, 355.0]</td>
-      <td>98</td>
-      <td>8.133019</td>
-      <td>1.348522</td>
-      <td>1.325399</td>
-      <td>3.187822</td>
-      <td>357.666168</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>4</td>
-      <td>1.0</td>
-      <td>0.869808</td>
-      <td>2.404379</td>
-      <td>1.037521</td>
-      <td>[158.0, 383.0]</td>
-      <td>41</td>
-      <td>3.62042</td>
-      <td>1.139261</td>
-      <td>0.554504</td>
-      <td>2.59998</td>
-      <td>263.609039</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>635</th>
-      <td>1253</td>
-      <td>1.0</td>
-      <td>0.823022</td>
-      <td>2.249863</td>
-      <td>1.049136</td>
-      <td>[54.0, 298.0]</td>
-      <td>36</td>
-      <td>3.534257</td>
-      <td>1.135812</td>
-      <td>0.486881</td>
-      <td>2.103236</td>
-      <td>86.4552</td>
-    </tr>
-    <tr>
-      <th>636</th>
-      <td>1254</td>
-      <td>1.0</td>
-      <td>1.283198</td>
-      <td>3.05027</td>
-      <td>1.206512</td>
-      <td>[424.0, 310.0]</td>
-      <td>66</td>
-      <td>5.933419</td>
-      <td>1.173457</td>
-      <td>0.892616</td>
-      <td>1.223336</td>
-      <td>75.52874</td>
-    </tr>
-    <tr>
-      <th>637</th>
-      <td>1255</td>
-      <td>1.0</td>
-      <td>1.045195</td>
-      <td>2.818991</td>
-      <td>1.063358</td>
-      <td>[370.0, 453.0]</td>
-      <td>56</td>
-      <td>4.735501</td>
-      <td>1.186981</td>
-      <td>0.757371</td>
-      <td>0.866438</td>
-      <td>94.208916</td>
-    </tr>
-    <tr>
-      <th>638</th>
-      <td>1256</td>
-      <td>1.0</td>
-      <td>1.528247</td>
-      <td>3.944389</td>
-      <td>1.111195</td>
-      <td>[489.0, 235.0]</td>
-      <td>110</td>
-      <td>6.981186</td>
-      <td>1.184853</td>
-      <td>1.487693</td>
-      <td>1.714282</td>
-      <td>52.609936</td>
-    </tr>
-    <tr>
-      <th>639</th>
-      <td>1257</td>
-      <td>1.0</td>
-      <td>1.133697</td>
-      <td>2.84187</td>
-      <td>1.144113</td>
-      <td>[436.0, 321.0]</td>
-      <td>57</td>
-      <td>5.392178</td>
-      <td>1.235332</td>
-      <td>0.770895</td>
-      <td>1.103987</td>
-      <td>74.589386</td>
-    </tr>
-  </tbody>
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>original_index</th>
+<th>footprint</th>
+<th>mrs</th>
+<th>mrs0</th>
+<th>compact</th>
+<th>med</th>
+<th>npix</th>
+<th>radius</th>
+<th>aspect_ratio</th>
+<th>npix_norm</th>
+<th>skew</th>
+<th>std</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>0</td>
+<td>1.0</td>
+<td>0.909815</td>
+<td>2.604203</td>
+<td>1.00197</td>
+<td>[105.0, 459.0]</td>
+<td>48</td>
+<td>3.565604</td>
+<td>1.051397</td>
+<td>0.649175</td>
+<td>3.016955</td>
+<td>353.675049</td>
+</tr>
+<tr>
+<th>1</th>
+<td>1</td>
+<td>1.0</td>
+<td>0.912076</td>
+<td>2.543516</td>
+<td>1.028426</td>
+<td>[48.5, 119.0]</td>
+<td>46</td>
+<td>3.538468</td>
+<td>1.074428</td>
+<td>0.622126</td>
+<td>3.784652</td>
+<td>422.922577</td>
+</tr>
+<tr>
+<th>2</th>
+<td>2</td>
+<td>1.0</td>
+<td>1.088559</td>
+<td>3.09209</td>
+<td>1.009662</td>
+<td>[22.0, 204.0]</td>
+<td>68</td>
+<td>4.124215</td>
+<td>1.027475</td>
+<td>0.919665</td>
+<td>3.603348</td>
+<td>342.368134</td>
+</tr>
+<tr>
+<th>3</th>
+<td>3</td>
+<td>1.0</td>
+<td>1.561322</td>
+<td>3.716985</td>
+<td>1.204697</td>
+<td>[53.0, 355.0]</td>
+<td>98</td>
+<td>8.133019</td>
+<td>1.348522</td>
+<td>1.325399</td>
+<td>3.187822</td>
+<td>357.666168</td>
+</tr>
+<tr>
+<th>4</th>
+<td>4</td>
+<td>1.0</td>
+<td>0.869808</td>
+<td>2.404379</td>
+<td>1.037521</td>
+<td>[158.0, 383.0]</td>
+<td>41</td>
+<td>3.62042</td>
+<td>1.139261</td>
+<td>0.554504</td>
+<td>2.59998</td>
+<td>263.609039</td>
+</tr>
+<tr>
+<th>...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr>
+<th>635</th>
+<td>1253</td>
+<td>1.0</td>
+<td>0.823022</td>
+<td>2.249863</td>
+<td>1.049136</td>
+<td>[54.0, 298.0]</td>
+<td>36</td>
+<td>3.534257</td>
+<td>1.135812</td>
+<td>0.486881</td>
+<td>2.103236</td>
+<td>86.4552</td>
+</tr>
+<tr>
+<th>636</th>
+<td>1254</td>
+<td>1.0</td>
+<td>1.283198</td>
+<td>3.05027</td>
+<td>1.206512</td>
+<td>[424.0, 310.0]</td>
+<td>66</td>
+<td>5.933419</td>
+<td>1.173457</td>
+<td>0.892616</td>
+<td>1.223336</td>
+<td>75.52874</td>
+</tr>
+<tr>
+<th>637</th>
+<td>1255</td>
+<td>1.0</td>
+<td>1.045195</td>
+<td>2.818991</td>
+<td>1.063358</td>
+<td>[370.0, 453.0]</td>
+<td>56</td>
+<td>4.735501</td>
+<td>1.186981</td>
+<td>0.757371</td>
+<td>0.866438</td>
+<td>94.208916</td>
+</tr>
+<tr>
+<th>638</th>
+<td>1256</td>
+<td>1.0</td>
+<td>1.528247</td>
+<td>3.944389</td>
+<td>1.111195</td>
+<td>[489.0, 235.0]</td>
+<td>110</td>
+<td>6.981186</td>
+<td>1.184853</td>
+<td>1.487693</td>
+<td>1.714282</td>
+<td>52.609936</td>
+</tr>
+<tr>
+<th>639</th>
+<td>1257</td>
+<td>1.0</td>
+<td>1.133697</td>
+<td>2.84187</td>
+<td>1.144113</td>
+<td>[436.0, 321.0]</td>
+<td>57</td>
+<td>5.392178</td>
+<td>1.235332</td>
+<td>0.770895</td>
+<td>1.103987</td>
+<td>74.589386</td>
+</tr>
+</tbody>
 </table>
 <p>640 rows × 12 columns</p>
 </div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">obsm</span>
-</pre></div>
-</div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[10]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">obsm</span>
+</code></pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[10]:
+</code></pre></div></div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 AxisArrays with keys: ypix, xpix
 </pre></div></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">.obsm</span></code> includes the ypix and xpix outputs for each suite2p ROI which represent the pixel locations of the ROI mask.</p>
+<p>The <code class="docutils literal notranslate">.obsm</code> includes the ypix and xpix outputs for each suite2p ROI which represent the pixel locations of the ROI mask.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ypix:&#39;</span><span class="p">,</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;ypix&#39;</span><span class="p">][:</span><span class="mi">5</span><span class="p">],</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">xpix: </span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;xpix&#39;</span><span class="p">][:</span><span class="mi">5</span><span class="p">])</span>
-</pre></div>
-</div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[11]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="nb">print</span><span class="p">(</span><span class="s1">'ypix:'</span><span class="p">,</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">'ypix'</span><span class="p">][:</span><span class="mi">5</span><span class="p">],</span> <span class="s1">'</span><span class="se">\n\n</span><span class="s1">xpix: </span><span class="se">\t</span><span class="s1">'</span><span class="p">,</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">'xpix'</span><span class="p">][:</span><span class="mi">5</span><span class="p">])</span>
+</code></pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -814,23 +970,29 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 </div>
 </section>
 <section id="variables-(temporal-synchronization-of-paq-channels-and-imaging)">
-<h3>variables (temporal synchronization of paq channels and imaging)<a class="headerlink" href="#variables-(temporal-synchronization-of-paq-channels-and-imaging)" title="Permalink to this headline">¶</a></h3>
-<p>And the temporal synchronization data of the experiment collected in .paq output is added to the variables annotations under <code class="docutils literal notranslate"><span class="pre">var</span></code>. These variables are timed to the imaging frame clock timings. The total # of variables is the number of imaging frames in the original Flu data input.</p>
+<h3>variables (temporal synchronization of paq channels and imaging)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#variables-(temporal-synchronization-of-paq-channels-and-imaging)">¶</a></h3>
+<p>And the temporal synchronization data of the experiment collected in .paq output is added to the variables annotations under <code class="docutils literal notranslate">var</code>. These variables are timed to the imaging frame clock timings. The total # of variables is the number of imaging frames in the original Flu data input.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">var</span>
-</pre></div>
-</div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[12]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">var</span>
+</code></pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
-</pre></div>
-</div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[12]:
+</code></pre></div></div>
 <div class="output_area rendered_html docutils container">
 <div>
-<style scoped>
+<style scoped="">
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
@@ -844,167 +1006,172 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
     }
 </style>
 <table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>frame_clock</th>
-      <th>x_galvo_uncaging</th>
-      <th>slm2packio</th>
-      <th>markpoints2packio</th>
-      <th>packio2slm</th>
-      <th>packio2markpoints</th>
-      <th>pycontrol_rsync</th>
-      <th>voltage</th>
-      <th>photostim</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>4.972792</td>
-      <td>-1.16518</td>
-      <td>3.329534</td>
-      <td>0.007827</td>
-      <td>0.000264</td>
-      <td>0.000592</td>
-      <td>0.017035</td>
-      <td>-0.116807</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>4.974765</td>
-      <td>-1.164851</td>
-      <td>3.325917</td>
-      <td>0.007827</td>
-      <td>-0.000394</td>
-      <td>-0.000394</td>
-      <td>0.019666</td>
-      <td>-0.19606</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>4.971806</td>
-      <td>-1.16518</td>
-      <td>3.337755</td>
-      <td>0.008156</td>
-      <td>-0.000065</td>
-      <td>0.000592</td>
-      <td>0.02131</td>
-      <td>-0.210858</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>4.970819</td>
-      <td>-1.164851</td>
-      <td>3.331507</td>
-      <td>0.007827</td>
-      <td>0.000592</td>
-      <td>0.000264</td>
-      <td>0.02131</td>
-      <td>-0.204939</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>4.975094</td>
-      <td>-1.166166</td>
-      <td>3.340715</td>
-      <td>0.006841</td>
-      <td>0.000264</td>
-      <td>0.00125</td>
-      <td>0.021639</td>
-      <td>-0.234206</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>16363</th>
-      <td>4.974436</td>
-      <td>-1.165837</td>
-      <td>3.337426</td>
-      <td>0.006841</td>
-      <td>-0.000065</td>
-      <td>0.002565</td>
-      <td>0.021639</td>
-      <td>2.423554</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>16364</th>
-      <td>4.975751</td>
-      <td>-1.164851</td>
-      <td>3.334138</td>
-      <td>0.012102</td>
-      <td>-0.000065</td>
-      <td>-0.000065</td>
-      <td>0.017035</td>
-      <td>2.473211</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>16365</th>
-      <td>4.960953</td>
-      <td>-1.164851</td>
-      <td>3.337097</td>
-      <td>0.008485</td>
-      <td>0.000264</td>
-      <td>0.000921</td>
-      <td>0.019994</td>
-      <td>2.473211</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>16366</th>
-      <td>4.971477</td>
-      <td>-1.167153</td>
-      <td>3.31934</td>
-      <td>0.006183</td>
-      <td>-0.000065</td>
-      <td>-0.000065</td>
-      <td>0.005525</td>
-      <td>2.466963</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>16367</th>
-      <td>4.975751</td>
-      <td>-1.164851</td>
-      <td>3.329863</td>
-      <td>0.009471</td>
-      <td>0.000264</td>
-      <td>0.000592</td>
-      <td>0.017693</td>
-      <td>2.453151</td>
-      <td>False</td>
-    </tr>
-  </tbody>
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>frame_clock</th>
+<th>x_galvo_uncaging</th>
+<th>slm2packio</th>
+<th>markpoints2packio</th>
+<th>packio2slm</th>
+<th>packio2markpoints</th>
+<th>pycontrol_rsync</th>
+<th>voltage</th>
+<th>photostim</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>4.972792</td>
+<td>-1.16518</td>
+<td>3.329534</td>
+<td>0.007827</td>
+<td>0.000264</td>
+<td>0.000592</td>
+<td>0.017035</td>
+<td>-0.116807</td>
+<td>False</td>
+</tr>
+<tr>
+<th>1</th>
+<td>4.974765</td>
+<td>-1.164851</td>
+<td>3.325917</td>
+<td>0.007827</td>
+<td>-0.000394</td>
+<td>-0.000394</td>
+<td>0.019666</td>
+<td>-0.19606</td>
+<td>False</td>
+</tr>
+<tr>
+<th>2</th>
+<td>4.971806</td>
+<td>-1.16518</td>
+<td>3.337755</td>
+<td>0.008156</td>
+<td>-0.000065</td>
+<td>0.000592</td>
+<td>0.02131</td>
+<td>-0.210858</td>
+<td>False</td>
+</tr>
+<tr>
+<th>3</th>
+<td>4.970819</td>
+<td>-1.164851</td>
+<td>3.331507</td>
+<td>0.007827</td>
+<td>0.000592</td>
+<td>0.000264</td>
+<td>0.02131</td>
+<td>-0.204939</td>
+<td>False</td>
+</tr>
+<tr>
+<th>4</th>
+<td>4.975094</td>
+<td>-1.166166</td>
+<td>3.340715</td>
+<td>0.006841</td>
+<td>0.000264</td>
+<td>0.00125</td>
+<td>0.021639</td>
+<td>-0.234206</td>
+<td>False</td>
+</tr>
+<tr>
+<th>...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr>
+<th>16363</th>
+<td>4.974436</td>
+<td>-1.165837</td>
+<td>3.337426</td>
+<td>0.006841</td>
+<td>-0.000065</td>
+<td>0.002565</td>
+<td>0.021639</td>
+<td>2.423554</td>
+<td>False</td>
+</tr>
+<tr>
+<th>16364</th>
+<td>4.975751</td>
+<td>-1.164851</td>
+<td>3.334138</td>
+<td>0.012102</td>
+<td>-0.000065</td>
+<td>-0.000065</td>
+<td>0.017035</td>
+<td>2.473211</td>
+<td>False</td>
+</tr>
+<tr>
+<th>16365</th>
+<td>4.960953</td>
+<td>-1.164851</td>
+<td>3.337097</td>
+<td>0.008485</td>
+<td>0.000264</td>
+<td>0.000921</td>
+<td>0.019994</td>
+<td>2.473211</td>
+<td>False</td>
+</tr>
+<tr>
+<th>16366</th>
+<td>4.971477</td>
+<td>-1.167153</td>
+<td>3.31934</td>
+<td>0.006183</td>
+<td>-0.000065</td>
+<td>-0.000065</td>
+<td>0.005525</td>
+<td>2.466963</td>
+<td>False</td>
+</tr>
+<tr>
+<th>16367</th>
+<td>4.975751</td>
+<td>-1.164851</td>
+<td>3.329863</td>
+<td>0.009471</td>
+<td>0.000264</td>
+<td>0.000592</td>
+<td>0.017693</td>
+<td>2.453151</td>
+<td>False</td>
+</tr>
+</tbody>
 </table>
 <p>16368 rows × 9 columns</p>
 </div></div>
 </div>
 </section>
 <section id="Creating-or-Modifying-AnnData-arrays-of-trialobj">
-<h3>Creating or Modifying AnnData arrays of trialobj<a class="headerlink" href="#Creating-or-Modifying-AnnData-arrays-of-trialobj" title="Permalink to this headline">¶</a></h3>
+<h3>Creating or Modifying AnnData arrays of trialobj<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Creating-or-Modifying-AnnData-arrays-of-trialobj">¶</a></h3>
 <p>There are a number of helper functions to create anndata arrays or modify existing anndata arrays.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># creating new anndata object. This is identical to the base AnnData library.</span>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[4]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="c1"># creating new anndata object. This is identical to the base AnnData library.</span>
 <span class="c1"># the example below is from the Getting Started Tutorial for AnnData:</span>
 
 <span class="c1"># any given anndata object is created from constituent data arrays.</span>
@@ -1019,16 +1186,17 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 
 <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">n_frames</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_rois</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">))</span>
 <span class="n">df</span>  <span class="c1"># show the dataframe</span>
-</pre></div>
-</div>
+</code></pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[4]:
+</code></pre></div></div>
 <div class="output_area rendered_html docutils container">
 <div>
-<style scoped>
+<style scoped="">
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
@@ -1042,190 +1210,196 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
     }
 </style>
 <table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>0</th>
-      <th>1</th>
-      <th>2</th>
-      <th>3</th>
-      <th>4</th>
-      <th>...</th>
-      <th>9995</th>
-      <th>9996</th>
-      <th>9997</th>
-      <th>9998</th>
-      <th>9999</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>0.007100</td>
-      <td>0.331746</td>
-      <td>0.954718</td>
-      <td>0.311193</td>
-      <td>0.342229</td>
-      <td>...</td>
-      <td>0.036089</td>
-      <td>0.515803</td>
-      <td>0.881094</td>
-      <td>0.484803</td>
-      <td>0.332016</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>0.078150</td>
-      <td>0.785294</td>
-      <td>0.845034</td>
-      <td>0.564981</td>
-      <td>0.053330</td>
-      <td>...</td>
-      <td>0.354211</td>
-      <td>0.703916</td>
-      <td>0.896111</td>
-      <td>0.836012</td>
-      <td>0.489882</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>0.817575</td>
-      <td>0.742934</td>
-      <td>0.334427</td>
-      <td>0.999174</td>
-      <td>0.215008</td>
-      <td>...</td>
-      <td>0.031412</td>
-      <td>0.694898</td>
-      <td>0.961636</td>
-      <td>0.234338</td>
-      <td>0.671856</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>0.074314</td>
-      <td>0.960333</td>
-      <td>0.302282</td>
-      <td>0.312936</td>
-      <td>0.373407</td>
-      <td>...</td>
-      <td>0.854256</td>
-      <td>0.382607</td>
-      <td>0.879831</td>
-      <td>0.280990</td>
-      <td>0.212398</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>0.591134</td>
-      <td>0.475524</td>
-      <td>0.263621</td>
-      <td>0.964541</td>
-      <td>0.415296</td>
-      <td>...</td>
-      <td>0.940733</td>
-      <td>0.712458</td>
-      <td>0.364609</td>
-      <td>0.118514</td>
-      <td>0.709443</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>0.152702</td>
-      <td>0.149395</td>
-      <td>0.169253</td>
-      <td>0.610581</td>
-      <td>0.878745</td>
-      <td>...</td>
-      <td>0.575089</td>
-      <td>0.028993</td>
-      <td>0.785949</td>
-      <td>0.768086</td>
-      <td>0.768378</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>0.968979</td>
-      <td>0.720071</td>
-      <td>0.573805</td>
-      <td>0.066508</td>
-      <td>0.668841</td>
-      <td>...</td>
-      <td>0.828199</td>
-      <td>0.660924</td>
-      <td>0.422817</td>
-      <td>0.892732</td>
-      <td>0.080562</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>0.699672</td>
-      <td>0.009906</td>
-      <td>0.624961</td>
-      <td>0.663044</td>
-      <td>0.314822</td>
-      <td>...</td>
-      <td>0.142305</td>
-      <td>0.339057</td>
-      <td>0.758372</td>
-      <td>0.381791</td>
-      <td>0.423501</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>0.637722</td>
-      <td>0.049601</td>
-      <td>0.434557</td>
-      <td>0.799958</td>
-      <td>0.565807</td>
-      <td>...</td>
-      <td>0.490102</td>
-      <td>0.458182</td>
-      <td>0.376269</td>
-      <td>0.637587</td>
-      <td>0.850117</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>0.929012</td>
-      <td>0.251330</td>
-      <td>0.160211</td>
-      <td>0.227208</td>
-      <td>0.236852</td>
-      <td>...</td>
-      <td>0.412546</td>
-      <td>0.101983</td>
-      <td>0.135045</td>
-      <td>0.167816</td>
-      <td>0.321940</td>
-    </tr>
-  </tbody>
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>...</th>
+<th>9995</th>
+<th>9996</th>
+<th>9997</th>
+<th>9998</th>
+<th>9999</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>0.007100</td>
+<td>0.331746</td>
+<td>0.954718</td>
+<td>0.311193</td>
+<td>0.342229</td>
+<td>...</td>
+<td>0.036089</td>
+<td>0.515803</td>
+<td>0.881094</td>
+<td>0.484803</td>
+<td>0.332016</td>
+</tr>
+<tr>
+<th>1</th>
+<td>0.078150</td>
+<td>0.785294</td>
+<td>0.845034</td>
+<td>0.564981</td>
+<td>0.053330</td>
+<td>...</td>
+<td>0.354211</td>
+<td>0.703916</td>
+<td>0.896111</td>
+<td>0.836012</td>
+<td>0.489882</td>
+</tr>
+<tr>
+<th>2</th>
+<td>0.817575</td>
+<td>0.742934</td>
+<td>0.334427</td>
+<td>0.999174</td>
+<td>0.215008</td>
+<td>...</td>
+<td>0.031412</td>
+<td>0.694898</td>
+<td>0.961636</td>
+<td>0.234338</td>
+<td>0.671856</td>
+</tr>
+<tr>
+<th>3</th>
+<td>0.074314</td>
+<td>0.960333</td>
+<td>0.302282</td>
+<td>0.312936</td>
+<td>0.373407</td>
+<td>...</td>
+<td>0.854256</td>
+<td>0.382607</td>
+<td>0.879831</td>
+<td>0.280990</td>
+<td>0.212398</td>
+</tr>
+<tr>
+<th>4</th>
+<td>0.591134</td>
+<td>0.475524</td>
+<td>0.263621</td>
+<td>0.964541</td>
+<td>0.415296</td>
+<td>...</td>
+<td>0.940733</td>
+<td>0.712458</td>
+<td>0.364609</td>
+<td>0.118514</td>
+<td>0.709443</td>
+</tr>
+<tr>
+<th>5</th>
+<td>0.152702</td>
+<td>0.149395</td>
+<td>0.169253</td>
+<td>0.610581</td>
+<td>0.878745</td>
+<td>...</td>
+<td>0.575089</td>
+<td>0.028993</td>
+<td>0.785949</td>
+<td>0.768086</td>
+<td>0.768378</td>
+</tr>
+<tr>
+<th>6</th>
+<td>0.968979</td>
+<td>0.720071</td>
+<td>0.573805</td>
+<td>0.066508</td>
+<td>0.668841</td>
+<td>...</td>
+<td>0.828199</td>
+<td>0.660924</td>
+<td>0.422817</td>
+<td>0.892732</td>
+<td>0.080562</td>
+</tr>
+<tr>
+<th>7</th>
+<td>0.699672</td>
+<td>0.009906</td>
+<td>0.624961</td>
+<td>0.663044</td>
+<td>0.314822</td>
+<td>...</td>
+<td>0.142305</td>
+<td>0.339057</td>
+<td>0.758372</td>
+<td>0.381791</td>
+<td>0.423501</td>
+</tr>
+<tr>
+<th>8</th>
+<td>0.637722</td>
+<td>0.049601</td>
+<td>0.434557</td>
+<td>0.799958</td>
+<td>0.565807</td>
+<td>...</td>
+<td>0.490102</td>
+<td>0.458182</td>
+<td>0.376269</td>
+<td>0.637587</td>
+<td>0.850117</td>
+</tr>
+<tr>
+<th>9</th>
+<td>0.929012</td>
+<td>0.251330</td>
+<td>0.160211</td>
+<td>0.227208</td>
+<td>0.236852</td>
+<td>...</td>
+<td>0.412546</td>
+<td>0.101983</td>
+<td>0.135045</td>
+<td>0.167816</td>
+<td>0.321940</td>
+</tr>
+</tbody>
 </table>
 <p>10 rows × 10000 columns</p>
 </div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#2) Observations matrix</span>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[5]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="c1">#2) Observations matrix</span>
 
 <span class="n">obs_meta</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-    <span class="s1">&#39;cell_type&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="s1">&#39;int&#39;</span><span class="p">],</span> <span class="n">n_rois</span><span class="p">),</span>
+    <span class="s1">'cell_type'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s1">'exc'</span><span class="p">,</span> <span class="s1">'int'</span><span class="p">],</span> <span class="n">n_rois</span><span class="p">),</span>
 <span class="p">},</span>
     <span class="n">index</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_rois</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span>    <span class="c1"># these are the same IDs of observations as above!</span>
 <span class="p">)</span>
 <span class="n">obs_meta</span>
-<br/></pre></div>
-</div>
+</code></pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[5]:
+</code></pre></div></div>
 <div class="output_area rendered_html docutils container">
 <div>
-<style scoped>
+<style scoped="">
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
@@ -1239,80 +1413,86 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
     }
 </style>
 <table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>cell_type</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>int</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>exc</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>exc</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>exc</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>int</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>int</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>int</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>exc</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>exc</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>exc</td>
-    </tr>
-  </tbody>
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>cell_type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>int</td>
+</tr>
+<tr>
+<th>1</th>
+<td>exc</td>
+</tr>
+<tr>
+<th>2</th>
+<td>exc</td>
+</tr>
+<tr>
+<th>3</th>
+<td>exc</td>
+</tr>
+<tr>
+<th>4</th>
+<td>int</td>
+</tr>
+<tr>
+<th>5</th>
+<td>int</td>
+</tr>
+<tr>
+<th>6</th>
+<td>int</td>
+</tr>
+<tr>
+<th>7</th>
+<td>exc</td>
+</tr>
+<tr>
+<th>8</th>
+<td>exc</td>
+</tr>
+<tr>
+<th>9</th>
+<td>exc</td>
+</tr>
+</tbody>
 </table>
 </div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#3) Variables matrix</span>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[6]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="c1">#3) Variables matrix</span>
 
 
 <span class="n">var_meta</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-    <span class="s1">&#39;exp_group&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s1">&#39;A&#39;</span><span class="p">,</span><span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">],</span> <span class="n">n_frames</span><span class="p">),</span>
+    <span class="s1">'exp_group'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s1">'A'</span><span class="p">,</span><span class="s1">'B'</span><span class="p">,</span> <span class="s1">'C'</span><span class="p">],</span> <span class="n">n_frames</span><span class="p">),</span>
 <span class="p">},</span>
     <span class="n">index</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_frames</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span>    <span class="c1"># these are the same IDs of observations as above!</span>
 <span class="p">)</span>
 <span class="n">var_meta</span>
-<br/></pre></div>
-</div>
+</code></pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[6]:
+</code></pre></div></div>
 <div class="output_area rendered_html docutils container">
 <div>
-<style scoped>
+<style scoped="">
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
@@ -1326,75 +1506,79 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
     }
 </style>
 <table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>exp_group</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>A</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>C</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>A</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>C</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>B</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>9995</th>
-      <td>B</td>
-    </tr>
-    <tr>
-      <th>9996</th>
-      <td>C</td>
-    </tr>
-    <tr>
-      <th>9997</th>
-      <td>C</td>
-    </tr>
-    <tr>
-      <th>9998</th>
-      <td>C</td>
-    </tr>
-    <tr>
-      <th>9999</th>
-      <td>A</td>
-    </tr>
-  </tbody>
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>exp_group</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>A</td>
+</tr>
+<tr>
+<th>1</th>
+<td>C</td>
+</tr>
+<tr>
+<th>2</th>
+<td>A</td>
+</tr>
+<tr>
+<th>3</th>
+<td>C</td>
+</tr>
+<tr>
+<th>4</th>
+<td>B</td>
+</tr>
+<tr>
+<th>...</th>
+<td>...</td>
+</tr>
+<tr>
+<th>9995</th>
+<td>B</td>
+</tr>
+<tr>
+<th>9996</th>
+<td>C</td>
+</tr>
+<tr>
+<th>9997</th>
+<td>C</td>
+</tr>
+<tr>
+<th>9998</th>
+<td>C</td>
+</tr>
+<tr>
+<th>9999</th>
+<td>A</td>
+</tr>
+</tbody>
 </table>
 <p>10000 rows × 1 columns</p>
 </div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#4) Creating a new anndata attribute for the trialobj</span>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[7]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="c1">#4) Creating a new anndata attribute for the trialobj</span>
 
 <span class="kn">import</span> <span class="nn">imagingplus.processing.anndata</span> <span class="k">as</span> <span class="nn">ad</span>  <span class="c1"># from the processing module, import anndata submodule</span>
 
 <span class="n">trialobj</span><span class="o">.</span><span class="n">new_anndata</span> <span class="o">=</span> <span class="n">ad</span><span class="o">.</span><span class="n">AnnotatedData</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">df</span><span class="p">,</span><span class="n">obs</span><span class="o">=</span><span class="n">obs_meta</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="n">var_meta</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">new_anndata</span><span class="p">)</span>
-</pre></div>
-</div>
+</code></pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -1405,20 +1589,25 @@ Annotated Data of n_obs (# ROIs) × n_vars (# Frames) = 10 × 10000
 available attributes:
         .X (primary datamatrix)
         .obs (ROIs metadata):
-                |- &#39;cell_type&#39;
+                |- 'cell_type'
         .var (frames metadata):
-                |- &#39;exp_group&#39;
+                |- 'exp_group'
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># adding an &#39;obs&#39; to existing anndata object</span>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[8]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="c1"># adding an 'obs' to existing anndata object</span>
 
 <span class="n">new_obs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-    <span class="s1">&#39;cell_loc_x&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="n">n_rois</span><span class="p">),</span>
-    <span class="s1">&#39;cell_loc_y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="n">n_rois</span><span class="p">),</span>
+    <span class="s1">'cell_loc_x'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="n">n_rois</span><span class="p">),</span>
+    <span class="s1">'cell_loc_y'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="n">n_rois</span><span class="p">),</span>
 <span class="p">},</span>
     <span class="n">index</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_rois</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span>    <span class="c1"># these are the same IDs of observations as above!</span>
 <span class="p">)</span>
@@ -1427,12 +1616,11 @@ available attributes:
 <span class="n">cell_loc_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="n">n_rois</span><span class="p">)</span>
 
 
-<span class="n">trialobj</span><span class="o">.</span><span class="n">new_anndata</span><span class="o">.</span><span class="n">add_obs</span><span class="p">(</span><span class="n">obs_name</span><span class="o">=</span><span class="s1">&#39;cell_loc_x&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">cell_loc_x</span><span class="p">)</span>
-<span class="n">trialobj</span><span class="o">.</span><span class="n">new_anndata</span><span class="o">.</span><span class="n">add_obs</span><span class="p">(</span><span class="n">obs_name</span><span class="o">=</span><span class="s1">&#39;cell_loc_y&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">cell_loc_y</span><span class="p">)</span>
+<span class="n">trialobj</span><span class="o">.</span><span class="n">new_anndata</span><span class="o">.</span><span class="n">add_obs</span><span class="p">(</span><span class="n">obs_name</span><span class="o">=</span><span class="s1">'cell_loc_x'</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">cell_loc_x</span><span class="p">)</span>
+<span class="n">trialobj</span><span class="o">.</span><span class="n">new_anndata</span><span class="o">.</span><span class="n">add_obs</span><span class="p">(</span><span class="n">obs_name</span><span class="o">=</span><span class="s1">'cell_loc_y'</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">cell_loc_y</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">new_anndata</span><span class="p">)</span>
-<br/><br/></pre></div>
-</div>
+</code></pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -1443,22 +1631,26 @@ Annotated Data of n_obs (# ROIs) × n_vars (# Frames) = 10 × 10000
 available attributes:
         .X (primary datamatrix)
         .obs (ROIs metadata):
-                |- &#39;cell_type&#39;, &#39;cell_loc_x&#39;, &#39;cell_loc_y&#39;
+                |- 'cell_type', 'cell_loc_x', 'cell_loc_y'
         .var (frames metadata):
-                |- &#39;exp_group&#39;
+                |- 'exp_group'
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># deleting an &#39;obs&#39; to existing anndata object</span>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[9]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="c1"># deleting an 'obs' to existing anndata object</span>
 <span class="c1"># uses the pop method</span>
 
-<span class="n">trialobj</span><span class="o">.</span><span class="n">new_anndata</span><span class="o">.</span><span class="n">del_obs</span><span class="p">(</span><span class="s1">&#39;cell_type&#39;</span><span class="p">)</span>
+<span class="n">trialobj</span><span class="o">.</span><span class="n">new_anndata</span><span class="o">.</span><span class="n">del_obs</span><span class="p">(</span><span class="s1">'cell_type'</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">new_anndata</span><span class="p">)</span>
-</pre></div>
-</div>
+</code></pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -1469,95 +1661,31 @@ Annotated Data of n_obs (# ROIs) × n_vars (# Frames) = 10 × 10000
 available attributes:
         .X (primary datamatrix)
         .obs (ROIs metadata):
-                |- &#39;cell_loc_x&#39;, &#39;cell_loc_y&#39;
+                |- 'cell_loc_x', 'cell_loc_y'
         .var (frames metadata):
-                |- &#39;exp_group&#39;
+                |- 'exp_group'
 </pre></div></div>
 </div>
 <p><em>Note: adding and deleting an ‘var’ to existing anndata object can be done in the exact same manner as demonstrated above for ‘obs’ using .add_var() and .del_var() methods on an anndata object.</em></p>
 </section>
 </section>
 </section>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="../index.html">
-              <img class="logo" src="../_static/imagingplus-logo.png" alt="Logo"/>
-            </a></p>
-  <div>
-    <h3><a href="../index.html">Table of Contents</a></h3>
-    <ul>
-<li><a class="reference internal" href="#">Tutorial 2 - Data organization inside imaging+</a><ul>
-<li><a class="reference internal" href="#Importing-data-analysis-objects">Importing data analysis objects</a></li>
-<li><a class="reference internal" href="#paq-data">paq data</a></li>
-<li><a class="reference internal" href="#Annotated-Data">Annotated Data</a><ul>
-<li><a class="reference internal" href="#storage-of-Flu-data">storage of Flu data</a></li>
-<li><a class="reference internal" href="#observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">observations (Suite2p ROIs metadata and associated processing info)</a></li>
-<li><a class="reference internal" href="#variables-(temporal-synchronization-of-paq-channels-and-imaging)">variables (temporal synchronization of paq channels and imaging)</a></li>
-<li><a class="reference internal" href="#Creating-or-Modifying-AnnData-arrays-of-trialobj">Creating or Modifying AnnData arrays of trialobj</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-  </div>
-  <div>
-    <h4>Previous topic</h4>
-    <p class="topless"><a href="Tutorial-1-Overview-of-Workflow.html"
-                          title="previous chapter">Tutorial 1 - Getting started with data</a></p>
-  </div>
-  <div>
-    <h4>Next topic</h4>
-    <p class="topless"><a href="Tutorial-3-plotting-module.html"
-                          title="next chapter">Tutorial 3 - Making Useful Plots</a></p>
-  </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/Tutorials/Tutorial-2-Organization-of-data-in-package-objects.ipynb.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
+</article>
+<footer>
+<div class="mt-20 mb-4 text-sm text-gray-700 print:mt-4">© 2022, Packer Lab Made with <a href="https://www.sphinx-doc.org">Sphinx 4.4.0</a></div>
+</footer></main>
+<button class="fixed bottom-0 right-0 z-20 opacity-0 p-4 m-4 tracking-wide bg-gray-900 text-gray-100 transition transform transform-gpu duration-500 translate-y-full" data-action="search#hideSnackbar" data-search-target="snackbar">
+  Clear highlights
+</button><div class="fixed hidden inset-0 bg-black bg-opacity-50" data-action="click-&gt;sidebar#close" data-sidebar-target="screen">
 </div>
-<script>$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="Tutorial-3-plotting-module.html" title="Tutorial 3 - Making Useful Plots"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="Tutorial-1-Overview-of-Workflow.html" title="Tutorial 1 - Getting started with data"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../Tutorials-reference.html" >Tutorials</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Tutorial 2 - Data organization inside imaging+</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2022, Packer Lab.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
-    </div>
-  </body>
+</div>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/doctools.js"></script>
+<script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+<script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="../_static/theme.3051a0ec24cad00d4d88.js"></script>
+</body>
 </html>
