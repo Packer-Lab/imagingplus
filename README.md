@@ -34,7 +34,7 @@ Recommended tools:
 #### Install Git version:
 Note: The package is installable as a stand-alone python package. You can install the package into an existing conda environment, or you may choose to skip using a conda environment all together (steps 2 and 3).
 
-1. Clone this github repository using `git clone https://github.com/Packer-Lab/imaging+.git` in the terminal. 
+1. Clone this github repository using `git clone https://github.com/Packer-Lab/imagingplus.git` in the terminal. 
 2. Create the preset conda environment provided in this repository (`plitest.yml`) using `conda env create -f plitest.yml` from the terminal. 
 3. Activate the conda environment `conda activate plitest`.
 4. `cd` to the parent directory of where this repo was downloaded to.
