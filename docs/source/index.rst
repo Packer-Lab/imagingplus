@@ -29,7 +29,7 @@ Especially, there are methods for analysis and visualisation of standard calcium
 .. sidebar:: Multimodal imaging+ experiment:
 
      .. Figure:: files/Typical-experiment-apr-22-2022.png
-         :width: 250
+         :width: 500
 
 
 Currently, ``imaging+`` is most functional for experiments performed using `PackIO <http://apacker83.github.io/PackIO/>`_ for temporal synchronization, a Bruker microscope for 2p imaging and utilizing `Suite2p <https://suite2p.readthedocs.io/en/latest/>`_ for automated post-processing cell segmentation.
