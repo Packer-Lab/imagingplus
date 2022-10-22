@@ -10,7 +10,7 @@ data processing for ROI segmentation.
 It should be completely usable and understandable for anyone with the correct data in hand and basic knowledge of Python. 
 There are tutorials to help along the way. Ultimately, the goal of this package is to jump-start your own analysis of your awesome experiment. 
 
-<img src="docs/source/files/Typical-experiment-apr-22-2022.jpeg" title="Imaging+ experiment diagram" alt="a typical imaging+ neuroscience experiment">
+<img src="docs/source/files/Typical-experiment-apr-22-2022.png" title="Imaging+ experiment diagram" alt="a typical imaging+ neuroscience experiment">
 
 
 We hope that it provides a useful structure to organize your experimental data, and some functionality to interact and process your data in an efficient manner. 
