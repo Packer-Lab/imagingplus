@@ -287,7 +287,7 @@ div.rendered_html tbody tr:hover {
 }
 </style>
 <section id="Tutorial-6---Integrating-with-Suite2p-(running-Suite2p-pipeline-and-storing-results)">
-<h1>Tutorial 6 - Integrating with Suite2p (running Suite2p pipeline and storing results)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Tutorial-6---Integrating-with-Suite2p-(running-Suite2p-pipeline-and-storing-results)">¶</a></h1>
+<h1>Tutorial 6 - Integrating with Suite2p (running Suite2p pipeline and storing results)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Tutorial-6---Integrating-with-Suite2p-(running-Suite2p-pipeline-and-storing-results)">¶</a></h1>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -312,9 +312,9 @@ cannot use anatomical mode, but otherwise suite2p will run normally
 <p>In this tutorial, we add the Suite2p submodule to an existing <code class="docutils literal notranslate">expobj</code>. We also show how to run the suite2p pipeline using the <code class="docutils literal notranslate">.Suite2p</code> submodule. Finally, we show how to access and use Suite2p results once the pipeline is run. Note: it is also possible to directly import independently run Suite2p results for this experiment (this is demonstrated in the final section).</p>
 <p>Suite2p provides an excellent cell (ROI) detection algorithm for calcium imaging datasets. The pipeline includes registration and spike deconvolution as well. Please familiarize yourself with the basic functionality of Suite2p using their documentation (found <a class="reference external" href="https://suite2p.readthedocs.io/en/latest/index.html" rel="nofollow noopener">here</a>) before proceeding with these examples below.</p>
 <section id="Adding-the-Suite2p-module">
-<h2>Adding the Suite2p module<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Adding-the-Suite2p-module">¶</a></h2>
+<h2>Adding the Suite2p module<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Adding-the-Suite2p-module">¶</a></h2>
 <section id="Import-data-analysis-object">
-<h3>Import data analysis object<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Import-data-analysis-object">¶</a></h3>
+<h3>Import data analysis object<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Import-data-analysis-object">¶</a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -349,7 +349,7 @@ cannot use anatomical mode, but otherwise suite2p will run normally
 </section>
 </section>
 <section id="Prepare-for-Suite2p-run">
-<h2>Prepare for Suite2p run<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Prepare-for-Suite2p-run">¶</a></h2>
+<h2>Prepare for Suite2p run<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Prepare-for-Suite2p-run">¶</a></h2>
 <p>We next need to setup the Suite2p settings to run for our particular imaging experiment. Use the <code class="docutils literal notranslate">.Suite2p.update_ops(dict)</code> method to update any <code class="docutils literal notranslate">ops</code> options before running to Suite2p.</p>
 <p>To get the necessary imaging metadata parameters, here we use one of the <code class="docutils literal notranslate">trialobj</code> contained within the present <code class="docutils literal notranslate">expobj</code> to retrieve that information.</p>
 <div class="nbinput nblast docutils container">
@@ -392,7 +392,7 @@ cannot use anatomical mode, but otherwise suite2p will run normally
 </div>
 </section>
 <section id="Run-Suite2p">
-<h2>Run Suite2p<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Run-Suite2p">¶</a></h2>
+<h2>Run Suite2p<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Run-Suite2p">¶</a></h2>
 <p>Now, we are all set to run Suite2p. We have provided the <code class="docutils literal notranslate">.Suite2p.s2pRun</code> method as a wrapper to run the Suite2p on the current <code class="docutils literal notranslate">expobj</code>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -405,7 +405,7 @@ cannot use anatomical mode, but otherwise suite2p will run normally
 </div>
 </section>
 <section id="Explore-suite2p-results---next-steps-after-running-Suite2p">
-<h2>Explore suite2p results - next steps after running Suite2p<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Explore-suite2p-results---next-steps-after-running-Suite2p">¶</a></h2>
+<h2>Explore suite2p results - next steps after running Suite2p<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Explore-suite2p-results---next-steps-after-running-Suite2p">¶</a></h2>
 <p>TODO</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -417,7 +417,7 @@ cannot use anatomical mode, but otherwise suite2p will run normally
 </div>
 </section>
 <section id="Import-suite2p-results-directly">
-<h2>Import suite2p results directly<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Import-suite2p-results-directly">¶</a></h2>
+<h2>Import suite2p results directly<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Import-suite2p-results-directly">¶</a></h2>
 <p>If we had run suite2p on our experiment independent of creating the <code class="docutils literal notranslate">expobj</code>, we can add that Suite2p output to the present <code class="docutils literal notranslate">expobj</code> by providing a valid path to the <code class="docutils literal notranslate">s2pResultsPath</code> argument when setting up the <code class="docutils literal notranslate">.Suite2p</code> submodule on our <code class="docutils literal notranslate">expobj</code>.</p>
 <p>Note: the output that is required in <code class="docutils literal notranslate">s2pResultsPath</code> is the path to <code class="docutils literal notranslate">&lt;../plane0/&gt;</code> of the Suite2p results output.</p>
 <div class="nbinput nblast docutils container">

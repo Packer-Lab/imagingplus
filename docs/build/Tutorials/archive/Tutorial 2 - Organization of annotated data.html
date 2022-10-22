@@ -426,7 +426,7 @@ import packerlabimaging
 </pre></div></div>
 </div>
 <section id="In-this-notebook,-we-demonstrate-the-basics-of-how-data-is-organized-inside-of-a-trial-object.">
-<h1>In this notebook, we demonstrate the basics of how data is organized inside of a trial object.<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#In-this-notebook,-we-demonstrate-the-basics-of-how-data-is-organized-inside-of-a-trial-object.">¶</a></h1>
+<h1>In this notebook, we demonstrate the basics of how data is organized inside of a trial object.<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#In-this-notebook,-we-demonstrate-the-basics-of-how-data-is-organized-inside-of-a-trial-object.">¶</a></h1>
 <p>First, an already existing trial object is loaded:</p>
 <div class="nbinput docutils container">
 <div class="code-wrapper" data-controller="code">
@@ -509,7 +509,7 @@ available attributes:
 </pre></div></div>
 </div>
 <section id="storage-of-Flu-data">
-<h2>storage of Flu data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#storage-of-Flu-data">¶</a></h2>
+<h2>storage of Flu data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#storage-of-Flu-data">¶</a></h2>
 <p>The raw data is stored in <code class="docutils literal notranslate">.X</code></p>
 <div class="nbinput docutils container">
 <div class="code-wrapper" data-controller="code">
@@ -608,7 +608,7 @@ shape:  (640, 16368)
 <p>The rest of the AnnData data object is built according to the dimensions of the original Flu data input.</p>
 </section>
 <section id="observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">
-<h2>observations (Suite2p ROIs metadata and associated processing info)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">¶</a></h2>
+<h2>observations (Suite2p ROIs metadata and associated processing info)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">¶</a></h2>
 <p>For instance, the metadata for each suite2p ROI stored in Suite2p’s stat.npy output is added to <code class="docutils literal notranslate">trialobject.data</code> under <code class="docutils literal notranslate">obs</code> and <code class="docutils literal notranslate">obsm</code> (1D and &gt;1-D observations annotations, respectively).</p>
 <div class="nbinput docutils container">
 <div class="code-wrapper" data-controller="code">
@@ -925,7 +925,7 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 </div>
 </section>
 <section id="variables-(temporal-synchronization-of-paq-channels-and-imaging)">
-<h2>variables (temporal synchronization of paq channels and imaging)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#variables-(temporal-synchronization-of-paq-channels-and-imaging)">¶</a></h2>
+<h2>variables (temporal synchronization of paq channels and imaging)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#variables-(temporal-synchronization-of-paq-channels-and-imaging)">¶</a></h2>
 <p>And the temporal synchronization data of the experiment collected in .paq output is added to the variables annotations under <code class="docutils literal notranslate">var</code>. These variables are timed to the imaging frame clock timings. The total # of variables is the number of imaging frames in the original Flu data input.</p>
 <div class="nbinput nblast docutils container">
 <div class="code-wrapper" data-controller="code">
