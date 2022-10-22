@@ -38,7 +38,7 @@ Note: The package is installable as a stand-alone python package. You can instal
 #### Test `imaging+` is successfully installed (import package in python):
 1. Ensure that the conda environment from which `imaging+` was installed is activated.
 2. start python from command line using: `python`, or start python from the same conda environment in your preferred method (e.g. jupyter notebook or IDE).
-3. Import the package: `import imaging+` or `import imaging+ as pli`.
+3. Import the package: `import imaging+` or `import imaging+ as ip`.
 
 ## Documentation
 
