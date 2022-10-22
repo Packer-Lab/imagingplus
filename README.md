@@ -27,6 +27,11 @@ Recommended tools:
 
 ## Installation instructions
 
+
+#### Install pypi release:
+`pip install imagingplus`
+
+#### Install Git version:
 Note: The package is installable as a stand-alone python package. You can install the package into an existing conda environment, or you may choose to skip using a conda environment all together (steps 2 and 3).
 
 1. Clone this github repository using `git clone https://github.com/Packer-Lab/imaging+.git` in the terminal. 
