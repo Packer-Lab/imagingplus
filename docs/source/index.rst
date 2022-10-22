@@ -28,7 +28,7 @@ Especially, there are methods for analysis and visualisation of standard calcium
 
 .. sidebar:: Multimodal imaging+ experiment:
 
-     .. Figure:: files/Typical-experiment-apr-22-2022.jpg
+     .. Figure:: files/Typical-experiment-apr-22-2022.jpeg
          :width: 500
 
 
