@@ -29,7 +29,7 @@ Recommended tools:
 
 
 #### Install pypi release:
-`pip install imagingplus`
+`pip install imagingplus` -- not stable yet -- do not use while this message is here. 
 
 #### Install Git version:
 Note: The package is installable as a stand-alone python package. You can install the package into an existing conda environment, or you may choose to skip using a conda environment all together (steps 2 and 3).
