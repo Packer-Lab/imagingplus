@@ -6,7 +6,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <meta charset="utf-8"/>
 <meta content="Docutils 0.17.1: http://docutils.sourceforge.net/" name="generator"/>
-<title>Core structures | imaging+ 0.2-beta documentation</title>
+<title>Core structures | Imaging+ 0.2-beta documentation</title>
 <link href="_static/pygments.css" rel="stylesheet"/>
 <link href="_static/theme.9297a650d9dd3016d913.css" rel="stylesheet"/>
 <link href="_static/sg_gallery.css" rel="stylesheet"/>
@@ -23,7 +23,7 @@
 <button class="xl:hidden h-14 w-14 leading-14 text-gray-100 hover:bg-gray-700 hover:text-brand focus:outline-none focus:bg-gray-700 focus:text-brand" data-action="sidebar#open" data-sidebar-target="hamburger">
 <span class="sr-only">Open navigation menu</span>
 <svg aria-hidden="true" class="fill-current h-8 w-8" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
-</button><a class="hover:bg-gray-700 focus:bg-gray-700 focus:outline-none" href="index.html" title="Back to homepage"><img alt="Logo" class="h-14 w-14 p-3 inline-block" src="_static/imagingplus-logo.png"/><span class="hidden lg:inline-block shrink-0 font-medium text-gray-100 mx-5 leading-14 tracking-wider">imaging+ 0.2-beta documentation</span>
+</button><a class="hover:bg-gray-700 focus:bg-gray-700 focus:outline-none" href="index.html" title="Back to homepage"><img alt="Logo" class="h-14 w-14 p-3 inline-block" src="_static/imagingplus-logo.png"/><span class="hidden lg:inline-block shrink-0 font-medium text-gray-100 mx-5 leading-14 tracking-wider">Imaging+ 0.2-beta documentation</span>
 </a></div><div class="flex justify-end items-center flex-1"><form action="search.html" class="flex print:hidden justify-between items-center leading-14 md:ml-4 bg-gray-dark text-gray-300 focus-within:bg-gray-50 focus-within:text-gray-800 focus-within:absolute focus-within:inset-x-0 focus-within:top-0 md:focus-within:w-full md:focus-within:static z-10" data-action="click-&gt;search#focusSearchInput" id="searchbox" method="get">
 <button aria-label="Get search results" class="text-inherit h-14 w-14" tabindex="-1">
 <svg aria-hidden="true" class="fill-current stroke-current h-8 w-8" stroke-width="0.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
@@ -139,12 +139,12 @@
 </nav>
 </aside>
 <main class="px-4 pt-14 xl:ml-fluid grid-area-main overflow-y-auto flex flex-col flex-1 h-full mx-0 md:mx-auto xl:mr-0"><nav aria-label="breadcrumbs" class="print:hidden mt-12 text-sm text-gray-light" role="navigation">
-<a class="text-gray-light text-sm hover:text-gray-dark font-medium focus:text-gray-dark" href="index.html">imaging+ 0.2-beta documentation</a>
+<a class="text-gray-light text-sm hover:text-gray-dark font-medium focus:text-gray-dark" href="index.html">Imaging+ 0.2-beta documentation</a>
 <span class="mr-1">/</span><span aria-current="page"><strong>Core structures</strong></span>
 </nav>
 <article class="flex-1" role="main">
 <section id="core-structures">
-<span id="overview"></span><h1><strong>Core structures</strong><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#core-structures">¶</a></h1>
+<span id="overview"></span><h1><strong>Core structures</strong><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#core-structures">¶</a></h1>
 <p>There are two core types of objects that are used to store experimental data: <cite>Experiment</cite> and <cite>ImagingTrial</cite> objects.</p>
 <p><cite>ImagingTrial</cite> objects represent a single, continuous imaging+ trial.</p>
 <p>The <cite>Experiment</cite> acts as a container to collect any number/types of individual <cite>ImagingTrial</cite> objects.</p>
@@ -154,15 +154,15 @@ The definition of an “experiment” is loose but, abstractly, can be thought o
 On the other hand, a “trial” is strictly a single time series of imaging+ data collection.</p>
 <p>Each <cite>ImagingTrial</cite> is built out-of three sub-types - <cite>TemporalData</cite>, <cite>ImagingData</cite> and <cite>CellAnnotations</cite> - which represent the three general modes of data outputs of an imaging+ data collection trial (Figure 2). Ultimately, the goal of this data processing flow is to organise data of an imaging+ experiment trial into an anndata data structure table that closely and intuitively represents and integrates multi-modal experimental data in a single Pythonic object (Figure 3). The natively functionality of the anndata library also allows for efficient on-disk and on-memory data access solution for imaging+ data.</p>
 <section id="modular-data-processing-analysis-and-visualisation">
-<h2><strong>Modular Data Processing, Analysis and Visualisation</strong><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#modular-data-processing-analysis-and-visualisation">¶</a></h2>
+<h2><strong>Modular Data Processing, Analysis and Visualisation</strong><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#modular-data-processing-analysis-and-visualisation">¶</a></h2>
 <p>imagingplus is designed to be highly modular. This allows an as-per-need data analysis workflow utilising a mixture of pre-built analysis submodules and custom user-built modules. We provide a sub-module to integrate the use of Suite2p, which is currently the most popular calcium imaging region-of-interest segmentation library to generate <cite>ImagingData</cite> and <cite>CellsAnnotations</cite> structures from microscope .tiff fluorescence calcium imaging data. We provide a sub-module for .paq data generated from PackIO which is used for temporal synchronisation of multiple hardware components during an experiment, including for instance electrophysiological data from an electrode collecting data from a sample. We also provide pre-built support for parsing microscope acquisition metadata from Bruker microscopes. Non-Bruker imaging acquisition can be readily handled using a general imaging acquisition metadata class or creation of a custom class for the desired microscope system. An additional sub-module provides support for parsing holographic 2-photon SLM stimulation protocols generated using NAPARM (ref) for all-optical imaging+ trials, and for running the STAMovieMaker algorithm for quick analysis of all-optical experiments.</p>
 <p>Finally, we also provide a plotting module which contains a number of convenient methods for typical plotting of imaging+ data.</p>
 </section>
 <section id="extensibility">
-<h2><strong>Extensibility</strong><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#extensibility">¶</a></h2>
+<h2><strong>Extensibility</strong><a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#extensibility">¶</a></h2>
 <p>The design structure of imagingplus is purposefully meant to enable direct extensibility on top of the core built-in structures of the package that allow end-users to create custom data processing/analysis workflows while benefiting from pre-engineered structures and workflows. For instance, imagingplus comes pre-built with a fully built-out workflow for AllOptical imaging+ trials which extends the core <cite>ImagingTrial</cite>. This workflow integrates individual data processing sub-modules to create a custom type of imaging+ trial designed for an all-optical experiment. Additionally methods for typical analysis of AllOptical data are provided herein.</p>
 <section id="next">
-<h3>Next<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#next">¶</a></h3>
+<h3>Next<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#next">¶</a></h3>
 <p><a class="reference internal" href="data-structure-details.html#data-structure-details"><span class="std std-ref">Data Structure Inside Trial objects</span></a></p>
 <p><a class="reference internal" href="Tutorials-reference.html#tutorials"><span class="std std-ref">Tutorials</span></a></p>
 </section>

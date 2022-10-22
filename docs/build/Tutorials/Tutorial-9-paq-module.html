@@ -280,7 +280,7 @@ div.rendered_html tbody tr:hover {
 }
 </style>
 <section id="Integration-with-PACKIO-outputs-(.paq-data)">
-<h1>Integration with PACKIO outputs (.paq data)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Integration-with-PACKIO-outputs-(.paq-data)">¶</a></h1>
+<h1>Integration with PACKIO outputs (.paq data)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Integration-with-PACKIO-outputs-(.paq-data)">¶</a></h1>
 <p>PACKIO is a software for temporal synchronization of experimental data acquisition and simultaneous hardware triggering. More information can be found at: <a class="reference external" href="https://github.com/apacker83/PackIO" rel="nofollow noopener">https://github.com/apacker83/PackIO</a></p>
 <p>The outputs of PACKIO is a .paq file that contains data across all channels collected.</p>
 <div class="nbinput nblast docutils container">
@@ -298,7 +298,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <section id="adding-paqdata-module-to-the-trialobj">
-<h2>adding paqdata module to the trialobj<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#adding-paqdata-module-to-the-trialobj">¶</a></h2>
+<h2>adding paqdata module to the trialobj<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#adding-paqdata-module-to-the-trialobj">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -339,7 +339,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </section>
 <section id="Processing-paq-data">
-<h2>Processing paq data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Processing-paq-data">¶</a></h2>
+<h2>Processing paq data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Processing-paq-data">¶</a></h2>
 <p>In this paq data, one of the channels recorded the microscope imaging frame clock. We can retrieve these frame clock times to retrieve the paq clock timestamps when the imaging period began and finished.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -371,7 +371,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </section>
 <section id="Synchronizing-.paq-data-with-imaging-frames">
-<h2>Synchronizing .paq data with imaging frames<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Synchronizing-.paq-data-with-imaging-frames">¶</a></h2>
+<h2>Synchronizing .paq data with imaging frames<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Synchronizing-.paq-data-with-imaging-frames">¶</a></h2>
 <p>Since, imaging is generally performed at multiple orders of magnitude slower data collection speed, we have provided the <code class="docutils literal notranslate">get_sparse_paq()</code> method in the .Paq module to collect paq data from channels at timepoints synchronized with only the imaging frames (found under <code class="docutils literal notranslate">.Paq.frame_times</code>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:

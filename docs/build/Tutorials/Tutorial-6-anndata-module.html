@@ -6,7 +6,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <meta charset="utf-8"/>
 <meta content="Docutils 0.17.1: http://docutils.sourceforge.net/" name="generator"/>
-<title>Tutorial 6 - Annotated Data Module | imaging+ 0.2-beta documentation</title>
+<title>Tutorial 6 - Annotated Data Module | Imaging+ 0.2-beta documentation</title>
 <link href="../_static/pygments.css" rel="stylesheet"/>
 <link href="../_static/theme.9297a650d9dd3016d913.css" rel="stylesheet"/>
 <link href="../_static/sg_gallery.css" rel="stylesheet"/>
@@ -23,7 +23,7 @@
 <button class="xl:hidden h-14 w-14 leading-14 text-gray-100 hover:bg-gray-700 hover:text-brand focus:outline-none focus:bg-gray-700 focus:text-brand" data-action="sidebar#open" data-sidebar-target="hamburger">
 <span class="sr-only">Open navigation menu</span>
 <svg aria-hidden="true" class="fill-current h-8 w-8" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
-</button><a class="hover:bg-gray-700 focus:bg-gray-700 focus:outline-none" href="../index.html" title="Back to homepage"><img alt="Logo" class="h-14 w-14 p-3 inline-block" src="../_static/imagingplus-logo.png"/><span class="hidden lg:inline-block shrink-0 font-medium text-gray-100 mx-5 leading-14 tracking-wider">imaging+ 0.2-beta documentation</span>
+</button><a class="hover:bg-gray-700 focus:bg-gray-700 focus:outline-none" href="../index.html" title="Back to homepage"><img alt="Logo" class="h-14 w-14 p-3 inline-block" src="../_static/imagingplus-logo.png"/><span class="hidden lg:inline-block shrink-0 font-medium text-gray-100 mx-5 leading-14 tracking-wider">Imaging+ 0.2-beta documentation</span>
 </a></div><div class="flex justify-end items-center flex-1"><form action="../search.html" class="flex print:hidden justify-between items-center leading-14 md:ml-4 bg-gray-dark text-gray-300 focus-within:bg-gray-50 focus-within:text-gray-800 focus-within:absolute focus-within:inset-x-0 focus-within:top-0 md:focus-within:w-full md:focus-within:static z-10" data-action="click-&gt;search#focusSearchInput" id="searchbox" method="get">
 <button aria-label="Get search results" class="text-inherit h-14 w-14" tabindex="-1">
 <svg aria-hidden="true" class="fill-current stroke-current h-8 w-8" stroke-width="0.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
@@ -139,7 +139,7 @@
 </nav>
 </aside>
 <main class="px-4 pt-14 xl:ml-fluid grid-area-main overflow-y-auto flex flex-col flex-1 h-full mx-0 md:mx-auto xl:mr-0"><nav aria-label="breadcrumbs" class="print:hidden mt-12 text-sm text-gray-light" role="navigation">
-<a class="text-gray-light text-sm hover:text-gray-dark font-medium focus:text-gray-dark" href="../index.html">imaging+ 0.2-beta documentation</a>
+<a class="text-gray-light text-sm hover:text-gray-dark font-medium focus:text-gray-dark" href="../index.html">Imaging+ 0.2-beta documentation</a>
 <span class="mr-1">/</span><a class="text-gray-light text-sm hover:text-gray-dark" href="../Tutorials-reference.html">Tutorials</a>
 <span class="mr-1">/</span><span aria-current="page">Tutorial 6 - Annotated Data Module</span>
 </nav>
@@ -392,7 +392,7 @@ div.rendered_html tbody tr:hover {
 }
 </style>
 <section id="Tutorial-6---Annotated-Data-Module">
-<h1>Tutorial 6 - Annotated Data Module<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Tutorial-6---Annotated-Data-Module">¶</a></h1>
+<h1>Tutorial 6 - Annotated Data Module<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Tutorial-6---Annotated-Data-Module">¶</a></h1>
 <p>The AnnData library is the primary protocol that is used to store imaging data in an efficient, multi-functional format. It is created using the <code class="docutils literal notranslate">anndata</code> sub-module and can be accessed using <code class="docutils literal notranslate">trialobj.data</code>. By default, <code class="docutils literal notranslate">trialobj.data</code> is a data array generated from Suite2p processed data. For all guidance on AnnData objects, visit: <a class="reference external" href="https://anndata.readthedocs.io/en/latest/index.html" rel="nofollow noopener">https://anndata.readthedocs.io/en/latest/index.html<svg aria-hidden="true" class="external-link-icon" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 19H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path></svg></a>.</p>
 <p>The AnnData object is built around the raw Flu matrix of each <code class="docutils literal notranslate">trialobj</code> . In keeping with AnnData conventions, the data structure is organized in <em>n</em> observations (obs) x <em>m</em> variables (var), where observations are suite2p ROIs and variables are imaging frame timepoints.</p>
 <div class="nbinput docutils container">
@@ -498,7 +498,7 @@ Annotated Data of n_obs (# ROIs) × n_vars (# Frames) = 640 × 14880
 </pre></div></div>
 </div>
 <section id="storage-of-Flu-data">
-<h2>storage of Flu data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#storage-of-Flu-data">¶</a></h2>
+<h2>storage of Flu data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#storage-of-Flu-data">¶</a></h2>
 <p>The raw data is stored in <code class="docutils literal notranslate">.X</code></p>
 <div class="nbinput docutils container">
 <div class="code-wrapper" data-controller="code">
@@ -597,7 +597,7 @@ shape:  (640, 16368)
 <p>The rest of the AnnData data object is built according to the dimensions of the original Flu data input.</p>
 </section>
 <section id="observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">
-<h2>observations (Suite2p ROIs metadata and associated processing info)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">¶</a></h2>
+<h2>observations (Suite2p ROIs metadata and associated processing info)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">¶</a></h2>
 <p>For instance, the metadata for each suite2p ROI stored in Suite2p’s stat.npy output is added to <code class="docutils literal notranslate">trialobject.data</code> under <code class="docutils literal notranslate">obs</code> and <code class="docutils literal notranslate">obsm</code> (1D and &gt;1-D observations annotations, respectively).</p>
 <div class="nbinput docutils container">
 <div class="code-wrapper" data-controller="code">
@@ -914,7 +914,7 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 </div>
 </section>
 <section id="variables-(temporal-synchronization-of-paq-channels-and-imaging)">
-<h2>variables (temporal synchronization of paq channels and imaging)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#variables-(temporal-synchronization-of-paq-channels-and-imaging)">¶</a></h2>
+<h2>variables (temporal synchronization of paq channels and imaging)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#variables-(temporal-synchronization-of-paq-channels-and-imaging)">¶</a></h2>
 <p>And the temporal synchronization data of the experiment collected in .paq output is added to the variables annotations under <code class="docutils literal notranslate">var</code>. These variables are timed to the imaging frame clock timings. The total # of variables is the number of imaging frames in the original Flu data input.</p>
 <div class="nbinput docutils container">
 <div class="code-wrapper" data-controller="code">
@@ -1103,7 +1103,7 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 </div></div>
 </div>
 <section id="Creating-or-Modifying-AnnData-arrays-of-trialobj">
-<h3>Creating or Modifying AnnData arrays of trialobj<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Creating-or-Modifying-AnnData-arrays-of-trialobj">¶</a></h3>
+<h3>Creating or Modifying AnnData arrays of trialobj<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Creating-or-Modifying-AnnData-arrays-of-trialobj">¶</a></h3>
 <p>There are a number of helper functions to create anndata arrays or modify existing anndata arrays.</p>
 <div class="nbinput docutils container">
 <div class="code-wrapper" data-controller="code">
@@ -1612,7 +1612,7 @@ available attributes:
 <p><em>Note: adding and deleting an ‘var’ to existing anndata object can be done in the exact same manner as demonstrated above for ‘obs’ using .add_var() and .del_var() methods on an anndata object.</em></p>
 </section>
 <section id="Plotting-quickly-from-anndata">
-<h3>Plotting quickly from anndata<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Plotting-quickly-from-anndata">¶</a></h3>
+<h3>Plotting quickly from anndata<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Plotting-quickly-from-anndata">¶</a></h3>
 <p>To quickly plot from data contained within an <code class="docutils literal notranslate">anndata</code> object, we convert the <code class="docutils literal notranslate">anndata</code> object to a long-form <code class="docutils literal notranslate">pandas</code> dataframe.</p>
 <p>Using this format of the data, we can quickly access the excellent <code class="docutils literal notranslate">seaborn</code> library for plotting.</p>
 <div class="nbinput docutils container">

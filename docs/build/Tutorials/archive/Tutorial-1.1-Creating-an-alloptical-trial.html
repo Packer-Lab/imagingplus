@@ -6,7 +6,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <meta charset="utf-8"/>
 <meta content="Docutils 0.17.1: http://docutils.sourceforge.net/" name="generator"/>
-<title>Creating an experiment - UPDATED MAR 29 2022 | imaging+ 0.2-beta documentation</title>
+<title>Creating an experiment - UPDATED MAR 29 2022 | Imaging+ 0.2-beta documentation</title>
 <link href="../../_static/pygments.css" rel="stylesheet"/>
 <link href="../../_static/theme.9297a650d9dd3016d913.css" rel="stylesheet"/>
 <link href="../../_static/sg_gallery.css" rel="stylesheet"/>
@@ -21,7 +21,7 @@
 <button class="xl:hidden h-14 w-14 leading-14 text-gray-100 hover:bg-gray-700 hover:text-brand focus:outline-none focus:bg-gray-700 focus:text-brand" data-action="sidebar#open" data-sidebar-target="hamburger">
 <span class="sr-only">Open navigation menu</span>
 <svg aria-hidden="true" class="fill-current h-8 w-8" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
-</button><a class="hover:bg-gray-700 focus:bg-gray-700 focus:outline-none" href="../../index.html" title="Back to homepage"><img alt="Logo" class="h-14 w-14 p-3 inline-block" src="../../_static/imagingplus-logo.png"/><span class="hidden lg:inline-block shrink-0 font-medium text-gray-100 mx-5 leading-14 tracking-wider">imaging+ 0.2-beta documentation</span>
+</button><a class="hover:bg-gray-700 focus:bg-gray-700 focus:outline-none" href="../../index.html" title="Back to homepage"><img alt="Logo" class="h-14 w-14 p-3 inline-block" src="../../_static/imagingplus-logo.png"/><span class="hidden lg:inline-block shrink-0 font-medium text-gray-100 mx-5 leading-14 tracking-wider">Imaging+ 0.2-beta documentation</span>
 </a></div><div class="flex justify-end items-center flex-1"><form action="../../search.html" class="flex print:hidden justify-between items-center leading-14 md:ml-4 bg-gray-dark text-gray-300 focus-within:bg-gray-50 focus-within:text-gray-800 focus-within:absolute focus-within:inset-x-0 focus-within:top-0 md:focus-within:w-full md:focus-within:static z-10" data-action="click-&gt;search#focusSearchInput" id="searchbox" method="get">
 <button aria-label="Get search results" class="text-inherit h-14 w-14" tabindex="-1">
 <svg aria-hidden="true" class="fill-current stroke-current h-8 w-8" stroke-width="0.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
@@ -137,7 +137,7 @@
 </nav>
 </aside>
 <main class="px-4 pt-14 xl:ml-fluid grid-area-main overflow-y-auto flex flex-col flex-1 h-full mx-0 md:mx-auto xl:mr-0"><nav aria-label="breadcrumbs" class="print:hidden mt-12 text-sm text-gray-light" role="navigation">
-<a class="text-gray-light text-sm hover:text-gray-dark font-medium focus:text-gray-dark" href="../../index.html">imaging+ 0.2-beta documentation</a>
+<a class="text-gray-light text-sm hover:text-gray-dark font-medium focus:text-gray-dark" href="../../index.html">Imaging+ 0.2-beta documentation</a>
 <span class="mr-1">/</span><span aria-current="page">Creating an experiment - UPDATED MAR 29 2022</span>
 </nav>
 <article class="flex-1" role="main">
@@ -401,7 +401,7 @@ div.rendered_html tbody tr:hover {
 </code></pre></div></div>
 </div>
 <section id="Creating-an-experiment---UPDATED-MAR-29-2022">
-<h1>Creating an experiment - UPDATED MAR 29 2022<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Creating-an-experiment---UPDATED-MAR-29-2022">¶</a></h1>
+<h1>Creating an experiment - UPDATED MAR 29 2022<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Creating-an-experiment---UPDATED-MAR-29-2022">¶</a></h1>
 <p>The first step towards starting the analysis pipeline and creating the <code class="docutils literal notranslate">Experiment</code> object is to create a dictionary (<code class="docutils literal notranslate">ExperimentMetainfo</code>) to collect the metadata fields required for initializing <code class="docutils literal notranslate">Experiment</code>. In <code class="docutils literal notranslate">ExperimentMetainfo</code>, we provide initial information about the experiment.</p>
 <div class="nbinput docutils container">
 <div class="code-wrapper" data-controller="code">
@@ -501,7 +501,7 @@ imported packerlabimaging successfully
 </div>
 </section>
 <section id="Adding-trials-to-an-experiment">
-<h1>Adding trials to an experiment<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Adding-trials-to-an-experiment">¶</a></h1>
+<h1>Adding trials to an experiment<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Adding-trials-to-an-experiment">¶</a></h1>
 <p>After creating the initial <code class="docutils literal notranslate">expobj</code> experiment, we move onto loading each trial from the experiment.</p>
 <p>There is a built-in <code class="docutils literal notranslate">ImagingTrial</code> workflow for data processing and analysis of an all optical imaging experiment trial called <code class="docutils literal notranslate">AllOpticalTrial</code>. This extends the <code class="docutils literal notranslate">TwoPhotonImaging</code> trial workflow.</p>
 <p>The <code class="docutils literal notranslate">AllOpticalTrial</code> is setup in an analogous manner as the <code class="docutils literal notranslate">TwoPhotonImaging</code> workflow. In addition to the fields required for the <code class="docutils literal notranslate">TwoPhotonImaging</code> trial, we supply additional fields that allow for addition of all-optical specific sub-modules. In particular, we supply a <code class="docutils literal notranslate">naparm_path</code> which triggers the workflow to run the <code class="docutils literal notranslate">naparm</code> analysis sub-module for analysis of 2-photon photostimulation protocols setup by NAPARM during the all-optical experiment.</p>

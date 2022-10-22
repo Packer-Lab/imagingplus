@@ -289,7 +289,7 @@ div.rendered_html tbody tr:hover {
 }
 </style>
 <section id="Tutorial-2---Data-organization-inside-packerlabimaging">
-<h1>Tutorial 2 - Data organization inside packerlabimaging<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Tutorial-2---Data-organization-inside-packerlabimaging">¶</a></h1>
+<h1>Tutorial 2 - Data organization inside packerlabimaging<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Tutorial-2---Data-organization-inside-packerlabimaging">¶</a></h1>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -322,7 +322,7 @@ imported packerlabimaging
 </div>
 <p><em>This notebook demonstrates the basics of how data is organized inside of a trial object.</em></p>
 <section id="Importing-data-analysis-objects">
-<h2>Importing data analysis objects<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Importing-data-analysis-objects">¶</a></h2>
+<h2>Importing data analysis objects<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Importing-data-analysis-objects">¶</a></h2>
 <p>The first step to begin using the data analysis objects is to import the previously created objects. In general, it is advised to import th high-level <code class="docutils literal notranslate">Experiment</code> object first, and then use the <code class="docutils literal notranslate">.load_trial</code> method to load an individual <code class="docutils literal notranslate">-Trial</code> object.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
@@ -354,7 +354,7 @@ trials in Experiment object:
 </div>
 </section>
 <section id="paq-data">
-<h2>paq data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#paq-data">¶</a></h2>
+<h2>paq data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#paq-data">¶</a></h2>
 <p>The <code class="docutils literal notranslate">paq</code> sub-module is used to retrieve and store data from the .paq file for each trial. It can be accessed by <code class="docutils literal notranslate">trialobj.paq</code>:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
@@ -390,7 +390,7 @@ packerlabimaging.processing.paq.paqData:
 </div>
 </section>
 <section id="Suite2p-data">
-<h2>Suite2p data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Suite2p-data">¶</a></h2>
+<h2>Suite2p data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Suite2p-data">¶</a></h2>
 <p>Suite2p is the primary Ca2+ imaging library that is integrated into the analysis pipeline. The dedicated <code class="docutils literal notranslate">suite2p</code> submodule handles accessing suite2p functionality, as well as the data imported from Suite2p processing. Suite2p related data and methods are accessed using <code class="docutils literal notranslate">trialobj.Suite2p</code>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -426,7 +426,7 @@ packerlabimaging.processing.paq.paqData:
 </div>
 </section>
 <section id="Annotated-Data">
-<h2>Annotated Data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Annotated-Data">¶</a></h2>
+<h2>Annotated Data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Annotated-Data">¶</a></h2>
 <p>The AnnData library is the primary protocol that is used to store imaging data in an efficient, multi-functional format. It is created using the <code class="docutils literal notranslate">anndata</code> sub-module and can be accessed using <code class="docutils literal notranslate">trialobj.data</code>. By default, <code class="docutils literal notranslate">trialobj.data</code> is a data array generated from Suite2p processed data. For all guidance on AnnData objects, visit: <a class="reference external" href="https://anndata.readthedocs.io/en/latest/index.html" rel="nofollow noopener">https://anndata.readthedocs.io/en/latest/index.html</a>.</p>
 <p>The AnnData object is built around the raw Flu matrix of each <code class="docutils literal notranslate">trialobj</code> . In keeping with AnnData conventions, the data structure is organized in <em>n</em> observations (obs) x <em>m</em> variables (var), where observations are suite2p ROIs and variables are imaging frame timepoints.</p>
 <div class="nbinput docutils container">
@@ -467,7 +467,7 @@ AnnData object with n_obs × n_vars = 640 × 16368
 </pre></div></div>
 </div>
 <section id="storage-of-Flu-data">
-<h3>storage of Flu data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#storage-of-Flu-data">¶</a></h3>
+<h3>storage of Flu data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#storage-of-Flu-data">¶</a></h3>
 <p>The raw data is stored in <code class="docutils literal notranslate">.X</code></p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
@@ -552,7 +552,7 @@ shape:  (640, 16368)
 <p>The rest of the AnnData data object is built according to the dimensions of the original Flu data input.</p>
 </section>
 <section id="observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">
-<h3>observations (Suite2p ROIs metadata and associated processing info)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">¶</a></h3>
+<h3>observations (Suite2p ROIs metadata and associated processing info)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">¶</a></h3>
 <p>For instance, the metadata for each suite2p ROI stored in Suite2p’s stat.npy output is added to <code class="docutils literal notranslate">trialobject.data</code> under <code class="docutils literal notranslate">obs</code> and <code class="docutils literal notranslate">obsm</code> (1D and &gt;1-D observations annotations, respectively).</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
@@ -853,7 +853,7 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 </div>
 </section>
 <section id="variables-(temporal-synchronization-of-paq-channels-and-imaging)">
-<h3>variables (temporal synchronization of paq channels and imaging)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#variables-(temporal-synchronization-of-paq-channels-and-imaging)">¶</a></h3>
+<h3>variables (temporal synchronization of paq channels and imaging)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#variables-(temporal-synchronization-of-paq-channels-and-imaging)">¶</a></h3>
 <p>And the temporal synchronization data of the experiment collected in .paq output is added to the variables annotations under <code class="docutils literal notranslate">var</code>. These variables are timed to the imaging frame clock timings. The total # of variables is the number of imaging frames in the original Flu data input.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
@@ -1037,7 +1037,7 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 </div>
 </section>
 <section id="Creating-or-Modifying-AnnData-arrays-of-trialobj">
-<h3>Creating or Modifying AnnData arrays of trialobj<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Creating-or-Modifying-AnnData-arrays-of-trialobj">¶</a></h3>
+<h3>Creating or Modifying AnnData arrays of trialobj<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Creating-or-Modifying-AnnData-arrays-of-trialobj">¶</a></h3>
 <p>There are a number of helper functions to create anndata arrays or modify existing anndata arrays.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
