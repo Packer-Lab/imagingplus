@@ -161,7 +161,7 @@ class Targets(naparm):
 
         self.target_coords_all, self.target_coords, self.n_targets, self.n_targets_total = self._readTargetsImage(
             self.__frame_x, self.__frame_y)
-        self.target_areas, self.target_areas_exclude = self._findTargetsAreas(self.__frame_x, self.__pix_sz_x)
+        self.target_areas, self.target_areas_exclude = self._findTargetsAreas(self.__pix_sz_x)
 
     def __repr__(self):
         print(f"naparm.Targets analysis submodule. Loaded from: {self.path}")

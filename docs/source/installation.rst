@@ -3,11 +3,11 @@ Installation instructions
 
 Installation
 ------------
-``packerlabimaging`` can be installed by downloading or cloning the GitHub repository and running:
+``imaging+`` can be installed by downloading or cloning the GitHub repository and running:
 
 .. code-block:: python
 
-    pip install -e packerlabimaging
+    pip install -e imagingplus
 
 from the command line from the directory where the GitHub repository was downloaded to.
 
@@ -18,7 +18,7 @@ from the command line from the directory where the GitHub repository was downloa
 
 1. Clone the GitHub repository using Git::
 
-    git clone https://github.com/Packer-Lab/packerlabimaging.git
+    git clone https://github.com/Packer-Lab/imagingplus.git
 
 2. Create a new conda environment using the ``plitest.yml`` provided in this repository by running::
 
@@ -32,17 +32,17 @@ from the command line from the directory where the GitHub repository was downloa
 4. ``cd`` to the parent directory of where this repo was downloaded to.
 5. From this parent directly, run::
 
-    pip install -e packerlabimaging
+    pip install -e imagingplus
 
     # this installs the package under developer settings (preferred for current release).
 
 
 Test/Import Installation
 ------------------------
-Test ``packerlabimaging`` is successfully installed by importing the package in python:
+Test ``imaging+`` is successfully installed by importing the package in python:
 
-1. Ensure that the conda environment from which `packerlabimaging` was installed is activated.
-2. start python on the command line using::
+1. Ensure that the conda environment from which `imaging+` was installed is activated.
+2. start *python* on the command line using::
 
     python
 
@@ -50,17 +50,17 @@ or start a python session from the same conda environment in your preferred meth
 
 3. Import the package::
 
-    import packerlabimaging
+    import imagingplus
     # or
-    import packerlabimaging as pli
+    import imagingplus as pli
 
 -- Ignore any warnings or printed messages :) --
 
 Dependencies
 ------------
-``packerlabimaging`` requires the use of multiple scientific python packages (e.g ``numpy``, ``pandas``, ``anndata``, ``matplotlib``).
-These dependencies are automatically confirmed during the installation phase of ``packerlabimaging``.
-However, if there are any non-trivial issues with dependencies during installation, please report this by raising an issue on Github.
+``imaging+`` requires the use of multiple scientific python packages (e.g ``numpy``, ``pandas``, ``anndata``, ``matplotlib``).
+These dependencies should be automatically installed as required when installing ``imaging+``. It is common to have conflicts with dependencies that might require manually uninstalling and re-installing specified versions.
+However, if there are non-trivial issues with dependencies during installation, please report this by raising an issue on Github.
 
 
 Next

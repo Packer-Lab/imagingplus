@@ -3,7 +3,7 @@
   {
    "cell_type": "markdown",
    "source": [
-    "# Tutorial 2 - Data organization inside imagingplus"
+    "# Tutorial 2 - Data organization inside imaging+"
    ],
    "metadata": {
     "collapsed": false,
@@ -142,81 +142,6 @@
    "source": [
     "We can see that the 'frame_clock' paq channel was used as the primary channel for retrieving imaging frame timestamps synchronized to the paq clock. There are a number of other channels associated with this .paq file (however their data is not saved in this object to save space). Data from any of the other channels can stored directly to the `.paq` object using the `.storePaqChannel()` object method. In this case, the 'voltage' paq channel was stored in its entirety under `.paq.voltage`."
    ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "id": "b042213c",
-   "metadata": {
-    "pycharm": {
-     "name": "#%%\n"
-    },
-    "trusted": false
-   },
-   "outputs": [],
-   "source": []
-  },
-  {
-   "cell_type": "markdown",
-   "id": "83f9636f",
-   "metadata": {},
-   "source": [
-    "## Suite2p data\n",
-    "\n",
-    "Suite2p is the primary Ca2+ imaging library that is integrated into the analysis pipeline. The dedicated `suite2p` submodule handles accessing suite2p functionality, as well as the data imported from Suite2p processing. Suite2p related data and methods are accessed using `trialobj.Suite2p`."
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "id": "badf397d",
-   "metadata": {
-    "pycharm": {
-     "name": "#%%\n"
-    },
-    "trusted": false
-   },
-   "outputs": [],
-   "source": []
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "id": "b01626e5",
-   "metadata": {
-    "pycharm": {
-     "name": "#%%\n"
-    },
-    "trusted": false
-   },
-   "outputs": [],
-   "source": []
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "id": "4196c1cc",
-   "metadata": {
-    "pycharm": {
-     "name": "#%%\n"
-    },
-    "trusted": false
-   },
-   "outputs": [],
-   "source": []
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "id": "52f2aadf",
-   "metadata": {
-    "pycharm": {
-     "name": "#%%\n"
-    },
-    "trusted": false
-   },
-   "outputs": [],
-   "source": []
   },
   {
    "cell_type": "markdown",
@@ -728,18 +653,6 @@
    "source": [
     "*Note: adding and deleting an 'var' to existing anndata object can be done in the exact same manner as demonstrated above for 'obs' using .add_var() and .del_var() methods on an anndata object.*"
    ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "outputs": [],
-   "source": [],
-   "metadata": {
-    "collapsed": false,
-    "pycharm": {
-     "name": "#%%\n"
-    }
-   }
   }
  ],
  "metadata": {

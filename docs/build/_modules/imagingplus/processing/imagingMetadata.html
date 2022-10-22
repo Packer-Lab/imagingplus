@@ -1,0 +1,278 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>imagingplus.processing.imagingMetadata &#8212; imaging+ 0.2-beta documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinxdoc.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">imagingplus.processing.imagingMetadata</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for imagingplus.processing.imagingMetadata</h1><div class="highlight"><pre>
+<span></span><span class="c1"># collection of functions for parsing PrairieView metadata from imaging and alloptical experiments</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">as</span> <span class="nn">ET</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="c1"># need to implement alternative class constructor using cls.method</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">imagingplus.main.subcore</span> <span class="kn">import</span> <span class="n">ImagingMetadata</span>
+
+
+<span class="c1"># class ImagingMetadata:</span>
+<span class="c1">#     &quot;&quot;&quot;Class containing metadata about imaging microscope&quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     def __init__(self, microscope, n_frames, fps, frame_x, frame_y, n_planes, pix_sz_x, pix_sz_y, **kwargs):</span>
+<span class="c1">#</span>
+<span class="c1">#         self.microscope = microscope  #: given name of microscope (use &#39;Bruker&#39; to process Metadata from PrairieView)</span>
+<span class="c1">#         self.n_frames = n_frames  # number of imaging frames in the current trial</span>
+<span class="c1">#         self.fps = fps  # rate of imaging acquisition (frames per second)</span>
+<span class="c1">#         self.frame_x = frame_x  # num of pixels in the x direction of a single frame</span>
+<span class="c1">#         self.frame_y = frame_y  # num of pixels in the y direction of a single frame</span>
+<span class="c1">#         self.n_planes = n_planes  # num of FOV planes in imaging acquisition</span>
+<span class="c1">#         self.pix_sz_x = pix_sz_x  # size of a single imaging pixel in x direction (microns)</span>
+<span class="c1">#         self.pix_sz_y = pix_sz_y  # size of a single imaging pixel in y direction (microns)</span>
+<span class="c1">#         for key, value in kwargs.items():</span>
+<span class="c1">#             setattr(self, key, value)</span>
+<span class="c1">#</span>
+<span class="c1">#     def __repr__(self):</span>
+<span class="c1">#         return f&#39;ImagingMetadata for imaging cellsdata collected with {self.microscope}.&#39;</span>
+
+
+<div class="viewcode-block" id="PrairieViewMetadata"><a class="viewcode-back" href="../../../reference.html#imagingplus.processing.imagingMetadata.PrairieViewMetadata">[docs]</a><span class="k">class</span> <span class="nc">PrairieViewMetadata</span><span class="p">(</span><span class="n">ImagingMetadata</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;class for parsing metadata of imaging microscope system.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PrairieViewMetadata.__init__"><a class="viewcode-back" href="../../../reference.html#imagingplus.processing.imagingMetadata.PrairieViewMetadata.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pv_xml_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">microscope</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Bruker&#39;</span><span class="p">):</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">\- Adding Imaging Acquisition Metadata from </span><span class="si">{</span><span class="n">microscope</span><span class="si">}</span><span class="s1"> ...&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pv_xml_dir</span> <span class="o">=</span> <span class="n">pv_xml_dir</span>  <span class="c1">#: path to the directory containing the .xml imaging output from PrairieView for a given trial</span>
+        <span class="n">pv_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsePVMetadata</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">microscope</span><span class="o">=</span><span class="n">microscope</span><span class="p">,</span> <span class="o">**</span><span class="n">pv_metadata</span><span class="p">)</span>  <span class="c1"># call to ImagingMetadata parent class</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scan_x</span> <span class="o">=</span> <span class="n">pv_metadata</span><span class="p">[</span><span class="s1">&#39;scan_x&#39;</span><span class="p">]</span>  <span class="c1">#: resonant scan center in x axis</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scan_y</span> <span class="o">=</span> <span class="n">pv_metadata</span><span class="p">[</span><span class="s1">&#39;scan_y&#39;</span><span class="p">]</span>  <span class="c1">#: resonant scan center in y axis</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zoom</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">pv_metadata</span><span class="p">[</span><span class="s1">&#39;zoom&#39;</span><span class="p">]</span>  <span class="c1">#: zoom level on Bruker microscope</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_good_frame</span> <span class="o">=</span> <span class="n">pv_metadata</span><span class="p">[</span>
+            <span class="s1">&#39;last_good_frame&#39;</span><span class="p">]</span>  <span class="c1">#: indicates when the last good frame was during the t-series recording, if nothing was wrong the value is 0, otherwise it is &gt;0 and that indicates that PV is not sure what happened after the frame listed, but it could be corrupt cellsdata</span></div>
+        <span class="c1"># for key, value in kwargs.items():  # todo removing kwargs</span>
+        <span class="c1">#     setattr(self, key, value)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;PrairieViewMetadata from: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pv_xml_dir</span><span class="si">}</span><span class="se">\n\t</span><span class="s1">n planes: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_planes</span><span class="si">}</span><span class="s1"> </span><span class="se">\n\t</span><span class="s1">n frames: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span><span class="si">}</span><span class="s1">&#39;</span> \
+               <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">fps: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fps</span><span class="si">}</span><span class="s1"> </span><span class="se">\n\t</span><span class="s1">frame size (px): </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_x</span><span class="si">}</span><span class="s1"> x </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_y</span><span class="si">}</span><span class="s1">  </span><span class="se">\n\t</span><span class="s1">zoom: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">zoom</span><span class="si">}</span><span class="s1"> </span><span class="se">\n\t</span><span class="s1">&#39;</span> \
+               <span class="sa">f</span><span class="s1">&#39;pixel size (um): </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pix_sz_x</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pix_sz_y</span><span class="si">}</span><span class="s1"> &#39;</span> \
+               <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">scan centre (V): </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scan_x</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scan_y</span><span class="si">}</span><span class="s1">&#39;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_getPVStateShard</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find the value, description and indices of a particular parameter from an xml file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">pv_state_shard</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;PVStateShard&#39;</span><span class="p">)</span>  <span class="c1"># find pv state shard element in root</span>
+
+        <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">pv_state_shard</span><span class="p">:</span>  <span class="c1"># for each element in pv state shard, find the value for the specified key</span>
+            <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">key</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># if the element has only one subelement</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+                <span class="k">else</span><span class="p">:</span>  <span class="c1"># if the element has many subelements (i.e. lots of entries for that key)</span>
+                    <span class="k">for</span> <span class="n">subelem</span> <span class="ow">in</span> <span class="n">elem</span><span class="p">:</span>
+                        <span class="n">value</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subelem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">))</span>
+                        <span class="n">description</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subelem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">))</span>
+                        <span class="n">index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subelem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">subelem</span> <span class="ow">in</span> <span class="n">elem</span><span class="p">:</span>  <span class="c1"># if key not in element, try subelements</span>
+                    <span class="k">if</span> <span class="n">subelem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">key</span><span class="p">:</span>
+                        <span class="n">value</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">)</span>
+                        <span class="k">break</span>
+
+            <span class="k">if</span> <span class="n">value</span><span class="p">:</span>  <span class="c1"># if found key in subelement, break the loop</span>
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>  <span class="c1"># if no value found at all, raise exception</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;ERROR: no element or subelement with the key </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1"> under root: </span><span class="si">{</span><span class="n">root</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">value</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">index</span>
+
+    <span class="k">def</span> <span class="nf">_parsePVMetadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse all of the relevant acquisition metadata from the PrairieView xml file for this recording</span>
+
+<span class="sd">        :return: dict; parsed values related to metadata from PrairieView xml file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">\- Parsing PV Metadata for Bruker microscope...&#39;</span><span class="p">)</span>
+
+        <span class="n">xml_dir_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv_xml_dir</span>  <span class="c1"># starting path to search for the .xml PrairieView files</span>
+        <span class="n">xml_path</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># searching for xml path</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1"> searching for xml path in tiff path directory at: </span><span class="si">{</span><span class="n">xml_dir_path</span><span class="si">}</span><span class="s1"> ... &#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>  <span class="c1"># look for xml file in path, or two paths up (achieved by decreasing count in while loop)</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="mi">2</span>
+            <span class="k">while</span> <span class="n">count</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">xml_path</span><span class="p">:</span>
+                <span class="n">count</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">xml_dir_path</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.xml&#39;</span><span class="p">):</span>
+                        <span class="n">xml_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">xml_dir_path</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+                <span class="n">xml_dir_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">xml_path</span><span class="p">)</span>  <span class="c1"># re-assign xml_dir_path as next folder up</span>
+            <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">xml_path</span><span class="p">),</span> <span class="sa">f</span><span class="s1">&#39;xml_path could not be found: </span><span class="si">{</span><span class="n">xml_path</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;ERROR: Could not find xml for this acquisition at: </span><span class="si">{</span><span class="n">xml_dir_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">xml_tree</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">xml_path</span><span class="p">)</span>  <span class="c1"># parse xml from a path</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">xml_tree</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span>  <span class="c1"># make xml tree structure</span>
+
+        <span class="n">sequence</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;Sequence&#39;</span><span class="p">)</span>
+        <span class="n">acq_type</span> <span class="o">=</span> <span class="n">sequence</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;ZSeries&#39;</span> <span class="ow">in</span> <span class="n">acq_type</span><span class="p">:</span>
+            <span class="n">n_planes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sequence</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;Frame&#39;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n_planes</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">frame_branch</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;Sequence/Frame&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">frame_period</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_getPVStateShard</span><span class="p">(</span><span class="n">frame_branch</span><span class="p">,</span> <span class="s1">&#39;framePeriod&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">frame_period</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_getPVStateShard</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;framePeriod&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">fps</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">frame_period</span>
+
+        <span class="n">frame_x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_getPVStateShard</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;pixelsPerLine&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">frame_y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_getPVStateShard</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;linesPerFrame&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">zoom</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_getPVStateShard</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;opticalZoom&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">scan_volts</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getPVStateShard</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;currentScanCenter&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">scan_volts</span><span class="p">,</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">scan_volts</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="s1">&#39;XAxis&#39;</span><span class="p">:</span>
+                <span class="n">scan_x</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">scan_volts</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="s1">&#39;YAxis&#39;</span><span class="p">:</span>
+                <span class="n">scan_y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">scan_volts</span><span class="p">)</span>
+
+        <span class="n">pixel_size</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getPVStateShard</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;micronsPerPixel&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">pixel_size</span><span class="p">,</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">pixel_size</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="s1">&#39;XAxis&#39;</span><span class="p">:</span>
+                <span class="n">pix_sz_x</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">pixel_size</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="s1">&#39;YAxis&#39;</span><span class="p">:</span>
+                <span class="n">pix_sz_y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">pixel_size</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">n_planes</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">n_frames</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;Sequence/Frame&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">)</span>  <span class="c1"># use suite2p output instead later</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n_frames</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;Sequence&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cycle&#39;</span><span class="p">)</span>
+
+        <span class="n">extra_params</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;Sequence/Frame/ExtraParameters&#39;</span><span class="p">)</span>
+        <span class="n">last_good_frame</span> <span class="o">=</span> <span class="n">extra_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lastGoodFrame&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">fps</span> <span class="o">/</span> <span class="n">n_planes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_x</span> <span class="o">=</span> <span class="n">frame_x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_y</span> <span class="o">=</span> <span class="n">frame_y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_planes</span> <span class="o">=</span> <span class="n">n_planes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pix_sz_x</span> <span class="o">=</span> <span class="n">pix_sz_x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pix_sz_y</span> <span class="o">=</span> <span class="n">pix_sz_y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scan_x</span> <span class="o">=</span> <span class="n">scan_x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scan_y</span> <span class="o">=</span> <span class="n">scan_y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zoom</span> <span class="o">=</span> <span class="n">zoom</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_frames</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_good_frame</span> <span class="o">=</span> <span class="n">last_good_frame</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">n planes:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_planes</span><span class="p">,</span>
+              <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">n frames:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span><span class="p">,</span>
+              <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">fps:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fps</span><span class="p">,</span>
+              <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">frame size (px):&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_x</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_y</span><span class="p">,</span>
+              <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">zoom:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoom</span><span class="p">,</span>
+              <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">pixel size (um):&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pix_sz_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pix_sz_y</span><span class="p">,</span>
+              <span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">scan centre (V):&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_y</span>
+              <span class="p">)</span>
+
+        <span class="n">return_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;fps&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fps</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+                       <span class="s1">&#39;n_planes&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_planes</span><span class="p">,</span>
+                       <span class="s1">&#39;n_frames&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span><span class="p">,</span>
+                       <span class="s1">&#39;frame_x&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_x</span><span class="p">,</span>
+                       <span class="s1">&#39;frame_y&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_y</span><span class="p">,</span>
+                       <span class="s1">&#39;zoom&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoom</span><span class="p">,</span>
+                       <span class="s1">&#39;pix_sz_x&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">pix_sz_x</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+                       <span class="s1">&#39;pix_sz_y&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">pix_sz_y</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+                       <span class="s1">&#39;scan_x&#39;</span><span class="p">:</span> <span class="n">scan_x</span><span class="p">,</span>
+                       <span class="s1">&#39;scan_y&#39;</span><span class="p">:</span> <span class="n">scan_y</span><span class="p">,</span>
+                       <span class="s1">&#39;last_good_frame&#39;</span><span class="p">:</span> <span class="n">last_good_frame</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">return_dict</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/imagingplus-logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">imagingplus.processing.imagingMetadata</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Packer Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

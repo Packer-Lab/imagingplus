@@ -3,7 +3,7 @@
 Main Modules
 ============
 
-There are a few primary modules to be aware of in `packerlabimaging`:
+There are a few primary modules to be aware of in `imaging+`:
 
 
 Main

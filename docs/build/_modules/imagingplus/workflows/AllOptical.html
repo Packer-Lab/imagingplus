@@ -1,0 +1,1005 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>imagingplus.workflows.AllOptical &#8212; imaging+ 0.2-beta documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinxdoc.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">imagingplus.workflows.AllOptical</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for imagingplus.workflows.AllOptical</h1><div class="highlight"><pre>
+<span></span><span class="c1"># TODO update all 2p stim related attr&#39;s to naparm submodule</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">imagingplus</span> <span class="kn">import</span> <span class="n">TwoPhotonImaging</span>
+<span class="kn">from</span> <span class="nn">imagingplus.main.subcore</span> <span class="kn">import</span> <span class="n">ImagingMetadata</span><span class="p">,</span> <span class="n">CellAnnotations</span>
+<span class="kn">from</span> <span class="nn">imagingplus.main.core</span> <span class="kn">import</span> <span class="n">Experiment</span><span class="p">,</span> <span class="n">ImagingTrial</span>
+<span class="kn">from</span> <span class="nn">imagingplus.processing.paq</span> <span class="kn">import</span> <span class="n">PaqData</span>
+<span class="kn">from</span> <span class="nn">imagingplus.processing.naparm</span> <span class="kn">import</span> <span class="n">Targets</span>
+
+<span class="c1"># %%</span>
+<span class="kn">from</span> <span class="nn">imagingplus.processing.anndata</span> <span class="kn">import</span> <span class="n">AnnotatedData</span>
+
+<span class="c1"># grabbing functions from .utils_funcs that are used in this script - Prajay&#39;s edits (review based on need)</span>
+
+<span class="n">PLANE</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">BADFRAMESLOC</span> <span class="o">=</span> <span class="s1">&#39;/home/pshah/Documents/code/imagingplus/tests/&#39;</span>
+
+<span class="n">prestim_sec</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1">#: length of pre stim trace collected (secs)</span>
+<span class="n">poststim_sec</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3.0</span>  <span class="c1">#: length of post stim trace collected (secs)</span>
+<span class="n">pre_stim_response_window</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.500</span>  <span class="c1">#: time window for collecting pre-stim measurement (units: msec)</span>
+<span class="n">post_stim_response_window</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.500</span>  <span class="c1">#: time window for collecting post-stim measurement (units: msec)</span>
+
+
+<span class="c1"># todo think about creating a custom class to hold directly taken coords targets imaging cellsdata - would work well for SLM targets, might even be able to extend in the naparm--&gt; Targets class</span>
+
+<div class="viewcode-block" id="AllOpticalTrial"><a class="viewcode-back" href="../../../reference.html#imagingplus.workflows.AllOptical.AllOpticalTrial">[docs]</a><span class="k">class</span> <span class="nc">AllOpticalTrial</span><span class="p">(</span><span class="n">TwoPhotonImaging</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;All Optical Experimental Data Analysis Workflow.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AllOpticalTrial.__init__"><a class="viewcode-back" href="../../../reference.html#imagingplus.workflows.AllOptical.AllOpticalTrial.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">naparm_path</span><span class="p">,</span> <span class="n">dataPath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">saveDir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">trialID</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">expID</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">expGroup</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">comment</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">imparams</span><span class="p">:</span> <span class="n">ImagingMetadata</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">cells</span><span class="p">:</span> <span class="n">CellAnnotations</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">tmdata</span><span class="p">:</span> <span class="n">PaqData</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param metainfo: TypedDict containing meta-information field needed for this experiment. Please see TwoPhotonImagingMetainfo for type hints on accepted keys.</span>
+<span class="sd">        :param paq_options: TypedDict containing meta-information about .paq file associated with current trial</span>
+<span class="sd">        :param naparm_path: path to folder containing photostimulation setup built by NAPARM</span>
+<span class="sd">        :param analysis_save_path: path of where to save the experiment analysis object</span>
+<span class="sd">        :param microscope: name of microscope used to record imaging (options: &quot;Bruker&quot; (default), &quot;other&quot;)</span>
+<span class="sd">        :param prestim_sec: pre-photostimulation timeperiod for collecting photostimulation timed signals</span>
+<span class="sd">        :param poststim_sec: post-photostimulation timeperiod for collecting photostimulation timed signals</span>
+<span class="sd">        :param pre_stim_response_window: pre-photostimulation time window for measurement of photostimulation evoked responses</span>
+<span class="sd">        :param post_stim_response_window: post-photostimulation time window for measurement of photostimulation evoked responses</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">initialization_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">date</span><span class="p">,</span>
+                               <span class="s1">&#39;trialID&#39;</span><span class="p">:</span> <span class="n">trialID</span><span class="p">,</span>
+                               <span class="s1">&#39;dataPath&#39;</span><span class="p">:</span> <span class="n">dataPath</span><span class="p">,</span>
+                               <span class="s1">&#39;saveDir&#39;</span><span class="p">:</span> <span class="n">saveDir</span><span class="p">,</span>
+                               <span class="s1">&#39;expID&#39;</span><span class="p">:</span> <span class="n">expID</span><span class="p">,</span>
+                               <span class="s1">&#39;expGroup&#39;</span><span class="p">:</span> <span class="n">expGroup</span><span class="p">,</span>
+                               <span class="s1">&#39;comment&#39;</span><span class="p">:</span> <span class="n">comment</span><span class="p">}</span>
+
+        <span class="c1"># 1) initialize object as a TwoPhotonImagingTrial</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">imparams</span><span class="o">=</span><span class="n">imparams</span><span class="p">,</span> <span class="n">cells</span><span class="o">=</span><span class="n">cells</span><span class="p">,</span> <span class="n">tmdata</span><span class="o">=</span><span class="n">tmdata</span><span class="p">,</span> <span class="o">**</span><span class="n">initialization_dict</span><span class="p">)</span>
+
+        <span class="c1"># Initialize Attributes:</span>
+
+        <span class="c1"># PHOTOSTIM PROTOCOL</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stim_start_times</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nomulti_sig_units</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># attr&#39;s for processing/analysis of photostim experiments</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__prestim_sec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1">#: length of pre stim trace collected (in secs)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__poststim_sec</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mf">3.0</span>  <span class="c1">#: length of post stim trace collected (in secs)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__prestim_response_window</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
+            <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.500</span>  <span class="c1">#: time window for collecting pre-stim measurement (units: msec)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__poststim_response_window</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
+            <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.500</span>  <span class="c1">#: time window for collecting post-stim measurement (units: msec)</span>
+
+        <span class="c1"># attr&#39;s for statistical analysis of photostim trials responses</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">photostimResponsesData</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># anndata object for collecting photostim responses and associated metadata for experiment and cells</span>
+
+        <span class="c1"># TODO update comment descriptions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_trials</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># all trials for each cell, dff detrended</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_amplitudes</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># all amplitudes of response between dff test periods</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stas</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># avg of all trials for each cell, dff</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sta_amplitudes</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># avg amplitude of response between dff test periods</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">prob_response</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># probability of response of cell to photostim trial; obtained from single trial significance (ROB suggestion)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_tests</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># result from related samples t-test between dff test periods</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wilcoxons</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1">#:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sig_units</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sta_sig</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># based on t-test between dff test periods</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sta_sig_nomulti</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># as above, no multiple comparisons correction</span>
+        <span class="c1">########</span>
+
+        <span class="c1"># initializing cellsdata processing, cellsdata analysis and/or results associated attr&#39;s</span>
+
+        <span class="c1"># PHOTOSTIM SLM TARGETS</span>
+        <span class="c1"># TODO add attr&#39;s related to numpy array&#39;s and pandas dataframes for photostim trials - SLM targets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">responses_SLMtargets</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># dF/prestimF responses for all SLM targets for each photostim trial</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">responses_SLMtargets_tracedFF</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># poststim dFF - prestim dFF responses for all SLM targets for each photostim trial</span>
+
+        <span class="c1"># ALL CELLS (from suite2p ROIs)</span>
+        <span class="c1"># TODO add attr&#39;s related to numpy array&#39;s and pandas dataframes for photostim trials - suite2p ROIs</span>
+
+        <span class="c1"># FUNCTIONS TO RUN AFTER init&#39;s of ALL ATTR&#39;S</span>
+
+        <span class="c1"># 3) process 2p stim protocol and collect imaging frames at stim starts and during photostimulation</span>
+        <span class="c1"># set naparm path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">twopstim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">twopstim</span><span class="o">.</span><span class="n">stim_start_frames</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">twopstim</span><span class="o">.</span><span class="n">photostim_frames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">photostimProcessing</span><span class="p">(</span>
+            <span class="n">naparm_path</span><span class="o">=</span><span class="n">naparm_path</span><span class="p">)</span>
+
+        <span class="c1"># 6) Collect Flu traces from Suite2p ROIs:</span>
+        <span class="c1">#   create:</span>
+        <span class="c1">#       1) array of dFF pre + post stim Flu snippets for each stim and cell [num cells x num peri-stim frames collected x num stims]</span>
+        <span class="c1">#       2) photostim response amplitudes in a dataframe for each cell and each photostim</span>
+        <span class="c1">#       3) save photostim response amplitudes to AnnotatedData</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">photostimProcessingAllCells</span><span class="p">()</span>
+
+        <span class="c1"># save final object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;\----- CREATED AllOpticalTrial cellsdata object for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">t_series_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pkl_path</span><span class="p">:</span>
+            <span class="n">lastmod</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getmtime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pkl_path</span><span class="p">))</span>
+            <span class="n">information</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_series_name</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">information</span><span class="si">}</span><span class="s2">) TwoPhotonImagingTrial.alloptical experimental trial object, last saved: </span><span class="si">{</span><span class="n">lastmod</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot; -- unsaved TwoPhotonImagingTrial.alloptical experimental trial object -- &quot;</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;TwoPhotonImagingTrial.alloptical experimental trial object&quot;</span>
+
+<div class="viewcode-block" id="AllOpticalTrial.AllOpticalTrialfromImagingTrial"><a class="viewcode-back" href="../../../reference.html#imagingplus.workflows.AllOptical.AllOpticalTrial.AllOpticalTrialfromImagingTrial">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">AllOpticalTrialfromImagingTrial</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">naparm_path</span><span class="p">,</span> <span class="n">imaging_trial</span><span class="p">:</span> <span class="n">ImagingTrial</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Alternative constructor for AllOpticalTrial.</span>
+
+<span class="sd">        Creates an all optical trial from an existing imaging trial.</span>
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :param naparm_path:</span>
+<span class="sd">        :param imaging_trial:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">initialization_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;naparm_path&#39;</span><span class="p">:</span> <span class="n">naparm_path</span><span class="p">,</span> <span class="s1">&#39;dataPath&#39;</span><span class="p">:</span> <span class="n">imaging_trial</span><span class="o">.</span><span class="n">dataPath</span><span class="p">,</span>
+                               <span class="s1">&#39;saveDir&#39;</span><span class="p">:</span> <span class="n">imaging_trial</span><span class="o">.</span><span class="n">saveDir</span><span class="p">,</span>
+                               <span class="s1">&#39;expID&#39;</span><span class="p">:</span> <span class="n">imaging_trial</span><span class="o">.</span><span class="n">expID</span><span class="p">,</span> <span class="s1">&#39;group&#39;</span><span class="p">:</span> <span class="n">imaging_trial</span><span class="o">.</span><span class="n">expGroup</span><span class="p">,</span>
+                               <span class="s1">&#39;comment&#39;</span><span class="p">:</span> <span class="n">imaging_trial</span><span class="o">.</span><span class="n">comment</span><span class="p">}</span>
+
+        <span class="n">aotrial</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">initialization_dict</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">aotrial</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">twopstim_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;path to folder containing photostimulation protocols output by NAPARM</span>
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">twopstim</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">twopstim</span><span class="o">.</span><span class="n">path</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">prestim_sec</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;length of pre stim trace collected (secs)</span>
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__prestim_sec</span>
+
+    <span class="nd">@prestim_sec</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">prestim_sec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TODO fill explanation and add parameters</span>
+<span class="sd">        :param val:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">==</span> <span class="nb">float</span><span class="p">,</span> <span class="s1">&#39;can only set prestim_sec with int or float&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__prestim_sec</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">poststim_sec</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;length of post stim trace collected (secs)</span>
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__poststim_sec</span>
+
+    <span class="nd">@poststim_sec</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">poststim_sec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TODO fill explanation and add parameters</span>
+<span class="sd">        :param val:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">==</span> <span class="nb">float</span><span class="p">,</span> <span class="s1">&#39;can only set poststim_sec with int or float&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__prestim_sec</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">prestim_response_window</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;time window for collecting pre-stim measurement (units: msec)</span>
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__prestim_response_window</span>
+
+    <span class="nd">@prestim_response_window</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">prestim_response_window</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TODO fill explanation and add parameters</span>
+<span class="sd">        :param val:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">==</span> <span class="nb">float</span><span class="p">,</span> <span class="s1">&#39;can only set prestim_response_window with int or float&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__prestim_response_window</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">prestim_response_frames_window</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;num frames for measuring Flu trace before each photostimulation trial during photostim response measurement (units: frames)</span>
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">fps</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">prestim_response_window</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">poststim_response_window</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;time window for collecting post-stim measurement (units: msec)</span>
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__poststim_response_window</span>
+
+    <span class="nd">@poststim_response_window</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">poststim_response_window</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TODO fill explanation and add parameters</span>
+<span class="sd">        :param val:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">==</span> <span class="nb">float</span><span class="p">,</span> <span class="s1">&#39;can only set poststim_response_window with int or float&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__poststim_response_window</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">poststim_response_frames_window</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;num frames for measuring Flu response after each photostimulation trial during photostim response measurement (units: frames)</span>
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">fps</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">poststim_response_window</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">prestim_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;num frames for collecting Flu trace after each photostimulation trial (units: frames)</span>
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__prestim_sec</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">fps</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">poststim_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;num frames for collecting Flu trace after each photostimulation trial (units: frames)</span>
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__poststim_sec</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">fps</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_stims</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1">#: TODO set property using anndata responses shape property assigning from array: cells x Flu frames x # of photostim trials</span>
+        <span class="sd">&quot;&quot;&quot;number of photostimulation trials</span>
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">stim_start_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Imaging frames corresponding to start of photostimulation trials.</span>
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># todo use anndata for getting this</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">photostim_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Imaging frames during photostimulation trials.</span>
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># todo just use anndata for getting this</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">stim_duration_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Duration of photostimulation as number of frames.</span>
+<span class="sd">        Note: Removing 1 more frame than the stim duration, as the stim isn&#39;t perfectly aligned with the start of the imaging frame</span>
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;twopstim&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s1">&#39;cannot retrieve stim_duration_frames. photostimulation analysis module cannot be found under .twopstim&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">duration_ms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">twopstim</span><span class="o">.</span><span class="n">stim_dur</span>
+            <span class="n">frame_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">fps</span>
+            <span class="n">duration_frames</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">((</span><span class="n">duration_ms</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">*</span> <span class="n">frame_rate</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration_frames</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">prestim_test_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;slice representing prestim response frames</span>
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prestim_frames</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">prestim_response_frames_window</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">prestim_frames</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">poststim_test_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;slice representing poststim response frames</span>
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">stim_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prestim_frames</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim_duration_frames</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[</span><span class="n">stim_end</span><span class="p">:</span> <span class="n">stim_end</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">poststim_response_frames_window</span><span class="p">]</span>
+
+<div class="viewcode-block" id="AllOpticalTrial.photostimProcessing"><a class="viewcode-back" href="../../../reference.html#imagingplus.workflows.AllOptical.AllOpticalTrial.photostimProcessing">[docs]</a>    <span class="k">def</span> <span class="nf">photostimProcessing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">naparm_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Processing alloptical trial photostimulation protocol.</span>
+<span class="sd">        - parse NAPARM protocol and SLM Targets information under .twopstim</span>
+<span class="sd">        - collect stimulation timing synchronized to imaging cellsdata frame timings</span>
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :param naparm_path:</span>
+<span class="sd">        :return:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">twopstim</span> <span class="o">=</span> <span class="n">Targets</span><span class="p">(</span><span class="n">naparm_path</span><span class="o">=</span><span class="n">naparm_path</span><span class="p">,</span> <span class="n">frame_x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">frame_x</span><span class="p">,</span> <span class="n">frame_y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">frame_y</span><span class="p">,</span> <span class="n">pix_sz_x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">pix_sz_x</span><span class="p">,</span> <span class="n">pix_sz_y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">pix_sz_y</span><span class="p">)</span>
+
+        <span class="c1"># find stim frames</span>
+        <span class="n">stim_start_frames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">stim</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tmdata</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;stim_start_times&#39;</span><span class="p">]:</span>
+            <span class="c1"># the index of the frame immediately preceeding stim</span>
+            <span class="n">stim_start_frame</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tmdata</span><span class="o">.</span><span class="n">frame_times</span><span class="p">)</span> <span class="k">if</span> <span class="n">sample</span> <span class="o">-</span> <span class="n">stim</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">stim_start_frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stim_start_frame</span><span class="p">)</span>
+
+        <span class="c1"># find all photostimulation frames in imaging series</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">\----- Finding photostimulation frames in imaging frames ...&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;# of photostim frames calculated per stim. trial: &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim_duration_frames</span><span class="p">)</span>
+
+        <span class="n">photostim_frames</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">stim_start_frames</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">stim_duration_frames</span><span class="p">):</span>
+                <span class="n">photostim_frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">|- # of Imaging frames:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">n_frames</span><span class="p">,</span>
+              <span class="s1">&#39;frames&#39;</span><span class="p">)</span>  <span class="c1">#: todo set this to n_frames property from trialdata</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">|- # of Photostimulation frames:&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">photostim_frames</span><span class="p">),</span> <span class="s1">&#39;frames&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">twopstim</span><span class="p">,</span> <span class="n">stim_start_frames</span><span class="p">,</span> <span class="n">photostim_frames</span></div>
+
+    <span class="c1">#### TODO review attr&#39;s and write docs from the following functions: // start</span>
+
+    <span class="c1">### ALLOPTICAL PROCESSING OF TRACES</span>
+    <span class="c1">## ... no methods determined here yet...</span>
+
+    <span class="c1">### ALLOPTICAL ANALYSIS - FOCUS ON SLM TARGETS RELATED METHODS - TEST all methods below</span>
+    <span class="c1"># todo test</span>
+<div class="viewcode-block" id="AllOpticalTrial.getTargetsStimTraceSnippets"><a class="viewcode-back" href="../../../reference.html#imagingplus.workflows.AllOptical.AllOpticalTrial.getTargetsStimTraceSnippets">[docs]</a>    <span class="k">def</span> <span class="nf">getTargetsStimTraceSnippets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">targets_idx</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">pre_stim</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+                                    <span class="n">post_stim</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mf">4.0</span><span class="p">,</span> <span class="n">stims</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Collect photostimulation timed snippets of signal from selected targets.</span>
+
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :param stims:</span>
+<span class="sd">        :param targets_idx: integer for the index of target cell to process</span>
+<span class="sd">        :param subselect_cells: ls of cells to subset from the overall set of traces (use in place of targets_idx if desired)</span>
+<span class="sd">        :param pre_stim: number of frames to use as pre-stim</span>
+<span class="sd">        :param post_stim: number of frames to use as post-stim</span>
+<span class="sd">        :param filter_sz: whether to filter out stims that are occuring seizures</span>
+<span class="sd">        :return: lists of individual targets dFF traces, and averaged targets dFF over all stims for each target</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">prestim_sec</span> <span class="o">=</span> <span class="n">pre_stim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">poststim_sec</span> <span class="o">=</span> <span class="n">post_stim</span>
+
+        <span class="n">pre_stim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prestim_frames</span>
+        <span class="n">post_stim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">poststim_frames</span>
+
+        <span class="k">if</span> <span class="n">stims</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">stim_timings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim_start_frames</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">stim_timings</span> <span class="o">=</span> <span class="n">stims</span>
+
+        <span class="n">process</span> <span class="o">=</span> <span class="s1">&#39;trace dFF&#39;</span>
+        <span class="k">if</span> <span class="n">targets_idx</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="n">data_to_process</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dFF_SLMTargets</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">targets_idx</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span><span class="p">,</span> <span class="s1">&#39;provide targets_idx as list on cell indexes to collect.&#39;</span>
+            <span class="n">data_to_process</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">dFF_SLMTargets</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">targets_idx</span><span class="p">])</span>
+
+        <span class="n">num_cells</span> <span class="o">=</span> <span class="n">data_to_process</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;collecting stim traces for </span><span class="si">{</span><span class="n">num_cells</span><span class="si">}</span><span class="s1"> cells &#39;</span><span class="p">,</span> <span class="n">num_cells</span><span class="p">)</span>
+
+        <span class="c1"># collect photostim timed trace snippets traces of photostim targets</span>
+        <span class="n">flu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">data_to_process</span><span class="p">[:,</span> <span class="n">stim</span> <span class="o">-</span> <span class="n">pre_stim</span><span class="p">:</span> <span class="n">stim</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim_duration_frames</span> <span class="o">+</span> <span class="n">post_stim</span><span class="p">]</span> <span class="k">for</span> <span class="n">stim</span> <span class="ow">in</span>
+                          <span class="n">stim_timings</span><span class="p">])</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;shape photostim. trials trace snippets array: </span><span class="si">{</span><span class="n">flu</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">flu</span></div>
+
+    <span class="c1"># todo test</span>
+<div class="viewcode-block" id="AllOpticalTrial.findTargetedCells"><a class="viewcode-back" href="../../../reference.html#imagingplus.workflows.AllOptical.AllOpticalTrial.findTargetedCells">[docs]</a>    <span class="k">def</span> <span class="nf">findTargetedCells</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;finding s2p cell ROIs that were also SLM targets (or more specifically within the target areas as specified by _findTargetAreas - include 15um radius from center coordinate of spiral)</span>
+<span class="sd">        Make a binary mask of the targets and multiply by an image of the cells</span>
+<span class="sd">        to find cells that were targeted</span>
+
+<span class="sd">        --- LAST UPDATED NOV 6 2021 - copied over from Vape ---</span>
+
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :param plot:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">\----- Searching for targeted cells in annotated cells...&#39;</span><span class="p">)</span>
+
+        <span class="c1">## TODO add necessary edits for multi-plane experiments</span>
+
+        <span class="n">targets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">([</span><span class="s1">&#39;non-target&#39;</span> <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span>
+                        <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="o">.</span><span class="n">n_cells</span><span class="p">)])</span>  <span class="c1"># initialize all cells as non-target, add as annotation to .cells</span>
+
+        <span class="c1">##### IDENTIFYING S2P ROIs THAT ARE WITHIN THE SLM TARGET SPIRAL AREAS</span>
+        <span class="c1"># make all target area coords in to a binary mask</span>
+        <span class="n">targ_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">frame_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">frame_y</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;uint16&#39;</span><span class="p">)</span>
+        <span class="n">target_areas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">twopstim</span><span class="o">.</span><span class="n">target_areas</span><span class="p">)</span>
+        <span class="n">targ_img</span><span class="p">[</span><span class="n">target_areas</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">target_areas</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># make an image of every cell area, filled with the index of that cell</span>
+        <span class="n">cell_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">targ_img</span><span class="p">)</span>
+
+        <span class="n">cell_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="o">.</span><span class="n">cell_coords</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">cell_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="o">.</span><span class="n">cell_coords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">coord</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">cell_x</span><span class="p">,</span> <span class="n">cell_y</span><span class="p">)):</span>
+            <span class="n">cell_img</span><span class="p">[</span><span class="n">coord</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># binary mask x cell image to get the cells that overlap with target areas</span>
+        <span class="n">targ_cell</span> <span class="o">=</span> <span class="n">cell_img</span> <span class="o">*</span> <span class="n">targ_img</span>
+
+        <span class="n">targ_cell_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">targ_cell</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># correct the cell id due to zero indexing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">targeted_cells</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="o">.</span><span class="n">n_cells</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;bool&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">targeted_cells</span><span class="p">[</span><span class="n">targ_cell_ids</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_targets</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="o">.</span><span class="n">cell_id</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">targeted_cells</span><span class="p">)[</span>
+            <span class="mi">0</span><span class="p">]]</span>  <span class="c1"># get list of cells that were photostim targetted -- todo turn into property accessing targets annotations of .cells</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_targeted_cells</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">targeted_cells</span><span class="p">)</span>  <span class="c1"># todo turn into property accessing targets annotations of .cells</span>
+
+        <span class="c1"># add targeted cells to targets</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">cell</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="o">.</span><span class="n">cell_id</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">cell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_targets</span><span class="p">:</span>
+                <span class="n">targets</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;target&#39;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">|- Search completed.&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">|- Number of targeted cells: &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_targeted_cells</span><span class="p">)</span>
+
+        <span class="c1"># IDENTIFYING S2P ROIs THAT ARE WITHIN THE EXCLUSION ZONES OF THE SLM TARGETS</span>
+        <span class="c1"># make all target area coords in to a binary mask</span>
+        <span class="n">targ_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">frame_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">frame_y</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;uint16&#39;</span><span class="p">)</span>
+        <span class="n">target_areas_exclude</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">twopstim</span><span class="o">.</span><span class="n">target_areas_exclude</span><span class="p">)</span>
+        <span class="n">targ_img</span><span class="p">[</span><span class="n">target_areas_exclude</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">target_areas_exclude</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># make an image of every cell area, filled with the index of that cell</span>
+        <span class="n">cell_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">targ_img</span><span class="p">)</span>
+
+        <span class="n">cell_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="o">.</span><span class="n">cell_coords</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">cell_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="o">.</span><span class="n">cell_coords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">coord</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">cell_x</span><span class="p">,</span> <span class="n">cell_y</span><span class="p">)):</span>
+            <span class="n">cell_img</span><span class="p">[</span><span class="n">coord</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># binary mask x cell image to get the cells that overlap with target areas</span>
+        <span class="n">targ_cell</span> <span class="o">=</span> <span class="n">cell_img</span> <span class="o">*</span> <span class="n">targ_img</span>
+
+        <span class="n">targ_cell_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">targ_cell</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># correct the cell id due to zero indexing</span>
+        <span class="n">exclude_cells</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="o">.</span><span class="n">n_cells</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;bool&#39;</span><span class="p">)</span>
+        <span class="n">exclude_cells</span><span class="p">[</span><span class="n">targ_cell_ids</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">cells_exclude</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="o">.</span><span class="n">n_cells</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
+                         <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">exclude_cells</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span>  <span class="c1"># get ls of s2p cells that were photostim targetted</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_exclude_cells</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">exclude_cells</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">|-Search completed.&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">|-Number of exclude Suite2p ROIs: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_exclude_cells</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># define non targets from suite2p ROIs (exclude cells in the SLM targets exclusion - .s2p_cells_exclude)</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">cell</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="o">.</span><span class="n">cell_id</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">cell</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cells_exclude</span><span class="p">:</span>
+                <span class="n">targets</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;exclude&#39;</span>
+
+        <span class="k">if</span> <span class="n">plot</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+            <span class="n">targ_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">frame_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">frame_y</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;uint16&#39;</span><span class="p">)</span>
+            <span class="n">target_areas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">twopstim</span><span class="o">.</span><span class="n">target_areas</span><span class="p">)</span>
+            <span class="n">targ_img</span><span class="p">[</span><span class="n">target_areas</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">target_areas</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">targ_img</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Greys_r&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;SLM targets areas&#39;</span><span class="p">)</span>
+            <span class="c1"># for (x, y) in self.twopstim.target_coords_all:</span>
+            <span class="c1">#     ax.scatter(x=x, y=y, edgecolors=&#39;white&#39;, facecolors=&#39;none&#39;, linewidths=1.0)</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+        <span class="c1"># add targets classification as observations annotation to .cellsdata anndata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">add_obs</span><span class="p">(</span><span class="n">obs_name</span><span class="o">=</span><span class="s1">&#39;photostim_class&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">targets</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="o">.</span><span class="n">cellsdata</span><span class="p">[</span><span class="s1">&#39;photostim_class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">targets</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">|- Number of non-target ROIs: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="o">.</span><span class="n">cellsdata</span><span class="p">[</span><span class="s1">&#39;photostim_class&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;non-target&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+    <span class="c1"># todo code and test</span>
+    <span class="k">def</span> <span class="nf">_makePhotostimTrialFluSnippets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane_flu</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                                       <span class="n">stim_frames</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>  <span class="c1"># base code copied from Vape&#39;s _makeFluTrials</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make Flu snippets timed on photostimulation, for each cell, for each stim instance. [cells x Flu frames x stims]  # TODO triple check order of this array&#39;s dimensions</span>
+
+<span class="sd">        Inputs:</span>
+<span class="sd">            plane_flu   - array of dff traces for all cells for this plane only</span>
+<span class="sd">            plane       - imaging plane corresponding to plane_flu, default = 0 (for one plane datasets)</span>
+<span class="sd">            stim_frames - optional, if provided then only use these photostim frames to collect photostim_array</span>
+<span class="sd">        Outputs:</span>
+<span class="sd">            photostim_array     - dFF peri-photostim Flu array [cell x Flu frames x trial]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">\- Collecting peri-stim traces ...&#39;</span><span class="p">)</span>
+
+        <span class="n">trial_array</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">_stims</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim_start_frames</span> <span class="k">if</span> <span class="n">stim_frames</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">stim_frames</span>
+
+        <span class="k">assert</span> <span class="n">plane_flu</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;plane_flu needs to be of ndim: 2&#39;</span>
+        <span class="k">assert</span> <span class="n">_stims</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim_start_frames</span><span class="p">,</span> <span class="s2">&quot;stims not found in the stim frames list of this plane&quot;</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">stim</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">_stims</span><span class="p">):</span>
+            <span class="c1"># get frame indices of entire trial from pre-stim start to post-stim end</span>
+            <span class="n">trial_frames</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[</span><span class="n">stim</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">prestim_frames</span><span class="p">:</span> <span class="n">stim</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">poststim_frames</span><span class="p">]</span>
+
+            <span class="c1"># use trial frames to extract this trial for every cell</span>
+            <span class="n">flu_trial</span> <span class="o">=</span> <span class="n">plane_flu</span><span class="p">[:,</span> <span class="n">trial_frames</span><span class="p">]</span>
+            <span class="n">flu_trial_len</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prestim_frames</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim_duration_frames</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">poststim_frames</span>
+
+            <span class="c1"># todo test if needed or better way to implement: catch timeseries which ended in the middle of an ongoing photostim instance</span>
+            <span class="k">if</span> <span class="n">flu_trial</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">flu_trial_len</span><span class="p">:</span>
+                <span class="c1"># only append trials of the correct length - will catch corrupt/incomplete cellsdata and not include</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">trial_array</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">trial_array</span> <span class="o">=</span> <span class="n">flu_trial</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">trial_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">((</span><span class="n">trial_array</span><span class="p">,</span> <span class="n">flu_trial</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;**incomplete trial detected and not appended to trial_array**&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Finished collecting peri-stim traces, out shape: </span><span class="si">{</span><span class="n">trial_array</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">trial_array</span>
+
+    <span class="c1"># todo test</span>
+    <span class="k">def</span> <span class="nf">_normalize_snippets_prestim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">snippets</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Normalize each trace snippet to pre-stim period.</span>
+
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :param snippets:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">snippets</span> <span class="o">=</span> <span class="n">snippets</span> <span class="k">if</span> <span class="n">snippets</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets_snippets</span>
+        <span class="n">num_cells</span> <span class="o">=</span> <span class="n">snippets</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">targets_dff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">num_cells</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stim_start_frames</span><span class="p">),</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">prestim_frames</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim_duration_frames</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">poststim_frames</span><span class="p">])</span>
+
+        <span class="c1"># create pre-stim period mean substracted photostim trials trace snippets</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">traces</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">snippets</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">trace</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">traces</span><span class="p">):</span>
+                <span class="n">mean_pre</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">trace</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">prestim_frames</span><span class="p">])</span>
+                <span class="n">trace_dff</span> <span class="o">=</span> <span class="p">(</span><span class="n">trace</span> <span class="o">-</span> <span class="n">mean_pre</span><span class="p">)</span>
+                <span class="n">targets_dff</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">trace_dff</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;shape photostim. trials trace snippets array: </span><span class="si">{</span><span class="n">targets_dff</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">targets_dff</span>
+
+    <span class="c1"># todo test</span>
+<div class="viewcode-block" id="AllOpticalTrial.calculatePhotoresponses"><a class="viewcode-back" href="../../../reference.html#imagingplus.workflows.AllOptical.AllOpticalTrial.calculatePhotoresponses">[docs]</a>    <span class="k">def</span> <span class="nf">calculatePhotoresponses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">snippets</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">stims_to_use</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculations of responses (post-stim - pre-stim) to photostimulation of SLM Targets of the provided snippets array.</span>
+
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :param snippets:</span>
+<span class="sd">        :param stims_to_use: ls of stims to retrieve photostim trial dFF responses</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">stims_to_use</span> <span class="ow">is</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="n">stims_to_use</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stim_start_frames</span><span class="p">))</span>
+            <span class="n">stims_idx</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">stim_start_frames</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">stim</span><span class="p">)</span> <span class="k">for</span> <span class="n">stim</span> <span class="ow">in</span> <span class="n">stims_to_use</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">stims_idx</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">stim_start_frames</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">stim</span><span class="p">)</span> <span class="k">for</span> <span class="n">stim</span> <span class="ow">in</span> <span class="n">stims_to_use</span><span class="p">]</span>
+
+        <span class="c1"># method 1) initializing pandas df that collects responses of stimulations</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">stim</span> <span class="ow">in</span> <span class="n">stims_idx</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">stim</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">snippets</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">snippets</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>  <span class="c1"># population dataframe</span>
+
+        <span class="c1"># calculate photostimulation responses</span>
+        <span class="n">cell_ids</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span>
+        <span class="k">for</span> <span class="n">target_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cell_ids</span><span class="p">)):</span>
+            <span class="n">responses</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">stim_idx</span> <span class="ow">in</span> <span class="n">stims_idx</span><span class="p">:</span>
+                <span class="n">dff_trace</span> <span class="o">=</span> <span class="n">snippets</span><span class="p">[</span><span class="n">target_idx</span><span class="p">][</span><span class="n">stim_idx</span><span class="p">]</span>
+                <span class="n">response_result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dff_trace</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prestim_frames</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim_duration_frames</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">prestim_frames</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim_duration_frames</span> <span class="o">+</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">poststim_response_frames_window</span><span class="p">])</span>  <span class="c1"># calculate the dF over pre-stim mean F response within the response window</span>
+                <span class="n">responses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">response_result</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+                <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">target_idx</span><span class="p">,</span> <span class="n">stim_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_result</span>
+
+        <span class="c1"># method 2) alternate method for calculating photostim responses</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__analysis_array</span> <span class="o">=</span> <span class="n">snippets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__pre_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__analysis_array</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prestim_test_slice</span><span class="p">,</span> <span class="p">:],</span>
+                                   <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># [cells x prestim frames] (avg&#39;d taken over all stims)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__post_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__analysis_array</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">poststim_test_slice</span><span class="p">,</span> <span class="p">:],</span>
+                                    <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># [cells x poststim frames] (avg&#39;d taken over all stims)</span>
+
+        <span class="c1"># Vape&#39;s version for collection photostim response amplitudes</span>
+        <span class="c1"># calculate amplitude of response for all cells, all trials</span>
+        <span class="n">all_amplitudes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__post_array</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">__pre_array</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">n_units</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stim_start_frames</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">all_amplitudes</span><span class="p">)</span>
+
+        <span class="c1"># todo compare two methods</span>
+
+        <span class="k">return</span> <span class="n">df</span></div>
+
+    <span class="c1"># todo code up</span>
+    <span class="k">def</span> <span class="nf">_TargetsPhotostimResponsesAnndata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create an anndata table for photostimulation responses of Targets.</span>
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="c1"># todo test</span>
+    <span class="k">def</span> <span class="nf">_CellsPhotostimResponsesAnndata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">photostimResponseAmplitudes</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates annotated cellsdata (see anndata library) object based around the Ca2+ matrix of the imaging trial.</span>
+
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :param photostimResponseAmplitudes:</span>
+<span class="sd">        :return:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># try:</span>
+        <span class="c1"># SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata</span>
+        <span class="c1"># build dataframe for obs_meta from suite2p stat information</span>
+        <span class="n">obs_meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="o">.</span><span class="n">cellsdata</span>
+
+        <span class="c1"># SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata</span>
+        <span class="c1"># build dataframe for var annot&#39;s from Paq file</span>
+        <span class="n">var_meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tmdata</span><span class="o">.</span><span class="n">data</span>
+        <span class="c1"># var_meta.columns = photostimResponseAmplitudes.columns</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">\----- CREATING annotated cellsdata object for photostim responses using AnnData:&quot;</span><span class="p">)</span>
+        <span class="n">photostimResponseAmplitudes</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">var_meta</span><span class="o">.</span><span class="n">columns</span>
+        <span class="n">adata</span> <span class="o">=</span> <span class="n">AnnotatedData</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">photostimResponseAmplitudes</span><span class="p">),</span> <span class="n">obs</span><span class="o">=</span><span class="n">obs_meta</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="n">var_meta</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{</span><span class="n">adata</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">adata</span>
+
+<div class="viewcode-block" id="AllOpticalTrial.photostimProcessingAllCells"><a class="viewcode-back" href="../../../reference.html#imagingplus.workflows.AllOptical.AllOpticalTrial.photostimProcessingAllCells">[docs]</a>    <span class="k">def</span> <span class="nf">photostimProcessingAllCells</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plane</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>  <span class="c1"># NOTE: not setup for multi-plane imaging processing yet...</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Take dfof trace for entire timeseries and break it up in to individual trials, calculate</span>
+<span class="sd">        the mean amplitudes of response and statistical significance across all trials</span>
+
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        Inputs:</span>
+<span class="sd">        :param plane:             - imaging plane n</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">----------------------------------------------------------------&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;running trial Processing for all cells &#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;----------------------------------------------------------------&#39;</span><span class="p">)</span>
+
+        <span class="c1"># make trial arrays from dff cellsdata shape: [cells x stims x frames]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">photostimFluArray</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_makePhotostimTrialFluSnippets</span><span class="p">(</span><span class="n">plane_flu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">normalize_dff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imdata</span><span class="o">.</span><span class="n">imdata</span><span class="p">))</span>
+            <span class="n">photostimResponseAmplitudes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculatePhotoresponses</span><span class="p">(</span><span class="n">photostimFluArray</span><span class="p">)</span>
+
+            <span class="c1">## create new anndata object for storing measured photostim responses from cellsdata, with other relevant cellsdata</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_CellsPhotostimResponsesAnndata</span><span class="p">(</span>
+                <span class="n">photostimResponseAmplitudes</span><span class="o">=</span><span class="n">photostimResponseAmplitudes</span><span class="p">)</span>
+
+            <span class="c1"># extend annotated imaging cellsdata object with imaging frames in photostim and stim_start_frames as additional keys in vars</span>
+            <span class="n">__frames_in_stim</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">n_frames</span>
+            <span class="n">__stim_start_frame</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">n_frames</span>
+            <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">twopstim</span><span class="o">.</span><span class="n">photostim_frames</span><span class="p">:</span> <span class="n">__frames_in_stim</span><span class="p">[</span><span class="n">frame</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">twopstim</span><span class="o">.</span><span class="n">stim_start_frames</span><span class="p">:</span> <span class="n">__stim_start_frame</span><span class="p">[</span><span class="n">frame</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">add_var</span><span class="p">(</span><span class="n">var_name</span><span class="o">=</span><span class="s1">&#39;photostim_frame&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">__frames_in_stim</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">add_var</span><span class="p">(</span><span class="n">var_name</span><span class="o">=</span><span class="s1">&#39;stim_start_frame&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">__stim_start_frame</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">photostimFluArray</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">photostimResponseAmplitudes</span> <span class="o">=</span> <span class="n">photostimFluArray</span><span class="p">,</span> <span class="n">photostimResponseAmplitudes</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Photostim. processing of fluorescence signal responses cannot be performed without Suite2p cellsdata.&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AllOpticalTrial.statisticalProcessingAllCells"><a class="viewcode-back" href="../../../reference.html#imagingplus.workflows.AllOptical.AllOpticalTrial.statisticalProcessingAllCells">[docs]</a>    <span class="k">def</span> <span class="nf">statisticalProcessingAllCells</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Runs statistical processing on photostim response arrays&quot;&quot;&quot;</span>
+
+        <span class="kn">from</span> <span class="nn">imagingplus._archive.stats</span> <span class="kn">import</span> <span class="n">runWilcoxonsTest</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wilcoxons</span> <span class="o">=</span> <span class="n">runWilcoxonsTest</span><span class="p">(</span><span class="n">array1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__pre_array</span><span class="p">,</span> <span class="n">array2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__post_array</span><span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">imagingplus._archive.stats</span> <span class="kn">import</span> <span class="n">sigTestAvgResponse</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sig_units</span> <span class="o">=</span> <span class="n">sigTestAvgResponse</span><span class="p">(</span><span class="n">trial</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">p_vals</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wilcoxons</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AllOpticalTrial.staSignificance"><a class="viewcode-back" href="../../../reference.html#imagingplus.workflows.AllOptical.AllOpticalTrial.staSignificance">[docs]</a>    <span class="k">def</span> <span class="nf">staSignificance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TODO docstring</span>
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :param test:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sta_sig</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">n_planes</span><span class="p">):</span>
+
+            <span class="c1"># set this to true if you want to multiple comparisons correct for the number of cells</span>
+            <span class="n">multi_comp_correction</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">multi_comp_correction</span><span class="p">:</span>
+                <span class="n">divisor</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">divisor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_units</span><span class="p">[</span><span class="n">plane</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">test</span> <span class="o">==</span> <span class="s1">&#39;t_test&#39;</span><span class="p">:</span>
+                <span class="n">p_vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_tests</span><span class="p">[</span><span class="n">plane</span><span class="p">]]</span>
+            <span class="k">if</span> <span class="n">test</span> <span class="o">==</span> <span class="s1">&#39;wilcoxon&#39;</span><span class="p">:</span>
+                <span class="n">p_vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">wilcoxons</span><span class="p">[</span><span class="n">plane</span><span class="p">]]</span>
+
+            <span class="k">if</span> <span class="n">multi_comp_correction</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;performing t-test on cells with mutliple comparisons correction&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;performing t-test on cells without mutliple comparisons correction&#39;</span><span class="p">)</span>
+
+            <span class="n">sig_units</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">p_vals</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mf">0.05</span> <span class="o">/</span> <span class="n">divisor</span><span class="p">):</span>
+                    <span class="n">unit_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_id</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+                    <span class="c1"># print(&#39;stimulation has significantly changed fluoresence of s2p unit {}, its P value is {}&#39;.format(unit_index, p))</span>
+                    <span class="n">sig_units</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">unit_index</span><span class="p">)</span>  <span class="c1"># significant units</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">sta_sig</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sig_units</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AllOpticalTrial.singleTrialSignificance"><a class="viewcode-back" href="../../../reference.html#imagingplus.workflows.AllOptical.AllOpticalTrial.singleTrialSignificance">[docs]</a>    <span class="k">def</span> <span class="nf">singleTrialSignificance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TODO docstring</span>
+<span class="sd">        TODO fill explanation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">single_sig</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># single trial significance value for each trial for each cell in each plane</span>
+
+        <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">n_planes</span><span class="p">):</span>
+
+            <span class="n">single_sigs</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">cell</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell_id</span><span class="p">[</span><span class="n">plane</span><span class="p">]):</span>
+
+                <span class="n">single_sig</span> <span class="o">=</span> <span class="p">[]</span>
+
+                <span class="k">for</span> <span class="n">trial</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_trials</span><span class="p">):</span>
+
+                    <span class="n">pre_f_trial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_trials</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">cell</span><span class="p">][</span><span class="n">trial</span><span class="p">][:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pre_frames</span><span class="p">]</span>
+                    <span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">pre_f_trial</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_amplitudes</span><span class="p">[</span><span class="n">plane</span><span class="p">][</span><span class="n">cell</span><span class="p">][</span><span class="n">trial</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">std</span><span class="p">:</span>
+                        <span class="n">single_sig</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">single_sig</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+                <span class="n">single_sigs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">single_sig</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">single_sig</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">single_sigs</span><span class="p">)</span></div>
+
+    <span class="c1">## NOT REVIEWED FOR USAGE YET</span>
+
+    <span class="c1"># other useful functions for all-optical analysis</span>
+<div class="viewcode-block" id="AllOpticalTrial.run_stamm_nogui"><a class="viewcode-back" href="../../../reference.html#imagingplus.workflows.AllOptical.AllOpticalTrial.run_stamm_nogui">[docs]</a>    <span class="k">def</span> <span class="nf">run_stamm_nogui</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numDiffStims</span><span class="p">,</span> <span class="n">startOnStim</span><span class="p">,</span> <span class="n">everyXStims</span><span class="p">,</span> <span class="n">preSeconds</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">postSeconds</span><span class="o">=</span><span class="mf">1.25</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        run STAmoviemaker for current trial</span>
+<span class="sd">        TODO add parameters</span>
+<span class="sd">        :param numDiffStims:</span>
+<span class="sd">        :param startOnStim:</span>
+<span class="sd">        :param everyXStims:</span>
+<span class="sd">        :param preSeconds:</span>
+<span class="sd">        :param postSeconds:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">qnap_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;/home/pshah/mnt/qnap&#39;</span><span class="p">)</span>
+
+        <span class="c1"># cellsdata path</span>
+        <span class="n">movie_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span>
+        <span class="n">sync_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paq_path</span>
+
+        <span class="c1"># stamm save path</span>
+        <span class="n">stam_save_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">qnap_path</span><span class="p">,</span> <span class="s1">&#39;Analysis&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">metainfo</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span> <span class="s1">&#39;STA_Movies&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metainfo</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">metainfo</span><span class="p">[</span><span class="s1">&#39;expID&#39;</span><span class="p">],</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">metainfo</span><span class="p">[</span><span class="s1">&#39;trialID&#39;</span><span class="p">]))</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">stam_save_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1">##</span>
+        <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">stam_save_path</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;QNAP_path:&#39;</span><span class="p">,</span> <span class="n">qnap_path</span><span class="p">,</span>
+              <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">cellsdata path:&#39;</span><span class="p">,</span> <span class="n">movie_path</span><span class="p">,</span>
+              <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">sync path:&#39;</span><span class="p">,</span> <span class="n">sync_path</span><span class="p">,</span>
+              <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">STA movie save s2pResultsPath:&#39;</span><span class="p">,</span> <span class="n">stam_save_path</span><span class="p">)</span>
+
+        <span class="c1"># define STAmm parameters</span>
+        <span class="n">frameRate</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imparams</span><span class="o">.</span><span class="n">fps</span><span class="p">)</span>
+
+        <span class="n">arg_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;moviePath&#39;</span><span class="p">:</span> <span class="n">movie_path</span><span class="p">,</span>  <span class="c1"># hard-code this</span>
+                    <span class="s1">&#39;savePath&#39;</span><span class="p">:</span> <span class="n">stam_save_path</span><span class="p">,</span>
+                    <span class="s1">&#39;syncFrameChannel&#39;</span><span class="p">:</span> <span class="s2">&quot;frame_clock&quot;</span><span class="p">,</span>
+                    <span class="s1">&#39;syncStimChannel&#39;</span><span class="p">:</span> <span class="s1">&#39;packio2markpoints&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;syncStartSec&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                    <span class="s1">&#39;syncStopSec&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                    <span class="s1">&#39;numDiffStims&#39;</span><span class="p">:</span> <span class="n">numDiffStims</span><span class="p">,</span>
+                    <span class="s1">&#39;startOnStim&#39;</span><span class="p">:</span> <span class="n">startOnStim</span><span class="p">,</span>
+                    <span class="s1">&#39;everyXStims&#39;</span><span class="p">:</span> <span class="n">everyXStims</span><span class="p">,</span>
+                    <span class="s1">&#39;preSeconds&#39;</span><span class="p">:</span> <span class="n">preSeconds</span><span class="p">,</span>
+                    <span class="s1">&#39;postSeconds&#39;</span><span class="p">:</span> <span class="n">postSeconds</span><span class="p">,</span>
+                    <span class="s1">&#39;frameRate&#39;</span><span class="p">:</span> <span class="n">frameRate</span><span class="p">,</span>
+                    <span class="s1">&#39;averageImageStart&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+                    <span class="s1">&#39;averageImageStop&#39;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span>
+                    <span class="s1">&#39;methodDF&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                    <span class="s1">&#39;methodDFF&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="s1">&#39;methodZscore&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                    <span class="s1">&#39;syncPath&#39;</span><span class="p">:</span> <span class="n">sync_path</span><span class="p">,</span>
+                    <span class="s1">&#39;zPlanes&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="s1">&#39;useStimOrder&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                    <span class="s1">&#39;stimOrder&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                    <span class="s1">&#39;useSingleTrials&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                    <span class="s1">&#39;doThreshold&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                    <span class="s1">&#39;threshold&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                    <span class="s1">&#39;colourByTime&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                    <span class="s1">&#39;useCorrelationImage&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                    <span class="s1">&#39;blurHandS&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                    <span class="s1">&#39;makeMaxImage&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="s1">&#39;makeColourImage&#39;</span><span class="p">:</span> <span class="kc">False</span>
+                    <span class="p">}</span>
+
+        <span class="c1"># # run STAmm</span>
+        <span class="c1"># STAMM.STAMovieMaker(arg_dict)</span>
+
+        <span class="c1"># show the MaxResponseImage</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">stam_save_path</span> <span class="o">+</span> <span class="s1">&#39;/*MaxResponseImage.tif&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div></div>
+        <span class="c1"># plot_single_tiff(img, frame_num=0)</span>
+
+    <span class="c1">####                                                                    // end</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">LOCAL_DATA_PATH</span> <span class="o">=</span> <span class="s1">&#39;/Users/prajayshah/data/oxford-data-to-process/&#39;</span>
+    <span class="n">REMOTE_DATA_PATH</span> <span class="o">=</span> <span class="s1">&#39;/home/pshah/mnt/qnap/Data/&#39;</span>
+    <span class="n">BASE_PATH</span> <span class="o">=</span> <span class="n">LOCAL_DATA_PATH</span>
+
+    <span class="n">ExperimentMetainfo</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;dataPath&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BASE_PATH</span><span class="si">}</span><span class="s1">/2020-12-19/2020-12-19_t-013/2020-12-19_t-013_Cycle00001_Ch3.tif&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;saveDir&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BASE_PATH</span><span class="si">}</span><span class="s1">/2020-12-19/&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;expID&#39;</span><span class="p">:</span> <span class="s1">&#39;RL109&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;comment&#39;</span><span class="p">:</span> <span class="s1">&#39;two photon imaging + alloptical trials&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">expobj</span> <span class="o">=</span> <span class="n">Experiment</span><span class="p">(</span><span class="o">**</span><span class="n">ExperimentMetainfo</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">alloptical_trial_fixture</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">initialization_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;naparm_path&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BASE_PATH</span><span class="si">}</span><span class="s1">/2020-12-19/photostim/2020-12-19_RL109_ps_014/&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;dataPath&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BASE_PATH</span><span class="si">}</span><span class="s1">/2020-12-19/2020-12-19_t-013/2020-12-19_t-013_Cycle00001_Ch3.tif&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;saveDir&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BASE_PATH</span><span class="si">}</span><span class="s1">/2020-12-19/&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="s1">&#39;2020-12-19&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;trialID&#39;</span><span class="p">:</span> <span class="s1">&#39;t-013&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;expID&#39;</span><span class="p">:</span> <span class="s1">&#39;RL109&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;expGroup&#39;</span><span class="p">:</span> <span class="s1">&#39;all optical trial with LFP&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;comment&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">initialization_dict</span>
+
+
+    <span class="k">def</span> <span class="nf">test_AllOpticalClass</span><span class="p">(</span><span class="n">alloptical_trial_fixture</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param alloptical_trial_fixture:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">imagingplus.processing.imagingMetadata</span> <span class="kn">import</span> <span class="n">PrairieViewMetadata</span>
+        <span class="kn">from</span> <span class="nn">imagingplus.processing.paq</span> <span class="kn">import</span> <span class="n">PaqData</span>
+
+        <span class="n">paqs_loc</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">BASE_PATH</span><span class="si">}</span><span class="s1">/2020-12-19/2020-12-19_RL109_013.paq&#39;</span>  <span class="c1"># path to the .paq files for the selected trials</span>
+        <span class="n">dataPath</span> <span class="o">=</span> <span class="n">alloptical_trial_fixture</span><span class="p">[</span><span class="s1">&#39;dataPath&#39;</span><span class="p">]</span>
+
+        <span class="c1"># parses imaging system cellsdata</span>
+        <span class="n">imparams</span> <span class="o">=</span> <span class="n">PrairieViewMetadata</span><span class="p">(</span><span class="n">pv_xml_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">dataPath</span><span class="p">),</span> <span class="n">microscope</span><span class="o">=</span><span class="s1">&#39;Bruker 2pPlus&#39;</span><span class="p">)</span>
+
+        <span class="c1"># sets the stim start frames</span>
+        <span class="n">tmdata</span> <span class="o">=</span> <span class="n">PaqData</span><span class="o">.</span><span class="n">paqProcessingAllOptical</span><span class="p">(</span><span class="n">paq_path</span><span class="o">=</span><span class="n">paqs_loc</span><span class="p">,</span> <span class="n">frame_channel</span><span class="o">=</span><span class="s1">&#39;frame_clock&#39;</span><span class="p">,</span>
+                                                 <span class="n">stim_channel</span><span class="o">=</span><span class="s1">&#39;markpoints2packio&#39;</span><span class="p">)</span>
+
+        <span class="c1"># create the trial</span>
+        <span class="n">aotrial</span> <span class="o">=</span> <span class="n">AllOpticalTrial</span><span class="p">(</span><span class="n">imparams</span><span class="o">=</span><span class="n">imparams</span><span class="p">,</span> <span class="n">tmdata</span><span class="o">=</span><span class="n">tmdata</span><span class="p">,</span> <span class="o">**</span><span class="n">alloptical_trial_fixture</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">aotrial</span>
+
+
+    <span class="n">idict</span> <span class="o">=</span> <span class="n">alloptical_trial_fixture</span><span class="p">()</span>
+    <span class="n">aotrial</span> <span class="o">=</span> <span class="n">test_AllOpticalClass</span><span class="p">(</span><span class="n">idict</span><span class="p">)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/imagingplus-logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">imagingplus.workflows.AllOptical</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Packer Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

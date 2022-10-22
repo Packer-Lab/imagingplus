@@ -47,6 +47,8 @@
     }
    ],
    "source": [
+    "from IPython import display\n",
+    "\n",
     "display.Image(\"/home/pshah/Documents/code/imagingplus/files/imagingplus-anndata-integration-01.jpg\")"
    ]
   },

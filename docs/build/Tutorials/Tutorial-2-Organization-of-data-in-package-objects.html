@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Tutorial 2 - Data organization inside imagingplus &#8212; imagingplus 0.2-alpha documentation</title>
+    <title>Tutorial 2 - Data organization inside imaging+ &#8212; imaging+ 0.2-beta documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
@@ -34,9 +34,9 @@
         <li class="right" >
           <a href="Tutorial-1-Overview-of-Workflow.html" title="Tutorial 1 - Getting started with data"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">imagingplus 0.2-alpha documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../Tutorials-reference.html" accesskey="U">Tutorials</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Tutorial 2 - Data organization inside imagingplus</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Tutorial 2 - Data organization inside imaging+</a></li> 
       </ul>
     </div>  
 
@@ -293,8 +293,8 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<section id="Tutorial-2---Data-organization-inside-imagingplus">
-<h1>Tutorial 2 - Data organization inside imagingplus<a class="headerlink" href="#Tutorial-2---Data-organization-inside-imagingplus" title="Permalink to this headline">¶</a></h1>
+<section id="Tutorial-2---Data-organization-inside-imaging+">
+<h1>Tutorial 2 - Data organization inside imaging+<a class="headerlink" href="#Tutorial-2---Data-organization-inside-imaging+" title="Permalink to this headline">¶</a></h1>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -385,50 +385,6 @@ packerlabimaging.processing.paq.paqData:
 </pre></div></div>
 </div>
 <p>We can see that the ‘frame_clock’ paq channel was used as the primary channel for retrieving imaging frame timestamps synchronized to the paq clock. There are a number of other channels associated with this .paq file (however their data is not saved in this object to save space). Data from any of the other channels can stored directly to the <code class="docutils literal notranslate"><span class="pre">.paq</span></code> object using the <code class="docutils literal notranslate"><span class="pre">.storePaqChannel()</span></code> object method. In this case, the ‘voltage’ paq channel was stored in its entirety under <code class="docutils literal notranslate"><span class="pre">.paq.voltage</span></code>.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
-</section>
-<section id="Suite2p-data">
-<h2>Suite2p data<a class="headerlink" href="#Suite2p-data" title="Permalink to this headline">¶</a></h2>
-<p>Suite2p is the primary Ca2+ imaging library that is integrated into the analysis pipeline. The dedicated <code class="docutils literal notranslate"><span class="pre">suite2p</span></code> submodule handles accessing suite2p functionality, as well as the data imported from Suite2p processing. Suite2p related data and methods are accessed using <code class="docutils literal notranslate"><span class="pre">trialobj.Suite2p</span></code>.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
 </section>
 <section id="Annotated-Data">
 <h2>Annotated Data<a class="headerlink" href="#Annotated-Data" title="Permalink to this headline">¶</a></h2>
@@ -447,7 +403,7 @@ packerlabimaging.processing.paq.paqData:
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/Tutorials_Tutorial-2-Organization-of-data-in-package-objects_17_0.jpg" src="../_images/Tutorials_Tutorial-2-Organization-of-data-in-package-objects_17_0.jpg" />
+<img alt="../_images/Tutorials_Tutorial-2-Organization-of-data-in-package-objects_11_0.jpg" src="../_images/Tutorials_Tutorial-2-Organization-of-data-in-package-objects_11_0.jpg" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -1519,14 +1475,6 @@ available attributes:
 </pre></div></div>
 </div>
 <p><em>Note: adding and deleting an ‘var’ to existing anndata object can be done in the exact same manner as demonstrated above for ‘obs’ using .add_var() and .del_var() methods on an anndata object.</em></p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
 </section>
 </section>
 </section>
@@ -1544,10 +1492,9 @@ available attributes:
   <div>
     <h3><a href="../index.html">Table of Contents</a></h3>
     <ul>
-<li><a class="reference internal" href="#">Tutorial 2 - Data organization inside imagingplus</a><ul>
+<li><a class="reference internal" href="#">Tutorial 2 - Data organization inside imaging+</a><ul>
 <li><a class="reference internal" href="#Importing-data-analysis-objects">Importing data analysis objects</a></li>
 <li><a class="reference internal" href="#paq-data">paq data</a></li>
-<li><a class="reference internal" href="#Suite2p-data">Suite2p data</a></li>
 <li><a class="reference internal" href="#Annotated-Data">Annotated Data</a><ul>
 <li><a class="reference internal" href="#storage-of-Flu-data">storage of Flu data</a></li>
 <li><a class="reference internal" href="#observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">observations (Suite2p ROIs metadata and associated processing info)</a></li>
@@ -1603,9 +1550,9 @@ available attributes:
         <li class="right" >
           <a href="Tutorial-1-Overview-of-Workflow.html" title="Tutorial 1 - Getting started with data"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">imagingplus 0.2-alpha documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../Tutorials-reference.html" >Tutorials</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Tutorial 2 - Data organization inside imagingplus</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Tutorial 2 - Data organization inside imaging+</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

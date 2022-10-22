@@ -4,62 +4,62 @@ API reference
 
 core
 -----------------
-.. automodule:: packerlabimaging.main.core
+.. automodule:: imagingplus.main.core
     :members:
 
 
 
 subcore
 --------------------
-.. automodule:: packerlabimaging.main.subcore
+.. automodule:: imagingplus.main.subcore
     :members:
 
 
 
 plotting
 --------
-.. automodule:: packerlabimaging.plotting.plotting
+.. automodule:: imagingplus.plotting.plotting
     :members:
 
 
 processing
 ----------
-.. automodule:: packerlabimaging.processing.anndata
+.. automodule:: imagingplus.processing.anndata
     :members:
 
-.. automodule:: packerlabimaging.processing.cellpose
+.. automodule:: imagingplus.processing.cellpose
     :members:
 
-.. automodule:: packerlabimaging.processing.imagingMetadata
+.. automodule:: imagingplus.processing.imagingMetadata
     :members:
 
-.. automodule:: packerlabimaging.processing.paq
+.. automodule:: imagingplus.processing.paq
     :members:
 
-.. automodule:: packerlabimaging.processing.suite2p
+.. automodule:: imagingplus.processing.suite2p
     :members:
 
 
 
 workflows (AllOptical)
 --------------------
-.. automodule:: packerlabimaging.workflows.AllOptical
+.. automodule:: imagingplus.workflows.AllOptical
     :members:
 
 
 
 utils
 -----
-.. automodule:: packerlabimaging.utils.io
+.. automodule:: imagingplus.utils.io
     :members:
 
-.. automodule:: packerlabimaging.utils.utils
+.. automodule:: imagingplus.utils.utils
     :members:
 
-.. automodule:: packerlabimaging.utils.PrairieLink
+.. automodule:: imagingplus.utils.PrairieLink
     :members:
 
-.. automodule:: packerlabimaging.utils.images
+.. automodule:: imagingplus.utils.images
     :members:
 
 

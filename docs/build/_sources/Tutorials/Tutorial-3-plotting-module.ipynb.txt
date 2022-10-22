@@ -40,7 +40,7 @@
   {
    "cell_type": "markdown",
    "source": [
-    "### import data"
+    "Import data"
    ],
    "metadata": {
     "collapsed": false

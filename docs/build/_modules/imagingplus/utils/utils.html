@@ -1,0 +1,357 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>imagingplus.utils.utils &#8212; imaging+ 0.2-beta documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinxdoc.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">imagingplus.utils.utils</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for imagingplus.utils.utils</h1><div class="highlight"><pre>
+<span></span><span class="c1"># TODO need to update this file to remove duplicates that have been refactored...</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">tifffile</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">signal</span>
+<span class="kn">from</span> <span class="nn">statsmodels</span> <span class="kn">import</span> <span class="n">stats</span>
+
+<span class="kn">from</span> <span class="nn">imagingplus.utils</span> <span class="kn">import</span> <span class="n">io</span>
+
+
+<div class="viewcode-block" id="define_term"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.utils.define_term">[docs]</a><span class="k">def</span> <span class="nf">define_term</span><span class="p">(</span><span class="n">term</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Search terms dictionary and retrieve definition of input term if found.</span>
+<span class="sd">    :param term: term to search for definition in dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">imagingplus.utils.terms_dictionary</span> <span class="kn">import</span> <span class="n">terms_dictionary</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s2">:</span><span class="se">\t</span><span class="si">{</span><span class="n">terms_dictionary</span><span class="p">[</span><span class="n">term</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">term</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="k">else</span> <span class="nb">print</span><span class="p">(</span>
+            <span class="s1">&#39;ERROR: please provide a string object as the key&#39;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;input - </span><span class="si">{</span><span class="n">term</span><span class="si">}</span><span class="s1"> - not found in dictionary&#39;</span><span class="p">)</span></div>
+
+
+<span class="c1"># report sizes of variables</span>
+<span class="k">def</span> <span class="nf">_sizeof_fmt</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;B&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; by Fred Cirera,  https://stackoverflow.com/a/1094933/1870254, modified&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">unit</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;Ki&#39;</span><span class="p">,</span> <span class="s1">&#39;Mi&#39;</span><span class="p">,</span> <span class="s1">&#39;Gi&#39;</span><span class="p">,</span> <span class="s1">&#39;Ti&#39;</span><span class="p">,</span> <span class="s1">&#39;Pi&#39;</span><span class="p">,</span> <span class="s1">&#39;Ei&#39;</span><span class="p">,</span> <span class="s1">&#39;Zi&#39;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1024.0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%3.1f</span><span class="s2"> </span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span>
+        <span class="n">num</span> <span class="o">/=</span> <span class="mf">1024.0</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%.1f</span><span class="s2"> </span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="s1">&#39;Yi&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="print_size_of"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.utils.print_size_of">[docs]</a><span class="k">def</span> <span class="nf">print_size_of</span><span class="p">(</span><span class="n">var</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Print size of input variable in current memory.</span>
+<span class="sd">    :param var: input variable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">_sizeof_fmt</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">var</span><span class="p">)))</span></div>
+
+
+<div class="viewcode-block" id="print_size_vars"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.utils.print_size_vars">[docs]</a><span class="k">def</span> <span class="nf">print_size_vars</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Print size of all current variables in memory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">size</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(((</span><span class="n">name</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">getsizeof</span><span class="p">(</span><span class="n">value</span><span class="p">))</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()),</span>
+                             <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])[:</span><span class="mi">10</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:&gt;30}</span><span class="s2">: </span><span class="si">{:&gt;8}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">_sizeof_fmt</span><span class="p">(</span><span class="n">size</span><span class="p">)))</span></div>
+
+
+<div class="viewcode-block" id="save_figure"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.utils.save_figure">[docs]</a><span class="k">def</span> <span class="nf">save_figure</span><span class="p">(</span><span class="n">fig</span><span class="p">:</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">Figure</span><span class="p">,</span> <span class="n">save_path_full</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Save a matplotlib generated figure to the path provided. Also, makes necessary directories in the path.</span>
+
+<span class="sd">    :param fig: matplotlib generated figure object</span>
+<span class="sd">    :param save_path_full: path to save figure to.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">\- saving figure to: </span><span class="si">{</span><span class="n">save_path_full</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">save_path_full</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_path_full</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">|- saved figure to: </span><span class="si">{</span><span class="n">save_path_full</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="save_to_csv"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.utils.save_to_csv">[docs]</a><span class="k">def</span> <span class="nf">save_to_csv</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">savepath</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Save pandas dataframe to csv at savepath.</span>
+
+<span class="sd">    :param df: dataframe to save.</span>
+<span class="sd">    :param savepath: path to save to.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">savepath</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">savepath</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|- saved dataframe to </span><span class="si">{</span><span class="n">savepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="filterDfBoolCol"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.utils.filterDfBoolCol">[docs]</a><span class="k">def</span> <span class="nf">filterDfBoolCol</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">true_cols</span><span class="o">=</span><span class="p">[],</span> <span class="n">false_cols</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="sd">&#39;&#39;&#39;Filter indices in a pandas dataframe using logical operations</span>
+<span class="sd">    on columns with Boolean values</span>
+
+<span class="sd">        :param df:         -- dataframe</span>
+<span class="sd">        :param true_cols:  -- columns where True should be filtered</span>
+<span class="sd">        :param false_cols: -- columns where False should be filtered</span>
+<span class="sd">    </span>
+<span class="sd">    Outputs:</span>
+<span class="sd">        indices of the dataframe where the logical operation is true</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">true_cols</span><span class="p">:</span>
+        <span class="n">true_rows</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">true_cols</span><span class="p">]</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;columns&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">false_cols</span><span class="p">:</span>
+        <span class="n">false_rows</span> <span class="o">=</span> <span class="p">(</span><span class="o">~</span><span class="n">df</span><span class="p">[</span><span class="n">false_cols</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;columns&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">true_cols</span> <span class="ow">and</span> <span class="n">false_cols</span><span class="p">:</span>
+        <span class="n">filtered_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">true_rows</span> <span class="o">&amp;</span> <span class="n">false_rows</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">true_cols</span><span class="p">:</span>
+        <span class="n">filtered_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">true_rows</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">false_cols</span><span class="p">:</span>
+        <span class="n">filtered_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">false_rows</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">filtered_df</span><span class="o">.</span><span class="n">index</span></div>
+
+
+<div class="viewcode-block" id="findClosest"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.utils.findClosest">[docs]</a><span class="k">def</span> <span class="nf">findClosest</span><span class="p">(</span><span class="n">arr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="nb">input</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;find the closest value in a list or 1-D array, to the given input</span>
+
+<span class="sd">    :param arr: list or array of values</span>
+<span class="sd">    :param input: key input to find closest value with in `arr`</span>
+<span class="sd">    :return: value of the closest item from `arr`, index of closest item</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span><span class="p">:</span> <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;input `arr` can only be of 1-dimension.&#39;</span><span class="p">)</span>
+    <span class="n">subtract</span> <span class="o">=</span> <span class="n">arr</span> <span class="o">-</span> <span class="nb">input</span>
+    <span class="n">positive_values</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">subtract</span><span class="p">)</span>
+    <span class="c1"># closest_value = min(positive_values) + input</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">positive_values</span> <span class="o">==</span> <span class="nb">min</span><span class="p">(</span><span class="n">positive_values</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">closest_value</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">closest_value</span><span class="p">,</span> <span class="n">index</span></div>
+
+
+<span class="c1"># calculates average over sliding window for an array</span>
+<div class="viewcode-block" id="moving_average"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.utils.moving_average">[docs]</a><span class="k">def</span> <span class="nf">moving_average</span><span class="p">(</span><span class="n">arr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">n</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return moving average over sliding window for an array</span>
+<span class="sd">    </span>
+<span class="sd">    :param arr: input array</span>
+<span class="sd">    :param n: length of sliding window</span>
+<span class="sd">    :return: array with moving average sliding window applied</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span><span class="p">:</span> <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+    <span class="n">ret</span><span class="p">[</span><span class="n">n</span><span class="p">:]</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="n">n</span><span class="p">:]</span> <span class="o">-</span> <span class="n">ret</span><span class="p">[:</span><span class="o">-</span><span class="n">n</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">ret</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">/</span> <span class="n">n</span></div>
+
+
+<span class="c1"># finding paths to files with a certain extension</span>
+<div class="viewcode-block" id="path_finder"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.utils.path_finder">[docs]</a><span class="k">def</span> <span class="nf">path_finder</span><span class="p">(</span><span class="n">umbrella</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">is_dir</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns the path to the single item in the umbrella folder containing the string names in each arg</span>
+<span class="sd">    </span>
+<span class="sd">    :param umbrella: parent directory to search inside</span>
+<span class="sd">    :param args: key string names to search in umbrella directory</span>
+<span class="sd">    :param is_dir: True if args is a collection of directories</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># ls of bools, has the function found each argument?</span>
+    <span class="c1"># ensures two folders / files are not found</span>
+    <span class="n">found</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="c1"># the paths to the args</span>
+    <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">is_dir</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">umbrella</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">folder</span><span class="p">:</span>
+                        <span class="k">assert</span> <span class="ow">not</span> <span class="n">found</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s1">&#39;found at least two paths for </span><span class="si">{}</span><span class="s1">,&#39;</span> \
+                                             <span class="s1">&#39;search </span><span class="si">{}</span><span class="s1"> to find conflicts&#39;</span> \
+                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">umbrella</span><span class="p">)</span>
+                        <span class="n">paths</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">folder</span><span class="p">)</span>
+                        <span class="n">found</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">is_dir</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">umbrella</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+                        <span class="k">assert</span> <span class="ow">not</span> <span class="n">found</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s1">&#39;found at least two paths for </span><span class="si">{}</span><span class="s1">,&#39;</span> \
+                                             <span class="s1">&#39;search </span><span class="si">{}</span><span class="s1"> to find conflicts&#39;</span> \
+                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">umbrella</span><span class="p">)</span>
+                        <span class="n">paths</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+                        <span class="n">found</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;could not find path to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">arg</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">paths</span></div>
+
+
+<div class="viewcode-block" id="points_in_circle_np"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.utils.points_in_circle_np">[docs]</a><span class="k">def</span> <span class="nf">points_in_circle_np</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y0</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return an array of 2-D Euclidean coordinates for a circle centered on x0, y0 with the input radius.</span>
+
+<span class="sd">    :param radius: radius of circle to be calculated</span>
+<span class="sd">    :param x0: x-center of circle</span>
+<span class="sd">    :param y0: y-center of circle</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">x0</span> <span class="o">-</span> <span class="n">radius</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">radius</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">y_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">y0</span> <span class="o">-</span> <span class="n">radius</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y0</span> <span class="o">+</span> <span class="n">radius</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">x_</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">-</span> <span class="n">x0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y_</span> <span class="o">-</span> <span class="n">y0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">radius</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x_</span><span class="p">[</span><span class="n">x</span><span class="p">],</span> <span class="n">y_</span><span class="p">[</span><span class="n">y</span><span class="p">]):</span>
+        <span class="k">yield</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span></div>
+
+
+<div class="viewcode-block" id="threshold_detect"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.utils.threshold_detect">[docs]</a><span class="k">def</span> <span class="nf">threshold_detect</span><span class="p">(</span><span class="n">signal</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">threshold</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns indexes where the input signal reaches above threshold.</span>
+
+<span class="sd">    lloyd russell</span>
+
+<span class="sd">    :param signal: input signal</span>
+<span class="sd">    :param threshold: threhsold value</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">thresh_signal</span> <span class="o">=</span> <span class="n">signal</span> <span class="o">&gt;</span> <span class="n">threshold</span>
+    <span class="n">thresh_signal</span><span class="p">[</span><span class="mi">1</span><span class="p">:][</span><span class="n">thresh_signal</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">thresh_signal</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">frames</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">thresh_signal</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">frames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="listdirFullpath"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.utils.listdirFullpath">[docs]</a><span class="k">def</span> <span class="nf">listdirFullpath</span><span class="p">(</span><span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">string</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return full path of all files in directory containing specified string</span>
+
+<span class="sd">    :param directory:  path to directory</span>
+<span class="sd">    :param string:  sequence to be found in file name</span>
+<span class="sd">    :return: string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span> <span class="k">if</span> <span class="n">string</span> <span class="ow">in</span> <span class="n">file</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="read_fiji"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.utils.read_fiji">[docs]</a><span class="k">def</span> <span class="nf">read_fiji</span><span class="p">(</span><span class="n">csv_path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Reads the csv file saved through plot z axis profile in Fiji</span>
+
+<span class="sd">    :param csv_path: path to input csv file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">csv_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+        <span class="n">spamreader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">quotechar</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">spamreader</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="intersect"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.utils.intersect">[docs]</a><span class="k">def</span> <span class="nf">intersect</span><span class="p">(</span><span class="n">lst1</span><span class="p">,</span> <span class="n">lst2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find intersection of two input lists.</span>
+
+<span class="sd">    :param lst1: list 1</span>
+<span class="sd">    :param lst2: list 2</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">lst1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">lst2</span><span class="p">))</span></div>
+
+
+<span class="c1"># calculate distance between 2 points on a cartesian plane</span>
+<div class="viewcode-block" id="calc_distance_2points"><a class="viewcode-back" href="../../../reference.html#imagingplus.utils.utils.calc_distance_2points">[docs]</a><span class="k">def</span> <span class="nf">calc_distance_2points</span><span class="p">(</span><span class="n">p1</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">p2</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Uses the hypothenus method to calculate the straight line distance between two given points on a 2d cartesian plane.</span>
+<span class="sd">    :param p1: point 1</span>
+<span class="sd">    :param p2: point 2</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">p2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">p1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">p1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/imagingplus-logo.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">imaging+ 0.2-beta documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">imagingplus.utils.utils</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Packer Lab.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>
