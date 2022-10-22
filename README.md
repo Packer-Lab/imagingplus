@@ -42,10 +42,6 @@ Note: The package is installable as a stand-alone python package. You can instal
 
 ## Documentation
 
-The documentation for `imaging+` is not currently hosted online. 
-Instead, you can access the documentation by opening the `index.html` file found from the following file path of **the downloaded git repo on your local computer**:
+The documentation for `imaging+` is available at https://imagingplus.readthedocs.io/en/latest/ 
 
-```{imaging+-git-repo local copy} > docs > build > index.html```
-
-Opening the `index.html` file will open the documentation as an HTML file in your web-browser.
 
