@@ -18,7 +18,7 @@ def test_AnnotatedData(existing_trialobj_alloptical_fixture):
 
 test_AnnotatedData(existing_trialobj_alloptical_fixture())
 
-@pytest.mark.skip
+# @pytest.mark.skip
 def test_convert_to_df(existing_anndata):
     'todo continue testing --- not working for everything.'
     adata = existing_anndata()

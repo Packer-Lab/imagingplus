@@ -1,5 +1,5 @@
 import anndata as ad
-from typing import Optional, Literal
+from typing import Optional, Literal, Union
 
 import numpy as np
 import pandas as pd
@@ -60,7 +60,8 @@ class AnnotatedData(ad.AnnData):
         :param obs_name: name of new observation field to add to anndata table
         :param values: list of data values to add under new observation field
         """
-        assert len(values) == self.obs.shape[0], f"# of values to add doesn't match # of observations in anndata array"
+        if not len(values) == self.obs.shape[0]:
+            raise ValueError(f"# of values to add doesn't match # of observations in anndata array")
         self.obs[obs_name] = values
 
     def del_obs(self, obs_name: str):
@@ -76,7 +77,8 @@ class AnnotatedData(ad.AnnData):
         :param var_name: name of new variable field to add to anndata table
         :param values: list of data values to add under new variable field
         """
-        assert len(values) == self.var.shape[0], f"# of values to add doesn't match # of observations in anndata array"
+        if not len(values) == self.var.shape[0]:
+            raise ValueError(f"# of values to add doesn't match # of observations in anndata array")
         self.var[var_name] = values
 
     def del_var(self, var_name: str):
@@ -85,6 +87,12 @@ class AnnotatedData(ad.AnnData):
         :param var_name: name of variable to remove
         """
         _ = self.var.pop(var_name)
+
+    def add_layer(self, layer_name: str, data: Union[np.ndarray, pd.DataFrame]):
+        if not data.shape == self.X.shape:
+            raise ValueError(f'cannot add layer of data shape {data.shape} to existing anndata table of shape {self.X.shape}')
+        self.layers[layer_name] = data
+        print(f'Add new {layer_name} layer. \n\tLayers in object: {self.layers}')
 
     def extend_anndata(self, additional_adata: ad.AnnData, axis: Literal[0, 1] = 0):
         """

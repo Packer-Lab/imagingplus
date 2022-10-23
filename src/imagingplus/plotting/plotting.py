@@ -72,14 +72,14 @@ def plotRoiLocations(trialobj: TwoPhotonImaging, suite2p_rois: Union[list, str] 
     :returns fig, ax: returns fig and ax object, if show is False
     """
     # image_frame_options()
-
-    # fig = kwargs['fig']
-    # suptitle = kwargs['suptitle'] if 'suptitle' in kwargs else None
-    image_frame_options() if 'apply_image_frame_options' not in kwargs or kwargs[
-        'apply_image_frame_options'] else None
-
+    fig = kwargs['fig']
     ax = kwargs['ax']
     kwargs.pop('ax')
+
+    # suptitle = kwargs['suptitle'] if 'suptitle' in kwargs else None
+    image_frame_options(fig=fig, ax=ax) if 'apply_image_frame_options' not in kwargs or kwargs[
+        'apply_image_frame_options'] else None
+
 
     facecolors = kwargs['facecolors'] if 'facecolors' in kwargs else 'none'
     edgecolors = kwargs['edgecolors'] if 'edgecolors' in kwargs else 'orange'
@@ -189,7 +189,7 @@ def plot_flu_trace(trialobj: TwoPhotonImaging, cell: int, to_plot='raw', **kwarg
 @plotting_decorator()
 def plot__channel(tmdata: TemporalData, channel: str, **kwargs):
     """
-    Plot the saved signal from the specified channel from a PaqData submodule.
+    Plot the saved signal from the specified TemporalData channel.
 
     :param tmdata: TemporalData object
     :param channel: channel to plot

@@ -1,22 +1,12 @@
-from imagingplus.plotting.plotting import plot__paq_channel
-from imagingplus._archive.paq import PaqData
+from imagingplus import TwoPhotonImaging
+from imagingplus.processing.paq import PaqData
 
-from imagingplus._archive.TwoPhotonImagingMain import TwoPhotonImagingTrial
 
 def test_import_paqdata(paqpath = '/home/pshah/mnt/qnap/Data/2021-01-25/2021-01-25_PS12_009.paq'):
-    paq_data_obj, paqdata = PaqData.import_paqdata(paq_path=paqpath)
-
-# test_import_paqdata()
-
-def test_paq_func(existing_trialobj_twophotonimaging_fixture):
-    trialobj: TwoPhotonImagingTrial = existing_trialobj_twophotonimaging_fixture
-    trialobj.Paq.storePaqChannel(chan_name='voltage')
-
-# test_paq_func(existing_trialobj_twophotonimaging_fixture)
+    paq_data_obj, paqdata = PaqData.import_paqdata(file_path=paqpath)
 
 
-def test_plot__paq_channel(existing_trialobj_twophotonimaging_fixture):
-    trialobj: TwoPhotonImagingTrial = existing_trialobj_twophotonimaging_fixture
-    plot__paq_channel(trialobj.Paq, channel='voltage', x_axis='Time (secs)', x_tick_secs=120)
-
+def test_cropData(existing_trialobj_twophotonimaging_fixture):
+    trialobj: TwoPhotonImaging = existing_trialobj_twophotonimaging_fixture
+    trialobj.tmdata.cropData(begin=trialobj.tmdata.frame_times[0], end=trialobj.tmdata.frame_times[-1], channels='all')
 
