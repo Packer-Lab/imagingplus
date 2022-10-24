@@ -38,12 +38,12 @@ Note: The package is installable as a stand-alone python package. You can instal
 2. Create the preset conda environment provided in this repository (`plitest.yml`) using `conda env create -f plitest.yml` from the terminal. 
 3. Activate the conda environment `conda activate plitest`.
 4. `cd` to the parent directory of where this repo was downloaded to.
-5. From this parent directly, run `pip install -e imaging+` from terminal to install this package `imaging+`.
+5. From this parent directly, run `pip install -e imagingplus` from terminal to install this package `imagingplus`.
 
 #### Test `imaging+` is successfully installed (import package in python):
 1. Ensure that the conda environment from which `imaging+` was installed is activated.
 2. start python from command line using: `python`, or start python from the same conda environment in your preferred method (e.g. jupyter notebook or IDE).
-3. Import the package: `import imaging+` or `import imaging+ as ip`.
+3. Import the package: `import imagingplus as ip`.
 
 ## Documentation
 
