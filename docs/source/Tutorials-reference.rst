@@ -3,7 +3,7 @@
 Tutorials
 =========
 
-Here are pre-built tutorials that are designed to guide you through the various features and processing pipelines setup in the package.
+Here are pre-built tutorials that are designed to guide you through some high-level features and functions built in the package.
 
 
 .. toctree::
