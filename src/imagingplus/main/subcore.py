@@ -183,7 +183,7 @@ class CellAnnotations:
 
 @dataclass
 class ImagingData:
-    """Imaging dataset."""
+    """Imaging dataset. N rois x num_frames"""
 
     def __init__(self, imdata: Union[np.ndarray, pd.DataFrame], **kwargs):
         """

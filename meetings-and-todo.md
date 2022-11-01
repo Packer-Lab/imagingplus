@@ -1,11 +1,32 @@
 # Record for meeting agendas, notes and todo's 
 
+
+
+## OCT 26 2022 
+
+~~[x] init: Experiment - auto save during creation - send flag if it already exists~~
+- make making anndata an explicit step in the Suite2p tutorials, ImagingTrial tutorial, and anndata tutorial (and also exclude auto-making anndata table)
+
+
+Documentation:
+
+Main modules
+- show quick examples of how to use each of the modules
+
+## Oct 25 2022 - TODO list:
+
+[ ] organize meeting logistical details for package meeting with the lab
+[ ] create a paper.bib file for the paper submission
+
+
+
+
 ## Apr 19 2022 - TODO list:
 
 **Major code base related tasks:**
 
 - [ ]  create the three fundamental data analysis *axes as fundamental classes . then plug other stuff into those axes.*
-    - like Temporal axis
+    - like Temporal axis**
         - plug paq into temporal axes
         - allows for other temporal signals from outside paq to plug in, but Paq becomes a child of this class
     - data axis

@@ -10,7 +10,7 @@ from imagingplus.processing.anndata import AnnotatedData
 
 # from imagingplus.processing.imagingMetadata import ImagingMetadata
 from imagingplus.processing.denoising import Deepinterpolation
-from imagingplus.processing.suite2p import Suite2pResultsTrial
+from imagingplus.processing.suite2p import Suite2pResultsTrial, Suite2pExperiment
 from imagingplus.utils.classes import UnavailableOptionError, TrialMetainfo
 
 import os
@@ -56,7 +56,6 @@ class SingleImage:
     imparams: ImagingMetadata = None    #: image collection parameters of image
 
     def __post_init__(self):
-        # self.data = tf.imread(self.dataPath)
         self.data = ImportTiff(self.dataPath)
 
     def plotImg(self, **kwargs):
@@ -92,10 +91,8 @@ class ImagingTrial:
         self.metainfo = TrialMetainfo(date=self.date, trialID=self.trialID, expID=self.expID, expGroup=self.expGroup,
                                       comment=self.comment, paths={})
 
-        if os.path.exists(self.dataPath):
-            self.metainfo['paths']['dataPath'] = self.dataPath
-        else:
-            raise FileNotFoundError(f"dataPath does not exist: {self.dataPath}")
+        if os.path.exists(self.dataPath): self.metainfo['paths']['dataPath'] = self.dataPath
+        else: raise FileNotFoundError(f"dataPath does not exist: {self.dataPath}")
 
         # processing collect mean FOV Trace -- after collecting imaging params and Paq timing info
         im_stack = ImportTiff(tiff_path=self.data_path)
@@ -105,13 +102,15 @@ class ImagingTrial:
 
         # set, create analysis save path directory and create pkl object
         os.makedirs(self.saveDir, exist_ok=True)
-        self.metainfo['paths']['pkl_path'] = f"{self.saveDir}{self.date}_{self.trialID}.pkl"
+        # self.metainfo['paths']['pkl_path'] = f"{self.saveDir}{self.date}_{self.trialID}.pkl"
+        self.pkl_path = f"{self.saveDir}{self.date}_{self.trialID}.pkl"
+        if os.path.exists(self.pkl_path): raise FileExistsError(f'.pkl file already exists at: {self.pkl_path}')
         self.save_pkl(pkl_path=self.pkl_path)  # save experiment object to pkl_path
         self.metainfo['paths']['pkl_path'] = self.pkl_path
 
-        # make anndata
-        if self.imdata and self.cells and self.tmdata:
-            self.create_anndata()
+        # # make anndata - depracating
+        # if (self.Suite2p and self.tmdata) or (self.imdata and self.cells and self.tmdata):
+        #     self.create_anndata()
 
     def __repr__(self):
         return repr(f"{self.t_series_name} (ImagingTrial)")
@@ -121,7 +120,7 @@ class ImagingTrial:
     @classmethod
     def newImagingTrialfromExperiment(cls, experiment, trialID, dataPath, date, comment=''):
         """
-        Creates a new ImagingTrial under an Experiment.
+        Creates a new ImagingTrial under an Experiment. Alternative constructor.
 
         :param experiment: Experiment object
         :param trialID: ID of new Imaging Trial to be added
@@ -321,27 +320,32 @@ class ImagingTrial:
         stack = self.importTrialTiff()
         SaveDownsampledTiff(stack=stack, save_as=f"{self.saveDir}/{self.date}_{self.trialID}_downsampled.tif")
 
-    def create_anndata(self, imdata_type: str, imdata: ImagingData=None, cells: CellAnnotations=None, tmdata: TemporalData=None):
+    def create_anndata(self, imdata_type: str = 'Original Imaging Data', imdata: ImagingData = None, cells: CellAnnotations = None, tmdata: TemporalData = None):
         """
         Creates annotated cellsdata (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial.
 
         Note: the tmdata is used as the source of truth for imaging frames time signals. If there is a mismatch, then tmdata timestamps for extraneous imaging frames will not be included in adata table.
 
         :param imdata_type: label to describe primary dataset in anndata structure.
-        :return:
+        :param imdata: Imaging data from extracted ROIs
+        :param cells: Cell annotations data
+        :param tmdata: Temporal series data
+        :return: an anndata table
 
         """
         # if not self.imdata and self.cells and self.tmdata:
         #     raise ValueError(
         #         'cannot create anndata table. anndata creation only available if experiments have ImagingData (.imdata), CellAnnotations (.cells) and TemporalData (.tmdata)')
 
+        if self.Suite2p: imdata = self.Suite2p
         imdata = self.imdata if imdata is None else imdata
-        assert hasattr(imdata, 'imdata') or tmdata != None, 'no `imdata` under .imdata'
+        if not hasattr(imdata, 'imdata') or tmdata != None: raise AttributeError( 'no `imdata` under .imdata')
 
         # SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata
-        obs = self.cells if cells is None else cells
-        assert hasattr(obs, 'cellsdata'), 'no `data` under .cells'
-        assert obs.cellsdata.shape[0] == imdata.imdata.shape[0], 'incorrect # of cells passed to anndata creation.'
+        if self.Suite2p: obs = self.Suite2p
+        else: obs = self.cells if cells is None else cells
+        if not hasattr(obs, 'cellsdata'): raise AttributeError( 'no `data` under .cells')
+        if not obs.cellsdata.shape[0] == imdata.imdata.shape[0]: raise AttributeError( 'incorrect # of cells passed to anndata creation.')
 
         # SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata
         vars = self.tmdata.data if tmdata is None else tmdata
@@ -396,7 +400,6 @@ class ImagingTrial:
                                                                    inferrence_param)
 
 
-# noinspection DuplicatedCode
 @dataclass
 class Experiment:
     """Overall experiment. It can collate all imaging trials that are part of a single field-of-view (FOV) of imaging"""
@@ -409,6 +412,7 @@ class Experiment:
     experimenter = ''  #: experimenter performing pertinent data collection or data analysis
     lab = ''  #: research group with with experiments were performed
     institution = ''  #: insititution where experiments were performed
+    Suite2p: Suite2pExperiment = None
 
     def __post_init__(self):
         print(f'***********************')
@@ -422,15 +426,15 @@ class Experiment:
             str, TrialMetainfo] = {}  #: dictionary of metadata information about each trial. Gets filled while adding each trial.
 
         # suite2p related attrs initialization
-        from imagingplus.processing.suite2p import Suite2pExperiment
-        self.Suite2p: Suite2pExperiment = None
         self._suite2p_save_path = None
         # self._trialsTiffsSuite2p = {}  #: dictionary of trial IDs and their respective .tiff paths for each trial that will be used in Suite2p processing for current experiment
         # self._s2pResultExists = False  #: flag for whether suite2p results exist for current experiment
 
         # save Experiment object
-        self._pkl_path = self._get_save_location()
+        # self._pkl_path = self._get_save_location()
+        self.pkl_path = self._get_save_location()
         os.makedirs(self.saveDir, exist_ok=True)
+        if os.path.exists(self.pkl_path): raise FileExistsError(f'.pkl file already exists at: {self.pkl_path}')
         self.save_pkl(pkl_path=self.pkl_path)
 
         print(f'\n\n\n******************************')

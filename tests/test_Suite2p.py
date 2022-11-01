@@ -38,8 +38,7 @@ def test_Suite2pExp():
     expobj = import_obj(pkl_path='/home/pshah/mnt/qnap/Analysis/2021-01-25/PS12/PS12_analysis.pkl')
 
     expobj.Suite2p = Suite2pExperiment(trialsTiffsSuite2p=expobj.Suite2p.tiff_paths_to_use_s2p,
-                                       s2pResultsPath=expobj.Suite2p.s2pResultsPath,
-                                       subtract_neuropil=expobj.Suite2p.subtract_neuropil)
+                                       s2pResultsPath=expobj.Suite2p.s2pResultsPath)
     expobj.save()
 # test_Suite2pExp()
 

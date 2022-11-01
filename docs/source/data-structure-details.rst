@@ -1,20 +1,24 @@
-.. _Data structure details:
+.. _Data structure:
 
 
-Data Structure Inside Trial objects
-===================================
+Data Structure Inside ImagingTrial
+==================================
 
-*AnnData* object for storing multi-modal data
+*AnnData* sub-module for storing multi-modal data
 ---------------------------------------------
 
-The AnnData library is used to store fluorescence imaging data in an efficient, multi-functional format.
+The AnnData library is used in the `anndata` submodule to store *imaging+*  data in a highly intuitive, efficient and multi-functional format.
 
-Further processing on the raw data is added to the AnnData object as ``layers``. For instance, dFF normalization of the raw data is added as the ``dFF`` layer to the existing data table.
+The `anndata` table is used to store:
+1) `.X`: ROI extracted imaging data in the main data matrix (dimensions: # of ROIs x # of frames)
+2) `.var`: Multiple channels of 1-D temporal series data as synchronized variables (dimensions: # of channels x # of frames)
+3) `.obs`: annotations of ROIs (dimensions # of ROIs x # of ROI annotations collected)
+4) `.layers`: Further processing on the main data is added as additional layers (dimensions: # of ROIs x # of frames). For instance, dFF normalization of the raw data is added as the ``dFF`` layer to the existing data table.
 
-This is stored under: ``trialobject.data``.
-The AnnData object is built around the raw Flu matrix of each ``trialobject``.
+
 In keeping with AnnData conventions, the data structure is organized in *n* observations (obs) x *m* variables (var), where observations are suite2p ROIs and variables are imaging frame timepoints.
 The rest of the AnnData data object is built according to these dimensions.
+
 For instance, the metadata for each suite2p ROI stored in Suite2p’s stat.npy output is added to ``trialobject.data`` under ``obs`` and ``obsm`` (1D and >1-D observations annotations, respectively).
 And the temporal synchronization data of the experiment collected in .paq output is added to the variables annotations under ``var``.
 

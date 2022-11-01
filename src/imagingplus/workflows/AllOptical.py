@@ -172,7 +172,7 @@ class AllOpticalTrial(TwoPhotonImaging):
     @prestim_sec.setter
     def prestim_sec(self, val):
         """
-    TODO fill explanation and add parameters
+        TODO fill explanation and add parameters
         :param val:
         """
         assert type(val) == int or type(val) == float, 'can only set prestim_sec with int or float'
@@ -193,7 +193,7 @@ class AllOpticalTrial(TwoPhotonImaging):
         :param val:
         """
         assert type(val) == int or type(val) == float, 'can only set poststim_sec with int or float'
-        self.__prestim_sec = val
+        self.__poststim_sec = val
 
     @property
     def prestim_response_window(self):

@@ -1,5 +1,5 @@
 ---
-title: 'An integrated analysis tool-kit in Python for multi-modal, imaging+ neuroscience data'
+title: 'Imaging+: An integrated analysis tool-kit in Python for multi-modal, imaging+ neuroscience data'
 tags:
   - Python
   - neuroscience
@@ -8,7 +8,7 @@ tags:
   - optogenetics
 authors:
   - name: Prajay Shah
-    orcid: 0000-0000-0000-0000
+    orcid: 0000-0002-6668-9301
     affiliation: 1
   - name: Rob M. Lees
     affiliation: 2
@@ -21,7 +21,7 @@ affiliations:
     index: 1
   - name: Department of Physiology, Anatomy and Genetics, University of Oxford, UK
     index: 2
-date: xx XXX 2022
+date: xx Nov 2022
 bibliography: paper.bib
 
 # Summary

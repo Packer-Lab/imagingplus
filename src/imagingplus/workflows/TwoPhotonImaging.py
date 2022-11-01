@@ -32,8 +32,8 @@ class TwoPhotonImaging(ImagingTrial):
 
         print(f'\----- CREATING TwoPhotonImagingTrial for trial: {trialID}')
 
-        super().__init__(date=date, trialID=trialID, expID=expID, dataPath=dataPath, expGroup=expGroup, comment=comment,
-                         saveDir=saveDir, imparams=imparams, cells=cells, tmdata=tmdata)
+        ImagingTrial(date=date, trialID=trialID, expID=expID, dataPath=dataPath, expGroup=expGroup, comment=comment,
+                     saveDir=saveDir, imparams=imparams, cells=cells, tmdata=tmdata, imdata=imdata)
 
         # SAVE two photon trial object
         self.save()
@@ -95,4 +95,3 @@ class TwoPhotonImaging(ImagingTrial):
     #     if self.Suite2p._s2pResultExists:
     #         dFF = self.normalize_dff(self.Suite2p.raw)
     #         return dFF
-

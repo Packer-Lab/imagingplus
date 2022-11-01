@@ -26,7 +26,7 @@ This tool-suite was first designed to serve as a scalable data analysis framewor
 The ``imaging+`` framework is more broadly useful for multi-modal *imaging+* neuroscience experiments, in which calcium imaging data is collected with other time-synchronized signals.
 Especially, there are methods for analysis and visualisation of standard calcium imaging data.
 
-.. sidebar:: Multimodal imaging+ experiment:
+.. sidebar:: A typical multimodal neuroscience imaging+ experiment:
 
      .. Figure:: files/Typical-experiment-apr-22-2022.png
          :width: 700
