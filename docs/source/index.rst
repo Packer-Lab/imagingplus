@@ -34,6 +34,9 @@ Especially, there are methods for analysis and visualisation of standard calcium
 
 Currently, ``imaging+`` is most functional for experiments performed using `PackIO <http://apacker83.github.io/PackIO/>`_ for temporal synchronization, a Bruker microscope for 2p imaging and utilizing `Suite2p <https://suite2p.readthedocs.io/en/latest/>`_ for automated post-processing cell segmentation.
 
+``imaging+`` integrates the `AnnData <https://anndata.readthedocs.io>`_ framework for native and highly efficient, HDF-5 compatible storage and organization of all levels of the data analysis workflow from preprocessing to highly analyzed downstream forms as well.
+
+
 Follow :ref:`installation` for installation.
 Please refer to :ref:`Quick start guide`,  :ref:`tutorials` and :ref:`overview` to get started and learn the toolbox.
 

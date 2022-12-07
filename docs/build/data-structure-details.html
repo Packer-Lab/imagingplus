@@ -6,7 +6,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <meta charset="utf-8"/>
 <meta content="Docutils 0.17.1: http://docutils.sourceforge.net/" name="generator"/>
-<title>Data Structure Inside Trial objects | Imaging+ 0.2-beta documentation</title>
+<title>Data Structure Inside ImagingTrial | Imaging+ 0.2-beta documentation</title>
 <link href="_static/pygments.css" rel="stylesheet"/>
 <link href="_static/theme.9297a650d9dd3016d913.css" rel="stylesheet"/>
 <link href="_static/sg_gallery.css" rel="stylesheet"/>
@@ -17,7 +17,7 @@
 </head>
 <body class="antialiased text-gray scroll-smooth">
 <div class="min-h-screen xl:h-screen flex flex-col xl:grid xl:grid-layout print:block print:h-auto" data-action="keydown@window-&gt;search#focus " data-controller="sidebar search " id="page">
-<a class="block transition -translate-x-full focus:translate-x-0 opacity-0 focus:opacity-100 text-xl bg-white p-4 z-20 absolute top-0 left-0 h-14" href="#data-structure-inside-trial-objects" title="Skip navigation links">Skip to content</a>
+<a class="block transition -translate-x-full focus:translate-x-0 opacity-0 focus:opacity-100 text-xl bg-white p-4 z-20 absolute top-0 left-0 h-14" href="#data-structure-inside-imagingtrial" title="Skip navigation links">Skip to content</a>
 <header class="grid-area-header z-10 h-14 fixed w-full top-0 print:hidden">
 <div class="bg-gray-dark shadow-md flex items-center h-full xl:px-2 relative"><div class="flex items-center">
 <button class="xl:hidden h-14 w-14 leading-14 text-gray-100 hover:bg-gray-700 hover:text-brand focus:outline-none focus:bg-gray-700 focus:text-brand" data-action="sidebar#open" data-sidebar-target="hamburger">
@@ -59,23 +59,21 @@
 </li>
 <li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials-reference.html">Tutorials</a></div><ul>
 <li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-1-Overview-of-Workflow.html">Tutorial 1 - Getting started with data</a></div><ul>
-<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-1-Overview-of-Workflow.html#Creating-an-experiment">Creating an experiment</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-1-Overview-of-Workflow.html#Creating-an-experiment---UPDATED-Oct-23-2022">Creating an experiment - UPDATED Oct 23 2022</a></div></li>
 <li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-1-Overview-of-Workflow.html#Adding-trials-to-an-experiment">Adding trials to an experiment</a></div></li>
 <li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-1-Overview-of-Workflow.html#Adding-calcium-imaging-processing-to-Experiment">Adding calcium imaging processing to Experiment</a></div></li>
 <li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-1-Overview-of-Workflow.html#Storing-Suite2p-processed-data-as-an-anndata-structure">Storing Suite2p processed data as an anndata structure</a></div></li>
 </ul>
 </li>
-<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-2-Organization-of-data-in-package-objects.html">Tutorial 2 - Data organization inside imaging+</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-2-Organization-of-data-in-package-objects.html">Tutorial 2 - Data organization inside Imaging+</a></div><ul>
 <li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-2-Organization-of-data-in-package-objects.html#Importing-data-analysis-objects">Importing data analysis objects</a></div></li>
 <li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-2-Organization-of-data-in-package-objects.html#paq-data">paq data</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-2-Organization-of-data-in-package-objects.html#Suite2p-data">Suite2p data</a></div></li>
 <li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-2-Organization-of-data-in-package-objects.html#Annotated-Data">Annotated Data</a></div></li>
 </ul>
 </li>
 <li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-3-plotting-module.html">Tutorial 3 - Making Useful Plots</a></div><ul>
-<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-3-plotting-module.html#plot-Suite2p-ROIs-location">plot Suite2p ROIs location</a></div></li>
-<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-3-plotting-module.html#plot-default-output-images-from-Suite2p">plot default output images from Suite2p</a></div></li>
-<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-3-plotting-module.html#plot-individual-cell’s-flu-or-dFF-trace">plot individual cell’s flu or dFF trace</a></div></li>
-<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-3-plotting-module.html#Raw-average-trace-of-FOV">Raw average trace of FOV</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-3-plotting-module.html#import-data">import data</a></div></li>
 </ul>
 </li>
 <li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-4-nwb-conversion.html">Tutorial 4 - NWB Conversion</a></div></li>
@@ -83,7 +81,6 @@
 <li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-5-suite2p-module.html#Adding-the-Suite2p-module">Adding the Suite2p module</a></div></li>
 <li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-5-suite2p-module.html#Prepare-for-Suite2p-run">Prepare for Suite2p run</a></div></li>
 <li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-5-suite2p-module.html#Run-Suite2p">Run Suite2p</a></div></li>
-<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-5-suite2p-module.html#Explore-suite2p-results---next-steps-after-running-Suite2p">Explore suite2p results - next steps after running Suite2p</a></div></li>
 <li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorials/Tutorial-5-suite2p-module.html#Import-suite2p-results-directly">Import suite2p results directly</a></div></li>
 </ul>
 </li>
@@ -114,7 +111,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current expanded"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="current reference internal" data-action="click-&gt;sidebar#close" href="#">Data structure details</a></div><ul>
-<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="#anndata-object-for-storing-multi-modal-data"><em>AnnData</em> object for storing multi-modal data</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="#anndata-sub-module-for-storing-multi-modal-data"><em>AnnData</em> sub-module for storing multi-modal data</a></div></li>
 </ul>
 </li>
 <li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="making-plots.html">Making plots</a></div><ul>
@@ -140,22 +137,26 @@
 </aside>
 <main class="px-4 pt-14 xl:ml-fluid grid-area-main overflow-y-auto flex flex-col flex-1 h-full mx-0 md:mx-auto xl:mr-0"><nav aria-label="breadcrumbs" class="print:hidden mt-12 text-sm text-gray-light" role="navigation">
 <a class="text-gray-light text-sm hover:text-gray-dark font-medium focus:text-gray-dark" href="index.html">Imaging+ 0.2-beta documentation</a>
-<span class="mr-1">/</span><span aria-current="page">Data Structure Inside Trial objects</span>
+<span class="mr-1">/</span><span aria-current="page">Data Structure Inside ImagingTrial</span>
 </nav>
 <article class="flex-1" role="main">
-<section id="data-structure-inside-trial-objects">
-<span id="data-structure-details"></span><h1>Data Structure Inside Trial objects<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#data-structure-inside-trial-objects">¶</a></h1>
-<section id="anndata-object-for-storing-multi-modal-data">
-<h2><em>AnnData</em> object for storing multi-modal data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#anndata-object-for-storing-multi-modal-data">¶</a></h2>
-<p>The AnnData library is used to store fluorescence imaging data in an efficient, multi-functional format.</p>
-<p>Further processing on the raw data is added to the AnnData object as <code class="docutils literal notranslate">layers</code>. For instance, dFF normalization of the raw data is added as the <code class="docutils literal notranslate">dFF</code> layer to the existing data table.</p>
-<p>This is stored under: <code class="docutils literal notranslate">trialobject.data</code>.
-The AnnData object is built around the raw Flu matrix of each <code class="docutils literal notranslate">trialobject</code>.
-In keeping with AnnData conventions, the data structure is organized in <em>n</em> observations (obs) x <em>m</em> variables (var), where observations are suite2p ROIs and variables are imaging frame timepoints.
-The rest of the AnnData data object is built according to these dimensions.
-For instance, the metadata for each suite2p ROI stored in Suite2p’s stat.npy output is added to <code class="docutils literal notranslate">trialobject.data</code> under <code class="docutils literal notranslate">obs</code> and <code class="docutils literal notranslate">obsm</code> (1D and &gt;1-D observations annotations, respectively).
-And the temporal synchronization data of the experiment collected in .paq output is added to the variables annotations under <code class="docutils literal notranslate">var</code>.</p>
+<section id="data-structure-inside-imagingtrial">
+<span id="data-structure"></span><h1>Data Structure Inside ImagingTrial<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#data-structure-inside-imagingtrial">¶</a></h1>
+<section id="anndata-sub-module-for-storing-multi-modal-data">
+<h2><em>AnnData</em> sub-module for storing multi-modal data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#anndata-sub-module-for-storing-multi-modal-data">¶</a></h2>
+<p>The AnnData library is used in the <cite>anndata</cite> submodule to store <em>imaging+</em>  data in a highly intuitive, efficient and multi-functional format.</p>
+<p>The <cite>anndata</cite> table is used to store:</p>
+<ol class="arabic simple">
+<li><p><cite>.X</cite>: ROI extracted imaging data in the main data matrix (dimensions: # of ROIs x # of frames)</p></li>
+<li><p><cite>.var</cite>: Multiple channels of 1-D temporal series data as synchronized variables (dimensions: # of channels x # of frames)</p></li>
+<li><p><cite>.obs</cite>: annotations of ROIs (dimensions # of ROIs x # of ROI annotations collected)</p></li>
+<li><p><cite>.layers</cite>: Further processing on the main data is added as additional layers (dimensions: # of ROIs x # of frames). For instance, dFF normalization of the raw data is added as the <code class="docutils literal notranslate">dFF</code> layer to the existing data table.</p></li>
+</ol>
 <a class="reference internal image-reference" href="_images/packerlabimaging-anndata-integration-01.jpg"><img alt="_images/packerlabimaging-anndata-integration-01.jpg" src="_images/packerlabimaging-anndata-integration-01.jpg" style="width: 600px;"/></a>
+<p>In keeping with AnnData conventions, the data structure is organized in <em>n</em> observations (obs) x <em>m</em> variables (var), where observations are suite2p ROIs and variables are imaging frame timepoints.
+The rest of the AnnData data object is built according to these dimensions.</p>
+<p>For instance, the metadata for each suite2p ROI stored in Suite2p’s stat.npy output is added to <code class="docutils literal notranslate">trialobject.data</code> under <code class="docutils literal notranslate">obs</code> and <code class="docutils literal notranslate">obsm</code> (1D and &gt;1-D observations annotations, respectively).
+And the temporal synchronization data of the experiment collected in .paq output is added to the variables annotations under <code class="docutils literal notranslate">var</code>.</p>
 <p>The primary benefit of anndata is that it enforces an intuitive data structure and allows a workflow that maintains relationships between different data sources and types, including processed data.
 Lastly, AnnData objects are highly scalable, allowing individual users to further modify and add observations and variables of their own as their experiment dictates. Note: since AnnData is an independent library, they have an implementation for unstructured data annotations, however usage of this feature is not recommended within the packerlabimaging ecosystem as unstructured data elements should be built as attributes of the <code class="docutils literal notranslate">trialobject</code>.</p>
 </section>

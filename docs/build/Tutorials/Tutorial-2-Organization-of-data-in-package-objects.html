@@ -6,7 +6,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <meta charset="utf-8"/>
 <meta content="Docutils 0.17.1: http://docutils.sourceforge.net/" name="generator"/>
-<title>Tutorial 2 - Data organization inside imaging+ | Imaging+ 0.2-beta documentation</title>
+<title>Tutorial 2 - Data organization inside Imaging+ | Imaging+ 0.2-beta documentation</title>
 <link href="../_static/pygments.css" rel="stylesheet"/>
 <link href="../_static/theme.9297a650d9dd3016d913.css" rel="stylesheet"/>
 <link href="../_static/sg_gallery.css" rel="stylesheet"/>
@@ -59,23 +59,21 @@
 </li>
 <li class="toctree-l1 current expanded"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../Tutorials-reference.html">Tutorials</a></div><ul class="current">
 <li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-1-Overview-of-Workflow.html">Tutorial 1 - Getting started with data</a></div><ul>
-<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-1-Overview-of-Workflow.html#Creating-an-experiment">Creating an experiment</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-1-Overview-of-Workflow.html#Creating-an-experiment---UPDATED-Oct-23-2022">Creating an experiment - UPDATED Oct 23 2022</a></div></li>
 <li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-1-Overview-of-Workflow.html#Adding-trials-to-an-experiment">Adding trials to an experiment</a></div></li>
 <li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-1-Overview-of-Workflow.html#Adding-calcium-imaging-processing-to-Experiment">Adding calcium imaging processing to Experiment</a></div></li>
 <li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-1-Overview-of-Workflow.html#Storing-Suite2p-processed-data-as-an-anndata-structure">Storing Suite2p processed data as an anndata structure</a></div></li>
 </ul>
 </li>
-<li class="toctree-l2 current expanded"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="current reference internal" data-action="click-&gt;sidebar#close" href="#">Tutorial 2 - Data organization inside imaging+</a></div><ul>
+<li class="toctree-l2 current expanded"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="current reference internal" data-action="click-&gt;sidebar#close" href="#">Tutorial 2 - Data organization inside Imaging+</a></div><ul>
 <li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="#Importing-data-analysis-objects">Importing data analysis objects</a></div></li>
 <li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="#paq-data">paq data</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="#Suite2p-data">Suite2p data</a></div></li>
 <li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="#Annotated-Data">Annotated Data</a></div></li>
 </ul>
 </li>
 <li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-3-plotting-module.html">Tutorial 3 - Making Useful Plots</a></div><ul>
-<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-3-plotting-module.html#plot-Suite2p-ROIs-location">plot Suite2p ROIs location</a></div></li>
-<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-3-plotting-module.html#plot-default-output-images-from-Suite2p">plot default output images from Suite2p</a></div></li>
-<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-3-plotting-module.html#plot-individual-cell’s-flu-or-dFF-trace">plot individual cell’s flu or dFF trace</a></div></li>
-<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-3-plotting-module.html#Raw-average-trace-of-FOV">Raw average trace of FOV</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-3-plotting-module.html#import-data">import data</a></div></li>
 </ul>
 </li>
 <li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-4-nwb-conversion.html">Tutorial 4 - NWB Conversion</a></div></li>
@@ -83,7 +81,6 @@
 <li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-5-suite2p-module.html#Adding-the-Suite2p-module">Adding the Suite2p module</a></div></li>
 <li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-5-suite2p-module.html#Prepare-for-Suite2p-run">Prepare for Suite2p run</a></div></li>
 <li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-5-suite2p-module.html#Run-Suite2p">Run Suite2p</a></div></li>
-<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-5-suite2p-module.html#Explore-suite2p-results---next-steps-after-running-Suite2p">Explore suite2p results - next steps after running Suite2p</a></div></li>
 <li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="Tutorial-5-suite2p-module.html#Import-suite2p-results-directly">Import suite2p results directly</a></div></li>
 </ul>
 </li>
@@ -114,7 +111,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../data-structure-details.html">Data structure details</a></div><ul>
-<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../data-structure-details.html#anndata-object-for-storing-multi-modal-data"><em>AnnData</em> object for storing multi-modal data</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../data-structure-details.html#anndata-sub-module-for-storing-multi-modal-data"><em>AnnData</em> sub-module for storing multi-modal data</a></div></li>
 </ul>
 </li>
 <li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../making-plots.html">Making plots</a></div><ul>
@@ -141,7 +138,7 @@
 <main class="px-4 pt-14 xl:ml-fluid grid-area-main overflow-y-auto flex flex-col flex-1 h-full mx-0 md:mx-auto xl:mr-0"><nav aria-label="breadcrumbs" class="print:hidden mt-12 text-sm text-gray-light" role="navigation">
 <a class="text-gray-light text-sm hover:text-gray-dark font-medium focus:text-gray-dark" href="../index.html">Imaging+ 0.2-beta documentation</a>
 <span class="mr-1">/</span><a class="text-gray-light text-sm hover:text-gray-dark" href="../Tutorials-reference.html">Tutorials</a>
-<span class="mr-1">/</span><span aria-current="page">Tutorial 2 - Data organization inside imaging+</span>
+<span class="mr-1">/</span><span aria-current="page">Tutorial 2 - Data organization inside Imaging+</span>
 </nav>
 <article class="flex-1" role="main">
 <style>
@@ -391,25 +388,13 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<section id="Tutorial-2---Data-organization-inside-imaging+">
-<h1>Tutorial 2 - Data organization inside imaging+<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Tutorial-2---Data-organization-inside-imaging+">¶</a></h1>
-<div class="nbinput nblast docutils container">
-<div class="code-wrapper" data-controller="code">
-<div class="code-header">
-<span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[1]:
-</code></pre></div></div>
-<div class="code-wrapper" data-controller="code">
-<div class="code-header">
-<span class="code-lang">ipython3</span></div>
-<div class="highlight"><pre><code><span class="kn">from</span> <span class="nn">IPython</span> <span class="kn">import</span> <span class="n">display</span>
-</code></pre></div></div>
-</div>
+<section id="Tutorial-2---Data-organization-inside-Imaging+">
+<h1>Tutorial 2 - Data organization inside Imaging+<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Tutorial-2---Data-organization-inside-Imaging+">¶</a></h1>
 <div class="nbinput docutils container">
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[2]:
+<div class="highlight"><pre><code>[1]:
 </code></pre></div></div>
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
@@ -422,30 +407,27 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Warning: cellpose did not import
-No module named 'cellpose'
-cannot use anatomical mode, but otherwise suite2p will run normally
 
-imported packerlabimaging
-        version: under...alpha...development
+imported imagingplus successfully
+        version: 0.2-beta
 
 </pre></div></div>
 </div>
-<p><em>This notebook demonstrates the basics of how data is organized inside of a trial object.</em></p>
+<p><strong>This notebook demonstrates the basics of how data is organized inside of a trial object.</strong></p>
 <section id="Importing-data-analysis-objects">
-<h2>Importing data analysis objects<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Importing-data-analysis-objects">¶</a></h2>
+<h2>Importing data analysis objects<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Importing-data-analysis-objects">¶</a></h2>
 <p>The first step to begin using the data analysis objects is to import the previously created objects. In general, it is advised to import th high-level <code class="docutils literal notranslate">Experiment</code> object first, and then use the <code class="docutils literal notranslate">.load_trial</code> method to load an individual <code class="docutils literal notranslate">-Trial</code> object.</p>
 <div class="nbinput docutils container">
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[3]:
+<div class="highlight"><pre><code>[24]:
 </code></pre></div></div>
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">ipython3</span></div>
 <div class="highlight"><pre><code><span class="c1"># import experiment obj and TwoPhotonImagingTrial object</span>
-<span class="n">expobj</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="s1">'/home/pshah/Documents/code/imagingplus/tests/RL109_analysis.pkl'</span><span class="p">)</span>
+<span class="n">expobj</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">import_obj</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="s1">'/mnt/qnap_share/Data/imagingplus-example/RL109_analysis.pkl'</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">expobj</span><span class="p">)</span>
 <span class="n">trialobj</span> <span class="o">=</span> <span class="n">expobj</span><span class="o">.</span><span class="n">load_trial</span><span class="p">(</span><span class="n">trialID</span><span class="o">=</span><span class="s1">'t-013'</span><span class="p">)</span>
 </code></pre></div></div>
@@ -455,33 +437,37 @@ imported packerlabimaging
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-|- Loaded packerlabimaging.Experiment object (date: 2020-12-19, expID: RL109)kl ...
-packerlabimaging Experiment object (last saved: Tue Feb  8 00:12:08 2022), date: 2020-12-19, expID: RL109, microscope: Bruker
-file path: /home/pshah/Documents/code/packerlabimaging/tests/RL109_analysis.pkl
+
+|- Loaded imagingplus.Experiment object (expID: RL109)109_analysis.pkl ...
+
+imagingplus Experiment object (last saved: Sun Oct 23 13:04:11 2022), expID: RL109
+file path: /mnt/qnap_share/Data/imagingplus-example/RL109_analysis.pkl
 
 trials in Experiment object:
-        t-005: TwoPhotonImagingTrial, pre 4ap 2p spont imaging
-        t-006: TwoPhotonImagingTrial, pre 4ap 2p spont imaging
-        t-013: AllOpticalTrial, pre 4ap 2p all optical
+        t-005: awake spont. 2p imaging + LFP
+        t-006: awake spont. 2p imaging + LFP
+        t-013: all optical trial with LFP
 
-|- Loaded (RL109 t-013) TwoPhotonImagingTrial.alloptical experimental trial object, last saved: Tue Feb  8 00:12:01 2022
+
+|- Loaded TwoPhotonImagingTrial.alloptical experimental trial object ...
+
 </pre></div></div>
 </div>
 </section>
 <section id="paq-data">
-<h2>paq data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#paq-data">¶</a></h2>
-<p>The <code class="docutils literal notranslate">paq</code> sub-module is used to retrieve and store data from the .paq file for each trial. It can be accessed by <code class="docutils literal notranslate">trialobj.paq</code>:</p>
+<h2>paq data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#paq-data">¶</a></h2>
+<p>The <code class="docutils literal notranslate">paq</code> sub-module is used to retrieve and store data from a .paq file for each trial. This temporal-data was saved into <code class="docutils literal notranslate">trialobj.tmdata</code>:</p>
 <div class="nbinput docutils container">
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[6]:
+<div class="highlight"><pre><code>[25]:
 </code></pre></div></div>
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">ipython3</span></div>
-<div class="highlight"><pre><code><span class="c1"># show all attributes saved in `trialobj.paq`</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">paq</span><span class="p">)</span>
+<div class="highlight"><pre><code><span class="c1"># show all attributes saved in `trialobj.tmdata`</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">tmdata</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 </code></pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -489,78 +475,1352 @@ trials in Experiment object:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-packerlabimaging.processing.paq.paqData:
-        frame_times: [  139577   140252   140925 ... 11142935 11143607 11144280]
-        frame_times_channame: frame_clock
-        paq_path: /home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_RL109_013.paq
-        paq_channels: ['frame_clock', 'x_galvo_uncaging', 'slm2packio', 'markpoints2packio', 'packio2slm', 'packio2markpoints', 'pycontrol_rsync', 'voltage']
-        paq_rate: 20000
-        voltage: [0.0551814  0.053866   0.05616795 ... 3.4617312  3.4610734  3.4614022 ]
+          frame_clock  x_galvo_uncaging  slm2packio  markpoints2packio  packio2slm  packio2markpoints  pycontrol_rsync   voltage  stim_start_times
+0            0.005525         -1.167153    3.338084           0.005854   -0.001710           0.000264         1.320265  0.055181             False
+1            0.005854         -1.166824    3.339728           0.007827    0.000264          -0.000065         1.237395  0.053866             False
+2            0.005854         -1.165509    3.336768           0.007169   -0.000394           0.000592         1.158142  0.056168             False
+3            0.005525         -1.166495    3.334138           0.006183   -0.000065           0.000264         1.084809  0.054524             False
+4            0.005854         -1.166824    3.331178           0.007169    0.002565           0.000592         1.018710  0.055510             False
+...               ...               ...         ...                ...         ...                ...              ...       ...               ...
+11864763     0.006512         -1.165837    3.331836           0.008156    0.001579           0.000921         0.022296  3.461073             False
+11864764     0.007498         -1.165180    3.333151           0.006512    0.000592           0.000592         0.018679  3.461402             False
+11864765     0.006512         -1.164851    3.335782           0.007827   -0.001052           0.000264         0.018350  3.461731             False
+11864766     0.008485         -1.164851    3.341701           0.008156   -0.000065           0.000592         0.020323  3.461073             False
+11864767     0.006512         -1.164851    3.344990           0.009142   -0.001052           0.000592         0.019008  3.461402             False
+
+[11864768 rows x 9 columns]
 </pre></div></div>
 </div>
 <p>We can see that the ‘frame_clock’ paq channel was used as the primary channel for retrieving imaging frame timestamps synchronized to the paq clock. There are a number of other channels associated with this .paq file (however their data is not saved in this object to save space). Data from any of the other channels can stored directly to the <code class="docutils literal notranslate">.paq</code> object using the <code class="docutils literal notranslate">.storePaqChannel()</code> object method. In this case, the ‘voltage’ paq channel was stored in its entirety under <code class="docutils literal notranslate">.paq.voltage</code>.</p>
 </section>
+<section id="Suite2p-data">
+<h2>Suite2p data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Suite2p-data">¶</a></h2>
+<p>Suite2p is the primary Ca2+ imaging library that is integrated into the analysis pipeline. The dedicated <code class="docutils literal notranslate">suite2p</code> submodule handles accessing suite2p functionality, as well as the data imported from Suite2p processing. Suite2p related data and methods are accessed using <code class="docutils literal notranslate">trialobj.Suite2p</code>.</p>
+<p>Some example functionality is shown below, refer to the reference documentation for more extensive information.</p>
+<div class="nbinput docutils container">
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[26]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="n">trialobj</span><span class="o">.</span><span class="n">Suite2p</span>
+</code></pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[26]:
+</code></pre></div></div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Suite2p Results (trial level) Object, 16368 key_frames x 640 s2p ROIs
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[27]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="c1"># the ROIs x raw data:</span>
+<span class="n">trialobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">imdata</span>
+
+<span class="c1"># NOTE: we recommend working with the data that is stored in the anndata table (`trialobj.data`)</span>
+<span class="c1"># for your processing/analysis work.</span>
+</code></pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[27]:
+</code></pre></div></div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([[352.13678 , 411.9472  , 280.92416 , ..., 401.3014  , 515.2566  ,
+        541.41565 ],
+       [192.22421 , 395.29306 , 330.7496  , ..., 257.25806 , 285.31506 ,
+        126.660484],
+       [336.64996 , 539.26746 , 219.30368 , ..., 423.15295 , 433.1515  ,
+        220.52742 ],
+       ...,
+       [308.56497 , 303.55536 , 413.3554  , ..., 482.61044 , 386.2576  ,
+        283.1643  ],
+       [133.96815 , 122.96908 ,  84.63106 , ..., 109.2256  , 187.91866 ,
+        159.50813 ],
+       [252.49574 , 240.2455  , 273.2785  , ..., 181.601   , 229.0061  ,
+        278.74188 ]], dtype=float32)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[28]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="c1"># meta-information about ROIs from the Suite2p stat file:</span>
+<span class="n">trialobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">stat</span>
+</code></pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[28]:
+</code></pre></div></div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([{'ypix': array([102, 102, 102, 102, 102, 103, 103, 103, 103, 103, 103, 103, 104,
+       104, 104, 104, 104, 104, 104, 104, 105, 105, 105, 105, 105, 105,
+       105, 105, 106, 106, 106, 106, 106, 106, 106, 106, 107, 107, 107,
+       107, 107, 107, 107, 108, 108, 108, 108, 108]), 'xpix': array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455,
+       456, 457, 458, 459, 460, 461, 462, 455, 456, 457, 458, 459, 460,
+       461, 462, 455, 456, 457, 458, 459, 460, 461, 462, 456, 457, 458,
+       459, 460, 461, 462, 457, 458, 459, 460, 461]), 'lam': array([0.00638468, 0.00895854, 0.01136301, 0.01110086, 0.00705759,
+       0.01243491, 0.02065784, 0.02732179, 0.03081292, 0.02857405,
+       0.01981334, 0.00643057, 0.01076856, 0.02522881, 0.03536875,
+       0.03719155, 0.03523667, 0.03170755, 0.02582202, 0.01195719,
+       0.01138049, 0.02936709, 0.0388124 , 0.03670786, 0.03174627,
+       0.02781939, 0.0247726 , 0.01484124, 0.0064307 , 0.02178741,
+       0.03363076, 0.03584319, 0.03252564, 0.02755288, 0.02219192,
+       0.01259714, 0.00933054, 0.01957686, 0.02685436, 0.02868195,
+       0.02438695, 0.01593173, 0.00604195, 0.00614118, 0.01241217,
+       0.01551214, 0.01438082, 0.00855111], dtype=float32), 'footprint': 1.0, 'mrs': 0.90981513, 'mrs0': 2.6042028761153, 'compact': 1.0019696625843746, 'med': [105.0, 459.0], 'npix': 48, 'overlap': array([ True, False, False, False, False, False, False, False, False,
+       False, False, False, False, False, False, False, False, False,
+       False, False,  True, False, False, False, False, False, False,
+       False,  True,  True, False, False, False, False, False, False,
+        True,  True,  True, False, False, False, False,  True,  True,
+        True,  True, False]), 'radius': 3.5656038064243396, 'aspect_ratio': 1.0513974755946096, 'npix_norm': 0.649175, 'skew': 3.0169547, 'std': 353.67505},
+       {'ypix': array([46, 46, 46, 46, 46, 46, 47, 47, 47, 47, 47, 47, 47, 47, 47, 48, 48,
+       48, 48, 48, 48, 48, 48, 49, 49, 49, 49, 49, 49, 49, 49, 50, 50, 50,
+       50, 50, 50, 50, 51, 51, 51, 51, 51, 52, 52, 52]), 'xpix': array([116, 117, 118, 119, 120, 121, 114, 115, 116, 117, 118, 119, 120,
+       121, 122, 115, 116, 117, 118, 119, 120, 121, 122, 115, 116, 117,
+       118, 119, 120, 121, 122, 116, 117, 118, 119, 120, 121, 122, 117,
+       118, 119, 120, 121, 118, 119, 120]), 'lam': array([0.00909591, 0.01456937, 0.01832514, 0.01890799, 0.01570023,
+       0.00973547, 0.00744942, 0.01453985, 0.02419673, 0.03284908,
+       0.03678438, 0.03534257, 0.02903387, 0.01822114, 0.00731372,
+       0.01591995, 0.03092505, 0.04184085, 0.0448999 , 0.04109605,
+       0.03287527, 0.02178643, 0.00951811, 0.00878189, 0.02346953,
+       0.03750538, 0.04307739, 0.03926133, 0.02999047, 0.01967636,
+       0.00941749, 0.01269261, 0.02711541, 0.03495914, 0.03259644,
+       0.0242609 , 0.01472905, 0.00662102, 0.01389002, 0.02195401,
+       0.02241964, 0.01594619, 0.00838999, 0.00760095, 0.00864918,
+       0.00606909], dtype=float32), 'footprint': 1.0, 'mrs': 0.9120764, 'mrs0': 2.543516044642053, 'compact': 1.0284258197493805, 'med': [48.5, 119.0], 'npix': 46, 'overlap': array([ True,  True,  True, False, False, False,  True,  True,  True,
+       False, False, False, False, False,  True,  True, False, False,
+       False, False, False,  True,  True,  True, False, False, False,
+       False,  True,  True,  True,  True, False, False,  True,  True,
+        True,  True,  True,  True,  True,  True,  True,  True,  True,
+        True]), 'radius': 3.538467745454827, 'aspect_ratio': 1.0744280065263727, 'npix_norm': 0.62212604, 'skew': 3.7846518, 'std': 422.92258},
+       {'ypix': array([18, 18, 18, 18, 19, 19, 19, 19, 19, 19, 19, 19, 20, 20, 20, 20, 20,
+       20, 20, 20, 20, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 22, 22, 22,
+       22, 22, 22, 22, 22, 22, 22, 23, 23, 23, 23, 23, 23, 23, 23, 24, 24,
+       24, 24, 24, 24, 24, 24, 25, 25, 25, 25, 25, 25, 25, 26, 26, 26, 26]), 'xpix': array([202, 203, 204, 205, 200, 201, 202, 203, 204, 205, 206, 207, 200,
+       201, 202, 203, 204, 205, 206, 207, 208, 200, 201, 202, 203, 204,
+       205, 206, 207, 208, 209, 199, 200, 201, 202, 203, 204, 205, 206,
+       207, 208, 200, 201, 202, 203, 204, 205, 206, 207, 200, 201, 202,
+       203, 204, 205, 206, 207, 201, 202, 203, 204, 205, 206, 207, 202,
+       203, 204, 205]), 'lam': array([0.00545189, 0.00608802, 0.00620215, 0.00528778, 0.00509016,
+       0.0122368 , 0.0166328 , 0.01625221, 0.01300093, 0.00930335,
+       0.00649809, 0.0054801 , 0.00835997, 0.01898179, 0.02681964,
+       0.02716714, 0.02171787, 0.01509764, 0.01041566, 0.00822917,
+       0.00693172, 0.0117227 , 0.02400276, 0.03096121, 0.03138037,
+       0.02795716, 0.02170095, 0.01506931, 0.01117996, 0.00849509,
+       0.00498517, 0.00457927, 0.01367252, 0.02446236, 0.02843685,
+       0.02762569, 0.02674694, 0.02412982, 0.01838652, 0.01173578,
+       0.00783563, 0.01189346, 0.02102235, 0.02426873, 0.02397901,
+       0.02280454, 0.0210674 , 0.01677865, 0.00966797, 0.00772996,
+       0.01501356, 0.0198556 , 0.02045688, 0.01869032, 0.01662539,
+       0.01329887, 0.00737635, 0.00898902, 0.01389659, 0.0156041 ,
+       0.01357497, 0.01125927, 0.00867181, 0.0049869 , 0.00614371,
+       0.00747479, 0.00685853, 0.00570034], dtype=float32), 'footprint': 1.0, 'mrs': 1.0885593, 'mrs0': 3.0920896689992627, 'compact': 1.0096624260641558, 'med': [22.0, 204.0], 'npix': 68, 'overlap': array([ True,  True,  True,  True,  True,  True,  True,  True,  True,
+        True,  True,  True,  True,  True,  True, False, False, False,
+       False, False, False,  True,  True, False, False, False, False,
+       False,  True,  True,  True, False, False, False, False,  True,
+        True,  True,  True,  True,  True,  True, False, False,  True,
+        True,  True,  True,  True,  True, False,  True,  True,  True,
+        True,  True,  True,  True,  True,  True,  True,  True,  True,
+        True,  True,  True,  True,  True]), 'radius': 4.124214681698544, 'aspect_ratio': 1.0274750851745456, 'npix_norm': 0.91966456, 'skew': 3.6033483, 'std': 342.36813},
+       ...,
+       {'ypix': array([158, 159, 159, 159, 159, 160, 160, 160, 160, 160, 161, 161, 161,
+       162, 162, 162, 162, 162, 162, 162, 162, 163, 163, 163, 163, 163,
+       163, 163, 163, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164,
+       164, 164, 164, 164, 164, 164, 164, 165, 165, 165, 165, 165, 165,
+       165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 166,
+       166, 166, 166, 166, 166, 166, 166, 166, 166, 166, 166, 166, 166,
+       166, 166, 166, 166, 166, 166, 166, 166, 166, 166, 166, 166, 166,
+       167, 167, 167, 167, 167, 167, 167, 167, 167, 167, 167, 167, 167,
+       167, 167, 167, 167, 167, 167, 167, 167, 167, 167, 167, 167, 167,
+       167, 167, 167, 167, 167, 167, 167, 167, 167, 167, 167, 167, 167,
+       168, 168, 168, 168, 168, 168, 168, 168, 168, 168, 168, 168, 168,
+       168, 168, 168, 168, 168, 168, 168, 168, 168, 168, 168, 168, 168,
+       168, 168, 168, 168, 168, 168, 168, 168, 168, 168, 168, 168, 168,
+       168, 168, 168, 168, 168, 169, 169, 169, 169, 169, 169, 169, 169,
+       169, 169, 169, 169, 169, 169, 169, 169, 169, 169, 169, 169, 169,
+       169, 169, 169, 169, 169, 169, 169, 169, 169, 169, 169, 169, 169,
+       169, 169, 169, 169, 169, 169, 169, 169, 169, 169, 170, 170, 170,
+       170, 170, 170, 170, 170, 170, 170, 170, 170, 170, 170, 170, 170,
+       170, 170, 170, 170, 170, 170, 170, 170, 170, 170, 170, 170, 170,
+       170, 170, 170, 170, 170, 170, 171, 171, 171, 171, 171, 171, 171,
+       171, 171, 171, 171, 171, 171, 171, 171, 171, 171, 171, 171, 171,
+       171, 171, 172, 172, 172, 172, 172, 172, 172, 172, 172, 172, 172,
+       172, 172, 172, 172, 172, 172, 172, 172, 172, 172, 173, 173, 173,
+       173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173,
+       173, 173, 173, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174,
+       174, 174, 174, 174, 175, 175]), 'xpix': array([375, 374, 375, 376, 377, 373, 374, 375, 376, 387, 374, 379, 380,
+       374, 375, 376, 379, 382, 385, 386, 388, 372, 373, 374, 375, 376,
+       378, 379, 386, 373, 374, 378, 379, 380, 384, 386, 387, 388, 389,
+       390, 392, 393, 401, 402, 403, 404, 353, 354, 355, 356, 373, 374,
+       382, 384, 385, 386, 387, 388, 392, 401, 402, 403, 404, 405, 352,
+       353, 354, 355, 356, 370, 373, 374, 377, 381, 382, 383, 384, 385,
+       386, 387, 388, 389, 390, 391, 392, 404, 405, 406, 409, 410, 411,
+       354, 355, 357, 365, 366, 367, 368, 369, 370, 371, 372, 373, 374,
+       375, 376, 377, 379, 380, 381, 382, 383, 384, 385, 386, 387, 389,
+       390, 391, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413,
+       353, 354, 355, 356, 357, 359, 365, 366, 367, 368, 369, 370, 371,
+       372, 373, 374, 375, 376, 377, 380, 381, 382, 383, 384, 385, 386,
+       388, 389, 390, 391, 392, 403, 404, 406, 408, 409, 410, 411, 412,
+       413, 414, 415, 416, 417, 354, 355, 356, 357, 358, 359, 360, 361,
+       362, 363, 364, 365, 366, 367, 369, 370, 371, 372, 373, 376, 377,
+       379, 380, 381, 382, 383, 384, 385, 386, 387, 388, 389, 390, 404,
+       405, 406, 407, 408, 413, 414, 415, 416, 417, 418, 355, 356, 359,
+       360, 361, 362, 363, 364, 366, 367, 369, 370, 371, 377, 378, 379,
+       380, 381, 382, 383, 384, 385, 386, 387, 388, 389, 390, 391, 404,
+       405, 406, 407, 416, 417, 418, 356, 367, 369, 370, 377, 378, 379,
+       380, 381, 382, 383, 387, 388, 389, 390, 391, 392, 403, 404, 416,
+       417, 418, 381, 382, 383, 387, 388, 389, 390, 391, 393, 395, 396,
+       397, 398, 399, 401, 403, 404, 405, 416, 417, 418, 359, 360, 380,
+       382, 387, 388, 389, 390, 391, 392, 393, 395, 396, 399, 400, 402,
+       403, 404, 405, 360, 390, 391, 392, 393, 394, 395, 396, 397, 398,
+       399, 400, 401, 402, 393, 394]), 'lam': array([0.00286928, 0.00259462, 0.00337227, 0.00255347, 0.00204948,
+       0.00202108, 0.00264209, 0.00276468, 0.00159292, 0.0017551 ,
+       0.00349023, 0.00286867, 0.00200605, 0.00511696, 0.00287608,
+       0.0017088 , 0.00151836, 0.00200302, 0.00164775, 0.00255818,
+       0.00152779, 0.00192849, 0.00335887, 0.00512549, 0.00234283,
+       0.00192926, 0.00196653, 0.00231145, 0.00387329, 0.00285975,
+       0.00298356, 0.00185528, 0.00229166, 0.00263537, 0.00209626,
+       0.00185905, 0.00425079, 0.00405806, 0.00191003, 0.0024535 ,
+       0.00249094, 0.00259834, 0.00277398, 0.00334289, 0.00350523,
+       0.00205348, 0.00302739, 0.00420143, 0.0031908 , 0.00126848,
+       0.00183293, 0.0029247 , 0.00197722, 0.00344929, 0.00318677,
+       0.00247438, 0.00310556, 0.00413478, 0.00176862, 0.00222995,
+       0.00326012, 0.00488892, 0.00418905, 0.00214313, 0.00250975,
+       0.00294531, 0.00288882, 0.0027946 , 0.0018857 , 0.00146898,
+       0.003711  , 0.00363824, 0.00154039, 0.00310719, 0.00375308,
+       0.00255617, 0.00466113, 0.00475768, 0.0030186 , 0.00474222,
+       0.00290538, 0.004514  , 0.00193983, 0.00285148, 0.00237405,
+       0.00505675, 0.00420587, 0.00221289, 0.00348542, 0.00489987,
+       0.00199475, 0.00183996, 0.00206761, 0.00302848, 0.00154587,
+       0.00251421, 0.00325534, 0.00324607, 0.00380017, 0.00604871,
+       0.00524036, 0.00550321, 0.00475682, 0.0037554 , 0.00470549,
+       0.00431793, 0.00338732, 0.00151919, 0.00159598, 0.00318731,
+       0.004536  , 0.00518949, 0.00561012, 0.00387813, 0.00329935,
+       0.00384294, 0.00238   , 0.00236514, 0.00192933, 0.00227059,
+       0.00360231, 0.00306801, 0.00418943, 0.00454379, 0.00372138,
+       0.002403  , 0.00354666, 0.00386164, 0.003181  , 0.00245785,
+       0.00255984, 0.00366211, 0.00436258, 0.00235788, 0.00183096,
+       0.00173962, 0.00151972, 0.00326573, 0.00403507, 0.00260203,
+       0.00447684, 0.00431312, 0.00344967, 0.00557541, 0.00342687,
+       0.00158354, 0.00394798, 0.00276107, 0.00271234, 0.00308114,
+       0.003789  , 0.00350815, 0.00290263, 0.00340051, 0.00217004,
+       0.00336243, 0.00159389, 0.00297907, 0.00402694, 0.00370309,
+       0.00189018, 0.00422567, 0.00462089, 0.00237474, 0.00265822,
+       0.00387684, 0.00313393, 0.0031415 , 0.00460251, 0.00364379,
+       0.00282508, 0.00214486, 0.00274323, 0.00315781, 0.00296068,
+       0.00282563, 0.00210713, 0.0016407 , 0.00155725, 0.00292419,
+       0.00161113, 0.00187676, 0.00170153, 0.00286219, 0.00260381,
+       0.00237066, 0.00381711, 0.00229396, 0.0043518 , 0.00322419,
+       0.00283945, 0.00257016, 0.00179217, 0.0015092 , 0.00209903,
+       0.00221834, 0.00235991, 0.00261474, 0.00332405, 0.00258864,
+       0.002608  , 0.00157223, 0.0016706 , 0.0020885 , 0.00282937,
+       0.00343391, 0.00242269, 0.00662414, 0.00623758, 0.00523879,
+       0.00461471, 0.00328737, 0.00286894, 0.00381225, 0.00226984,
+       0.00238015, 0.00494135, 0.00242791, 0.00132498, 0.00289301,
+       0.00220604, 0.00326554, 0.00390699, 0.00538431, 0.00660804,
+       0.00181801, 0.00395399, 0.00194908, 0.00214654, 0.00397877,
+       0.00191753, 0.00191654, 0.00249725, 0.00191403, 0.00348469,
+       0.0025085 , 0.00253094, 0.00373572, 0.00212011, 0.00132894,
+       0.00190789, 0.00326894, 0.00351297, 0.00348651, 0.0038919 ,
+       0.00185133, 0.00382373, 0.00376294, 0.00448563, 0.00410995,
+       0.00243404, 0.00267941, 0.00238115, 0.00217249, 0.00210481,
+       0.0014822 , 0.00162536, 0.00144151, 0.0023181 , 0.00149256,
+       0.00183859, 0.00408302, 0.00452229, 0.00208426, 0.00525849,
+       0.00521683, 0.00460148, 0.0049272 , 0.00447842, 0.00195348,
+       0.00327713, 0.00339903, 0.00256586, 0.00375898, 0.0021151 ,
+       0.00260367, 0.00298934, 0.00345007, 0.00504905, 0.00679261,
+       0.00553208, 0.00556962, 0.0051293 , 0.00482718, 0.00153104,
+       0.00187431, 0.00337595, 0.00319663, 0.00225396, 0.0020286 ,
+       0.00243751, 0.00402626, 0.00299196, 0.00178289, 0.00192062,
+       0.00151216, 0.00169066, 0.00303077, 0.00178265, 0.00131673,
+       0.0019633 , 0.00383657, 0.00185625, 0.00405352, 0.003759  ,
+       0.00313889, 0.00364831, 0.00576573, 0.0017102 , 0.00263339,
+       0.00242149, 0.00277657, 0.00511749, 0.00442813, 0.00205553,
+       0.0018405 , 0.00177784, 0.00203138, 0.00323508, 0.00316913,
+       0.00243073, 0.00238249, 0.00385366, 0.00318298, 0.00193085,
+       0.00209014, 0.00362567, 0.00206467, 0.00271361, 0.00130027,
+       0.00184112], dtype=float32), 'footprint': 2.0, 'mrs': 4.998543, 'mrs0': 6.843361744187066, 'compact': 2.0948364712531085, 'med': [168.0, 385.0], 'npix': 331, 'overlap': array([ True, False, False,  True,  True, False,  True,  True, False,
+        True, False, False,  True, False,  True, False,  True,  True,
+        True,  True,  True,  True,  True, False,  True, False, False,
+        True,  True,  True, False,  True,  True,  True,  True,  True,
+        True,  True,  True,  True,  True,  True,  True,  True,  True,
+        True,  True,  True, False, False,  True, False,  True,  True,
+        True,  True,  True,  True,  True,  True, False,  True,  True,
+        True,  True,  True,  True, False, False,  True, False, False,
+        True,  True,  True,  True,  True,  True,  True, False, False,
+       False,  True, False,  True,  True,  True,  True,  True,  True,
+        True,  True, False, False,  True,  True,  True,  True,  True,
+       False, False, False, False, False, False, False, False,  True,
+        True,  True,  True,  True,  True,  True,  True, False, False,
+        True,  True,  True,  True,  True,  True,  True,  True,  True,
+        True,  True,  True,  True, False, False, False,  True,  True,
+        True,  True,  True,  True,  True,  True, False, False, False,
+       False, False, False, False, False,  True,  True,  True,  True,
+        True,  True,  True,  True, False, False, False, False,  True,
+        True,  True,  True,  True,  True,  True,  True,  True,  True,
+        True,  True, False, False,  True,  True,  True,  True,  True,
+        True,  True,  True,  True,  True,  True,  True,  True, False,
+       False, False, False, False, False, False,  True,  True,  True,
+        True,  True,  True,  True,  True,  True,  True,  True, False,
+        True,  True,  True,  True,  True,  True,  True,  True,  True,
+        True,  True, False, False,  True, False, False, False, False,
+        True, False, False, False, False, False, False, False,  True,
+       False,  True,  True,  True,  True,  True,  True,  True,  True,
+        True, False, False,  True,  True,  True,  True,  True,  True,
+        True, False, False, False, False,  True, False, False, False,
+       False, False,  True,  True, False,  True,  True,  True,  True,
+        True,  True,  True,  True,  True, False,  True,  True,  True,
+        True,  True,  True,  True,  True,  True,  True,  True,  True,
+        True,  True,  True,  True,  True,  True,  True,  True,  True,
+        True,  True, False,  True,  True,  True,  True,  True,  True,
+        True,  True,  True,  True,  True,  True,  True,  True,  True,
+        True,  True,  True,  True,  True,  True,  True,  True,  True,
+        True,  True,  True,  True,  True,  True,  True]), 'radius': 33.09026240792262, 'aspect_ratio': 1.6760580112361614, 'npix_norm': 4.4766026, 'skew': 2.9793897, 'std': 56.44806},
+       {'ypix': array([274, 274, 274, 274, 275, 275, 275, 275, 276, 276, 276, 276, 277,
+       277, 277, 277, 278, 278, 278, 279, 279, 279, 279, 280, 280, 280,
+       280, 281, 281, 281, 281, 282, 282, 282, 282, 282, 282, 282, 282,
+       283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 284, 284,
+       284, 284, 284, 284, 284, 284, 285, 285, 285, 285, 285, 285, 285,
+       285, 285, 286, 286, 286, 286, 286, 286, 286, 286, 287, 287, 287,
+       287, 287, 287, 287, 287, 287, 288, 288, 288, 288, 288, 288, 288,
+       288, 288, 288, 289, 289, 289, 289, 289, 289, 289, 289, 290, 290,
+       290, 290, 290, 290, 290, 291, 291, 291, 291, 291, 291, 292, 292,
+       292, 292, 292, 292, 292, 292, 292, 292, 293, 293, 293, 293, 293,
+       293, 293, 293, 293, 293, 293, 293, 293, 293, 294, 294, 294, 294,
+       294, 294, 294, 294, 294, 294, 294, 294, 295, 295, 295, 295, 295,
+       295, 295, 295, 295, 295, 295, 295, 296, 296, 296, 296, 296]), 'xpix': array([235, 236, 237, 238, 235, 236, 237, 238, 235, 236, 237, 238, 235,
+       236, 237, 238, 236, 237, 238, 236, 237, 238, 239, 233, 237, 238,
+       239, 233, 234, 238, 239, 228, 232, 233, 234, 235, 236, 238, 239,
+       228, 229, 233, 234, 235, 236, 237, 238, 239, 240, 241, 229, 230,
+       231, 232, 233, 234, 235, 236, 229, 230, 231, 232, 233, 234, 235,
+       236, 237, 231, 232, 233, 234, 235, 236, 237, 238, 232, 233, 234,
+       235, 236, 237, 238, 239, 240, 232, 233, 234, 235, 236, 237, 238,
+       239, 240, 241, 238, 239, 240, 241, 242, 243, 244, 245, 238, 239,
+       240, 241, 242, 243, 244, 237, 238, 239, 240, 243, 244, 236, 237,
+       238, 239, 240, 244, 245, 246, 249, 250, 236, 237, 238, 239, 240,
+       242, 244, 245, 246, 247, 248, 249, 250, 251, 237, 238, 239, 240,
+       241, 242, 245, 246, 247, 248, 249, 250, 238, 239, 240, 241, 242,
+       243, 244, 245, 246, 247, 248, 249, 242, 243, 244, 248, 249]), 'lam': array([0.00353741, 0.00517016, 0.00329727, 0.00242688, 0.00562091,
+       0.00851122, 0.00902197, 0.00581402, 0.00508556, 0.00906205,
+       0.01027361, 0.00704236, 0.00266805, 0.00577183, 0.00894417,
+       0.00258301, 0.00346624, 0.00572842, 0.00828662, 0.00369061,
+       0.00778687, 0.00929033, 0.00555683, 0.00537309, 0.00639053,
+       0.01002211, 0.00271699, 0.00966459, 0.00380201, 0.00461136,
+       0.00312464, 0.00320701, 0.00406449, 0.00522045, 0.00784463,
+       0.00931368, 0.00349013, 0.00940471, 0.00486539, 0.00372914,
+       0.00348873, 0.00299941, 0.00649019, 0.01081055, 0.00591648,
+       0.00761427, 0.00786332, 0.00745158, 0.00659136, 0.00329301,
+       0.00506582, 0.00632644, 0.00559625, 0.00547724, 0.0035666 ,
+       0.00537009, 0.00703207, 0.00474662, 0.00293929, 0.00527441,
+       0.00700889, 0.00802964, 0.00545722, 0.00701146, 0.00783141,
+       0.00954959, 0.00472145, 0.00286008, 0.00413494, 0.00316838,
+       0.00655688, 0.00773258, 0.01021765, 0.00886467, 0.0038621 ,
+       0.00265623, 0.00318746, 0.00749208, 0.01182964, 0.01098835,
+       0.00886356, 0.00513412, 0.00592422, 0.00542556, 0.00280691,
+       0.00454984, 0.00804457, 0.0096524 , 0.00539598, 0.00430585,
+       0.00582052, 0.00585476, 0.00655159, 0.00419438, 0.00528989,
+       0.00720624, 0.00521403, 0.0070284 , 0.00683123, 0.00418202,
+       0.00422283, 0.00337052, 0.00919068, 0.00937859, 0.00727854,
+       0.0053387 , 0.0047962 , 0.0045184 , 0.00378519, 0.00492048,
+       0.01271848, 0.00960135, 0.00512651, 0.00453599, 0.00539573,
+       0.00272184, 0.00689939, 0.00851619, 0.00394244, 0.00283469,
+       0.00492722, 0.00332688, 0.00271739, 0.00385867, 0.0044151 ,
+       0.00225622, 0.00788738, 0.00966464, 0.00583506, 0.00456629,
+       0.00366349, 0.00343617, 0.00392625, 0.0041062 , 0.00613991,
+       0.00736859, 0.00892439, 0.00740234, 0.00635011, 0.00564566,
+       0.01279525, 0.01160507, 0.0078163 , 0.00567653, 0.00653419,
+       0.00338925, 0.00434683, 0.0054269 , 0.00842457, 0.0101354 ,
+       0.00415056, 0.00570583, 0.00666986, 0.00296249, 0.00338989,
+       0.00395845, 0.00390827, 0.00890002, 0.00437463, 0.00502896,
+       0.00769272, 0.01021333, 0.00910969, 0.0031401 , 0.00529241,
+       0.00510558, 0.00368369, 0.00422071], dtype=float32), 'footprint': 1.0, 'mrs': 2.4965265, 'mrs0': 4.877157380553088, 'compact': 1.468066186248697, 'med': [287.5, 238.0], 'npix': 168, 'overlap': array([False, False, False, False,  True,  True, False, False,  True,
+        True,  True, False,  True,  True, False, False,  True,  True,
+       False,  True,  True,  True, False,  True,  True, False, False,
+        True,  True,  True, False,  True, False,  True,  True,  True,
+        True, False, False,  True,  True, False, False, False,  True,
+       False, False, False, False, False,  True,  True,  True, False,
+       False, False, False,  True,  True,  True, False, False, False,
+       False, False, False,  True,  True, False, False, False, False,
+       False, False, False, False, False, False, False, False, False,
+       False, False, False, False, False, False, False, False, False,
+       False, False, False, False, False, False, False, False,  True,
+        True,  True,  True, False, False,  True,  True,  True,  True,
+        True, False,  True,  True,  True,  True,  True, False,  True,
+        True,  True,  True,  True,  True,  True,  True,  True, False,
+        True,  True,  True,  True,  True,  True,  True,  True,  True,
+        True,  True,  True,  True, False,  True,  True,  True,  True,
+        True,  True,  True,  True,  True,  True,  True,  True,  True,
+        True,  True,  True,  True,  True,  True,  True,  True,  True,
+        True,  True,  True,  True,  True, False]), 'radius': 13.957618205848593, 'aspect_ratio': 1.339115841204737, 'npix_norm': 2.2721124, 'skew': 1.6962737, 'std': 55.597923},
+       {'ypix': array([380, 381, 381, 381, 381, 381, 381, 381, 381, 381, 381, 381, 382,
+       382, 382, 382, 382, 382, 382, 382, 382, 382, 383, 383, 383, 383,
+       383, 383, 383, 383, 383, 384, 384, 384, 384, 384, 384, 384, 384,
+       384, 385, 385, 385, 385, 385, 385, 385, 385, 385, 385, 386, 386,
+       386, 386, 386, 386, 386, 386, 386, 386, 386, 387, 387, 387, 387,
+       387, 387, 387, 387, 387, 387, 387, 388, 388, 388, 388, 388, 388,
+       388, 388, 388, 388, 389, 389, 389, 389, 389, 389, 389, 390, 390,
+       390, 390, 390, 391, 391, 391, 391, 391, 391, 391, 392, 392, 392,
+       392, 392, 392, 392, 392, 393, 393, 393, 393, 393, 393, 393, 394,
+       394, 394, 394, 394, 394, 394, 395, 395, 395, 395, 395, 395, 395,
+       396, 396, 396, 396, 397]), 'xpix': array([165, 163, 164, 165, 166, 168, 169, 170, 171, 172, 173, 174, 161,
+       162, 167, 168, 169, 170, 171, 172, 173, 174, 162, 167, 168, 169,
+       170, 171, 172, 173, 174, 166, 167, 168, 169, 170, 171, 172, 173,
+       174, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 164, 165,
+       166, 167, 168, 169, 170, 171, 172, 173, 174, 164, 165, 166, 167,
+       168, 169, 170, 171, 172, 173, 174, 165, 166, 167, 168, 169, 170,
+       171, 172, 173, 174, 167, 168, 169, 170, 171, 172, 173, 167, 168,
+       170, 171, 172, 166, 167, 168, 169, 170, 171, 172, 164, 165, 166,
+       167, 168, 169, 170, 171, 164, 165, 166, 167, 168, 169, 170, 164,
+       165, 166, 167, 168, 169, 170, 164, 165, 166, 167, 168, 169, 170,
+       166, 167, 168, 170, 167]), 'lam': array([0.00340487, 0.00443801, 0.00432576, 0.00364362, 0.00372115,
+       0.0040224 , 0.00417633, 0.00480787, 0.00354271, 0.00403816,
+       0.0050534 , 0.00306647, 0.00317431, 0.00347661, 0.00582939,
+       0.00717845, 0.00530369, 0.00492711, 0.00470956, 0.00557796,
+       0.00620364, 0.00479258, 0.00335542, 0.00475656, 0.00652052,
+       0.00544199, 0.00550956, 0.00730126, 0.00841345, 0.00802831,
+       0.0042955 , 0.00464875, 0.0083406 , 0.00900917, 0.00706007,
+       0.00674814, 0.00993268, 0.01159688, 0.00853468, 0.00410526,
+       0.0044767 , 0.00742816, 0.00709389, 0.00519973, 0.00671921,
+       0.00670468, 0.00825069, 0.01028707, 0.0091009 , 0.00554293,
+       0.00396461, 0.00787717, 0.00824603, 0.0078269 , 0.00689538,
+       0.00743007, 0.00990708, 0.01138136, 0.0117935 , 0.00800649,
+       0.0052063 , 0.0050209 , 0.00850611, 0.0077141 , 0.00610797,
+       0.0056674 , 0.00711334, 0.01013461, 0.01220826, 0.01165707,
+       0.01071399, 0.00704673, 0.00452671, 0.00680357, 0.00701252,
+       0.00787713, 0.00966987, 0.00868987, 0.00850217, 0.00997268,
+       0.00815679, 0.00552057, 0.00465902, 0.00710784, 0.00624458,
+       0.00395763, 0.00561889, 0.00919538, 0.00613715, 0.00527674,
+       0.00642221, 0.00384698, 0.00716806, 0.0092556 , 0.00563079,
+       0.00597326, 0.00725889, 0.00778292, 0.00925728, 0.00931448,
+       0.00463286, 0.00385788, 0.00715826, 0.00858624, 0.0110799 ,
+       0.01386848, 0.01385103, 0.01151467, 0.00747484, 0.00697996,
+       0.01026383, 0.01158813, 0.01415514, 0.01577739, 0.01696804,
+       0.01635207, 0.00626897, 0.01167264, 0.00914658, 0.00947039,
+       0.01374428, 0.01636752, 0.01416822, 0.00490234, 0.00620987,
+       0.00580414, 0.00667666, 0.01042749, 0.00996509, 0.00810222,
+       0.00406754, 0.00441266, 0.00561097, 0.00375401, 0.00403797],
+      dtype=float32), 'footprint': 2.0, 'mrs': 1.7417334, 'mrs0': 4.367111321475383, 'compact': 1.1438356678731552, 'med': [387.0, 169.0], 'npix': 135, 'overlap': array([ True,  True,  True,  True, False, False, False, False, False,
+       False, False,  True,  True,  True, False, False, False, False,
+       False, False, False, False, False, False, False, False, False,
+       False, False, False, False, False, False, False, False, False,
+       False, False, False, False, False, False, False, False, False,
+       False, False, False, False, False, False, False, False, False,
+       False, False, False, False, False, False, False, False, False,
+       False, False, False, False, False, False, False,  True,  True,
+       False, False, False, False, False, False, False, False,  True,
+        True, False, False, False, False, False,  True,  True, False,
+       False,  True,  True,  True, False, False,  True, False, False,
+        True,  True, False, False,  True,  True,  True,  True, False,
+        True, False,  True,  True,  True,  True,  True, False, False,
+        True,  True,  True,  True,  True,  True,  True,  True,  True,
+        True,  True,  True,  True,  True,  True,  True,  True,  True]), 'radius': 8.848792719685099, 'aspect_ratio': 1.2544510943588814, 'npix_norm': 1.8258046, 'skew': 1.5335176, 'std': 60.688213}],
+      dtype=object)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[29]:
+</code></pre></div></div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">ipython3</span></div>
+<div class="highlight"><pre><code><span class="c1"># meta-information about the Suite2p run:</span>
+<span class="n">trialobj</span><span class="o">.</span><span class="n">Suite2p</span><span class="o">.</span><span class="n">output_ops</span>
+</code></pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[29]:
+</code></pre></div></div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{'suite2p_version': '0.9.3',
+ 'look_one_level_down': False,
+ 'fast_disk': '/mnt/sandbox/pshah/suite2p_tmp/suite2p/plane0',
+ 'delete_bin': True,
+ 'mesoscan': False,
+ 'bruker': False,
+ 'h5py': [],
+ 'h5py_key': 'data',
+ 'save_path0': '/home/pshah/mnt/qnap/Data/2020-12-19',
+ 'save_folder': '/home/pshah/mnt/qnap/Analysis/2020-12-19/suite2p/alloptical-2p-1x-alltrials',
+ 'subfolders': [],
+ 'move_bin': False,
+ 'nplanes': 1,
+ 'nchannels': 1,
+ 'functional_chan': 1,
+ 'tau': 1.26,
+ 'fs': 30.0,
+ 'force_sktiff': False,
+ 'frames_include': -1,
+ 'multiplane_parallel': False,
+ 'preclassify': 0.0,
+ 'save_mat': True,
+ 'save_NWB': False,
+ 'combined': True,
+ 'aspect': 1.0,
+ 'do_bidiphase': False,
+ 'bidiphase': 0,
+ 'bidi_corrected': True,
+ 'do_registration': True,
+ 'two_step_registration': False,
+ 'keep_movie_raw': False,
+ 'nimg_init': 200,
+ 'batch_size': 2000,
+ 'maxregshift': 0.1,
+ 'align_by_chan': 1,
+ 'reg_tif': True,
+ 'reg_tif_chan2': False,
+ 'subpixel': 10,
+ 'smooth_sigma_time': 0,
+ 'smooth_sigma': 1.15,
+ 'th_badframes': 1.0,
+ 'norm_frames': True,
+ 'force_refImg': False,
+ 'pad_fft': False,
+ 'nonrigid': True,
+ 'block_size': (128, 128),
+ 'snr_thresh': 1.2,
+ 'maxregshiftNR': 5,
+ '1Preg': False,
+ 'spatial_hp': 42,
+ 'spatial_hp_reg': 42,
+ 'spatial_hp_detect': 25,
+ 'pre_smooth': 0,
+ 'spatial_taper': 40,
+ 'roidetect': True,
+ 'spikedetect': True,
+ 'anatomical_only': False,
+ 'sparse_mode': True,
+ 'diameter': 4.5,
+ 'spatial_scale': 0,
+ 'connected': True,
+ 'nbinned': 5000,
+ 'max_iterations': 20,
+ 'threshold_scaling': 1.0,
+ 'max_overlap': 0.75,
+ 'high_pass': 100,
+ 'use_builtin_classifier': False,
+ 'neuropil_extract': True,
+ 'inner_neuropil_radius': 2,
+ 'min_neuropil_pixels': 350,
+ 'allow_overlap': False,
+ 'chan2_thres': 0.65,
+ 'baseline': 'maximin',
+ 'win_baseline': 60.0,
+ 'sig_baseline': 10.0,
+ 'prctile_baseline': 8.0,
+ 'neucoeff': 0.7,
+ 'num_workers': 50,
+ 'num_workers_roi': 0,
+ 'navg_frames_svd': 5000,
+ 'nsvd_for_roi': 1000,
+ 'ratio_neuropil': 6.0,
+ 'ratio_neuropil_to_cell': 3,
+ 'tile_factor': 1.0,
+ 'outer_neuropil_radius': inf,
+ 'data_path': ['/home/pshah/mnt/qnap/Data/2020-12-19'],
+ 'tiff_list': ['/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-005/2020-12-19_t-005_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-006/2020-12-19_t-006_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-007/2020-12-19_t-007_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-008/2020-12-19_t-008_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-011/2020-12-19_t-011_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-012/2020-12-19_t-012_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-013/2020-12-19_t-013_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-014/2020-12-19_t-014_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-016/2020-12-19_t-016_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-017/2020-12-19_t-017_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-018/2020-12-19_t-018_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-019/2020-12-19_t-019_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-020/2020-12-19_t-020_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-021/2020-12-19_t-021_Cycle00001_Ch3.tif'],
+ 'input_format': 'tif',
+ 'save_path': '/home/pshah/mnt/qnap/Analysis/2020-12-19/suite2p/alloptical-2p-1x-alltrials/plane0',
+ 'ops_path': '/home/pshah/mnt/qnap/Analysis/2020-12-19/suite2p/alloptical-2p-1x-alltrials/plane0/ops.npy',
+ 'reg_file': '/mnt/sandbox/pshah/suite2p_tmp/suite2p/plane0/data.bin',
+ 'first_tiffs': array([ True, False, False, False, False, False, False, False, False,
+        False, False, False, False, False]),
+ 'frames_per_folder': array([256018], dtype=int32),
+ 'filelist': ['/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-005/2020-12-19_t-005_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-006/2020-12-19_t-006_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-007/2020-12-19_t-007_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-008/2020-12-19_t-008_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-011/2020-12-19_t-011_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-012/2020-12-19_t-012_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-013/2020-12-19_t-013_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-014/2020-12-19_t-014_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-016/2020-12-19_t-016_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-017/2020-12-19_t-017_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-018/2020-12-19_t-018_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-019/2020-12-19_t-019_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-020/2020-12-19_t-020_Cycle00001_Ch3.tif',
+  '/home/pshah/mnt/qnap/Data/2020-12-19/2020-12-19_t-021/2020-12-19_t-021_Cycle00001_Ch3.tif'],
+ 'nframes': 256018,
+ 'frames_per_file': array([14880, 23173, 16368, 16368, 16368, 16368, 16368, 16368, 15436,
+        17520, 26784, 16368, 20015, 23634]),
+ 'meanImg': array([[ 50.12349604,  50.23252739,  48.01559696, ..., 121.3560685 ,
+          95.51667508,  71.15855232],
+        [ 51.21065841,  50.49309602,  48.47367467, ..., 121.16339316,
+          96.34339423,  72.14198395],
+        [ 54.0642524 ,  53.15367606,  50.94001476, ..., 122.28726252,
+          97.78234619,  74.57712429],
+        ...,
+        [ 48.55685746,  48.13359499,  47.3793314 , ..., 110.28305276,
+          85.49449971,  66.07143804],
+        [ 48.142719  ,  47.56769193,  46.87753913, ..., 112.38966948,
+          88.19436885,  68.4536527 ],
+        [ 47.91820708,  47.66211425,  46.95750661, ..., 114.25616458,
+          90.47362592,  70.60839945]]),
+ 'Ly': 512,
+ 'Lx': 512,
+ 'yrange': [9, 503],
+ 'xrange': [8, 504],
+ 'date_proc': ('2021-04-12 01:24:09.523948',),
+ 'refImg': array([[ 35,  40,  64, ..., 162, 107,  99],
+        [ 43,  49,  41, ..., 198, 108, 113],
+        [ 43,  43,  80, ..., 198, 174, 117],
+        ...,
+        [ 71,  55,  41, ..., 107,  87,  55],
+        [ 35,  54,  49, ..., 104,  78,  60],
+        [ 53,  36,  41, ...,  86,  52,  50]], dtype=int16),
+ 'yblock': [array([  0, 128]),
+  array([  0, 128]),
+  array([  0, 128]),
+  array([  0, 128]),
+  array([  0, 128]),
+  array([  0, 128]),
+  array([ 76, 204]),
+  array([ 76, 204]),
+  array([ 76, 204]),
+  array([ 76, 204]),
+  array([ 76, 204]),
+  array([ 76, 204]),
+  array([153, 281]),
+  array([153, 281]),
+  array([153, 281]),
+  array([153, 281]),
+  array([153, 281]),
+  array([153, 281]),
+  array([230, 358]),
+  array([230, 358]),
+  array([230, 358]),
+  array([230, 358]),
+  array([230, 358]),
+  array([230, 358]),
+  array([307, 435]),
+  array([307, 435]),
+  array([307, 435]),
+  array([307, 435]),
+  array([307, 435]),
+  array([307, 435]),
+  array([384, 512]),
+  array([384, 512]),
+  array([384, 512]),
+  array([384, 512]),
+  array([384, 512]),
+  array([384, 512])],
+ 'xblock': [array([  0, 128]),
+  array([ 76, 204]),
+  array([153, 281]),
+  array([230, 358]),
+  array([307, 435]),
+  array([384, 512]),
+  array([  0, 128]),
+  array([ 76, 204]),
+  array([153, 281]),
+  array([230, 358]),
+  array([307, 435]),
+  array([384, 512]),
+  array([  0, 128]),
+  array([ 76, 204]),
+  array([153, 281]),
+  array([230, 358]),
+  array([307, 435]),
+  array([384, 512]),
+  array([  0, 128]),
+  array([ 76, 204]),
+  array([153, 281]),
+  array([230, 358]),
+  array([307, 435]),
+  array([384, 512]),
+  array([  0, 128]),
+  array([ 76, 204]),
+  array([153, 281]),
+  array([230, 358]),
+  array([307, 435]),
+  array([384, 512]),
+  array([  0, 128]),
+  array([ 76, 204]),
+  array([153, 281]),
+  array([230, 358]),
+  array([307, 435]),
+  array([384, 512])],
+ 'nblocks': [6, 6],
+ 'NRsm': array([[5.20324048e-01, 1.91416520e-01, 9.53006737e-03, ...,
+         8.91787773e-16, 8.13205187e-19, 1.00357493e-22],
+        [1.51273845e-01, 4.11204943e-01, 1.51273845e-01, ...,
+         1.04596789e-13, 7.04767619e-16, 6.42664882e-19],
+        [7.45365784e-03, 1.49710720e-01, 4.06955929e-01, ...,
+         2.07917407e-12, 1.03515982e-13, 6.97485198e-16],
+        ...,
+        [6.97485198e-16, 1.03515982e-13, 2.07917407e-12, ...,
+         4.06955929e-01, 1.49710720e-01, 7.45365784e-03],
+        [6.42664882e-19, 7.04767619e-16, 1.04596789e-13, ...,
+         1.51273845e-01, 4.11204943e-01, 1.51273845e-01],
+        [1.00357493e-22, 8.13205187e-19, 8.91787773e-16, ...,
+         9.53006737e-03, 1.91416520e-01, 5.20324048e-01]]),
+ 'yoff': array([ 6,  6,  6, ..., -5, -3, -3], dtype=int32),
+ 'xoff': array([ 1,  1,  1, ..., -1,  0, -1], dtype=int32),
+ 'corrXY': array([0.00959044, 0.00960284, 0.0094241 , ..., 0.00457666, 0.00501979,
+        0.00504856], dtype=float32),
+ 'yoff1': array([[-1.4      , -0.7      , -2.       , ...,  1.4      , -1.1      ,
+          1.6      ],
+        [ 1.       ,  0.4      , -1.2      , ..., -0.7      ,  0.2      ,
+          0.       ],
+        [-0.2      ,  1.9      , -1.6      , ...,  0.2      , -0.1      ,
+         -0.2      ],
+        ...,
+        [ 1.3      , -2.4      ,  0.8      , ...,  2.6      ,  3.3      ,
+          3.4      ],
+        [-3.4      , -2.1      , -1.9      , ...,  2.6      ,  2.1      ,
+          0.4000001],
+        [-0.8      , -1.       , -1.8      , ...,  4.       ,  3.9      ,
+          3.7      ]], dtype=float32),
+ 'xoff1': array([[ 0.7       ,  0.7       ,  0.        , ..., -0.4       ,
+         -0.3       ,  1.6       ],
+        [ 0.1       , -0.1       , -1.        , ..., -0.2       ,
+          0.7       ,  0.9       ],
+        [ 1.5       ,  0.5       ,  0.7       , ..., -0.5       ,
+         -0.3       ,  0.        ],
+        ...,
+        [-2.4       , -3.4       , -3.5       , ..., -0.5       ,
+          2.1       ,  2.1       ],
+        [-1.8       , -6.2       , -4.8       , ...,  1.        ,
+          1.5       , -0.39999998],
+        [-5.5       , -5.2       , -2.9       , ...,  2.2       ,
+          3.2       ,  2.1       ]], dtype=float32),
+ 'corrXY1': array([[0.00919435, 0.00919876, 0.0116785 , ..., 0.00711383, 0.00944198,
+         0.00948804],
+        [0.00647564, 0.00736795, 0.01000382, ..., 0.0076691 , 0.01092151,
+         0.00926576],
+        [0.00583567, 0.00848304, 0.0075896 , ..., 0.00753374, 0.00743041,
+         0.00842835],
+        ...,
+        [0.00330454, 0.00626063, 0.00424052, ..., 0.00529465, 0.00432887,
+         0.0035261 ],
+        [0.00343887, 0.00463221, 0.00404293, ..., 0.00740753, 0.00634679,
+         0.00395357],
+        [0.00442418, 0.00470658, 0.00492312, ..., 0.00652623, 0.00688208,
+         0.00364723]], dtype=float32),
+ 'badframes': array([False, False, False, ..., False, False, False]),
+ 'tPC': array([[-0.00385161, -0.00559585,  0.0003806 , ..., -0.00223742,
+          0.00463703,  0.00163983],
+        [-0.00315774, -0.00614559,  0.00095745, ..., -0.00359311,
+          0.00548552,  0.00198896],
+        [-0.00274034, -0.00611279, -0.00012864, ..., -0.00142712,
+          0.00467182, -0.00026236],
+        ...,
+        [-0.00553717,  0.00480035,  0.0068187 , ..., -0.00425075,
+         -0.00529271, -0.00728753],
+        [-0.00621215,  0.00524708,  0.0061828 , ..., -0.00442626,
+         -0.0048028 , -0.00833573],
+        [-0.00602844,  0.00649163,  0.00625741, ..., -0.00518075,
+         -0.00291675, -0.00805337]], dtype=float32),
+ 'regPC': array([[[[ 48.803333,  61.823334,  66.433334, ..., 104.39333 ,
+           111.20333 , 118.503334],
+          [ 57.82    ,  64.206665,  64.71    , ..., 106.94    ,
+           101.18    , 114.16333 ],
+          [ 48.88    ,  49.67    ,  72.956665, ..., 112.85333 ,
+           116.43667 , 118.316666],
+          ...,
+          [ 83.78667 , 122.68    , 117.26    , ...,  71.87666 ,
+            69.23333 ,  63.966667],
+          [ 76.95    , 104.93    , 116.46333 , ...,  63.573334,
+            76.07333 ,  88.84    ],
+          [102.45333 , 125.84333 , 129.33333 , ...,  64.596664,
+            59.756668,  53.56    ]],
+
+         [[116.08    , 133.21    , 133.70667 , ..., 265.08334 ,
+           287.74335 , 256.68    ],
+          [114.166664, 129.26    , 141.96666 , ..., 268.33334 ,
+           299.51334 , 279.81332 ],
+          [118.82    , 126.42    , 122.82    , ..., 253.73334 ,
+           265.92667 , 288.83    ],
+          ...,
+          [114.68667 , 137.00333 , 113.41    , ..., 108.9     ,
+           121.93667 , 108.63333 ],
+          [ 93.596664, 146.42    , 142.58333 , ..., 109.67333 ,
+           102.35333 , 108.55    ],
+          [116.78333 , 132.78667 , 118.73    , ..., 105.61667 ,
+           113.886665, 101.40667 ]],
+
+         [[100.69    , 125.846664, 133.60667 , ..., 301.96667 ,
+           311.06332 , 315.62332 ],
+          [ 95.03667 , 119.53667 , 138.27667 , ..., 286.80334 ,
+           292.23334 , 312.08    ],
+          [ 91.10667 , 117.54    , 141.71    , ..., 284.78665 ,
+           291.26    , 314.41333 ],
+          ...,
+          [111.99    , 154.89333 , 149.94    , ..., 106.46333 ,
+            95.      ,  92.403336],
+          [ 94.79667 , 141.68    , 165.19    , ...,  78.92333 ,
+            93.78333 , 125.73333 ],
+          [105.32    , 136.91333 , 139.8     , ...,  88.77    ,
+            89.90667 ,  89.64    ]],
+
+         ...,
+
+         [[104.253334, 135.57    , 120.67667 , ..., 249.21666 ,
+           278.88    , 280.25333 ],
+          [ 96.82333 , 124.14    , 148.01    , ..., 257.76    ,
+           263.37668 , 255.48    ],
+          [101.183334, 120.683334, 135.43666 , ..., 237.28667 ,
+           260.77    , 250.50333 ],
+          ...,
+          [168.90334 , 177.75    , 153.21    , ...,  75.58    ,
+            81.933334,  88.933334],
+          [150.90666 , 159.37    , 161.11    , ...,  80.98333 ,
+            75.96333 ,  92.346664],
+          [134.19    , 158.59666 , 142.31    , ...,  82.81    ,
+            90.13    ,  94.94    ]],
+
+         [[126.833336, 138.82    , 132.74    , ..., 309.29333 ,
+           305.81    , 278.87    ],
+          [113.00667 , 127.723335, 171.91    , ..., 289.11667 ,
+           302.11    , 298.26    ],
+          [117.52    , 127.363335, 136.80667 , ..., 250.39333 ,
+           289.51334 , 302.49335 ],
+          ...,
+          [134.75    , 173.78    , 169.04    , ...,  89.53667 ,
+            67.27333 ,  69.43667 ],
+          [138.35    , 182.27667 , 182.11667 , ...,  81.31333 ,
+            72.933334,  87.236664],
+          [140.90666 , 174.53334 , 163.04666 , ...,  82.58    ,
+            71.27    ,  78.19    ]],
+
+         [[129.24333 , 136.14667 , 125.22    , ..., 283.02667 ,
+           288.88333 , 265.22333 ],
+          [112.97667 , 136.62334 , 154.46333 , ..., 280.07333 ,
+           280.24335 , 271.28    ],
+          [115.996666, 143.51    , 146.41    , ..., 236.60333 ,
+           260.77335 , 282.38    ],
+          ...,
+          [165.29333 , 153.61333 , 144.52333 , ...,  82.096664,
+            85.93    ,  85.403336],
+          [134.71    , 161.40666 , 153.82333 , ...,  77.293335,
+            84.32333 , 112.6     ],
+          [123.9     , 142.58    , 161.44    , ...,  89.12334 ,
+            76.81    ,  78.113335]]],
+
+
+        [[[117.31    , 136.51334 , 118.333336, ..., 418.2     ,
+           437.41333 , 462.52667 ],
+          [126.72667 , 132.47333 , 135.47333 , ..., 406.29    ,
+           426.89667 , 453.17667 ],
+          [130.3     , 122.85333 , 120.64    , ..., 401.91666 ,
+           431.47333 , 462.03665 ],
+          ...,
+          [147.45    , 155.37334 , 149.17334 , ...,  53.17    ,
+            51.806667,  44.766666],
+          [140.26334 , 151.84    , 156.65    , ...,  56.95    ,
+            46.376667,  43.7     ],
+          [137.10333 , 154.23334 , 151.17    , ...,  45.183334,
+            39.366665,  46.206665]],
+
+         [[ 68.886665,  79.473335,  85.31    , ..., 179.99333 ,
+           208.45334 , 211.75    ],
+          [ 74.02333 ,  79.59333 ,  94.96667 , ..., 186.76    ,
+           196.13667 , 193.65    ],
+          [ 69.43667 ,  78.51    ,  98.236664, ..., 152.06667 ,
+           186.98666 , 189.66333 ],
+          ...,
+          [139.16667 , 149.30333 , 142.05667 , ...,  56.883335,
+            49.306667,  45.45    ],
+          [118.91    , 128.42334 , 134.6     , ...,  51.263332,
+            65.95    ,  57.283333],
+          [109.15    , 121.08    , 149.72    , ...,  51.763332,
+            55.183334,  51.306667]],
+
+         [[ 89.87    ,  94.91333 ,  75.92    , ..., 160.15666 ,
+           180.90334 , 182.74    ],
+          [ 83.136665,  79.886665,  81.69666 , ..., 180.36    ,
+           190.57    , 166.58667 ],
+          [ 85.28667 ,  85.99333 ,  84.93667 , ..., 149.57    ,
+           192.53334 , 179.65334 ],
+          ...,
+          [145.65666 , 145.47333 , 127.276665, ...,  70.04    ,
+            85.97    ,  82.69666 ],
+          [128.10667 , 158.08667 , 134.23666 , ...,  88.723335,
+            88.253334,  73.36667 ],
+          [134.56667 , 116.48    , 124.39    , ...,  83.11    ,
+            80.39333 ,  80.14    ]],
+
+         ...,
+
+         [[139.9     , 132.21333 , 143.20667 , ..., 272.52335 ,
+           282.32    , 301.93668 ],
+          [119.04667 , 125.90667 , 144.93666 , ..., 276.23666 ,
+           274.05334 , 295.67667 ],
+          [120.503334, 140.87    , 139.29333 , ..., 245.15666 ,
+           284.54666 , 315.88666 ],
+          ...,
+          [162.06334 , 191.1     , 158.66    , ..., 133.05    ,
+           144.46333 , 124.793335],
+          [138.21666 , 205.55333 , 196.53334 , ..., 141.27667 ,
+           149.49667 , 130.67    ],
+          [166.69667 , 187.59666 , 167.1     , ..., 123.15    ,
+           116.63333 , 116.19    ]],
+
+         [[129.77667 , 142.61667 , 128.19    , ..., 278.19333 ,
+           318.87668 , 325.53665 ],
+          [119.04    , 138.70334 , 129.49667 , ..., 303.49    ,
+           319.76    , 314.64    ],
+          [126.74333 , 141.53667 , 145.10667 , ..., 273.95    ,
+           307.13    , 319.60666 ],
+          ...,
+          [185.21333 , 192.18    , 165.25    , ...,  97.763336,
+           138.56667 , 129.24    ],
+          [145.51334 , 170.88    , 176.19667 , ..., 120.62666 ,
+           114.43    , 135.35    ],
+          [156.4     , 147.27    , 166.32333 , ..., 102.53333 ,
+           125.13333 , 141.57    ]],
+
+         [[117.08    , 117.74333 , 108.47667 , ..., 266.76334 ,
+           303.67667 , 300.38333 ],
+          [ 97.723335, 108.04    , 124.98333 , ..., 257.82333 ,
+           284.94    , 302.98334 ],
+          [100.833336, 101.76    , 115.7     , ..., 256.35    ,
+           285.42667 , 315.81332 ],
+          ...,
+          [128.80667 , 167.19    , 147.91667 , ..., 109.11667 ,
+           101.31333 ,  91.85333 ],
+          [113.166664, 148.28    , 170.32    , ...,  88.28333 ,
+           100.37    ,  88.636665],
+          [122.00667 , 144.22333 , 129.55667 , ...,  95.833336,
+            94.4     ,  84.98333 ]]]], dtype=float32),
+ 'regDX': array([[0.        , 0.33925834, 1.11803401],
+        [0.        , 0.2966944 , 0.80622578],
+        [0.        , 0.25482228, 0.98488575],
+        [0.        , 0.18145472, 0.36055514],
+        [0.        , 0.29416427, 1.01980388],
+        [0.        , 0.44277123, 1.94164884],
+        [0.        , 0.43367335, 0.86023253],
+        [0.        , 0.42310792, 1.07703292],
+        [0.        , 0.7421639 , 2.22036052],
+        [0.        , 0.22052506, 0.72801095],
+        [0.        , 0.20909657, 0.56568545],
+        [0.        , 0.22919962, 0.63245553],
+        [0.        , 0.23898822, 0.67082042],
+        [0.        , 0.16511217, 0.41231057],
+        [0.        , 0.23602465, 0.53851646],
+        [0.        , 0.29116005, 0.76157731],
+        [0.        , 0.14360097, 0.41231057],
+        [0.        , 0.22187585, 0.98994946],
+        [0.        , 0.13449502, 1.02956295],
+        [0.        , 0.13344911, 0.40000001],
+        [0.        , 0.38366002, 1.47648227],
+        [0.        , 0.23847649, 0.50990194],
+        [0.        , 0.31064969, 0.86023253],
+        [0.        , 0.22794604, 0.89442724],
+        [0.        , 0.26166505, 0.72801095],
+        [0.        , 0.18842264, 0.44721362],
+        [0.        , 0.19900249, 0.50990194],
+        [0.        , 0.110293  , 0.31622776],
+        [0.        , 0.19484028, 0.67082042],
+        [0.        , 0.20143001, 0.70710677]]),
+ 'Lyc': 494,
+ 'Lxc': 496,
+ 'max_proj': array([[ 458.29272,  463.09528,  589.3723 , ..., 1088.4231 , 1106.6278 ,
+         1195.9891 ],
+        [ 412.72095,  470.47662,  503.16998, ..., 1025.4072 , 1051.8951 ,
+         1102.9324 ],
+        [ 448.06744,  473.93552,  509.3069 , ..., 1075.5228 , 1053.9805 ,
+         1074.7214 ],
+        ...,
+        [ 619.5967 ,  669.1463 ,  688.1083 , ...,  220.58905,  148.54236,
+          174.57959],
+        [ 544.49054,  631.5219 ,  597.0902 , ...,  150.59314,  140.03844,
+          149.181  ],
+        [ 501.64355,  580.7329 ,  525.6721 , ...,  167.84431,  164.5453 ,
+          194.7751 ]], dtype=float32),
+ 'Vmax': array([544.24432373, 425.04608154, 410.96011353, ...,   0.        ,
+          0.        ,   0.        ]),
+ 'ihop': array([1., 1., 1., ..., 0., 0., 0.]),
+ 'Vsplit': array([0.99547887, 1.03119838, 1.11834872, ..., 0.        , 0.        ,
+        0.        ]),
+ 'Vcorr': array([[ 8.56670761,  8.56670761,  8.56670761, ..., 14.61773595,
+         13.62227058, 13.62227058],
+        [ 8.62333679,  8.88878441,  8.56670761, ..., 17.63501114,
+         15.1110803 , 13.62227058],
+        [ 8.56670761,  8.56670761,  8.56670761, ..., 19.06478942,
+         16.87938595, 14.72189916],
+        ...,
+        [ 5.05349922,  5.291502  ,  5.66901642, ...,  5.17744494,
+          4.58999729,  4.58999729],
+        [ 5.05349922,  5.94988728,  5.38719559, ...,  4.58999729,
+          5.69844675,  4.58999729],
+        [ 5.05349922,  5.05349922,  5.05349922, ...,  4.58999729,
+          4.58999729,  4.58999729]]),
+ 'Vmap': [array([[ 0.      ,  0.      ,  0.      , ...,  0.      ,  0.      ,
+           0.      ],
+         [ 0.      ,  0.      ,  0.      , ..., 25.148453, 23.744226,
+           0.      ],
+         [ 0.      ,  0.      ,  0.      , ..., 30.296545, 22.667467,
+           0.      ],
+         ...,
+         [ 0.      ,  0.      ,  0.      , ...,  0.      ,  0.      ,
+           0.      ],
+         [ 0.      ,  0.      ,  0.      , ...,  0.      ,  0.      ,
+           0.      ],
+         [ 0.      ,  0.      ,  0.      , ...,  0.      ,  0.      ,
+           0.      ]], dtype=float32),
+  array([[ 0.      ,  0.      , 23.122604, ..., 20.389763, 28.873795,
+          10.63866 ],
+         [ 0.      ,  0.      , 34.16201 , ..., 26.002893, 36.606396,
+          25.46211 ],
+         [ 0.      ,  0.      , 24.592402, ..., 11.210071, 19.750923,
+          10.806151],
+         ...,
+         [ 0.      ,  0.      ,  0.      , ...,  0.      ,  0.      ,
+           0.      ],
+         [ 0.      ,  0.      ,  0.      , ...,  0.      ,  0.      ,
+           0.      ],
+         [ 0.      ,  0.      ,  0.      , ...,  0.      ,  0.      ,
+           0.      ]], dtype=float32),
+  array([[  0.      ,  60.973827, 115.87801 , ...,  19.820988,  21.515013,
+            0.      ],
+         [  0.      ,  49.942753, 135.81062 , ...,  25.370378,  29.147215,
+           21.83618 ],
+         [  0.      ,   0.      ,  56.054794, ...,  20.734127,  32.878292,
+           20.805685],
+         ...,
+         [  0.      ,   0.      ,   0.      , ...,   0.      ,   0.      ,
+            0.      ],
+         [  0.      ,   0.      ,   0.      , ...,   0.      ,   0.      ,
+            0.      ],
+         [  0.      ,   0.      ,   0.      , ...,   0.      ,   0.      ,
+            0.      ]], dtype=float32),
+  array([[ 0.      , 12.807495, 35.59454 , ..., 20.918184, 21.074291,
+          17.162472],
+         [ 0.      , 11.755073, 43.690525, ..., 12.610296, 13.309116,
+          16.659231],
+         [ 0.      ,  0.      , 11.302436, ..., 42.857433, 24.979958,
+          20.20845 ],
+         ...,
+         [22.619421, 18.38663 ,  0.      , ...,  0.      ,  0.      ,
+           0.      ],
+         [ 0.      ,  0.      ,  0.      , ...,  0.      ,  0.      ,
+           0.      ],
+         [ 0.      ,  0.      ,  0.      , ...,  0.      ,  0.      ,
+           0.      ]], dtype=float32),
+  array([[  0.       ,  18.761265 ,  22.00155  ,  20.106363 ,  31.457918 ,
+           17.99521  ,  27.805702 ,  22.959528 ,  67.5127   ,  25.97459  ,
+           32.703026 ,  74.41162  ,  77.91727  ,  44.79754  ,   0.       ,
+            0.       ,  39.893223 ,  26.753466 ,  39.773632 ,  18.030586 ,
+           46.558167 ,  22.08241  ,  25.278173 ,  33.416092 ,  31.42634  ,
+           45.868927 ,  25.041973 ,  36.168198 ,   0.       ,  30.618185 ,
+           11.196726 ],
+         [  0.       ,   0.       ,  15.889307 ,  37.866627 ,  27.998209 ,
+           31.210688 ,  37.0064   ,  45.891594 ,  78.81539  ,  35.931118 ,
+           32.215298 ,  60.27749  ,  59.443836 ,  13.002179 ,   0.       ,
+            0.       ,  46.32305  ,  37.092934 ,  51.55094  ,  28.471247 ,
+           88.87431  ,  69.16025  ,  28.667269 ,  12.514505 ,  22.509735 ,
+           35.5407   ,  13.857132 ,  37.89423  ,  13.134527 ,  31.093699 ,
+            0.       ],
+         [  0.       ,   0.       ,  19.105545 ,  55.446796 ,  69.75233  ,
+           60.038574 ,  45.82042  ,  45.931347 ,  42.82073  ,  19.491152 ,
+           19.604023 ,  89.13505  ,  41.904408 ,   0.       ,   0.       ,
+            0.       ,  21.79975  ,  26.976746 ,  42.35914  ,  34.890873 ,
+           64.7733   ,  33.799175 ,  63.375954 ,  70.537865 ,  42.327576 ,
+           50.923855 ,  35.638897 ,  60.568203 ,  35.986923 ,  22.5094   ,
+            0.       ],
+         [  0.       ,   0.       ,   0.       ,  12.951279 ,  54.69571  ,
+           84.55392  ,  41.850338 ,  86.19817  ,  47.273956 ,  38.37253  ,
+           32.75303  ,  39.16079  ,   0.       ,   0.       ,  11.434719 ,
+           80.742584 ,  58.51306  ,  10.068825 ,  22.486538 ,  69.98205  ,
+           66.101074 ,  35.314816 ,  31.858385 ,  17.779354 ,  27.573975 ,
+           13.104621 ,  10.330398 ,  26.83389  ,  36.76979  ,  32.9714   ,
+            0.       ],
+         [  0.       ,   0.       ,   0.       ,  43.204254 ,  35.000034 ,
+           61.071648 ,  43.637596 ,  78.8092   ,  46.642223 ,  49.50118  ,
+           51.85339  ,  26.671396 ,   0.       ,   0.       ,  10.147274 ,
+          106.665085 ,  54.602    ,  27.451935 ,  15.589963 ,  35.380974 ,
+           13.684361 ,  21.411234 ,  23.960522 ,  37.22175  ,  28.106092 ,
+           25.845469 ,  22.442015 ,  37.089752 ,  61.341656 ,  33.164642 ,
+           18.989178 ],
+         [  0.       ,   0.       ,   0.       ,  29.705914 ,  75.97761  ,
+          120.03745  ,  36.083984 ,  74.84977  ,  79.92401  , 123.79953  ,
+           63.542423 ,  15.404969 ,  20.735775 ,   0.       ,  27.085281 ,
+           73.916275 ,  30.180313 ,  29.184595 ,  23.79657  ,  56.44945  ,
+           40.87944  ,  25.083975 ,  10.042647 ,  27.349155 ,  34.647503 ,
+           27.09013  ,  18.940546 ,  17.822775 ,  21.821684 ,  42.90886  ,
+           16.732117 ],
+         [  0.       ,   0.       ,  16.12358  ,  43.80721  , 135.52042  ,
+          159.33096  , 102.74628  ,  38.847992 ,  64.08926  ,  93.27484  ,
+           31.575274 ,   0.       ,  36.73037  ,  10.4765   ,  20.796688 ,
+           58.90999  ,  41.28404  ,  39.649246 ,  28.220493 ,  33.67499  ,
+           11.890762 ,  27.202375 ,  84.52475  ,  58.474457 ,  57.446598 ,
+           66.725    ,  70.834305 ,  34.99508  ,  45.65519  ,  48.998028 ,
+           33.911766 ],
+         [  0.       ,   0.       ,   0.       ,  18.008604 ,  37.641056 ,
+           29.577116 ,  30.554024 ,  25.501987 ,  88.034035 ,  75.03446  ,
+           24.535976 ,   0.       ,  15.692905 ,  21.148823 ,  43.98922  ,
+           85.98492  ,  46.876385 ,  51.4659   ,  47.162296 ,  50.889503 ,
+           39.749195 ,  45.148643 ,  35.60301  ,  44.323734 ,  44.712437 ,
+           56.385937 ,  37.878334 ,  22.514725 ,  80.53554  ,  55.671318 ,
+           23.175415 ],
+         [  0.       ,   0.       ,  10.256237 ,  23.191038 ,   0.       ,
+            0.       ,   0.       ,   0.       ,  57.65718  ,  19.237274 ,
+            0.       ,   0.       ,  13.198662 ,  48.6327   ,  44.997364 ,
+          113.92365  ,  46.466045 ,  72.333084 ,  56.206753 ,  61.566685 ,
+           50.24183  ,  52.353756 ,  42.206673 ,  49.842495 ,  45.605877 ,
+           40.034145 ,  36.13802  ,  21.947565 ,  30.383896 ,  19.626316 ,
+           15.6971855],
+         [  0.       ,   0.       ,  14.943319 ,  20.315891 ,  11.092508 ,
+            0.       ,   0.       ,  11.951464 ,  14.545294 ,   0.       ,
+            0.       ,  15.447489 ,  30.17128  ,  45.653877 ,  31.771915 ,
+           39.475025 ,  48.38519  ,  97.57856  ,  70.784874 ,  49.339314 ,
+           36.203506 ,  45.126854 ,  58.03036  ,  48.44668  ,  34.326054 ,
+           20.798355 ,  24.854729 ,  23.26571  ,  30.352905 ,  23.848442 ,
+           15.95392  ],
+         [  0.       ,   0.       ,  22.728083 ,  36.54725  ,  22.815332 ,
+           12.600178 ,   0.       ,  12.2020645,  10.900231 ,   0.       ,
+            0.       ,  18.946835 ,  71.625206 ,  47.389957 ,  33.905098 ,
+           36.503983 ,  36.663177 ,  67.34269  ,  60.24297  ,  59.704277 ,
+           43.837112 ,  54.632523 ,  72.18209  ,  43.334446 ,  36.803596 ,
+           12.46697  ,  31.010822 ,  32.08981  ,  24.267569 ,  26.31773  ,
+           14.205252 ],
+         [ 12.415798 ,  22.179655 ,  40.28706  ,  70.733246 ,  45.976845 ,
+           15.367744 ,  10.765518 ,  19.17331  ,  20.989594 ,   0.       ,
+           16.940937 ,  22.014372 ,  60.527145 ,  48.575287 ,  44.873466 ,
+           36.98361  ,  32.90341  ,  56.18464  ,  36.599037 ,  32.541187 ,
+           22.995617 ,  33.40358  ,  41.268433 ,  29.26771  ,  42.17862  ,
+           29.699398 ,  49.418747 ,  34.054085 ,  31.691277 ,  39.46365  ,
+           26.664072 ],
+         [ 20.650377 ,  31.5019   ,  19.80476  ,  17.834845 ,   0.       ,
+           11.243249 ,  21.004097 ,  33.937267 ,  34.570484 ,  14.8726425,
+           19.466679 ,  24.94124  ,  64.13373  ,  62.453747 ,  56.201878 ,
+           39.288147 ,  49.11496  ,  49.559643 ,  51.781067 ,  52.13033  ,
+           69.369606 ,  67.112434 ,  59.32581  ,  41.05275  ,  51.665318 ,
+           41.544285 ,  59.189323 ,  36.45694  ,  37.24715  ,  37.08217  ,
+           30.871262 ],
+         [ 73.68833  ,  72.83313  ,  46.720818 ,  22.842861 ,  10.706368 ,
+           26.221462 ,  29.644278 ,  60.330868 ,  33.24753  ,  15.645941 ,
+           19.726418 ,  30.158867 ,  58.787712 ,  62.116245 ,  77.67166  ,
+           74.466675 ,  88.32849  ,  65.13905  ,  42.919373 ,  31.354347 ,
+           43.751274 ,  44.326294 ,  56.69054  ,  41.900967 ,  60.17963  ,
+           49.41677  ,  65.14522  ,  43.092133 ,  29.558516 ,  25.482983 ,
+           30.73054  ],
+         [ 13.020716 ,  27.34724  ,  40.140205 ,  20.155624 ,  32.174774 ,
+           56.04063  ,  53.90798  ,  67.00694  ,  20.946318 ,  30.36067  ,
+           50.926823 ,  56.70052  ,  65.39784  ,  57.883133 ,  74.21626  ,
+           81.24211  , 107.921875 ,  95.31582  ,  63.307045 ,  36.27327  ,
+           40.20667  ,  46.316204 ,  55.129314 ,  44.933735 ,  51.42051  ,
+           45.037663 ,  52.088474 ,  40.505413 ,  36.676994 ,  50.82425  ,
+           47.347218 ],
+         [  0.       ,  14.254572 ,  12.756462 ,  27.333847 ,  88.414406 ,
+           56.557953 ,  42.787914 ,  34.31327  ,  33.14932  ,  62.234585 ,
+           89.91793  ,  79.488884 ,  83.20377  ,  53.7662   ,  69.51782  ,
+           56.061245 ,  69.1291   ,  61.856358 ,  21.744175 ,  25.660513 ,
+            0.       ,  33.505833 ,  53.59767  ,  53.598907 ,  56.61656  ,
+           46.451965 ,  40.940727 ,  34.242485 ,  27.516453 ,  26.344011 ,
+            0.       ],
+         [  0.       ,   0.       ,  18.546104 ,  36.564713 ,  45.84534  ,
+            0.       ,   0.       ,  18.260416 ,  87.69083  ,  74.11969  ,
+          111.75257  ,  66.37363  ,  52.041443 ,  12.619892 ,  21.150396 ,
+           22.890997 ,  51.84068  ,  72.282394 ,  25.026175 ,   0.       ,
+            0.       ,  21.175545 ,  23.335567 ,  32.922916 ,  45.002266 ,
+           54.604027 ,  42.660576 ,  27.103464 ,  19.974123 ,  21.852142 ,
+            0.       ],
+         [ 26.09762  ,   0.       ,  14.429226 ,   0.       ,   0.       ,
+            0.       ,  13.387272 ,  51.04614  , 102.92584  ,  81.83338  ,
+           78.45017  ,  54.45624  ,  48.19962  ,  20.947622 ,  13.310457 ,
+           11.487244 ,  18.69836  ,  49.52861  ,  18.11824  ,  15.17062  ,
+           22.62213  ,  38.891678 ,  52.026188 ,  57.005016 ,  62.450703 ,
+           56.280834 ,  56.293064 ,  41.676464 ,  45.163937 ,  17.143925 ,
+            0.       ],
+         [ 69.2023   ,  45.039143 ,  55.902893 ,  11.05204  ,   0.       ,
+            0.       ,  29.517735 ,  87.63849  , 113.8917   ,  51.189655 ,
+           42.392963 ,  36.309063 ,  31.309158 ,  30.220482 ,  32.288418 ,
+           30.90326  ,  34.732376 ,  34.15919  ,  28.271446 ,  19.721619 ,
+           30.168718 ,  41.933464 ,  42.43278  ,  30.222301 ,  49.654083 ,
+           40.82311  ,  60.85302  ,  55.470646 ,  56.86636  ,  29.072601 ,
+            0.       ],
+         [ 51.31906  ,  39.408813 ,  83.5      ,  49.80349  ,  60.469414 ,
+           48.037983 ,  45.27676  ,  75.21179  ,  31.432724 ,  40.231922 ,
+           33.33812  ,  28.125282 ,  51.62141  ,  30.795444 ,  19.669012 ,
+           15.096413 ,  34.983948 ,  35.408955 ,  57.472977 , 101.00325  ,
+           47.860912 ,  62.187714 ,  25.056152 ,  47.735107 ,  34.697876 ,
+           46.761932 ,  36.07154  ,  38.886765 ,  16.448402 ,   0.       ,
+            0.       ],
+         [ 36.575233 ,  15.004146 ,  65.10667  ,  35.94373  ,  43.60637  ,
+           28.609274 ,  10.350796 ,  84.091576 ,  46.850124 ,  57.395676 ,
+           56.469635 ,  14.328652 ,  44.849834 ,  15.821119 ,  40.797646 ,
+           25.726791 ,  28.025984 ,  23.909845 ,  32.93551  ,  30.149992 ,
+           30.56912  ,  42.578205 ,  38.922474 ,  58.99219  ,  19.601097 ,
+           20.381102 ,   0.       ,   0.       ,   0.       ,   0.       ,
+            0.       ],
+         [ 43.74546  ,  32.38469  ,  47.736877 ,  33.801086 ,  24.081137 ,
+           12.182896 ,   0.       ,  19.05047  ,  12.183497 ,  27.165195 ,
+           24.599052 ,  16.693968 ,  20.222195 ,  17.012455 ,  52.180542 ,
+           33.2982   ,  32.71403  ,  35.016582 ,  36.288067 ,  26.527443 ,
+           40.014294 ,  33.828037 ,  26.525133 ,  19.702091 ,   0.       ,
+            0.       ,   0.       ,   0.       ,   0.       ,   0.       ,
+            0.       ],
+         [ 49.69824  ,  39.516964 ,  31.188408 ,  26.918964 ,   0.       ,
+            0.       ,   0.       ,  18.505878 ,  12.468141 ,  14.049125 ,
+           50.826515 ,   0.       ,  19.151745 ,  15.160233 ,  41.003994 ,
+           24.800297 ,  25.76484  ,  28.67309  ,  47.285294 ,  23.727394 ,
+           21.46927  ,  28.968851 ,   0.       ,  14.954822 ,   0.       ,
+            0.       ,   0.       ,   0.       ,   0.       ,   0.       ,
+            0.       ],
+         [ 49.704754 ,  47.20818  ,   0.       ,   0.       ,   0.       ,
+            0.       ,   0.       ,   0.       ,   0.       ,   0.       ,
+           17.729279 ,  17.599442 ,  50.23716  ,  39.016808 ,  42.02624  ,
+           42.25864  ,  58.123146 ,  41.62897  ,  49.37666  ,  18.239134 ,
+            0.       ,  11.025133 ,   0.       ,   0.       ,   0.       ,
+            0.       ,   0.       ,   0.       ,   0.       ,   0.       ,
+            0.       ],
+         [ 62.078747 ,  60.143616 ,  23.276524 ,  24.717758 ,  22.978292 ,
+           10.960012 ,  11.229352 ,  12.934702 ,  53.534874 ,  54.600044 ,
+           45.671627 ,  29.377514 ,  45.58333  ,  31.234728 ,  55.60468  ,
+           42.841145 ,  78.4407   ,  50.08436  ,  21.816065 ,   0.       ,
+            0.       ,  14.923934 ,   0.       ,   0.       ,   0.       ,
+            0.       ,   0.       ,   0.       ,   0.       ,   0.       ,
+            0.       ],
+         [ 37.65311  ,  34.476532 ,  21.753775 ,  21.979464 ,  28.30353  ,
+            0.       ,  12.026232 ,   0.       ,  31.215992 ,  39.304512 ,
+           64.60065  ,  11.7430525,  24.881798 ,  20.760872 ,  73.585915 ,
+           54.400772 ,  51.92013  ,  20.653893 ,  10.239027 ,  16.149317 ,
+            0.       ,   0.       ,   0.       ,   0.       ,   0.       ,
+            0.       ,  10.042473 ,   0.       ,  11.338436 ,  15.213412 ,
+           15.844808 ],
+         [  0.       ,  19.078972 ,  27.77968  ,  30.989094 ,  54.33296  ,
+            0.       ,  13.461093 ,   0.       ,  11.069255 ,   0.       ,
+           21.951103 ,   0.       ,  15.719333 ,  23.344418 ,  76.51987  ,
+           35.987278 ,  25.11747  ,   0.       ,  15.156668 ,   0.       ,
+            0.       ,   0.       ,   0.       ,   0.       ,   0.       ,
+            0.       ,   0.       ,  28.900726 ,  55.672203 ,  54.48396  ,
+           34.622555 ],
+         [ 17.740337 ,  23.67508  ,  41.108585 ,  28.646248 ,  34.675606 ,
+            0.       ,   0.       ,   0.       ,   0.       ,   0.       ,
+           25.658663 ,  11.66374  ,  25.59551  ,   0.       ,  18.080381 ,
+            0.       ,   0.       ,   0.       ,   0.       ,   0.       ,
+            0.       ,   0.       ,   0.       ,   0.       ,   0.       ,
+            0.       ,   0.       ,   0.       ,  27.093662 ,   0.       ,
+            0.       ],
+         [ 13.67132  ,  22.655464 ,  71.59811  ,  28.375526 ,  23.769104 ,
+            0.       ,   0.       ,  12.166921 ,   0.       ,  17.340382 ,
+           15.418265 ,  20.931238 ,   0.       ,   0.       ,   0.       ,
+            0.       ,   0.       ,   0.       ,   0.       ,   0.       ,
+            0.       ,   0.       ,   0.       ,   0.       ,  46.89845  ,
+           48.228558 ,  37.01589  ,  35.522602 ,  26.637213 ,   0.       ,
+            0.       ],
+         [  0.       ,   0.       ,  35.08596  ,   0.       ,  21.843304 ,
+            0.       ,  26.014463 ,  39.36237  ,   0.       ,   0.       ,
+            0.       ,   0.       ,   0.       ,   0.       ,   0.       ,
+            0.       ,   0.       ,   0.       ,   0.       ,   0.       ,
+            0.       ,   0.       ,   0.       ,   0.       ,   0.       ,
+            0.       ,   0.       ,   0.       ,  10.372042 ,   0.       ,
+            0.       ],
+         [  0.       ,   0.       ,   0.       ,   0.       ,  17.737555 ,
+           13.628258 ,   0.       ,   0.       ,   0.       ,   0.       ,
+            0.       ,   0.       ,   0.       ,   0.       ,   0.       ,
+            0.       ,   0.       ,   0.       ,   0.       ,   0.       ,
+            0.       ,   0.       ,   0.       ,   0.       ,   0.       ,
+            0.       ,   0.       ,   0.       ,   0.       ,   0.       ,
+            0.       ]], dtype=float32)],
+ 'spatscale_pix': array([12]),
+ 'meanImgE': array([[0., 0., 0., ..., 0., 0., 0.],
+        [0., 0., 0., ..., 0., 0., 0.],
+        [0., 0., 0., ..., 0., 0., 0.],
+        ...,
+        [0., 0., 0., ..., 0., 0., 0.],
+        [0., 0., 0., ..., 0., 0., 0.],
+        [0., 0., 0., ..., 0., 0., 0.]], dtype=float32),
+ 'timing': {'registration': 11319.762184858322,
+  'registration_metrics': 34.16234278678894,
+  'detection': 671.0295331478119,
+  'extraction': 867.5214445590973,
+  'classification': 0.08369636535644531,
+  'deconvolution': 24.275188446044922,
+  'total_plane_runtime': 12946.64022898674}}
+</pre></div></div>
+</div>
+</section>
 <section id="Annotated-Data">
-<h2>Annotated Data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Annotated-Data">¶</a></h2>
+<h2>Annotated Data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Annotated-Data">¶</a></h2>
 <p>The AnnData library is the primary protocol that is used to store imaging data in an efficient, multi-functional format. It is created using the <code class="docutils literal notranslate">anndata</code> sub-module and can be accessed using <code class="docutils literal notranslate">trialobj.data</code>. By default, <code class="docutils literal notranslate">trialobj.data</code> is a data array generated from Suite2p processed data. For all guidance on AnnData objects, visit: <a class="reference external" href="https://anndata.readthedocs.io/en/latest/index.html" rel="nofollow noopener">https://anndata.readthedocs.io/en/latest/index.html<svg aria-hidden="true" class="external-link-icon" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 19H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path></svg></a>.</p>
 <p>The AnnData object is built around the raw Flu matrix of each <code class="docutils literal notranslate">trialobj</code> . In keeping with AnnData conventions, the data structure is organized in <em>n</em> observations (obs) x <em>m</em> variables (var), where observations are suite2p ROIs and variables are imaging frame timepoints.</p>
 <div class="nbinput docutils container">
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[4]:
+<div class="highlight"><pre><code>[30]:
 </code></pre></div></div>
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">ipython3</span></div>
-<div class="highlight"><pre><code><span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s2">"/home/pshah/Documents/code/imagingplus/files/imagingplus-anndata-integration-01.jpg"</span><span class="p">)</span>
+<div class="highlight"><pre><code><span class="nb">print</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># this is the anndata object for this trial</span>
 </code></pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="code-wrapper" data-controller="code">
-<div class="code-header">
-<span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[4]:
-</code></pre></div></div>
-<div class="output_area docutils container">
-<img alt="../_images/Tutorials_Tutorial-2-Organization-of-data-in-package-objects_11_0.jpg" src="../_images/Tutorials_Tutorial-2-Organization-of-data-in-package-objects_11_0.jpg"/>
+<div class="prompt empty docutils container">
 </div>
-</div>
-<div class="nbinput docutils container">
-<div class="code-wrapper" data-controller="code">
-<div class="code-header">
-<span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[5]:
-</code></pre></div></div>
-<div class="code-wrapper" data-controller="code">
-<div class="code-header">
-<span class="code-lang">ipython3</span></div>
-<div class="highlight"><pre><code><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span>  <span class="c1"># this is the anndata object for this trial</span>
-</code></pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="code-wrapper" data-controller="code">
-<div class="code-header">
-<span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[5]:
-</code></pre></div></div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-AnnData object with n_obs × n_vars = 640 × 16368
-    obs: 'original_index', 'footprint', 'mrs', 'mrs0', 'compact', 'med', 'npix', 'radius', 'aspect_ratio', 'npix_norm', 'skew', 'std'
-    var: 'frame_clock', 'x_galvo_uncaging', 'slm2packio', 'markpoints2packio', 'packio2slm', 'packio2markpoints', 'pycontrol_rsync', 'voltage', 'photostim'
-    obsm: 'ypix', 'xpix'
-    layers: 'dFF'
+Annotated Data of n_obs × n_vars = 640 × 16368
+available attributes:
+        .X (primary datamatrix) of .data_label:
+                |- suite2p raw - neuropil corrected
+        .obs (obs metadata):
+                |- 'ypix', 'xpix', 'lam', 'footprint', 'mrs', 'mrs0', 'compact', 'med', 'npix', 'overlap', 'radius', 'aspect_ratio', 'npix_norm', 'skew', 'std'
+        .var (vars metadata):
+                |- 'frame_clock', 'x_galvo_uncaging', 'slm2packio', 'markpoints2packio', 'packio2slm', 'packio2markpoints', 'pycontrol_rsync', 'voltage'
+        .obsm:
+                |- 'ypix', 'xpix'
 </pre></div></div>
 </div>
 <section id="storage-of-Flu-data">
-<h3>storage of Flu data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#storage-of-Flu-data">¶</a></h3>
+<h3>storage of Flu data<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#storage-of-Flu-data">¶</a></h3>
 <p>The raw data is stored in <code class="docutils literal notranslate">.X</code></p>
 <div class="nbinput docutils container">
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[6]:
+<div class="highlight"><pre><code>[31]:
 </code></pre></div></div>
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
@@ -575,19 +1835,13 @@ AnnData object with n_obs × n_vars = 640 × 16368
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[[192.45299   242.91817   107.09003   ... 207.51477   334.1156
-  365.0477   ]
- [ 66.31345   259.14606   203.12158   ... 101.82039   114.88985
-   -9.639214 ]
- [169.24162   379.78748    74.28577   ... 246.50652   262.48956
-   37.629868 ]
+[[352.13678  411.9472   280.92416  ... 401.3014   515.2566   541.41565 ]
+ [192.22421  395.29306  330.7496   ... 257.25806  285.31506  126.660484]
+ [336.64996  539.26746  219.30368  ... 423.15295  433.1515   220.52742 ]
  ...
- [110.732574  132.53998   227.20924   ... 247.80368   176.27718
-   66.34219  ]
- [ 62.887573   53.21826     3.9203873 ...  38.31378   106.62804
-   77.784836 ]
- [ 93.47685    98.41176   112.59836   ...  22.503403   86.3116
-  112.58064  ]]
+ [308.56497  303.55536  413.3554   ... 482.61044  386.2576   283.1643  ]
+ [133.96815  122.96908   84.63106  ... 109.2256   187.91866  159.50813 ]
+ [252.49574  240.2455   273.2785   ... 181.601    229.0061   278.74188 ]]
 shape:  (640, 16368)
 </pre></div></div>
 </div>
@@ -596,70 +1850,37 @@ shape:  (640, 16368)
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[7]:
+<div class="highlight"><pre><code>[34]:
 </code></pre></div></div>
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">ipython3</span></div>
 <div class="highlight"><pre><code><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">layers</span>
-</code></pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="code-wrapper" data-controller="code">
-<div class="code-header">
-<span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[7]:
-</code></pre></div></div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Layers with keys: dFF
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="code-wrapper" data-controller="code">
-<div class="code-header">
-<span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[8]:
-</code></pre></div></div>
-<div class="code-wrapper" data-controller="code">
-<div class="code-header">
-<span class="code-lang">ipython3</span></div>
-<div class="highlight"><pre><code><span class="nb">print</span><span class="p">(</span><span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="s1">'dFF'</span><span class="p">])</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s1">'shape: '</span><span class="p">,</span> <span class="n">trialobj</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="s1">'dFF'</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="c1"># NOTE: we haven't added any layers to this dataset yet.</span>
 </code></pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
+<div class="code-wrapper" data-controller="code">
+<div class="code-header">
+<span class="code-lang">none</span></div>
+<div class="highlight"><pre><code>[34]:
+</code></pre></div></div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[[ 5.98681450e+01  1.01788902e+02 -1.10417347e+01 ...  7.23797684e+01
-   1.77545395e+02  2.03240280e+02]
- [ 5.94472656e+01  5.23103271e+02  3.88395325e+02 ...  1.44821854e+02
-   1.76246674e+02 -1.23176994e+02]
- [ 2.83476105e+02  7.60541382e+02  6.83203888e+01 ...  4.58546722e+02
-   4.94761932e+02 -1.47363739e+01]
- ...
- [ 1.48959662e+06  1.78293462e+06  3.05635900e+06 ...  3.33338075e+06
-   2.37125675e+06  8.92488500e+05]
- [ 2.31955856e+02  1.80915817e+02 -7.93059998e+01 ...  1.02241608e+02
-   4.62842560e+02  3.10591949e+02]
- [ 2.52069653e+03  2.64849194e+03  3.01587134e+03 ...  6.82752991e+02
-   2.33514380e+03  3.01541260e+03]]
-shape:  (640, 16368)
+Layers with keys:
 </pre></div></div>
 </div>
-<p>The rest of the AnnData data object is built according to the dimensions of the original Flu data input.</p>
+<p>The entire AnnData data object is built according to the dimensions of the original Flu data input.</p>
 </section>
 <section id="observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">
-<h3>observations (Suite2p ROIs metadata and associated processing info)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">¶</a></h3>
+<h3>observations (Suite2p ROIs metadata and associated processing info)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">¶</a></h3>
 <p>For instance, the metadata for each suite2p ROI stored in Suite2p’s stat.npy output is added to <code class="docutils literal notranslate">trialobject.data</code> under <code class="docutils literal notranslate">obs</code> and <code class="docutils literal notranslate">obsm</code> (1D and &gt;1-D observations annotations, respectively).</p>
 <div class="nbinput docutils container">
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[9]:
+<div class="highlight"><pre><code>[35]:
 </code></pre></div></div>
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
@@ -671,7 +1892,7 @@ shape:  (640, 16368)
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[9]:
+<div class="highlight"><pre><code>[35]:
 </code></pre></div></div>
 <div class="output_area rendered_html docutils container">
 <div>
@@ -692,13 +1913,12 @@ shape:  (640, 16368)
 <thead>
 <tr style="text-align: right;">
 <th></th>
-<th>original_index</th>
+<th>ypix</th>
+<th>xpix</th>
+<th>lam</th>
 <th>footprint</th>
 <th>mrs</th>
-<th>mrs0</th>
-<th>compact</th>
-<th>med</th>
-<th>npix</th>
+<th>...</th>
 <th>radius</th>
 <th>aspect_ratio</th>
 <th>npix_norm</th>
@@ -709,13 +1929,12 @@ shape:  (640, 16368)
 <tbody>
 <tr>
 <th>0</th>
-<td>0</td>
+<td>[102, 102, 102, 102, 102, 103, 103, 103, 103, ...</td>
+<td>[457, 458, 459, 460, 461, 456, 457, 458, 459, ...</td>
+<td>[0.0063846777, 0.008958542, 0.011363007, 0.011...</td>
 <td>1.0</td>
 <td>0.909815</td>
-<td>2.604203</td>
-<td>1.00197</td>
-<td>[105.0, 459.0]</td>
-<td>48</td>
+<td>...</td>
 <td>3.565604</td>
 <td>1.051397</td>
 <td>0.649175</td>
@@ -724,13 +1943,12 @@ shape:  (640, 16368)
 </tr>
 <tr>
 <th>1</th>
-<td>1</td>
+<td>[46, 46, 46, 46, 46, 46, 47, 47, 47, 47, 47, 4...</td>
+<td>[116, 117, 118, 119, 120, 121, 114, 115, 116, ...</td>
+<td>[0.009095913, 0.014569374, 0.01832514, 0.01890...</td>
 <td>1.0</td>
 <td>0.912076</td>
-<td>2.543516</td>
-<td>1.028426</td>
-<td>[48.5, 119.0]</td>
-<td>46</td>
+<td>...</td>
 <td>3.538468</td>
 <td>1.074428</td>
 <td>0.622126</td>
@@ -739,13 +1957,12 @@ shape:  (640, 16368)
 </tr>
 <tr>
 <th>2</th>
-<td>2</td>
+<td>[18, 18, 18, 18, 19, 19, 19, 19, 19, 19, 19, 1...</td>
+<td>[202, 203, 204, 205, 200, 201, 202, 203, 204, ...</td>
+<td>[0.00545189, 0.006088022, 0.0062021483, 0.0052...</td>
 <td>1.0</td>
 <td>1.088559</td>
-<td>3.09209</td>
-<td>1.009662</td>
-<td>[22.0, 204.0]</td>
-<td>68</td>
+<td>...</td>
 <td>4.124215</td>
 <td>1.027475</td>
 <td>0.919665</td>
@@ -754,13 +1971,12 @@ shape:  (640, 16368)
 </tr>
 <tr>
 <th>3</th>
-<td>3</td>
+<td>[43, 44, 45, 46, 46, 47, 47, 47, 48, 48, 48, 4...</td>
+<td>[352, 352, 352, 352, 353, 352, 353, 354, 351, ...</td>
+<td>[0.0036495698, 0.0043396214, 0.0031816224, 0.0...</td>
 <td>1.0</td>
 <td>1.561322</td>
-<td>3.716985</td>
-<td>1.204697</td>
-<td>[53.0, 355.0]</td>
-<td>98</td>
+<td>...</td>
 <td>8.133019</td>
 <td>1.348522</td>
 <td>1.325399</td>
@@ -769,13 +1985,12 @@ shape:  (640, 16368)
 </tr>
 <tr>
 <th>4</th>
-<td>4</td>
+<td>[156, 156, 156, 156, 156, 157, 157, 157, 157, ...</td>
+<td>[382, 383, 384, 385, 386, 380, 381, 382, 383, ...</td>
+<td>[0.013304887, 0.02187323, 0.023734575, 0.01969...</td>
 <td>1.0</td>
 <td>0.869808</td>
-<td>2.404379</td>
-<td>1.037521</td>
-<td>[158.0, 383.0]</td>
-<td>41</td>
+<td>...</td>
 <td>3.62042</td>
 <td>1.139261</td>
 <td>0.554504</td>
@@ -795,93 +2010,87 @@ shape:  (640, 16368)
 <td>...</td>
 <td>...</td>
 <td>...</td>
+</tr>
+<tr>
+<th>1241</th>
+<td>[290, 291, 291, 291, 291, 291, 291, 291, 291, ...</td>
+<td>[299, 298, 299, 300, 301, 302, 305, 306, 307, ...</td>
+<td>[0.0029507184, 0.0032565512, 0.005071437, 0.00...</td>
+<td>2.0</td>
+<td>2.336259</td>
 <td>...</td>
+<td>11.46564</td>
+<td>1.251471</td>
+<td>2.447931</td>
+<td>2.540658</td>
+<td>94.641136</td>
 </tr>
 <tr>
-<th>635</th>
-<td>1253</td>
-<td>1.0</td>
-<td>0.823022</td>
-<td>2.249863</td>
-<td>1.049136</td>
-<td>[54.0, 298.0]</td>
-<td>36</td>
-<td>3.534257</td>
-<td>1.135812</td>
-<td>0.486881</td>
-<td>2.103236</td>
-<td>86.4552</td>
+<th>1242</th>
+<td>[354, 354, 355, 355, 355, 355, 355, 356, 356, ...</td>
+<td>[309, 310, 308, 309, 310, 311, 312, 307, 308, ...</td>
+<td>[0.00252066, 0.0021455055, 0.007094776, 0.0078...</td>
+<td>2.0</td>
+<td>2.386548</td>
+<td>...</td>
+<td>10.831544</td>
+<td>1.129317</td>
+<td>2.934812</td>
+<td>2.229956</td>
+<td>79.882561</td>
 </tr>
 <tr>
-<th>636</th>
-<td>1254</td>
-<td>1.0</td>
-<td>1.283198</td>
-<td>3.05027</td>
-<td>1.206512</td>
-<td>[424.0, 310.0]</td>
-<td>66</td>
-<td>5.933419</td>
-<td>1.173457</td>
-<td>0.892616</td>
-<td>1.223336</td>
-<td>75.52874</td>
+<th>1246</th>
+<td>[15, 15, 16, 16, 16, 17, 17, 17, 17, 17, 17, 1...</td>
+<td>[488, 489, 486, 487, 489, 486, 487, 488, 489, ...</td>
+<td>[0.010669279, 0.007242187, 0.013514522, 0.0124...</td>
+<td>2.0</td>
+<td>2.238235</td>
+<td>...</td>
+<td>13.789857</td>
+<td>1.460301</td>
+<td>1.636462</td>
+<td>4.38241</td>
+<td>55.825489</td>
 </tr>
 <tr>
-<th>637</th>
-<td>1255</td>
-<td>1.0</td>
-<td>1.045195</td>
-<td>2.818991</td>
-<td>1.063358</td>
-<td>[370.0, 453.0]</td>
-<td>56</td>
-<td>4.735501</td>
-<td>1.186981</td>
-<td>0.757371</td>
-<td>0.866438</td>
-<td>94.208916</td>
+<th>1250</th>
+<td>[472, 472, 472, 473, 473, 473, 473, 473, 473, ...</td>
+<td>[55, 56, 67, 55, 56, 57, 63, 64, 65, 66, 67, 6...</td>
+<td>[0.0023643558, 0.0034383552, 0.0021977199, 0.0...</td>
+<td>2.0</td>
+<td>2.079421</td>
+<td>...</td>
+<td>10.794925</td>
+<td>1.331867</td>
+<td>2.583175</td>
+<td>1.233372</td>
+<td>64.879417</td>
 </tr>
 <tr>
-<th>638</th>
-<td>1256</td>
-<td>1.0</td>
-<td>1.528247</td>
-<td>3.944389</td>
-<td>1.111195</td>
-<td>[489.0, 235.0]</td>
-<td>110</td>
-<td>6.981186</td>
-<td>1.184853</td>
-<td>1.487693</td>
-<td>1.714282</td>
-<td>52.609936</td>
-</tr>
-<tr>
-<th>639</th>
-<td>1257</td>
-<td>1.0</td>
-<td>1.133697</td>
-<td>2.84187</td>
-<td>1.144113</td>
-<td>[436.0, 321.0]</td>
-<td>57</td>
-<td>5.392178</td>
-<td>1.235332</td>
-<td>0.770895</td>
-<td>1.103987</td>
-<td>74.589386</td>
+<th>1251</th>
+<td>[342, 342, 342, 343, 343, 343, 343, 343, 344, ...</td>
+<td>[128, 129, 130, 126, 127, 128, 129, 130, 124, ...</td>
+<td>[0.010067902, 0.007827523, 0.005219734, 0.0070...</td>
+<td>2.0</td>
+<td>1.777428</td>
+<td>...</td>
+<td>8.44572</td>
+<td>1.100779</td>
+<td>1.744658</td>
+<td>2.057152</td>
+<td>62.520458</td>
 </tr>
 </tbody>
 </table>
-<p>640 rows × 12 columns</p>
+<p>640 rows × 15 columns</p>
 </div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[10]:
+<div class="highlight"><pre><code>[36]:
 </code></pre></div></div>
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
@@ -893,7 +2102,7 @@ shape:  (640, 16368)
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[10]:
+<div class="highlight"><pre><code>[36]:
 </code></pre></div></div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
@@ -905,7 +2114,7 @@ AxisArrays with keys: ypix, xpix
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[11]:
+<div class="highlight"><pre><code>[37]:
 </code></pre></div></div>
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
@@ -919,64 +2128,64 @@ AxisArrays with keys: ypix, xpix
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 ypix: [array([102, 102, 102, 102, 102, 103, 103, 103, 103, 103, 103, 103, 104,
-        104, 104, 104, 104, 104, 104, 104, 105, 105, 105, 105, 105, 105,
-        105, 105, 106, 106, 106, 106, 106, 106, 106, 106, 107, 107, 107,
-        107, 107, 107, 107, 108, 108, 108, 108, 108])
+       104, 104, 104, 104, 104, 104, 104, 105, 105, 105, 105, 105, 105,
+       105, 105, 106, 106, 106, 106, 106, 106, 106, 106, 107, 107, 107,
+       107, 107, 107, 107, 108, 108, 108, 108, 108])
  array([46, 46, 46, 46, 46, 46, 47, 47, 47, 47, 47, 47, 47, 47, 47, 48, 48,
-        48, 48, 48, 48, 48, 48, 49, 49, 49, 49, 49, 49, 49, 49, 50, 50, 50,
-        50, 50, 50, 50, 51, 51, 51, 51, 51, 52, 52, 52])
+       48, 48, 48, 48, 48, 48, 49, 49, 49, 49, 49, 49, 49, 49, 50, 50, 50,
+       50, 50, 50, 50, 51, 51, 51, 51, 51, 52, 52, 52])
  array([18, 18, 18, 18, 19, 19, 19, 19, 19, 19, 19, 19, 20, 20, 20, 20, 20,
-        20, 20, 20, 20, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 22, 22, 22,
-        22, 22, 22, 22, 22, 22, 22, 23, 23, 23, 23, 23, 23, 23, 23, 24, 24,
-        24, 24, 24, 24, 24, 24, 25, 25, 25, 25, 25, 25, 25, 26, 26, 26, 26])
+       20, 20, 20, 20, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 22, 22, 22,
+       22, 22, 22, 22, 22, 22, 22, 23, 23, 23, 23, 23, 23, 23, 23, 24, 24,
+       24, 24, 24, 24, 24, 24, 25, 25, 25, 25, 25, 25, 25, 26, 26, 26, 26])
  array([43, 44, 45, 46, 46, 47, 47, 47, 48, 48, 48, 48, 48, 49, 49, 49, 49,
-        49, 49, 50, 50, 50, 50, 50, 50, 50, 51, 51, 51, 51, 51, 51, 51, 52,
-        52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 53, 53, 53, 53, 53, 53,
-        53, 53, 53, 53, 53, 53, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 55,
-        55, 55, 55, 55, 55, 55, 55, 55, 56, 56, 56, 56, 56, 56, 56, 56, 57,
-        57, 57, 57, 57, 57, 57, 58, 58, 58, 58, 58, 59, 59])
+       49, 49, 50, 50, 50, 50, 50, 50, 50, 51, 51, 51, 51, 51, 51, 51, 52,
+       52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 53, 53, 53, 53, 53, 53,
+       53, 53, 53, 53, 53, 53, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 55,
+       55, 55, 55, 55, 55, 55, 55, 55, 56, 56, 56, 56, 56, 56, 56, 56, 57,
+       57, 57, 57, 57, 57, 57, 58, 58, 58, 58, 58, 59, 59])
  array([156, 156, 156, 156, 156, 157, 157, 157, 157, 157, 157, 157, 157,
-        158, 158, 158, 158, 158, 158, 158, 158, 159, 159, 159, 159, 159,
-        159, 159, 159, 160, 160, 160, 160, 160, 160, 160, 161, 161, 161,
-        161, 161])                                                      ]
+       158, 158, 158, 158, 158, 158, 158, 158, 159, 159, 159, 159, 159,
+       159, 159, 159, 160, 160, 160, 160, 160, 160, 160, 161, 161, 161,
+       161, 161])]
 
 xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455,
-        456, 457, 458, 459, 460, 461, 462, 455, 456, 457, 458, 459, 460,
-        461, 462, 455, 456, 457, 458, 459, 460, 461, 462, 456, 457, 458,
-        459, 460, 461, 462, 457, 458, 459, 460, 461])
+       456, 457, 458, 459, 460, 461, 462, 455, 456, 457, 458, 459, 460,
+       461, 462, 455, 456, 457, 458, 459, 460, 461, 462, 456, 457, 458,
+       459, 460, 461, 462, 457, 458, 459, 460, 461])
  array([116, 117, 118, 119, 120, 121, 114, 115, 116, 117, 118, 119, 120,
-        121, 122, 115, 116, 117, 118, 119, 120, 121, 122, 115, 116, 117,
-        118, 119, 120, 121, 122, 116, 117, 118, 119, 120, 121, 122, 117,
-        118, 119, 120, 121, 118, 119, 120])
+       121, 122, 115, 116, 117, 118, 119, 120, 121, 122, 115, 116, 117,
+       118, 119, 120, 121, 122, 116, 117, 118, 119, 120, 121, 122, 117,
+       118, 119, 120, 121, 118, 119, 120])
  array([202, 203, 204, 205, 200, 201, 202, 203, 204, 205, 206, 207, 200,
-        201, 202, 203, 204, 205, 206, 207, 208, 200, 201, 202, 203, 204,
-        205, 206, 207, 208, 209, 199, 200, 201, 202, 203, 204, 205, 206,
-        207, 208, 200, 201, 202, 203, 204, 205, 206, 207, 200, 201, 202,
-        203, 204, 205, 206, 207, 201, 202, 203, 204, 205, 206, 207, 202,
-        203, 204, 205])
+       201, 202, 203, 204, 205, 206, 207, 208, 200, 201, 202, 203, 204,
+       205, 206, 207, 208, 209, 199, 200, 201, 202, 203, 204, 205, 206,
+       207, 208, 200, 201, 202, 203, 204, 205, 206, 207, 200, 201, 202,
+       203, 204, 205, 206, 207, 201, 202, 203, 204, 205, 206, 207, 202,
+       203, 204, 205])
  array([352, 352, 352, 352, 353, 352, 353, 354, 351, 352, 353, 354, 355,
-        350, 351, 352, 353, 354, 355, 350, 351, 352, 353, 354, 355, 356,
-        349, 350, 351, 352, 353, 354, 355, 349, 350, 351, 352, 353, 354,
-        355, 357, 358, 359, 360, 361, 350, 351, 352, 353, 354, 355, 356,
-        357, 358, 359, 360, 361, 352, 353, 354, 355, 356, 357, 358, 359,
-        360, 361, 354, 355, 356, 357, 358, 359, 360, 361, 362, 354, 355,
-        356, 357, 358, 359, 360, 361, 355, 356, 357, 358, 359, 360, 361,
-        357, 358, 359, 360, 361, 358, 359])
+       350, 351, 352, 353, 354, 355, 350, 351, 352, 353, 354, 355, 356,
+       349, 350, 351, 352, 353, 354, 355, 349, 350, 351, 352, 353, 354,
+       355, 357, 358, 359, 360, 361, 350, 351, 352, 353, 354, 355, 356,
+       357, 358, 359, 360, 361, 352, 353, 354, 355, 356, 357, 358, 359,
+       360, 361, 354, 355, 356, 357, 358, 359, 360, 361, 362, 354, 355,
+       356, 357, 358, 359, 360, 361, 355, 356, 357, 358, 359, 360, 361,
+       357, 358, 359, 360, 361, 358, 359])
  array([382, 383, 384, 385, 386, 380, 381, 382, 383, 384, 385, 386, 387,
-        380, 381, 382, 383, 384, 385, 386, 387, 380, 381, 382, 383, 384,
-        385, 386, 387, 380, 381, 382, 383, 384, 385, 386, 381, 382, 383,
-        384, 385])                                                      ]
+       380, 381, 382, 383, 384, 385, 386, 387, 380, 381, 382, 383, 384,
+       385, 386, 387, 380, 381, 382, 383, 384, 385, 386, 381, 382, 383,
+       384, 385])]
 </pre></div></div>
 </div>
 </section>
 <section id="variables-(temporal-synchronization-of-paq-channels-and-imaging)">
-<h3>variables (temporal synchronization of paq channels and imaging)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#variables-(temporal-synchronization-of-paq-channels-and-imaging)">¶</a></h3>
+<h3>variables (temporal synchronization of paq channels and imaging)<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#variables-(temporal-synchronization-of-paq-channels-and-imaging)">¶</a></h3>
 <p>And the temporal synchronization data of the experiment collected in .paq output is added to the variables annotations under <code class="docutils literal notranslate">var</code>. These variables are timed to the imaging frame clock timings. The total # of variables is the number of imaging frames in the original Flu data input.</p>
 <div class="nbinput docutils container">
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[12]:
+<div class="highlight"><pre><code>[38]:
 </code></pre></div></div>
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
@@ -988,7 +2197,7 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[12]:
+<div class="highlight"><pre><code>[38]:
 </code></pre></div></div>
 <div class="output_area rendered_html docutils container">
 <div>
@@ -1017,24 +2226,22 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 <th>packio2markpoints</th>
 <th>pycontrol_rsync</th>
 <th>voltage</th>
-<th>photostim</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th>0</th>
+<th>139577</th>
 <td>4.972792</td>
-<td>-1.16518</td>
+<td>-1.165180</td>
 <td>3.329534</td>
 <td>0.007827</td>
 <td>0.000264</td>
 <td>0.000592</td>
 <td>0.017035</td>
 <td>-0.116807</td>
-<td>False</td>
 </tr>
 <tr>
-<th>1</th>
+<th>140252</th>
 <td>4.974765</td>
 <td>-1.164851</td>
 <td>3.325917</td>
@@ -1042,44 +2249,40 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 <td>-0.000394</td>
 <td>-0.000394</td>
 <td>0.019666</td>
-<td>-0.19606</td>
-<td>False</td>
+<td>-0.196060</td>
 </tr>
 <tr>
-<th>2</th>
+<th>140925</th>
 <td>4.971806</td>
-<td>-1.16518</td>
+<td>-1.165180</td>
 <td>3.337755</td>
 <td>0.008156</td>
 <td>-0.000065</td>
 <td>0.000592</td>
-<td>0.02131</td>
+<td>0.021310</td>
 <td>-0.210858</td>
-<td>False</td>
 </tr>
 <tr>
-<th>3</th>
+<th>141595</th>
 <td>4.970819</td>
 <td>-1.164851</td>
 <td>3.331507</td>
 <td>0.007827</td>
 <td>0.000592</td>
 <td>0.000264</td>
-<td>0.02131</td>
+<td>0.021310</td>
 <td>-0.204939</td>
-<td>False</td>
 </tr>
 <tr>
-<th>4</th>
+<th>142267</th>
 <td>4.975094</td>
 <td>-1.166166</td>
 <td>3.340715</td>
 <td>0.006841</td>
 <td>0.000264</td>
-<td>0.00125</td>
+<td>0.001250</td>
 <td>0.021639</td>
 <td>-0.234206</td>
-<td>False</td>
 </tr>
 <tr>
 <th>...</th>
@@ -1091,10 +2294,9 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 <td>...</td>
 <td>...</td>
 <td>...</td>
-<td>...</td>
 </tr>
 <tr>
-<th>16363</th>
+<th>11136216</th>
 <td>4.974436</td>
 <td>-1.165837</td>
 <td>3.337426</td>
@@ -1103,10 +2305,9 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 <td>0.002565</td>
 <td>0.021639</td>
 <td>2.423554</td>
-<td>False</td>
 </tr>
 <tr>
-<th>16364</th>
+<th>11136886</th>
 <td>4.975751</td>
 <td>-1.164851</td>
 <td>3.334138</td>
@@ -1115,10 +2316,9 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 <td>-0.000065</td>
 <td>0.017035</td>
 <td>2.473211</td>
-<td>False</td>
 </tr>
 <tr>
-<th>16365</th>
+<th>11137559</th>
 <td>4.960953</td>
 <td>-1.164851</td>
 <td>3.337097</td>
@@ -1127,22 +2327,20 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 <td>0.000921</td>
 <td>0.019994</td>
 <td>2.473211</td>
-<td>False</td>
 </tr>
 <tr>
-<th>16366</th>
+<th>11138232</th>
 <td>4.971477</td>
 <td>-1.167153</td>
-<td>3.31934</td>
+<td>3.319340</td>
 <td>0.006183</td>
 <td>-0.000065</td>
 <td>-0.000065</td>
 <td>0.005525</td>
 <td>2.466963</td>
-<td>False</td>
 </tr>
 <tr>
-<th>16367</th>
+<th>11138904</th>
 <td>4.975751</td>
 <td>-1.164851</td>
 <td>3.329863</td>
@@ -1151,22 +2349,21 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 <td>0.000592</td>
 <td>0.017693</td>
 <td>2.453151</td>
-<td>False</td>
 </tr>
 </tbody>
 </table>
-<p>16368 rows × 9 columns</p>
+<p>16368 rows × 8 columns</p>
 </div></div>
 </div>
 </section>
 <section id="Creating-or-Modifying-AnnData-arrays-of-trialobj">
-<h3>Creating or Modifying AnnData arrays of trialobj<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Creating-or-Modifying-AnnData-arrays-of-trialobj">¶</a></h3>
+<h3>Creating or Modifying AnnData arrays of trialobj<a aria-label="Click to copy this link" class="headerlink tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne tooltipped tooltipped-ne" data-action="click-&gt;clipboard#copyHeaderLink" data-controller="clipboard" href="#Creating-or-Modifying-AnnData-arrays-of-trialobj">¶</a></h3>
 <p>There are a number of helper functions to create anndata arrays or modify existing anndata arrays.</p>
 <div class="nbinput docutils container">
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[4]:
+<div class="highlight"><pre><code>[39]:
 </code></pre></div></div>
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
@@ -1192,7 +2389,7 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[4]:
+<div class="highlight"><pre><code>[39]:
 </code></pre></div></div>
 <div class="output_area rendered_html docutils container">
 <div>
@@ -1229,143 +2426,143 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 <tbody>
 <tr>
 <th>0</th>
-<td>0.007100</td>
-<td>0.331746</td>
-<td>0.954718</td>
-<td>0.311193</td>
-<td>0.342229</td>
+<td>0.760647</td>
+<td>0.110865</td>
+<td>0.013329</td>
+<td>0.935462</td>
+<td>0.540991</td>
 <td>...</td>
-<td>0.036089</td>
-<td>0.515803</td>
-<td>0.881094</td>
-<td>0.484803</td>
-<td>0.332016</td>
+<td>0.473592</td>
+<td>0.368700</td>
+<td>0.200333</td>
+<td>0.580795</td>
+<td>0.397233</td>
 </tr>
 <tr>
 <th>1</th>
-<td>0.078150</td>
-<td>0.785294</td>
-<td>0.845034</td>
-<td>0.564981</td>
-<td>0.053330</td>
+<td>0.971282</td>
+<td>0.036780</td>
+<td>0.315767</td>
+<td>0.216254</td>
+<td>0.759866</td>
 <td>...</td>
-<td>0.354211</td>
-<td>0.703916</td>
-<td>0.896111</td>
-<td>0.836012</td>
-<td>0.489882</td>
+<td>0.982392</td>
+<td>0.137152</td>
+<td>0.935467</td>
+<td>0.262601</td>
+<td>0.867271</td>
 </tr>
 <tr>
 <th>2</th>
-<td>0.817575</td>
-<td>0.742934</td>
-<td>0.334427</td>
-<td>0.999174</td>
-<td>0.215008</td>
+<td>0.227014</td>
+<td>0.163650</td>
+<td>0.851788</td>
+<td>0.527026</td>
+<td>0.444399</td>
 <td>...</td>
-<td>0.031412</td>
-<td>0.694898</td>
-<td>0.961636</td>
-<td>0.234338</td>
-<td>0.671856</td>
+<td>0.996837</td>
+<td>0.685767</td>
+<td>0.307295</td>
+<td>0.282857</td>
+<td>0.553372</td>
 </tr>
 <tr>
 <th>3</th>
-<td>0.074314</td>
-<td>0.960333</td>
-<td>0.302282</td>
-<td>0.312936</td>
-<td>0.373407</td>
+<td>0.054008</td>
+<td>0.280003</td>
+<td>0.651034</td>
+<td>0.933380</td>
+<td>0.087784</td>
 <td>...</td>
-<td>0.854256</td>
-<td>0.382607</td>
-<td>0.879831</td>
-<td>0.280990</td>
-<td>0.212398</td>
+<td>0.899018</td>
+<td>0.389161</td>
+<td>0.996816</td>
+<td>0.672480</td>
+<td>0.860496</td>
 </tr>
 <tr>
 <th>4</th>
-<td>0.591134</td>
-<td>0.475524</td>
-<td>0.263621</td>
-<td>0.964541</td>
-<td>0.415296</td>
+<td>0.474105</td>
+<td>0.987455</td>
+<td>0.986814</td>
+<td>0.977501</td>
+<td>0.322008</td>
 <td>...</td>
-<td>0.940733</td>
-<td>0.712458</td>
-<td>0.364609</td>
-<td>0.118514</td>
-<td>0.709443</td>
+<td>0.571053</td>
+<td>0.896681</td>
+<td>0.143181</td>
+<td>0.967625</td>
+<td>0.332282</td>
 </tr>
 <tr>
 <th>5</th>
-<td>0.152702</td>
-<td>0.149395</td>
-<td>0.169253</td>
-<td>0.610581</td>
-<td>0.878745</td>
+<td>0.473564</td>
+<td>0.460252</td>
+<td>0.806648</td>
+<td>0.583812</td>
+<td>0.419692</td>
 <td>...</td>
-<td>0.575089</td>
-<td>0.028993</td>
-<td>0.785949</td>
-<td>0.768086</td>
-<td>0.768378</td>
+<td>0.226740</td>
+<td>0.973925</td>
+<td>0.974531</td>
+<td>0.315231</td>
+<td>0.431784</td>
 </tr>
 <tr>
 <th>6</th>
-<td>0.968979</td>
-<td>0.720071</td>
-<td>0.573805</td>
-<td>0.066508</td>
-<td>0.668841</td>
+<td>0.891266</td>
+<td>0.953494</td>
+<td>0.120490</td>
+<td>0.178379</td>
+<td>0.894506</td>
 <td>...</td>
-<td>0.828199</td>
-<td>0.660924</td>
-<td>0.422817</td>
-<td>0.892732</td>
-<td>0.080562</td>
+<td>0.089454</td>
+<td>0.563263</td>
+<td>0.897826</td>
+<td>0.295088</td>
+<td>0.194042</td>
 </tr>
 <tr>
 <th>7</th>
-<td>0.699672</td>
-<td>0.009906</td>
-<td>0.624961</td>
-<td>0.663044</td>
-<td>0.314822</td>
+<td>0.829370</td>
+<td>0.295575</td>
+<td>0.703529</td>
+<td>0.639097</td>
+<td>0.606885</td>
 <td>...</td>
-<td>0.142305</td>
-<td>0.339057</td>
-<td>0.758372</td>
-<td>0.381791</td>
-<td>0.423501</td>
+<td>0.408049</td>
+<td>0.901431</td>
+<td>0.242319</td>
+<td>0.211567</td>
+<td>0.089038</td>
 </tr>
 <tr>
 <th>8</th>
-<td>0.637722</td>
-<td>0.049601</td>
-<td>0.434557</td>
-<td>0.799958</td>
-<td>0.565807</td>
+<td>0.271850</td>
+<td>0.935636</td>
+<td>0.120800</td>
+<td>0.487115</td>
+<td>0.638711</td>
 <td>...</td>
-<td>0.490102</td>
-<td>0.458182</td>
-<td>0.376269</td>
-<td>0.637587</td>
-<td>0.850117</td>
+<td>0.700857</td>
+<td>0.314190</td>
+<td>0.338174</td>
+<td>0.822562</td>
+<td>0.709709</td>
 </tr>
 <tr>
 <th>9</th>
-<td>0.929012</td>
-<td>0.251330</td>
-<td>0.160211</td>
-<td>0.227208</td>
-<td>0.236852</td>
+<td>0.486074</td>
+<td>0.555504</td>
+<td>0.725748</td>
+<td>0.992619</td>
+<td>0.433843</td>
 <td>...</td>
-<td>0.412546</td>
-<td>0.101983</td>
-<td>0.135045</td>
-<td>0.167816</td>
-<td>0.321940</td>
+<td>0.968497</td>
+<td>0.225324</td>
+<td>0.896016</td>
+<td>0.659566</td>
+<td>0.660780</td>
 </tr>
 </tbody>
 </table>
@@ -1376,7 +2573,7 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[5]:
+<div class="highlight"><pre><code>[40]:
 </code></pre></div></div>
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
@@ -1395,7 +2592,7 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[5]:
+<div class="highlight"><pre><code>[40]:
 </code></pre></div></div>
 <div class="output_area rendered_html docutils container">
 <div>
@@ -1438,7 +2635,7 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 </tr>
 <tr>
 <th>4</th>
-<td>int</td>
+<td>exc</td>
 </tr>
 <tr>
 <th>5</th>
@@ -1450,7 +2647,7 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 </tr>
 <tr>
 <th>7</th>
-<td>exc</td>
+<td>int</td>
 </tr>
 <tr>
 <th>8</th>
@@ -1468,7 +2665,7 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[6]:
+<div class="highlight"><pre><code>[41]:
 </code></pre></div></div>
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
@@ -1488,7 +2685,7 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[6]:
+<div class="highlight"><pre><code>[41]:
 </code></pre></div></div>
 <div class="output_area rendered_html docutils container">
 <div>
@@ -1523,7 +2720,7 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 </tr>
 <tr>
 <th>2</th>
-<td>A</td>
+<td>B</td>
 </tr>
 <tr>
 <th>3</th>
@@ -1551,7 +2748,7 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 </tr>
 <tr>
 <th>9998</th>
-<td>C</td>
+<td>A</td>
 </tr>
 <tr>
 <th>9999</th>
@@ -1566,7 +2763,7 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[7]:
+<div class="highlight"><pre><code>[43]:
 </code></pre></div></div>
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
@@ -1585,12 +2782,14 @@ xpix:    [array([457, 458, 459, 460, 461, 456, 457, 458, 459, 460, 461, 462, 455
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Annotated Data of n_obs (# ROIs) × n_vars (# Frames) = 10 × 10000
+Created AnnData object:
+        Annotated Data of n_obs (# ROIs) × n_vars (# Frames) = 10 × 10000
+Annotated Data of n_obs × n_vars = 10 × 10000
 available attributes:
         .X (primary datamatrix)
-        .obs (ROIs metadata):
+        .obs (obs metadata):
                 |- 'cell_type'
-        .var (frames metadata):
+        .var (vars metadata):
                 |- 'exp_group'
 </pre></div></div>
 </div>
@@ -1598,7 +2797,7 @@ available attributes:
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[8]:
+<div class="highlight"><pre><code>[44]:
 </code></pre></div></div>
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
@@ -1627,12 +2826,12 @@ available attributes:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Annotated Data of n_obs (# ROIs) × n_vars (# Frames) = 10 × 10000
+Annotated Data of n_obs × n_vars = 10 × 10000
 available attributes:
         .X (primary datamatrix)
-        .obs (ROIs metadata):
+        .obs (obs metadata):
                 |- 'cell_type', 'cell_loc_x', 'cell_loc_y'
-        .var (frames metadata):
+        .var (vars metadata):
                 |- 'exp_group'
 </pre></div></div>
 </div>
@@ -1640,7 +2839,7 @@ available attributes:
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
 <span class="code-lang">none</span></div>
-<div class="highlight"><pre><code>[9]:
+<div class="highlight"><pre><code>[45]:
 </code></pre></div></div>
 <div class="code-wrapper" data-controller="code">
 <div class="code-header">
@@ -1657,12 +2856,12 @@ available attributes:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Annotated Data of n_obs (# ROIs) × n_vars (# Frames) = 10 × 10000
+Annotated Data of n_obs × n_vars = 10 × 10000
 available attributes:
         .X (primary datamatrix)
-        .obs (ROIs metadata):
+        .obs (obs metadata):
                 |- 'cell_loc_x', 'cell_loc_y'
-        .var (frames metadata):
+        .var (vars metadata):
                 |- 'exp_group'
 </pre></div></div>
 </div>

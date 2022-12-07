@@ -3,8 +3,8 @@
 Quick Start Guide
 =================
 
-The easiest way to get started with using ``packerlabimaging`` is to follow `Tutorial 1 - Getting started with data`_.
-This tutorial demonstrates how to setup a new experiment inside ``packerlabimaging`` for data processing and analysis.
+The easiest way to get started with using ``imaging+`` is to follow `Tutorial 1 - Getting started with data`_.
+This tutorial demonstrates how to setup a new experiment inside ``imaging+`` for data processing and analysis.
 
 To get started with plotting and data exploration, check out `Tutorial 3 - Making useful plots`_.
 
@@ -30,10 +30,10 @@ And, there 3 sub-core data types to handle multi-modal data within each imaging 
 3) `CellAnnotations` - Annotations and cellular/ROI segmentations of the live imaging tissue sample
 
 
-A more detailed overview of these modules and other key structures of ``packerlabimaging`` can be found at :ref:`overview`.
+A more detailed overview of these modules and other key structures of ``imaging+`` can be found at :ref:`overview`.
 
 
-An overview of all primary modules of ``packerlabimaging`` can be found at :ref:`main modules`.
+An overview of all primary modules of ``imaging+`` can be found at :ref:`main modules`.
 
 
 .. _Tutorial 1 - Getting started with data: Tutorials/Tutorial-1-Overview-of-Workflow.ipynb

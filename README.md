@@ -5,8 +5,11 @@ Especially, there is a fully implemented pipeline for data structuring, processi
 
 ## Overview
 
-This package is designed for experiments that follow the general structure of an "imaging+" experiment shown below. We have additionally provided specific sub-modules to suit imaging experiments performed using PackIO, a Bruker 2pPlus microscope and using Suite2p for Ca2+ imaging 
-data processing for ROI segmentation. 
+This package is designed for experiments that follow the general structure of an "imaging+" experiment shown below. We have additionally provided specific sub-modules to suit imaging experiments performed using PackIO, a Bruker 2pPlus microscope and using [Suite2p](https://suite2p.readthedocs.io/en/latest/) for Ca2+ imaging 
+data processing for ROI segmentation.
+
+This package integrates the [AnnData](https://anndata.readthedocs.io) framework for native and highly efficient, HDF-5 compatible storage and organization of all levels of the data analysis workflow from preprocessing to highly analyzed downstream forms as well. 
+
 It should be completely usable and understandable for anyone with the correct data in hand and basic knowledge of Python. 
 There are tutorials to help along the way. Ultimately, the goal of this package is to jump-start your own analysis of your awesome experiment. 
 

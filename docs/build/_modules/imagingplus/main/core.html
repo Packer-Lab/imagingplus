@@ -1,73 +1,162 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>imagingplus.main.core — imaging+ 0.2-beta documentation</title>
-<link href="../../../_static/pygments.css" rel="stylesheet" type="text/css"/>
-<link href="../../../_static/sphinxdoc.css" rel="stylesheet" type="text/css"/>
-<link href="../../../_static/sg_gallery.css" rel="stylesheet" type="text/css"/>
-<script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-<script src="../../../_static/jquery.js"></script>
-<script src="../../../_static/underscore.js"></script>
-<script src="../../../_static/doctools.js"></script>
-<script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-<link href="../../../genindex.html" rel="index" title="Index"/>
+<meta charset="utf-8"/>
+<title>imagingplus.main.core | Imaging+ 0.2-beta documentation</title>
+<link href="../../../_static/pygments.css" rel="stylesheet"/>
+<link href="../../../_static/theme.9297a650d9dd3016d913.css" rel="stylesheet"/>
+<link href="../../../_static/sg_gallery.css" rel="stylesheet"/>
 <link href="../../../search.html" rel="search" title="Search"/>
-</head><body>
-<div aria-label="related navigation" class="related" role="navigation">
-<h3>Navigation</h3>
-<ul>
-<li class="right" style="margin-right: 10px">
-<a accesskey="I" href="../../../genindex.html" title="General Index">index</a></li>
-<li class="right">
-<a href="../../../py-modindex.html" title="Python Module Index">modules</a> |</li>
-<li class="nav-item nav-item-0"><a href="../../../index.html">imaging+ 0.2-beta documentation</a> »</li>
-<li class="nav-item nav-item-1"><a accesskey="U" href="../../index.html">Module code</a> »</li>
-<li class="nav-item nav-item-this"><a href="">imagingplus.main.core</a></li>
+<link href="../../../genindex.html" rel="index" title="Index"/>
+</head>
+<body class="antialiased text-gray scroll-smooth">
+<div class="min-h-screen xl:h-screen flex flex-col xl:grid xl:grid-layout print:block print:h-auto" data-action="keydown@window-&gt;search#focus " data-controller="sidebar search " id="page">
+<a class="block transition -translate-x-full focus:translate-x-0 opacity-0 focus:opacity-100 text-xl bg-white p-4 z-20 absolute top-0 left-0 h-14" href="#imagingplus-main-core" title="Skip navigation links">Skip to content</a>
+<header class="grid-area-header z-10 h-14 fixed w-full top-0 print:hidden">
+<div class="bg-gray-dark shadow-md flex items-center h-full xl:px-2 relative"><div class="flex items-center">
+<button class="xl:hidden h-14 w-14 leading-14 text-gray-100 hover:bg-gray-700 hover:text-brand focus:outline-none focus:bg-gray-700 focus:text-brand" data-action="sidebar#open" data-sidebar-target="hamburger">
+<span class="sr-only">Open navigation menu</span>
+<svg aria-hidden="true" class="fill-current h-8 w-8" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
+</button><a class="hover:bg-gray-700 focus:bg-gray-700 focus:outline-none" href="../../../index.html" title="Back to homepage"><img alt="Logo" class="h-14 w-14 p-3 inline-block" src="../../../_static/imagingplus-logo.png"/><span class="hidden lg:inline-block shrink-0 font-medium text-gray-100 mx-5 leading-14 tracking-wider">Imaging+ 0.2-beta documentation</span>
+</a></div><div class="flex justify-end items-center flex-1"><form action="../../../search.html" class="flex print:hidden justify-between items-center leading-14 md:ml-4 bg-gray-dark text-gray-300 focus-within:bg-gray-50 focus-within:text-gray-800 focus-within:absolute focus-within:inset-x-0 focus-within:top-0 md:focus-within:w-full md:focus-within:static z-10" data-action="click-&gt;search#focusSearchInput" id="searchbox" method="get">
+<button aria-label="Get search results" class="text-inherit h-14 w-14" tabindex="-1">
+<svg aria-hidden="true" class="fill-current stroke-current h-8 w-8" stroke-width="0.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+</button>
+<input aria-label="Search the docs" class="pr-2 bg-transparent text-inherit focus:outline-none w-0 md:w-auto focus:w-full transition-all duration-100" data-search-target="searchInput" id="search-input" name="q" placeholder="Search the docs" type="search"/>
+</form></div>
+</div>
+</header>
+<aside class="grid-area-sidebar h-full fixed pt-14 xl:relative inset-y-0 left-0 z-20 xl:z-0 print:hidden overflow-y-auto transition-all transform transform-gpu -translate-x-full opacity-0 duration-300 xl:translate-x-0 xl:opacity-100" data-sidebar-target="sidebar">
+<nav class="h-full overflow-y-auto bg-white text-gray-600 pt-8 flex flex-col" role="navigation">
+<div class="nav-toc flex-1 pl-6"><ul>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../installation.html">Installation</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../installation.html#installation">Installation</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../installation.html#test-import-installation">Test/Import Installation</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../installation.html#dependencies">Dependencies</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../installation.html#next">Next</a></div></li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../quick-start-guide.html">Quick start guide</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../quick-start-guide.html#key-structures">Key Structures</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../quick-start-guide.html#next">Next</a></div></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../overview.html">Overview</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../overview.html#modular-data-processing-analysis-and-visualisation"><strong>Modular Data Processing, Analysis and Visualisation</strong></a></div></li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../overview.html#extensibility"><strong>Extensibility</strong></a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../overview.html#next">Next</a></div></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials-reference.html">Tutorials</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-1-Overview-of-Workflow.html">Tutorial 1 - Getting started with data</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-1-Overview-of-Workflow.html#Creating-an-experiment---UPDATED-Oct-23-2022">Creating an experiment - UPDATED Oct 23 2022</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-1-Overview-of-Workflow.html#Adding-trials-to-an-experiment">Adding trials to an experiment</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-1-Overview-of-Workflow.html#Adding-calcium-imaging-processing-to-Experiment">Adding calcium imaging processing to Experiment</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-1-Overview-of-Workflow.html#Storing-Suite2p-processed-data-as-an-anndata-structure">Storing Suite2p processed data as an anndata structure</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-2-Organization-of-data-in-package-objects.html">Tutorial 2 - Data organization inside Imaging+</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-2-Organization-of-data-in-package-objects.html#Importing-data-analysis-objects">Importing data analysis objects</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-2-Organization-of-data-in-package-objects.html#paq-data">paq data</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-2-Organization-of-data-in-package-objects.html#Suite2p-data">Suite2p data</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-2-Organization-of-data-in-package-objects.html#Annotated-Data">Annotated Data</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-3-plotting-module.html">Tutorial 3 - Making Useful Plots</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-3-plotting-module.html#import-data">import data</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-4-nwb-conversion.html">Tutorial 4 - NWB Conversion</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-5-suite2p-module.html">Tutorial 5 - Integrating with Suite2p (running Suite2p pipeline and storing results)</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-5-suite2p-module.html#Adding-the-Suite2p-module">Adding the Suite2p module</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-5-suite2p-module.html#Prepare-for-Suite2p-run">Prepare for Suite2p run</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-5-suite2p-module.html#Run-Suite2p">Run Suite2p</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-5-suite2p-module.html#Import-suite2p-results-directly">Import suite2p results directly</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-6-anndata-module.html">Tutorial 6 - Annotated Data Module</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-6-anndata-module.html#storage-of-Flu-data">storage of Flu data</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-6-anndata-module.html#observations-(Suite2p-ROIs-metadata-and-associated-processing-info)">observations (Suite2p ROIs metadata and associated processing info)</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-6-anndata-module.html#variables-(temporal-synchronization-of-paq-channels-and-imaging)">variables (temporal synchronization of paq channels and imaging)</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-7-paq-module.html">Tutorial 7 - Integration with PACKIO outputs (.paq data)</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-7-paq-module.html#adding-paqdata-module-to-the-trialobj">adding paqdata module to the trialobj</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-7-paq-module.html#Processing-paq-data">Processing paq data</a></div></li>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-7-paq-module.html#Synchronizing-.paq-data-with-imaging-frames">Synchronizing .paq data with imaging frames</a></div></li>
+</ul>
+</li>
+<li class="toctree-l2"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-8-Extending-built-in-classes.html">Tutorial 8 - Extending built in classes</a></div><ul>
+<li class="toctree-l3"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../Tutorials/Tutorial-8-Extending-built-in-classes.html#Creating-a-custom-class-for-Interneuron-Gcamp-imaging-during-seizures">Creating a custom class for Interneuron Gcamp imaging during seizures</a></div></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../organization-of-modules.html">Main Modules</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../organization-of-modules.html#main">Main</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../organization-of-modules.html#processing">Processing</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../organization-of-modules.html#workflow">Workflow</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../organization-of-modules.html#utils">Utils</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../organization-of-modules.html#plotting">Plotting</a></div></li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../data-structure-details.html">Data structure details</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../data-structure-details.html#anndata-sub-module-for-storing-multi-modal-data"><em>AnnData</em> sub-module for storing multi-modal data</a></div></li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../making-plots.html">Making plots</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../making-plots.html#module-imagingplus.plotting.plotting">Available plotting functions:</a></div></li>
+</ul>
+</li>
+<li class="toctree-l1"><div class="nav-link"><svg class="expand" data-action="click-&gt;sidebar#expand keydown-&gt;sidebar#expandKeyPressed" tabindex="0" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../reference.html">API Reference</a></div><ul>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../reference.html#module-imagingplus.main.core">core</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../reference.html#module-imagingplus.main.subcore">subcore</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../reference.html#module-imagingplus.plotting.plotting">plotting</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../reference.html#module-imagingplus.processing.anndata">processing</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../reference.html#workflows-alloptical">workflows (AllOptical)</a></div></li>
+<li class="toctree-l2"><div class="nav-link"><a class="reference internal" data-action="click-&gt;sidebar#close" href="../../../reference.html#module-imagingplus.utils.io">utils</a></div></li>
+</ul>
+</li>
 </ul>
 </div>
-<div class="document">
-<div class="documentwrapper">
-<div class="bodywrapper">
-<div class="body" role="main">
+<button class="text-4xl text-gray-800 p-4 bottom-0 hover:text-brand xl:hidden focus:text-brand self-center" data-action="sidebar#close" title="Close navigation menu">
+<span class="sr-only">Close navigation menu</span>
+<svg aria-hidden="true" class="fill-current stroke-current h-6 w-6" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+</button>
+</nav>
+</aside>
+<main class="px-4 pt-14 xl:ml-fluid grid-area-main overflow-y-auto flex flex-col flex-1 h-full mx-0 md:mx-auto xl:mr-0"><nav aria-label="breadcrumbs" class="print:hidden mt-12 text-sm text-gray-light" role="navigation">
+<a class="text-gray-light text-sm hover:text-gray-dark font-medium focus:text-gray-dark" href="../../../index.html">Imaging+ 0.2-beta documentation</a>
+<span class="mr-1">/</span><a class="text-gray-light text-sm hover:text-gray-dark" href="../../index.html">Module code</a>
+<span class="mr-1">/</span><span aria-current="page">imagingplus.main.core</span>
+</nav>
+<article class="flex-1" role="main">
 <h1>Source code for imagingplus.main.core</h1><div class="highlight"><pre>
-<span></span><span class="c1"># this file contains the two fundamental class types (Trial and Experiment) needed to construct an experiment in imagingplus</span>
+<code><span class="c1"># this file contains the two fundamental class types (Trial and Experiment) needed to construct an experiment in imagingplus</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">MutableMapping</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TypedDict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-
-<span class="kn">from</span> <span class="nn">imagingplus.main.subcore</span> <span class="kn">import</span> <span class="n">ImagingMetadata</span><span class="p">,</span> <span class="n">ImagingData</span><span class="p">,</span> <span class="n">CellAnnotations</span><span class="p">,</span> <span class="n">TemporalData</span>
-<span class="kn">from</span> <span class="nn">imagingplus.processing.anndata</span> <span class="kn">import</span> <span class="n">AnnotatedData</span>
-
-<span class="c1"># from imagingplus.processing.imagingMetadata import ImagingMetadata</span>
-<span class="kn">from</span> <span class="nn">imagingplus.processing.denoising</span> <span class="kn">import</span> <span class="n">Deepinterpolation</span>
-<span class="kn">from</span> <span class="nn">imagingplus.processing.suite2p</span> <span class="kn">import</span> <span class="n">Suite2pResultsTrial</span>
-<span class="kn">from</span> <span class="nn">imagingplus.utils.classes</span> <span class="kn">import</span> <span class="n">UnavailableOptionError</span><span class="p">,</span> <span class="n">TrialMetainfo</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">tifffile</span> <span class="k">as</span> <span class="nn">tf</span>
-
 <span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="c1"># add new class for temporal synchronization of additional 1d dataarrays with imaging cellsdata - parent of Paq</span>
-<span class="c1"># todo - test new paqdata child class.</span>
+<span class="kn">from</span> <span class="nn">imagingplus.main.subcore</span> <span class="kn">import</span> <span class="n">ImagingMetadata</span><span class="p">,</span> <span class="n">ImagingData</span><span class="p">,</span> <span class="n">CellAnnotations</span><span class="p">,</span> <span class="n">TemporalData</span>
+<span class="kn">from</span> <span class="nn">imagingplus.processing.anndata</span> <span class="kn">import</span> <span class="n">AnnotatedData</span>
 
-<span class="c1"># add new class for cell annotations</span>
+<span class="kn">from</span> <span class="nn">imagingplus.processing.denoising</span> <span class="kn">import</span> <span class="n">Deepinterpolation</span>
+<span class="kn">from</span> <span class="nn">imagingplus.processing.suite2p</span> <span class="kn">import</span> <span class="n">Suite2pResultsTrial</span><span class="p">,</span> <span class="n">Suite2pExperiment</span>
+<span class="kn">from</span> <span class="nn">imagingplus.utils.classes</span> <span class="kn">import</span> <span class="n">UnavailableOptionError</span><span class="p">,</span> <span class="n">TrialMetainfo</span>
 
-<span class="c1"># TODO test out new Trial class and new workflows</span>
-<span class="c1"># todo test anndata creation from Trial</span>
-
-<span class="c1"># TODO add function in Experiment object for merging of Trials across time axis (assert they have the same cell annotations).</span>
-
-<span class="c1"># TODO [ ]  thinking about restructuring TwoPhotonImaging trial methods to more general trial type</span>
-<span class="c1">#    [ ]  then making TwoPhotonImaging as an independent workflow, allowing the general trial type to retain the methods that are *currently* in TwoPhotonImaging</span>
 <span class="kn">from</span> <span class="nn">imagingplus.utils.utils</span> <span class="kn">import</span> <span class="n">findClosest</span>
 <span class="kn">from</span> <span class="nn">imagingplus.utils.images</span> <span class="kn">import</span> <span class="n">ImportTiff</span><span class="p">,</span> <span class="n">SaveDownsampledTiff</span>
 
@@ -78,6 +167,7 @@
 <span class="sd">    - could have cases where you have different hardware collecitng temporal data!</span>
 
 <span class="sd">- merging of multiple ImagingTrials + TemporalData across the same CellAnnotations into a single ImagingTrial</span>
+<span class="sd"># TODO add function in Experiment object for merging of Trials across time axis (assert they have the same cell annotations).</span>
 
 <span class="sd">"""</span>
 
@@ -92,7 +182,6 @@
     <span class="n">imparams</span><span class="p">:</span> <span class="n">ImagingMetadata</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1">#: image collection parameters of image</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># self.data = tf.imread(self.dataPath)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">ImportTiff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataPath</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SingleImage.plotImg"><a class="viewcode-back" href="../../../reference.html#imagingplus.main.core.SingleImage.plotImg">[docs]</a>    <span class="k">def</span> <span class="nf">plotImg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -128,10 +217,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">metainfo</span> <span class="o">=</span> <span class="n">TrialMetainfo</span><span class="p">(</span><span class="n">date</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="n">trialID</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trialID</span><span class="p">,</span> <span class="n">expID</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">expID</span><span class="p">,</span> <span class="n">expGroup</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">expGroup</span><span class="p">,</span>
                                       <span class="n">comment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">comment</span><span class="p">,</span> <span class="n">paths</span><span class="o">=</span><span class="p">{})</span>
 
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataPath</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">metainfo</span><span class="p">[</span><span class="s1">'paths'</span><span class="p">][</span><span class="s1">'dataPath'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataPath</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"dataPath does not exist: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dataPath</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataPath</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">metainfo</span><span class="p">[</span><span class="s1">'paths'</span><span class="p">][</span><span class="s1">'dataPath'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataPath</span>
+        <span class="k">else</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"dataPath does not exist: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dataPath</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="c1"># processing collect mean FOV Trace -- after collecting imaging params and Paq timing info</span>
         <span class="n">im_stack</span> <span class="o">=</span> <span class="n">ImportTiff</span><span class="p">(</span><span class="n">tiff_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">)</span>
@@ -141,13 +228,15 @@
 
         <span class="c1"># set, create analysis save path directory and create pkl object</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">saveDir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">metainfo</span><span class="p">[</span><span class="s1">'paths'</span><span class="p">][</span><span class="s1">'pkl_path'</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">saveDir</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trialID</span><span class="si">}</span><span class="s2">.pkl"</span>
+        <span class="c1"># self.metainfo['paths']['pkl_path'] = f"{self.saveDir}{self.date}_{self.trialID}.pkl"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pkl_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">saveDir</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trialID</span><span class="si">}</span><span class="s2">.pkl"</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pkl_path</span><span class="p">):</span> <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'.pkl file already exists at: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pkl_path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save_pkl</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pkl_path</span><span class="p">)</span>  <span class="c1"># save experiment object to pkl_path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metainfo</span><span class="p">[</span><span class="s1">'paths'</span><span class="p">][</span><span class="s1">'pkl_path'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pkl_path</span>
 
-        <span class="c1"># make anndata</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">imdata</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">tmdata</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">create_anndata</span><span class="p">()</span>
+        <span class="c1"># # make anndata - depracating</span>
+        <span class="c1"># if (self.Suite2p and self.tmdata) or (self.imdata and self.cells and self.tmdata):</span>
+        <span class="c1">#     self.create_anndata()</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">t_series_name</span><span class="si">}</span><span class="s2"> (ImagingTrial)"</span><span class="p">)</span>
@@ -157,7 +246,7 @@
 <div class="viewcode-block" id="ImagingTrial.newImagingTrialfromExperiment"><a class="viewcode-back" href="../../../reference.html#imagingplus.main.core.ImagingTrial.newImagingTrialfromExperiment">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">newImagingTrialfromExperiment</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="n">trialID</span><span class="p">,</span> <span class="n">dataPath</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s1">''</span><span class="p">):</span>
         <span class="sd">"""</span>
-<span class="sd">        Creates a new ImagingTrial under an Experiment.</span>
+<span class="sd">        Creates a new ImagingTrial under an Experiment. Alternative constructor.</span>
 
 <span class="sd">        :param experiment: Experiment object</span>
 <span class="sd">        :param trialID: ID of new Imaging Trial to be added</span>
@@ -357,27 +446,32 @@
         <span class="n">stack</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">importTrialTiff</span><span class="p">()</span>
         <span class="n">SaveDownsampledTiff</span><span class="p">(</span><span class="n">stack</span><span class="o">=</span><span class="n">stack</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">saveDir</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trialID</span><span class="si">}</span><span class="s2">_downsampled.tif"</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ImagingTrial.create_anndata"><a class="viewcode-back" href="../../../reference.html#imagingplus.main.core.ImagingTrial.create_anndata">[docs]</a>    <span class="k">def</span> <span class="nf">create_anndata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imdata_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">imdata</span><span class="p">:</span> <span class="n">ImagingData</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cells</span><span class="p">:</span> <span class="n">CellAnnotations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tmdata</span><span class="p">:</span> <span class="n">TemporalData</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ImagingTrial.create_anndata"><a class="viewcode-back" href="../../../reference.html#imagingplus.main.core.ImagingTrial.create_anndata">[docs]</a>    <span class="k">def</span> <span class="nf">create_anndata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imdata_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'Original Imaging Data'</span><span class="p">,</span> <span class="n">imdata</span><span class="p">:</span> <span class="n">ImagingData</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">cells</span><span class="p">:</span> <span class="n">CellAnnotations</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tmdata</span><span class="p">:</span> <span class="n">TemporalData</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Creates annotated cellsdata (see anndata library for more information on AnnotatedData) object based around the Ca2+ matrix of the imaging trial.</span>
 
 <span class="sd">        Note: the tmdata is used as the source of truth for imaging frames time signals. If there is a mismatch, then tmdata timestamps for extraneous imaging frames will not be included in adata table.</span>
 
 <span class="sd">        :param imdata_type: label to describe primary dataset in anndata structure.</span>
-<span class="sd">        :return:</span>
+<span class="sd">        :param imdata: Imaging data from extracted ROIs</span>
+<span class="sd">        :param cells: Cell annotations data</span>
+<span class="sd">        :param tmdata: Temporal series data</span>
+<span class="sd">        :return: an anndata table</span>
 
 <span class="sd">        """</span>
         <span class="c1"># if not self.imdata and self.cells and self.tmdata:</span>
         <span class="c1">#     raise ValueError(</span>
         <span class="c1">#         'cannot create anndata table. anndata creation only available if experiments have ImagingData (.imdata), CellAnnotations (.cells) and TemporalData (.tmdata)')</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="p">:</span> <span class="n">imdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span>
         <span class="n">imdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imdata</span> <span class="k">if</span> <span class="n">imdata</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">imdata</span>
-        <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">imdata</span><span class="p">,</span> <span class="s1">'imdata'</span><span class="p">)</span> <span class="ow">or</span> <span class="n">tmdata</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">'no `imdata` under .imdata'</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">imdata</span><span class="p">,</span> <span class="s1">'imdata'</span><span class="p">)</span> <span class="ow">or</span> <span class="n">tmdata</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span> <span class="s1">'no `imdata` under .imdata'</span><span class="p">)</span>
 
         <span class="c1"># SETUP THE OBSERVATIONS (CELLS) ANNOTATIONS TO USE IN anndata</span>
-        <span class="n">obs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span> <span class="k">if</span> <span class="n">cells</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cells</span>
-        <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="s1">'cellsdata'</span><span class="p">),</span> <span class="s1">'no `data` under .cells'</span>
-        <span class="k">assert</span> <span class="n">obs</span><span class="o">.</span><span class="n">cellsdata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">imdata</span><span class="o">.</span><span class="n">imdata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">'incorrect # of cells passed to anndata creation.'</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="p">:</span> <span class="n">obs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span>
+        <span class="k">else</span><span class="p">:</span> <span class="n">obs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span> <span class="k">if</span> <span class="n">cells</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cells</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="s1">'cellsdata'</span><span class="p">):</span> <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span> <span class="s1">'no `data` under .cells'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obs</span><span class="o">.</span><span class="n">cellsdata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">imdata</span><span class="o">.</span><span class="n">imdata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span> <span class="s1">'incorrect # of cells passed to anndata creation.'</span><span class="p">)</span>
 
         <span class="c1"># SETUP THE VARIABLES ANNOTATIONS TO USE IN anndata</span>
         <span class="nb">vars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tmdata</span><span class="o">.</span><span class="n">data</span> <span class="k">if</span> <span class="n">tmdata</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">tmdata</span>
@@ -432,7 +526,6 @@
                                                                    <span class="n">inferrence_param</span><span class="p">)</span></div>
 
 
-<span class="c1"># noinspection DuplicatedCode</span>
 <div class="viewcode-block" id="Experiment"><a class="viewcode-back" href="../../../reference.html#imagingplus.main.core.Experiment">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Experiment</span><span class="p">:</span>
     <span class="sd">"""Overall experiment. It can collate all imaging trials that are part of a single field-of-view (FOV) of imaging"""</span>
@@ -445,6 +538,7 @@
     <span class="n">experimenter</span> <span class="o">=</span> <span class="s1">''</span>  <span class="c1">#: experimenter performing pertinent data collection or data analysis</span>
     <span class="n">lab</span> <span class="o">=</span> <span class="s1">''</span>  <span class="c1">#: research group with with experiments were performed</span>
     <span class="n">institution</span> <span class="o">=</span> <span class="s1">''</span>  <span class="c1">#: insititution where experiments were performed</span>
+    <span class="n">Suite2p</span><span class="p">:</span> <span class="n">Suite2pExperiment</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'***********************'</span><span class="p">)</span>
@@ -458,15 +552,15 @@
             <span class="nb">str</span><span class="p">,</span> <span class="n">TrialMetainfo</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1">#: dictionary of metadata information about each trial. Gets filled while adding each trial.</span>
 
         <span class="c1"># suite2p related attrs initialization</span>
-        <span class="kn">from</span> <span class="nn">imagingplus.processing.suite2p</span> <span class="kn">import</span> <span class="n">Suite2pExperiment</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Suite2p</span><span class="p">:</span> <span class="n">Suite2pExperiment</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_suite2p_save_path</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># self._trialsTiffsSuite2p = {}  #: dictionary of trial IDs and their respective .tiff paths for each trial that will be used in Suite2p processing for current experiment</span>
         <span class="c1"># self._s2pResultExists = False  #: flag for whether suite2p results exist for current experiment</span>
 
         <span class="c1"># save Experiment object</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pkl_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_save_location</span><span class="p">()</span>
+        <span class="c1"># self._pkl_path = self._get_save_location()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pkl_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_save_location</span><span class="p">()</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">saveDir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pkl_path</span><span class="p">):</span> <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'.pkl file already exists at: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pkl_path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save_pkl</span><span class="p">(</span><span class="n">pkl_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pkl_path</span><span class="p">)</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="se">\n\n\n</span><span class="s1">******************************'</span><span class="p">)</span>
@@ -686,45 +780,21 @@
 <span class="sd">        Save path for suite2p outputs/results.</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suite2p_save_path</span></div>
-</pre></div>
-<div class="clearer"></div>
+</code></pre></div>
+</article>
+<footer>
+<div class="mt-20 mb-4 text-sm text-gray-700 print:mt-4">© 2022, Packer Lab Made with <a href="https://www.sphinx-doc.org">Sphinx 4.4.0</a></div>
+</footer></main>
+<button class="fixed bottom-0 right-0 z-20 opacity-0 p-4 m-4 tracking-wide bg-gray-900 text-gray-100 transition transform transform-gpu duration-500 translate-y-full" data-action="search#hideSnackbar" data-search-target="snackbar">
+  Clear highlights
+</button><div class="fixed hidden inset-0 bg-black bg-opacity-50" data-action="click-&gt;sidebar#close" data-sidebar-target="screen">
 </div>
 </div>
-</div>
-<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
-<div class="sphinxsidebarwrapper">
-<p class="logo"><a href="../../../index.html">
-<img alt="Logo" class="logo" src="../../../_static/imagingplus-logo.png"/>
-</a></p>
-<div id="searchbox" role="search" style="display: none">
-<h3 id="searchlabel">Quick search</h3>
-<div class="searchformwrapper">
-<form action="../../../search.html" class="search" method="get">
-<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
-<input type="submit" value="Go"/>
-</form>
-</div>
-</div>
-<script>$('#searchbox').show(0);</script>
-</div>
-</div>
-<div class="clearer"></div>
-</div>
-<div aria-label="related navigation" class="related" role="navigation">
-<h3>Navigation</h3>
-<ul>
-<li class="right" style="margin-right: 10px">
-<a href="../../../genindex.html" title="General Index">index</a></li>
-<li class="right">
-<a href="../../../py-modindex.html" title="Python Module Index">modules</a> |</li>
-<li class="nav-item nav-item-0"><a href="../../../index.html">imaging+ 0.2-beta documentation</a> »</li>
-<li class="nav-item nav-item-1"><a href="../../index.html">Module code</a> »</li>
-<li class="nav-item nav-item-this"><a href="">imagingplus.main.core</a></li>
-</ul>
-</div>
-<div class="footer" role="contentinfo">
-        © Copyright 2022, Packer Lab.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
-    </div>
+<script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+<script src="../../../_static/jquery.js"></script>
+<script src="../../../_static/underscore.js"></script>
+<script src="../../../_static/doctools.js"></script>
+<script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+<script src="../../../_static/theme.3051a0ec24cad00d4d88.js"></script>
 </body>
 </html>

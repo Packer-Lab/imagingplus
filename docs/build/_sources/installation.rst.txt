@@ -9,7 +9,7 @@ Installation
 
     pip install -e imagingplus
 
-from the command line from the directory where the GitHub repository was downloaded to.
+on the command line from the directory where the GitHub repository was downloaded to.
 
 
 *Note: The package is installable as a stand-alone python package. You can install the package into an existing conda environment, or you may choose to skip using conda environment all together.*
@@ -52,7 +52,7 @@ or start a python session from the same conda environment in your preferred meth
 
     import imagingplus
     # or
-    import imagingplus as pli
+    import imagingplus as ip
 
 -- Ignore any warnings or printed messages :) --
 

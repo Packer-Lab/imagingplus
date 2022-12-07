@@ -1,37 +1,21 @@
 # this file contains the two fundamental class types (Trial and Experiment) needed to construct an experiment in imagingplus
 from __future__ import absolute_import
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional, MutableMapping, Union, TypedDict, List, Dict, Any
-import numpy as np
-import pandas as pd
-
-from imagingplus.main.subcore import ImagingMetadata, ImagingData, CellAnnotations, TemporalData
-from imagingplus.processing.anndata import AnnotatedData
-
-# from imagingplus.processing.imagingMetadata import ImagingMetadata
-from imagingplus.processing.denoising import Deepinterpolation
-from imagingplus.processing.suite2p import Suite2pResultsTrial, Suite2pExperiment
-from imagingplus.utils.classes import UnavailableOptionError, TrialMetainfo
 
 import os
 import time
 import re
-import tifffile as tf
-
 import pickle
+import numpy as np
 
-# add new class for temporal synchronization of additional 1d dataarrays with imaging cellsdata - parent of Paq
-# todo - test new paqdata child class.
+from imagingplus.main.subcore import ImagingMetadata, ImagingData, CellAnnotations, TemporalData
+from imagingplus.processing.anndata import AnnotatedData
 
-# add new class for cell annotations
+from imagingplus.processing.denoising import Deepinterpolation
+from imagingplus.processing.suite2p import Suite2pResultsTrial, Suite2pExperiment
+from imagingplus.utils.classes import UnavailableOptionError, TrialMetainfo
 
-# TODO test out new Trial class and new workflows
-# todo test anndata creation from Trial
-
-# TODO add function in Experiment object for merging of Trials across time axis (assert they have the same cell annotations).
-
-# TODO [ ]  thinking about restructuring TwoPhotonImaging trial methods to more general trial type
-#    [ ]  then making TwoPhotonImaging as an independent workflow, allowing the general trial type to retain the methods that are *currently* in TwoPhotonImaging
 from imagingplus.utils.utils import findClosest
 from imagingplus.utils.images import ImportTiff, SaveDownsampledTiff
 
@@ -42,6 +26,7 @@ NOTES:
     - could have cases where you have different hardware collecitng temporal data!
 
 - merging of multiple ImagingTrials + TemporalData across the same CellAnnotations into a single ImagingTrial
+# TODO add function in Experiment object for merging of Trials across time axis (assert they have the same cell annotations).
 
 """
 
