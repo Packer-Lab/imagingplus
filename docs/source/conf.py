@@ -16,7 +16,7 @@
 
 
 # -- Project information -----------------------------------------------------
-project = 'Imaging+'
+project = 'imagingplus'
 copyright = '2022, Packer Lab'
 author = 'Packer Lab'
 
@@ -54,7 +54,6 @@ exclude_patterns = ['build', '**.ipynb_checkpoints']
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
 html_theme = "sphinxawesome_theme"
 html_logo = 'files/imagingplus-logo.png'
 
