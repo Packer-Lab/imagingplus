@@ -1,25 +1,24 @@
 from setuptools import setup, find_packages
 
-# test_deps = [
-#     "pytest~=7.0.1",
-# "pytest-cov==2.12.1",
-# "numpy~=1.19.5",
-# 'pandas~=1.4.0',
-# 'seaborn~=0.11.2',
-# 'matplotlib~=3.5.1',
-# 'packerlabimaging~=0.1',
-# 'tifffile~=2022.2.9',
-# 'scipy~=1.8.0',
-# 'statsmodels~=0.13.2',
-# 'h5py~=3.1.0',
-# 'scikit-image~=0.19.1',
-# 'opencv-python~=4.6.0',
-# 'suite2p~=0.10.3',
-# 'anndata~=0.7.8',
-# 'setuptools~=58.0.4',
-# 'tensorflow~=2.5.0',
-# 'pystackreg~=0.2.5',
-# 'deepinterpolation~=0.1.4']
+test_deps = [
+    "pytest~=7.0.1",
+"pytest-cov==2.12.1",
+"numpy~=1.19.5",
+'pandas~=1.4.0',
+'seaborn~=0.11.2',
+'matplotlib~=3.5.1',
+'tifffile~=2022.2.9',
+'scipy~=1.8.0',
+'statsmodels~=0.13.2',
+'h5py~=3.1.0',
+'scikit-image~=0.19.1',
+'opencv-python~=4.6.0',
+'suite2p~=0.10.3',
+'anndata~=0.7.8',
+'setuptools~=58.0.4',
+'tensorflow~=2.5.0',
+'pystackreg~=0.2.5',
+'deepinterpolation~=0.1.4']
 
 # read the contents of your README file
 from pathlib import Path
