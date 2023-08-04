@@ -41,3 +41,15 @@ src/imagingplus/workflows/OnePhotonStimImaging.py
 src/imagingplus/workflows/TwoPhotonImaging.py
 src/imagingplus/workflows/WidefieldImagingTrial.py
 src/imagingplus/workflows/__init__.py
+tests/test_AllOpticalClass.py
+tests/test_ExperimentMain.py
+tests/test_OnePhotonStimClass.py
+tests/test_Suite2p.py
+tests/test_TwoPhotonImagingClass.py
+tests/test_anndata.py
+tests/test_imagingMetadata.py
+tests/test_nwb.py
+tests/test_paq.py
+tests/test_plotting.py
+tests/test_turboreg.py
+tests/test_utils.py

@@ -232,7 +232,7 @@ class ImagingMetadata:
             setattr(self, key, value)
 
     def __repr__(self):
-        return f'ImagingMetadata for imaging cellsdata collected with {self.microscope}.'
+        return f'ImagingMetadata for imaging data collected with {self.microscope}.'
 
     @property
     def fov_size(self):

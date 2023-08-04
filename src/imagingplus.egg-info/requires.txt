@@ -1,13 +1,13 @@
+suite2p
 anndata
 tifffile
 numpy>=1.18.5
 seaborn
 matplotlib
 pandas
-scipy
+scipy~=1.8.0
 statsmodels
 scikit-image
-suite2p
 opencv-python
 pystackreg
 mpl_point_clicker

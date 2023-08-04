@@ -29,7 +29,7 @@ from imagingplus.main.subcore import ImagingMetadata
 
 
 class PrairieViewMetadata(ImagingMetadata):
-    """class for parsing metadata of imaging microscope system."""
+    """class for parsing metadata of Bruker microscope systems in which imaging data is collected through PrairieView."""
 
     def __init__(self, pv_xml_dir: str, microscope: str = 'Bruker'):
 
@@ -191,3 +191,66 @@ class PrairieViewMetadata(ImagingMetadata):
 
         return return_dict
 
+
+class Scanbox(ImagingMetadata):
+    def get_args(self):
+        parser = argparse.ArgumentParser()
+        parser.add_argument('pathname', type=str)
+        # parser.add_argument('sbx_path', type=str)
+        # parser.add_argument('--mat', type=str)
+        # parser.add_argument('--suffix', type = str, default = '')
+
+        args = parser.parse_args()
+
+        return args
+
+    def loadmat(self, matfile):
+        info = scipy.io.loadmat(matfile)['info']
+
+        # The following variables are taken from the corresponding scanbox code
+        info_channels = info['channels'][0][0][0]
+        if info_channels == 1:
+            info_nchan = 2
+            factor = 1
+        if info_channels == 2 or info_channels == 3:
+            info_nchan = 1
+            factor = 2
+
+        info_sz = info['sz'][0][0][0].astype(np.uint16)
+        info_scanmode = info['scanmode'][0][0]
+
+        info_bytesperbuffer = info['bytesPerBuffer'][0][0][0][0]
+        info_recordsperbuffer = info['recordsPerBuffer'][0][0][0][0]
+        info_scanbox_version = info['scanbox_version'][0][0][0]
+
+        # Computed values
+        # info_nsamples = info_sz[1].astype(int) * info_recordsperbuffer * 2 * info_nchan
+        # info_max_idx =  fid.size/info_recordsperbuffer/info_sz[1]*factor/4 - 1
+
+        return info_sz
+
+    def sbx_to_tiff(self, fpath, s_name):
+        start = datetime.now()
+        print('--- Start time = ', start)
+
+        print('--- Loading matfile')
+        info_sz = loadmat(fpath + '.mat')
+        height, width = info_sz
+        maxint = np.iinfo(
+            np.uint16).max  # This is the largest value a uint16 can store. We have to remove it from each value in the binary, for some reason.
+        print("--- Height = {}, Width = {}".format(height, width))
+
+        print('--- Reading sbx file to memory...')
+        fid = np.fromfile(fpath + '.sbx', dtype=np.uint16)
+
+        print('--- Done reading. Reshaping array...')
+        vid = fid.reshape(-1, height, width)
+        vid = maxint - vid
+        fid = None
+
+        print('--- Saving as TIFF...')
+        io.imsave(s_name + '.tiff', vid)
+        print('--- Saving complete')
+        end = datetime.now()
+        print('--- End time = ', end)
+        print('--- Runtime = ', end - start)
