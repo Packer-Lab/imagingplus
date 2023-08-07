@@ -1,5 +1,5 @@
 # TODO need to update this file to remove duplicates that have been refactored...
-
+import argparse
 import sys
 from pathlib import Path
 from typing import Union
@@ -31,6 +31,14 @@ def define_term(term: str):
             'ERROR: please provide a string object as the key')
     except KeyError:
         print(f'input - {term} - not found in dictionary')
+
+
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('pathname', type=str)
+    args = parser.parse_args()
+
+    return args
 
 
 # report sizes of variables
