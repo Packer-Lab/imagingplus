@@ -1,5 +1,27 @@
 # ~ based off code originally written by Adam R. (in the Josselyn Lab ~ 2023)
 
+"""
+!!!! READ FIRST !!!! ~ HOW TO USE THIS SCRIPT
+
+As of now, this script can be run with two options. Note that this script is also not tested yet, so there maybe be errors that you should fix and git commit/push please :)
+
+Option 1) use for converting a set of raw data (i.e. pairs of .mat + .sbx files) to .tiff files
+    This is run as:
+    1) at the command line, cd to the location of your raw data
+    2) from the command line, run: `python <enter-path-to-this-script>`
+    3) this should then run this script and create .tiff files (as long as there are no other errors)
+
+Option 2) use for creating and saving an ImagingPlus experiment object to use for further analysis with this package.
+- NOTE: this options doesn't work yet - the code isn't built out for it - please contribute to it below to make it functional!
+    - to enable this, we will use the createExperiment flag and set it to true as shown:
+    1) at the command line, cd to the location of your raw data
+    2) from the command line, run: `python  <enter-path-to-this-script> createExperiment=True`
+    3) this should then run this script and create .tiff files, and also create an Experiment object (as long as there are no other errors)
+    - note the Experiment object will be saved as a .pkl file in the same directory
+
+"""
+
+
 import pathlib
 from dataclasses import dataclass, field
 from datetime import datetime
