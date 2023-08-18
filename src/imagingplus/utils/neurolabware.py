@@ -91,9 +91,10 @@ class Neurolabware:
     @classmethod
     def newExperimentFromNeurolabware(cls, sbx: list[pathlib.Path], **kwargs):
         """
+        Alternative Constructor:
         Create a new experiment object (including imaging trials) for use in analysis from Neurolabware data.
 
-        :param kwargs: see core.Experiment for required and optional arguments
+        :param kwargs: see core.Experiment for required and optional arguments.
         """
 
         nb_exp = cls(sbx_list=sbx)
