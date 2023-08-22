@@ -27,12 +27,15 @@ from dataclasses import dataclass, field
 from datetime import datetime
 
 import numpy as np
+# import skimage.io as io
 from scipy import io
 
 from imagingplus import Experiment
 from imagingplus.main.core import ImagingTrial
 from imagingplus.utils.images import WriteTiff
 from imagingplus.utils.utils import get_args
+
+start_time = datetime.now()
 
 
 @dataclass
@@ -42,7 +45,7 @@ class Neurolabware:
 
     def __post_init__(self):
         nbFiles = 0
-        for i in sbx_list:
+        for i in self.sbx_list:
             fpath = i.as_posix().split('.')[0]
             save_name_base = '_'.join([i.parts[-4], i.parts[-3], i.stem])
             save_name = i.parent.joinpath(save_name_base).as_posix()
@@ -58,7 +61,7 @@ class Neurolabware:
 
     @staticmethod
     def _loadmatfile(matfile):
-        info = io.loadmatfile(matfile)['info']
+        info = io.loadmat(matfile)['info']
 
         # The following variables are taken from the corresponding scanbox code
         info_channels = info['channels'][0][0][0]
@@ -111,7 +114,7 @@ class Neurolabware:
         print('--- Runtime = ', end - start)
 
     @classmethod
-    def newExperimentFromNeurolabware(cls, sbx: list[pathlib.Path], **kwargs):
+    def newExperimentFromNeurolabware(cls, sbx: list[pathlib.Path], dataPath, expID, saveDir, **kwargs):
         """
         Alternative Constructor:
         Create a new experiment object (including imaging trials) for use in analysis from Neurolabware data.
@@ -121,9 +124,9 @@ class Neurolabware:
 
         nb_exp = cls(sbx_list=sbx)
 
-        expobj = Experiment(dataPath=kwargs['dataPath'],
-                            expID=kwargs['expID'],
-                            saveDir=kwargs['saveDir'],
+        expobj = Experiment(dataPath= dataPath,
+                            expID= expID,
+                            saveDir= saveDir,
                             **kwargs)
         for tiff in nb_exp.tiff_list:
             trialID = tiff.split('.')[0]
@@ -139,8 +142,6 @@ if __name__ == "__main__":
 
     exten = '*.sbx'  # CHANGE THIS IF YOU WANT TO CONVERT DIFFERENT VIDEOS
     print(folderpath)
-
-    start_time = datetime.now()
 
     p = pathlib.Path(folderpath)
 

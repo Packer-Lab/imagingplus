@@ -16,6 +16,7 @@ src/imagingplus/_archive/OnePstim.py
 src/imagingplus/_archive/TwoPhotonImagingMain.py
 src/imagingplus/_archive/__init__.py
 src/imagingplus/_archive/classes.py
+src/imagingplus/_archive/loadpaths.py
 src/imagingplus/_archive/paq.py
 src/imagingplus/_archive/paq_.py
 src/imagingplus/_archive/stats.py
