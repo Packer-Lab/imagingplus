@@ -116,8 +116,7 @@ class Neurolabware:
 
     @classmethod
     def newExperimentFromNeurolabware(cls, sbx: list[pathlib.Path], date: str, dataPath: str, expID: str, saveDir: str,
-                                      expobj_pkl: str = None,
-                                      **kwargs):
+                                      expobj_pkl: str = None):
         """
         Alternative Constructor:
         Create a new experiment object (including imaging trials) for use in analysis from Neurolabware data.
@@ -134,15 +133,14 @@ class Neurolabware:
         if expobj_pkl is None:
             expobj = Experiment(dataPath= dataPath,
                                 expID= expID,
-                                saveDir= saveDir,
-                                **kwargs)
+                                saveDir= saveDir)
         else:
             from imagingplus.utils.io import import_obj
             expobj = import_obj(expobj_pkl)
         for tiff in nb_exp.tiff_list:
             trialID = tiff.split('.')[0]
             trialobj = ImagingTrial.newImagingTrialfromExperiment(experiment=expobj, trialID=trialID, dataPath=tiff,
-                                                                  date=date, **kwargs)
+                                                                  date=date)
 
         expobj.save()
         return nb_exp, expobj
