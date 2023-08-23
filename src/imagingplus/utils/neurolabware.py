@@ -55,9 +55,7 @@ class Neurolabware:
             self.sbx_to_tiff(fpath, save_name)
             nbFiles += 1
 
-        print(f'Conversion of {nbFiles} files over!')
-        print((datetime.now() - start_time), "seconds elapsed ---")
-        print('Done!')
+        print(f'Conversion of {nbFiles} .sbx files to TIFF completed, {(datetime.now() - start_time)} seconds elapsed --- ')
 
     @staticmethod
     def _loadmatfile(matfile):
@@ -93,7 +91,7 @@ class Neurolabware:
         try:
             info_sz = self._loadmatfile(fpath + '.mat')
         except:
-            pass  # TODO : armaan : remove this `pass` and return the appropriate Error message to return when the .mat file is not found in the same folder location as the .sbx file; hint: use FileNotFoundError()
+            pass  # TODO : armaan : remove this `pass` and raise the appropriate Error message when the .mat file is not found in the same folder location as the .sbx file; hint: use FileNotFoundError() and add a helpful message for user to identify what the issue is
         height, width = info_sz
         maxint = np.iinfo(
             np.uint16).max  # This is the largest value a uint16 can store. We have to remove it from each value in the binary, for some reason.
@@ -117,12 +115,15 @@ class Neurolabware:
         print('--- Runtime = ', end - start)
 
     @classmethod
-    def newExperimentFromNeurolabware(cls, sbx: list[pathlib.Path], dataPath: str, expID: str, saveDir: str, **kwargs):
+    def newExperimentFromNeurolabware(cls, sbx: list[pathlib.Path], date: str, dataPath: str, expID: str, saveDir: str,
+                                      expobj_pkl: str = None,
+                                      **kwargs):
         """
         Alternative Constructor:
         Create a new experiment object (including imaging trials) for use in analysis from Neurolabware data.
 
         :param sbx: list of pathnames for .sbx data files to import into imagingplus (note that matfiles are also required)
+        :param expobj_pkl: if using a preexisting imagingplus Experiment object, provide .pkl file path
         :param dataPath:
         :param expID:
         :param saveDir:
@@ -130,14 +131,18 @@ class Neurolabware:
         """
 
         nb_exp = cls(sbx_list=sbx)
-
-        expobj = Experiment(dataPath= dataPath,
-                            expID= expID,
-                            saveDir= saveDir,
-                            **kwargs)
+        if expobj_pkl is None:
+            expobj = Experiment(dataPath= dataPath,
+                                expID= expID,
+                                saveDir= saveDir,
+                                **kwargs)
+        else:
+            from imagingplus.utils.io import import_obj
+            expobj = import_obj(expobj_pkl)
         for tiff in nb_exp.tiff_list:
             trialID = tiff.split('.')[0]
-            trialobj = ImagingTrial.newImagingTrialfromExperiment(experiment=expobj, trialID=trialID, **kwargs)
+            trialobj = ImagingTrial.newImagingTrialfromExperiment(experiment=expobj, trialID=trialID, dataPath=tiff,
+                                                                  date=date, **kwargs)
 
         expobj.save()
         return nb_exp, expobj

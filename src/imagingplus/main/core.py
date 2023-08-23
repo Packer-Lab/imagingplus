@@ -76,7 +76,10 @@ class ImagingTrial:
         self.metainfo = TrialMetainfo(date=self.date, trialID=self.trialID, expID=self.expID, expGroup=self.expGroup,
                                       comment=self.comment, paths={})
 
-        if os.path.exists(self.dataPath): self.metainfo['paths']['dataPath'] = self.dataPath
+        if os.path.exists(self.dataPath):
+            self.metainfo['paths']['dataPath'] = self.dataPath
+            if self.data_path[-5:] == '.tiff': pass
+            else: raise ValueError(f"dataPath for new ImagingTrial must be `.tiff` file")
         else: raise FileNotFoundError(f"dataPath does not exist: {self.dataPath}")
 
         # processing collect mean FOV Trace -- after collecting imaging params and Paq timing info
@@ -173,7 +176,7 @@ class ImagingTrial:
 
     @property
     def data_path(self):
-        """data path of current trial object"""
+        """directory location of data of current trial object. Protected property."""
         return self.metainfo['paths']['dataPath']
 
     @property
@@ -395,13 +398,13 @@ class Experiment:
     comment: str = ''  #: notes related to experiment
     singleImages: Dict[str, SingleImage] = None  #: contains single image frames from each experiment
     experimenter = ''  #: experimenter performing pertinent data collection or data analysis
-    lab = ''  #: research group with with experiments were performed
+    lab = ''  #: research group
     institution = ''  #: insititution where experiments were performed
     Suite2p: Suite2pExperiment = None
 
     def __post_init__(self):
         print(f'***********************')
-        print(f'CREATING new Experiment: (expID: {self.expID})')
+        print(f'CREATING new imagingplus Experiment: (expID: {self.expID})')
         print(f'***********************\n\n')
 
         self.singleImages = {}
@@ -423,8 +426,8 @@ class Experiment:
         self.save_pkl(pkl_path=self.pkl_path)
 
         print(f'\n\n\n******************************')
-        print(f"NEW Experiment created: \n")
-        print(self.__str__())
+        print(f"New imagingplus Experiment created: \n")
+        print('\t', self.__str__())
 
     def __repr__(self):
         return f"imagingplus.Experiment object (expID: {self.expID})"
@@ -432,13 +435,13 @@ class Experiment:
     def __str__(self):
         lastsaved = time.ctime(os.path.getmtime(self.pkl_path))
         __return_information = f"imagingplus Experiment object (last saved: {lastsaved}), expID: {self.expID}"
-        __return_information = __return_information + f"\nfile path: {self.pkl_path}"
+        __return_information = __return_information + f"\n\tfile path: {self.pkl_path}"
 
         if len(self.TrialsInformation) > 0:
             __return_information = __return_information + f"\n\ntrials in Experiment object:"
             for trial in self.TrialsInformation:
                 __return_information = __return_information + self.get_trial_info(trialID=trial)
-            return f"{__return_information}\n"
+            return f"\t{__return_information}\n"
         else:
             return f"{__return_information}\n"
 
@@ -455,7 +458,7 @@ class Experiment:
         else:
             self.saveDir = self.saveDir + '/' if self.saveDir[
                                                      -1] != '/' else self.saveDir
-            _pkl_path = f"{self.saveDir}{self.expID}_analysis.pkl"
+            _pkl_path = f"{self.saveDir}{self.expID}_imagingplus_expobj.pkl"
         os.makedirs(self.saveDir, exist_ok=True)
         return _pkl_path
 
