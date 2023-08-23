@@ -90,7 +90,10 @@ class Neurolabware:
         print('--- Start time = ', start)
 
         print('--- Loading matfile')
-        info_sz = self._loadmatfile(fpath + '.mat')
+        try:
+            info_sz = self._loadmatfile(fpath + '.mat')
+        except:
+            pass  # TODO : armaan : remove this `pass` and return the appropriate Error message to return when the .mat file is not found in the same folder location as the .sbx file; hint: use FileNotFoundError()
         height, width = info_sz
         maxint = np.iinfo(
             np.uint16).max  # This is the largest value a uint16 can store. We have to remove it from each value in the binary, for some reason.
@@ -114,12 +117,16 @@ class Neurolabware:
         print('--- Runtime = ', end - start)
 
     @classmethod
-    def newExperimentFromNeurolabware(cls, sbx: list[pathlib.Path], dataPath, expID, saveDir, **kwargs):
+    def newExperimentFromNeurolabware(cls, sbx: list[pathlib.Path], dataPath: str, expID: str, saveDir: str, **kwargs):
         """
         Alternative Constructor:
         Create a new experiment object (including imaging trials) for use in analysis from Neurolabware data.
 
-        :param kwargs: see core.Experiment for required and optional arguments.
+        :param sbx: list of pathnames for .sbx data files to import into imagingplus (note that matfiles are also required)
+        :param dataPath:
+        :param expID:
+        :param saveDir:
+        :param kwargs: see core.Experiment for additional optional arguments.
         """
 
         nb_exp = cls(sbx_list=sbx)

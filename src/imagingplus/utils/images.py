@@ -385,7 +385,7 @@ def WriteTiff(save_path, stack: np.array):
     print(f"\n\- saving array [{stack.shape}] to: {save_path}", end="\r")
     if not os.path.exists(os.path.dirname(save_path)):
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
-    tf.imwrite(file=save_path, data=stack, photometric='minisblack')
+    tf.imwrite(save_path, stack, photometric='minisblack')
     print(f"\n|- saved array [{stack.shape}] to: {save_path}")
 
 
