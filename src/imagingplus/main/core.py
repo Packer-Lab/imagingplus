@@ -1,7 +1,7 @@
 # this file contains the two fundamental class types (Trial and Experiment) needed to construct an experiment in imagingplus
 from __future__ import absolute_import
 from dataclasses import dataclass
-from typing import Optional, MutableMapping, Union, TypedDict, List, Dict, Any
+from typing import Optional, MutableMapping, Union, Dict
 
 import os
 import time

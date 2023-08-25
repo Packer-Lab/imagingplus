@@ -47,11 +47,11 @@ class Neurolabware:
         nbFiles = 0
         for i in self.sbx_list:
             fpath = i.as_posix().split('.')[0]
-            save_name_base = '_'.join([i.parts[-4], i.parts[-3], i.stem])
+            # save_name_base = '_'.join([i.parts[-4], i.parts[-3], i.stem])
+            save_name_base = i.parts[-1][:-4]
             save_name = i.parent.joinpath(save_name_base).as_posix()
 
             print('Converting ' + fpath)
-            print('Saving as ' + save_name_base)
             self.sbx_to_tiff(fpath, save_name)
             nbFiles += 1
 
@@ -138,7 +138,7 @@ class Neurolabware:
             from imagingplus.utils.io import import_obj
             expobj = import_obj(expobj_pkl)
         for tiff in nb_exp.tiff_list:
-            trialID = tiff.split('.')[0]
+            trialID = tiff.split('/')[-1].split('.')[0]
             trialobj = ImagingTrial.newImagingTrialfromExperiment(experiment=expobj, trialID=trialID, dataPath=tiff,
                                                                   date=date)
 
@@ -159,7 +159,10 @@ if __name__ == "__main__":
 
     # process neurolabware experiment with the sbx list of files to process in current batch
     if 'createExperiment' in args and args['createExperiment'] is True:
-        _, _ = Neurolabware.newExperimentFromNeurolabware(sbx=list(sbx_list))
+        _, _ = Neurolabware.newExperimentFromNeurolabware(sbx=list(sbx_list), date=args['date'],
+                                                          dataPath=args['dataPath'], expID=args['expID'],
+                                                          saveDir=args['saveDir'],
+                                                          expobj_pkl='/Users/prajayshah/DATA/Josselyn_lab/test_data/analysis/001_imagingplus_expobj.pkl')
     else:
         _ = Neurolabware(sbx_list=list(sbx_list))
 
