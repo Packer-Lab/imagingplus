@@ -7,7 +7,7 @@ import time
 from imagingplus.main.core import ImagingTrial
 from imagingplus.main.subcore import CellAnnotations, ImagingData
 from imagingplus.processing.paq import PaqData
-from imagingplus.processing.imagingMetadata import ImagingMetadata
+from imagingplus.processing.microscopes import MicroscopeMetadata
 
 
 class TwoPhotonImaging(ImagingTrial):
@@ -17,7 +17,7 @@ class TwoPhotonImaging(ImagingTrial):
 
     def __init__(self, date: str = None, trialID: str = None, expID: str = None, dataPath: str = None,
                  expGroup: str = None, saveDir: str = None, tmdata: PaqData = None, imdata: ImagingData = None,
-                 imparams: ImagingMetadata = None, cells: CellAnnotations = None, comment: str = ''):
+                 imparams: MicroscopeMetadata = None, cells: CellAnnotations = None, comment: str = ''):
 
         """
         TODO update function docstring for approp args
@@ -25,7 +25,7 @@ class TwoPhotonImaging(ImagingTrial):
         :param paq_options: TypedDict containing meta-information about .paq file associated with current trial
         :param analysis_save_path: path of where to save the experiment analysis object
         :param microscope: name of microscope used to record imaging (options: "Bruker" (default), "other")
-        :param imagingMicroscopeMetadata: provide ImagingMetadata object (see ImagingMetadata class).
+        :param imagingMicroscopeMetadata: provide MicroscopeMetadata object (see MicroscopeMetadata class).
         :param suite2p_experiment_obj: provide Suite2p Experiment Object as variable in order to process Suite2p cellsdata for current trial
         :param total_frames_stitched: provide frame number on which current trial starts in Suite2p Experiment Object
         """
@@ -57,7 +57,7 @@ class TwoPhotonImaging(ImagingTrial):
     #         return PrairieViewMetadata(tiff_path_dir=self.tiff_path_dir)
     #     else:
     #         try:
-    #             return ImagingMetadata(**metadata)
+    #             return MicroscopeMetadata(**metadata)
     #         except TypeError:
     #             Exception('required key not present in metadata')
     #

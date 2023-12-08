@@ -9,7 +9,7 @@ import re
 import pickle
 import numpy as np
 
-from imagingplus.main.subcore import ImagingMetadata, ImagingData, CellAnnotations, TemporalData
+from imagingplus.main.subcore import MicroscopeMetadata, ImagingData, CellAnnotations, TemporalData
 from imagingplus.processing.anndata import AnnotatedData
 
 from imagingplus.processing.denoising import Deepinterpolation
@@ -38,7 +38,7 @@ class SingleImage:
     imgID: str = None                   #: id of image
     expGroup: str = None                #: experimental group of image
     comment: str = None                 #: notes regarding image
-    imparams: ImagingMetadata = None    #: image collection parameters of image
+    imparams: MicroscopeMetadata = None    #: image collection parameters of image
 
     def __post_init__(self):
         self.data = ImportTiff(self.dataPath)
@@ -62,7 +62,7 @@ class ImagingTrial:
     expID: str          #: experiment ID associated with current Imaging Trial
     expGroup: str = ''  #: group assignment within experiment
     comment: str = ''   #: notes related to Imaging Trial
-    imparams: ImagingMetadata = None        #: ImagingMetadata related to current Imaging Trial
+    imparams: MicroscopeMetadata = None        #: MicroscopeMetadata related to current Imaging Trial
     data: AnnotatedData = None              #: anndata structure for current Imaging Trial
     imdata: ImagingData = None              #: Imaging data for current Imaging Trial
     cells: CellAnnotations = None           #: Cells Annotations data for current Imaging Trial
@@ -248,15 +248,15 @@ class ImagingTrial:
         # plt.show()
         return stack
 
-    def addImagingMetadata(self, imaging_metadata: ImagingMetadata = None, Bruker: bool = False):
+    def addImagingMetadata(self, imaging_metadata: MicroscopeMetadata = None, Bruker: bool = False):
         """Add the imaging metadata submodule to the current ImagingTrial.
 
-        :param Bruker: if True, then set ImagingMetadata as PrairieViewMetadata
-        :param imaging_metadata: input ImagingMetadata to add to current ImagingTrial
+        :param Bruker: if True, then set MicroscopeMetadata as PrairieViewMetadata
+        :param imaging_metadata: input MicroscopeMetadata to add to current ImagingTrial
         """
         # imaging metadata
         if Bruker:
-            from imagingplus.processing.imagingMetadata import PrairieViewMetadata
+            from imagingplus.processing.microscopes import PrairieViewMetadata
             self.imparams = PrairieViewMetadata(pv_xml_dir=self.data_path_dir)
         elif imaging_metadata:
             self.imparams = imaging_metadata

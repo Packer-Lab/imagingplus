@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 
 from imagingplus import TwoPhotonImaging
-from imagingplus.main.subcore import ImagingMetadata, CellAnnotations
+from imagingplus.main.subcore import MicroscopeMetadata, CellAnnotations
 from imagingplus.main.core import Experiment, ImagingTrial
 from imagingplus.processing.paq import PaqData
 from imagingplus.processing.naparm import Targets
@@ -34,7 +34,7 @@ class AllOpticalTrial(TwoPhotonImaging):
     """All Optical Experimental Data Analysis Workflow."""
 
     def __init__(self, naparm_path, dataPath: str, saveDir: str, date: str, trialID: str, expID: str,
-                 expGroup: str = '', comment: str = '', imparams: ImagingMetadata = None, cells: CellAnnotations = None,
+                 expGroup: str = '', comment: str = '', imparams: MicroscopeMetadata = None, cells: CellAnnotations = None,
                  tmdata: PaqData = None):
 
         """
@@ -898,7 +898,7 @@ if __name__ == '__main__':
         :param alloptical_trial_fixture:
         :return:
         """
-        from imagingplus.processing.imagingMetadata import PrairieViewMetadata
+        from imagingplus.processing.microscopes import PrairieViewMetadata
         from imagingplus.processing.paq import PaqData
 
         paqs_loc = f'{BASE_PATH}/2020-12-19/2020-12-19_RL109_013.paq'  # path to the .paq files for the selected trials

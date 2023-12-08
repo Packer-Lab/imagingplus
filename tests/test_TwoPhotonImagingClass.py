@@ -3,7 +3,7 @@ import os
 import pytest
 
 from imagingplus.processing.paq import PaqData
-from imagingplus.processing.imagingMetadata import PrairieViewMetadata
+from imagingplus.processing.microscopes import PrairieViewMetadata
 from imagingplus.workflows.TwoPhotonImaging import TwoPhotonImaging
 
 

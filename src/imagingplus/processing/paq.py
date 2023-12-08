@@ -135,7 +135,7 @@ def paq2py(file_path=None, plot=False):
 
 # noinspection DuplicatedCode
 class PaqData(TemporalData):
-    """access and storage of cellsdata from .paq files."""
+    """access and storage of temporal data from .paq files."""
 
     def __init__(self, file_path, **kwargs):
         print(f"\n\- ADDING PAQ DATA from {file_path}... ")

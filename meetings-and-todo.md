@@ -7,9 +7,12 @@
 
 
 ## TODO
-2023-12-07: Armaan to test out/debug neurolabware.py with test data
-
-
+2023-12-07: [Armaan] to test out/debug neurolabware.py with test data
+2023-12-08: [to assign] create new default class for neurolabware metadata in imagingMetadata.py
+Tutorial-1-Overview:
+2023-12-08: [to assign] update Tutorial-1-Overview from PaqData --> TemporalData, and PrairieViewMetadata --> MicroscopeMetadata
+    - or atleast just add example for user to input the necessary info manually, and then have another cell where it is automatically parsed for PaqData and PrairieViewMetadata (to show examples of built-ins)
+2023-12-08: [to assign] remove AllOptical example cell from Tutorial-1-Overview --> move to separate AllOptical trial + processing + analysis tutorial
 
 
 

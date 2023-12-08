@@ -1,4 +1,4 @@
-from imagingplus.processing.imagingMetadata import PrairieViewMetadata
+from imagingplus.processing.microscopes import PrairieViewMetadata
 
 
 def test_PrairieViewMetadata():

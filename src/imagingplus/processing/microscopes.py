@@ -1,14 +1,14 @@
-# collection of functions for parsing PrairieView metadata from imaging and alloptical experiments
+# default classes designed for parsing MicroscopeMetadata from microscope systems
 import os
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 
 # need to implement alternative class constructor using cls.method
 from typing import List, Union, Any
-from imagingplus.main.subcore import ImagingMetadata
+from imagingplus.main.subcore import MicroscopeMetadata
 
 
-# class ImagingMetadata:
+# class MicroscopeMetadata:
 #     """Class containing metadata about imaging microscope"""
 #
 #     def __init__(self, microscope, n_frames, fps, frame_x, frame_y, n_planes, pix_sz_x, pix_sz_y, **kwargs):
@@ -25,10 +25,10 @@ from imagingplus.main.subcore import ImagingMetadata
 #             setattr(self, key, value)
 #
 #     def __repr__(self):
-#         return f'ImagingMetadata for imaging cellsdata collected with {self.microscope}.'
+#         return f'MicroscopeMetadata for imaging cellsdata collected with {self.microscope}.'
 
 
-class PrairieViewMetadata(ImagingMetadata):
+class PrairieViewMetadata(MicroscopeMetadata):
     """class for parsing metadata of Bruker microscope systems in which imaging data is collected through PrairieView."""
 
     def __init__(self, pv_xml_dir: str, microscope: str = 'Bruker'):
@@ -36,7 +36,7 @@ class PrairieViewMetadata(ImagingMetadata):
         print(f'\n\- Adding Imaging Acquisition Metadata from {microscope} ...')
         self.pv_xml_dir = pv_xml_dir  #: path to the directory containing the .xml imaging output from PrairieView for a given trial
         pv_metadata = self._parsePVMetadata()
-        super().__init__(microscope=microscope, **pv_metadata)  # call to ImagingMetadata parent class
+        super().__init__(microscope=microscope, **pv_metadata)  # call to MicroscopeMetadata parent class
 
         self.scan_x = pv_metadata['scan_x']  #: resonant scan center in x axis
         self.scan_y = pv_metadata['scan_y']  #: resonant scan center in y axis

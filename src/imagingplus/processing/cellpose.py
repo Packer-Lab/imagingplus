@@ -4,14 +4,14 @@ import os
 import numpy as np
 from matplotlib import pyplot as plt
 
-from imagingplus.main.subcore import ImagingMetadata
+from imagingplus.main.subcore import MicroscopeMetadata
 
 from imagingplus.main.core import SingleImage
 from imagingplus.plotting._utils import _add_scalebar
 
 
 class CellposeImg(SingleImage):
-    def __init__(self, dataPath: str, cellpose_npy_path, imparams: ImagingMetadata, saveDir: str, expGroup: str = '',
+    def __init__(self, dataPath: str, cellpose_npy_path, imparams: MicroscopeMetadata, saveDir: str, expGroup: str = '',
                  **kwargs):
         super().__init__(dataPath=dataPath, imparams=imparams, **kwargs)
         if not os.path.exists(cellpose_npy_path):
@@ -44,7 +44,7 @@ class CellposeImg(SingleImage):
         return [*self.roi_areas]
 
     @classmethod
-    def load_cellpose(cls, dataPath: str, cellpose_npy_path, imparams: ImagingMetadata, saveDir: str, expGroup: str = ''):
+    def load_cellpose(cls, dataPath: str, cellpose_npy_path, imparams: MicroscopeMetadata, saveDir: str, expGroup: str = ''):
         """
         Alternate constructor.
         Import and load array coords from cellpose generated ROI masks for red channel interneurons.

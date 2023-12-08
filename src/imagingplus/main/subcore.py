@@ -211,7 +211,7 @@ class ImagingData:
         return self.imdata.shape[0]
 
 
-class ImagingMetadata:
+class MicroscopeMetadata:
     """Metadata about imaging system parameters."""
 
     PIXEL_SIZE_UNITS: str = 'microns per pixel'  #: units for the values of the size of imaging pixels

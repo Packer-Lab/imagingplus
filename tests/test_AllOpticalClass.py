@@ -20,7 +20,7 @@ def test_AllOpticalClass(alloptical_trial_fixture, existing_expobj_nopredones2p_
     :param alloptical_trial_fixture:
     :return:
     """
-    from imagingplus.processing.imagingMetadata import PrairieViewMetadata
+    from imagingplus.processing.microscopes import PrairieViewMetadata
     from imagingplus.processing.paq import PaqData
 
     paqs_loc = f'{BASE_PATH}/2020-12-19/2020-12-19_RL109_013.paq'  # path to the .paq files for the selected trials
