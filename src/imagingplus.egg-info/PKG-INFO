@@ -8,7 +8,7 @@ Author-email: adampacker@gmail.com
 License: MIT
 Description-Content-Type: text/markdown
 License-File: LICENSE
-Requires-Dist: suite2p
+Requires-Dist: suite2p~=0.10.3
 Requires-Dist: anndata
 Requires-Dist: tifffile
 Requires-Dist: numpy>=1.18.5

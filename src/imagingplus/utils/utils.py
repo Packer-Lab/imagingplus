@@ -34,8 +34,9 @@ def define_term(term: str):
 
 
 def get_args():
+    """parsing arguments passed into command line prompt"""
     parser = argparse.ArgumentParser()
-    parser.add_argument('pathname', type=str)
+    # parser.add_argument('pathname', type=str)
     args = parser.parse_args()
 
     return args

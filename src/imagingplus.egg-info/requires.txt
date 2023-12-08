@@ -1,4 +1,4 @@
-suite2p
+suite2p~=0.10.3
 anndata
 tifffile
 numpy>=1.18.5

@@ -25,6 +25,7 @@ Option 2) use for creating and saving an ImagingPlus experiment object to use fo
 import pathlib
 from dataclasses import dataclass, field
 from datetime import datetime
+import os
 
 import numpy as np
 # import skimage.io as io
@@ -148,7 +149,9 @@ class Neurolabware:
 
 if __name__ == "__main__":
     args = get_args()
-    folderpath = args.pathname
+    # folderpath = args.pathname
+
+    folderpath = os.getcwd()
 
     exten = '*.sbx'  # CHANGE THIS IF YOU WANT TO CONVERT DIFFERENT VIDEOS
     print(folderpath)
