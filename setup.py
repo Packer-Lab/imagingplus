@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 test_deps = [
-    "pytest~=7.0.1",
+"pytest~=7.0.1",
 "pytest-cov==2.12.1",
 "numpy~=1.19.5",
 'pandas~=1.4.0',
@@ -29,17 +29,18 @@ long_description = (this_directory / "README.md").read_text()
 setup(
     name='imagingplus',
     version='0.2-beta',
-    description='integrated tool-suite of essential processing and analysis of imaging+ experiments',
+    description='integrated tool-suite of essential processing and analysis of imaging+ neuroscience experiments',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/Packer-Lab/imagingplus.git',
-    author='Packer Lab',
-    author_email='adampacker@gmail.com',
+    author='Prajay Shah (Packer Lab)',
+    author_email='prajay.shah@mail.utoronto.ca',
     license='MIT',
     package_dir={'': 'src'},
     packages=find_packages(where='src'),
+    python_requires='>=3.9, <3.11',
     install_requires=[
-        'suite2p~=0.10.3',
+        'suite2p',
         'anndata',
         'tifffile',
         'numpy>=1.18.5',

@@ -1,14 +1,15 @@
 Metadata-Version: 2.1
 Name: imagingplus
 Version: 0.2b0
-Summary: integrated tool-suite of essential processing and analysis of imaging+ experiments
+Summary: integrated tool-suite of essential processing and analysis of imaging+ neuroscience experiments
 Home-page: https://github.com/Packer-Lab/imagingplus.git
 Author: Packer Lab
 Author-email: adampacker@gmail.com
 License: MIT
+Requires-Python: >=3.9, <3.11
 Description-Content-Type: text/markdown
 License-File: LICENSE
-Requires-Dist: suite2p~=0.10.3
+Requires-Dist: suite2p
 Requires-Dist: anndata
 Requires-Dist: tifffile
 Requires-Dist: numpy>=1.18.5
