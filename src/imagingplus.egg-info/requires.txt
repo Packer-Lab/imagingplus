@@ -5,7 +5,7 @@ numpy>=1.18.5
 seaborn
 matplotlib
 pandas
-scipy~=1.8.0
+scipy
 statsmodels
 scikit-image
 opencv-python

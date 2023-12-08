@@ -159,10 +159,11 @@ if __name__ == "__main__":
 
     # process neurolabware experiment with the sbx list of files to process in current batch
     if 'createExperiment' in args and args['createExperiment'] is True:
+        assert ('date' in args and 'dataPath' in args and 'expID' in args and
+                'saveDir' in args), 'missing data or dataPath or expId or saveDir - all arguments are required to create an iamgingplus Experiment'
         _, _ = Neurolabware.newExperimentFromNeurolabware(sbx=list(sbx_list), date=args['date'],
                                                           dataPath=args['dataPath'], expID=args['expID'],
-                                                          saveDir=args['saveDir'],
-                                                          expobj_pkl='/Users/prajayshah/DATA/Josselyn_lab/test_data/analysis/001_imagingplus_expobj.pkl')
+                                                          saveDir=args['saveDir'])
     else:
         _ = Neurolabware(sbx_list=list(sbx_list))
 

@@ -66,6 +66,7 @@ However, if there are non-trivial issues with dependencies during installation, 
 Next
 ----
 
+:ref:`Quick start guide`
+
 :ref:`overview`
 
-:ref:`Quick start guide`

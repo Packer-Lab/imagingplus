@@ -8,6 +8,20 @@ Author-email: adampacker@gmail.com
 License: MIT
 Description-Content-Type: text/markdown
 License-File: LICENSE
+Requires-Dist: suite2p
+Requires-Dist: anndata
+Requires-Dist: tifffile
+Requires-Dist: numpy>=1.18.5
+Requires-Dist: seaborn
+Requires-Dist: matplotlib
+Requires-Dist: pandas
+Requires-Dist: scipy
+Requires-Dist: statsmodels
+Requires-Dist: scikit-image
+Requires-Dist: opencv-python
+Requires-Dist: pystackreg
+Requires-Dist: mpl_point_clicker
+Requires-Dist: pynwb
 
 # Imaging+ <img src="docs/source/files/imagingplus-logo.png" width="200" title="imagingplus logo" alt="a python -x- calcium spike" align="right" vspace = "50">
 
