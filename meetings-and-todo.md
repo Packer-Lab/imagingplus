@@ -1,6 +1,18 @@
 # Record for meeting agendas, notes and todo's 
 
 
+## ONGOING PROBLEMS LIST
+2023-12-07: package not currently stable with combo python3.11 +/- current suite2p, only stable at python3.9 + suite2p==0.10.3
+
+
+
+## TODO
+2023-12-07: Armaan to test out/debug neurolabware.py with test data
+
+
+
+
+
 
 ## OCT 26 2022 
 
