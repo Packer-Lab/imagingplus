@@ -9,9 +9,9 @@ import pandas as pd
 @dataclass
 class TemporalData:
     """1-D time series datasets corresponding with an imaging trial. Accomodates all 1-D series that are temporally synchronized to each other."""
-    file_path: str  #: path to cellsdata file
-    sampling_rate: float  #: rate of cellsdata collection (Hz)
-    channels: List[str]  #: list of cellsdata channel names.
+    file_path: str  #: path to TemporalData file
+    sampling_rate: float  #: rate of TemporalData collection (Hz)
+    channels: List[str]  #: list of TemporalData channel names.
     data: pd.DataFrame  #: N columns x Time array of N x 1D cellsdata channels collected over Time at the same sampling rate
     units: List[str] = None  #: list of units corresponding to channels.
     frame_times: Union[
